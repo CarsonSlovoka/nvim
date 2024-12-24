@@ -5,7 +5,7 @@ mkdir -p ~/.config/nvim
 git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 ```
 
-# 目錄構
+# 目錄結構
 
 - ✅ 表示目前已經有實作
 - 沒有標記的部份就只是目前規劃
