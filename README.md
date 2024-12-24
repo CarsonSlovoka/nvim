@@ -1,3 +1,10 @@
+# INSTALL
+
+```sh
+mkdir -p ~/.config/nvim
+git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
+```
+
 # 目錄構
 
 - ✅ 表示目前已經有實作
