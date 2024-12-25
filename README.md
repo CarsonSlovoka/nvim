@@ -11,6 +11,8 @@ LuaJIT 2.1.1713484068
 ```sh
 mkdir -p ~/.config/nvim
 git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
+cd ~/.config/nvim
+git submodule update --init --recursive
 ```
 
 # 目錄結構
