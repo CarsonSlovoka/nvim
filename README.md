@@ -124,3 +124,35 @@ go install golang.org/x/tools/gopls@latest
 which gopls
 # $GOPATH/bin/gopls
 ```
+
+#### python
+
+```bash
+pyenv virtualenv 3.13.0 pyright-env
+pyenv activate pyright-env
+pyenv versions # check switch
+python -m pip install --upgrade pip
+pip install pyright
+pip freeze
+# nodeenv==1.9.1
+# pyright==1.1.391
+# typing_extensions==4.12.2
+pyenv deactivate
+which pyright | wl-copy
+# vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑
+
+# 進入nvim之前要啟用虛擬環境, 才會有作用, 而且相關的python套件也要在該虛擬環境有，不然也沒辦法做檢測
+pyenv activate pyright-env
+nivm ~/test.py
+```
+
+建議安裝在全局上，可以省得麻煩
+```bash
+pyenv install 3.13.0
+pyenv global 3.13.0
+pip install pyright
+pip freeze | grep pyright
+# pyright==1.1.391
+which pyright | wl-copy
+# vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑 
+```

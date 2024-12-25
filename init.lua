@@ -33,5 +33,6 @@ require'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lu
 
 local lspconfig = require'lspconfig'
 lspconfig.pyright.setup{}
+vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
 lspconfig.gopls.setup{}
 -- lspconfig.tsserver.setup{}
