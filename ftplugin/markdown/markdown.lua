@@ -1,22 +1,33 @@
 -- 生成 TOC 數據
 local function generate_toc()
     local toc = {}
+    local in_code_block = false -- 標記是否在程式碼塊中
+
     for line_num = 1, vim.api.nvim_buf_line_count(0) do
         local line = vim.fn.getline(line_num)
-        local header = line:match("^(#+)%s+(.*)")
-        if header then
-            -- header:match("^#+") 可能是 ###
-            -- #header:match("^#+") 是計算長度, 所以level會是數字
-            local level = #header:match("^#+")
-            table.insert(toc, {
-                level = level,
-                line = line_num,
-                title = line:match("^#+%s+(.*)") -- 去除#[space], 不要匹配主文字即可
-            })
+
+        -- 檢查是否進入或退出程式碼塊
+        if line:match("^```") then
+            in_code_block = not in_code_block
+        end
+
+        -- 忽略程式碼塊中的內容
+        if not in_code_block then
+            -- 嚴格匹配 Markdown 標題格式
+            local header, title = line:match("^(#+)%s+(%S.*)$")
+            if header then
+                local level = #header -- #表示取長度
+                table.insert(toc, {
+                    level = level,
+                    line = line_num,
+                    title = title -- 已去除#[空白]
+                })
+            end
         end
     end
     return toc
 end
+
 
 -- 顯示 TOC 浮動窗口
 local function show_toc_window()
