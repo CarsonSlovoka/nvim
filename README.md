@@ -1,3 +1,11 @@
+# Version
+
+```
+NVIM v0.10.2
+Build type: RelWithDebInfo
+LuaJIT 2.1.1713484068
+```
+
 # INSTALL
 
 ```sh
@@ -13,6 +21,10 @@ git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 ```
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
+├── pack/
+│   ├── nvim-treesitter/             -- ✅ 語法高亮 
+├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
+│   ├── markdown/                    -- ✅ markdown編輯, toc相關
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── plugins/                     -- 插件相關的配置
 │   │   ├── init.lua                 -- 插件管理器 (packer.nvim 或 lazy.nvim) 的配置
@@ -47,4 +59,31 @@ git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 │   ├── syntax/                      -- 語法高亮相關配置
 │   └── ...                          -- 其他延遲加載配置
 └── README.md                        -- ✅ 簡單說明文件
+```
+
+# pack
+
+```
+:help runtimepath
+:help :packadd
+    pack/*/start/{name}
+```
+
+## nvim-treesitter
+
+```bash
+mkdir -p ~/.config/nvim/pack/syntax/start/ # 建立一個syntax的群組
+git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/pack/syntax/start/nvim-treesitter
+```
+
+```yaml
+# 此項目是nvim-treesitter所提供的: https://github.com/nvim-treesitter/nvim-treesitter/blob/096babebf6daef2a046650883082ed2b3dcc5b67/lua/nvim-treesitter/health.lua#L117-L174
+:checkhealth
+```
+
+![treesitter_health](.img/treesitter_health.webp)
+
+```yaml
+# 更新
+:TSUpdate
 ```

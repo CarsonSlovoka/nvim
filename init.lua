@@ -18,3 +18,12 @@ end
 require("config.options").setup()
 require("config.keymaps").setup()
 require("config.commands").setup()
+
+-- pack/syntax/start/nvim-treesitter
+require'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
+    ensure_installed = { "markdown", "markdown_inline" },
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+}
