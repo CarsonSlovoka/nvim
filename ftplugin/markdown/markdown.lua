@@ -5,8 +5,14 @@ local function generate_toc()
         local line = vim.fn.getline(line_num)
         local header = line:match("^(#+)%s+(.*)")
         if header then
+            -- header:match("^#+") 可能是 ###
+            -- #header:match("^#+") 是計算長度, 所以level會是數字
             local level = #header:match("^#+")
-            table.insert(toc, { level = level, line = line_num, title = line:match("^#+%s+(.*)") })
+            table.insert(toc, {
+                level = level,
+                line = line_num,
+                title = line:match("^#+%s+(.*)") -- 去除#[space], 不要匹配主文字即可
+            })
         end
     end
     return toc
@@ -34,7 +40,11 @@ local function show_toc_window()
 
     local lines = {}
     for _, item in ipairs(toc) do
-        table.insert(lines, string.rep(" ", (item.level - 1) * 2) .. "- " .. item.title .. " (line " .. item.line .. ")")
+        table.insert(lines,
+                string.rep(" ", (item.level - 1) * 2) ..
+                        "- " .. item.title ..
+                        " (line " .. item.line .. ")"
+        )
     end
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 
