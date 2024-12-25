@@ -24,10 +24,13 @@ function exec.ExecuteSelection()
 
     -- 合併行內容為單一命令字串
     local command = table.concat(lines, "\n")
+    print(command)
 
     -- 非同步執行命令，無輸出到文本
+    local curDir = vim.fn.expand("%:p:h")
     vim.loop.spawn("sh", {
         args = { "-c", command },
+        cwd = curDir -- (optional) 設定工作目錄
     }, function(code, signal)
         if code ~= 0 then
             vim.schedule(function()

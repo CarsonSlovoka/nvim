@@ -20,10 +20,11 @@ local function setup_visual()
     )
 
     vim.keymap.set('x',
-            '<leader>r',
+            '<leader><F5>',
             -- [[:lua ExecuteSelection()<CR>]],
             function()
-                exec.ExecuteSelection()
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true) -- 先離開visual模式，否則它會認為是在visual中運作，這會等到esc之後才會動作，導致你可能認為要按第二次才會觸發
+                vim.schedule(exec.ExecuteSelection) -- 並且使用 schedule 確保在模式更新後執行
             end,
             { noremap = true, silent = true }
     )
