@@ -24,7 +24,12 @@ git submodule update --init --recursive
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
 ├── pack/
-│   ├── nvim-treesitter/             -- ✅ 語法高亮 
+│   ├── syntax/start/
+│   │          │
+│   │          └── nvim-treesitter/  -- ✅ 語法高亮
+│   │          
+│   ├── syntax/lsp/                  -- ✅ language server protocol
+│   │          └── nvim-lspconfig/   -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
 │   ├── markdown/                    -- ✅ markdown編輯, toc相關
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
@@ -71,6 +76,10 @@ git submodule update --init --recursive
     pack/*/start/{name}
 ```
 
+```bash
+for dir in ./pack/*; do du -hs "$dir"; done
+```
+
 ## nvim-treesitter
 
 ```bash
@@ -83,9 +92,35 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 :checkhealth
 ```
 
-![treesitter_health](.img/treesitter_health.webp)
+[![treesitter_health](.img/treesitter_health.webp)](./pack/syntax/start/nvim-treesitter/lua/nvim-treesitter/health.lua)
 
 ```yaml
 # 更新
 :TSUpdate
+```
+
+## lsp
+
+1. 下載lsp
+2. 安裝語言伺服器
+3. 編輯init.lua: `require'lspconfig'.gopls.setup{}`
+
+![lsp_checkhealth](.img/lsp_checkhealth.webp)
+
+### 下載lsp(language server protocol)
+
+```bash
+## 這個只是protocol, 至於server還是要再另外安裝
+mkdir -p ~/.config/nvim/pack/lsp/start
+git clone https://github.com/neovim/nvim-lspconfig.git ~/.config/nvim/pack/lsp/start/nvim-lspconfig
+```
+
+### 安裝語言伺服器
+
+#### go
+
+```
+go install golang.org/x/tools/gopls@latest
+which gopls
+# $GOPATH/bin/gopls
 ```

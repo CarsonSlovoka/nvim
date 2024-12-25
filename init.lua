@@ -21,9 +21,17 @@ require("config.commands").setup()
 
 -- pack/syntax/start/nvim-treesitter
 require'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
-    ensure_installed = { "markdown", "markdown_inline" },
+    ensure_installed = {
+        "lua",
+        "go",
+        "markdown", "markdown_inline" },
     highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
-    },
+    }
 }
+
+local lspconfig = require'lspconfig'
+lspconfig.pyright.setup{}
+lspconfig.gopls.setup{}
+-- lspconfig.tsserver.setup{}
