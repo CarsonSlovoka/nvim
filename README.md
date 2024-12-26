@@ -23,6 +23,7 @@ git submodule update --init --recursive
 ```
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
+├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
 ├── pack/
 │   ├── syntax/start/
 │   │          │
@@ -37,7 +38,7 @@ git submodule update --init --recursive
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
 │   │          
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
-│   ├── markdown/                    -- ✅ markdown編輯, toc相關
+│   └── markdown/                    -- ✅ markdown編輯, toc相關
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── plugins/                     -- 插件相關的配置
 │   │   ├── init.lua                 -- 插件管理器 (packer.nvim 或 lazy.nvim) 的配置
