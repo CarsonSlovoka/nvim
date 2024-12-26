@@ -213,3 +213,35 @@ if status_ok then
         },
     }
 end
+
+local plugin_nvimTree
+status_ok, plugin_nvimTree = pcall(require, "nvim-tree")
+if status_ok then
+    --[[
+    USAGE:
+
+    :NvimTreeOpen
+
+    g?
+    ]]--
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+
+    -- optionally enable 24-bit colour
+    vim.opt.termguicolors = true
+
+    plugin_nvimTree.setup({
+        sort = {
+            sorter = "case_sensitive",
+        },
+        view = {
+            width = 30,
+        },
+        renderer = {
+            group_empty = true,
+        },
+        filters = {
+            dotfiles = true,
+        },
+    })
+end

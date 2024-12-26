@@ -40,9 +40,14 @@ git submodule update --init --recursive
 │   ├── motion/start/                -- ✅ 移動相關
 │   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2左右)
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
-│   │          
+│   │
+│   └── tree/start/                  -- ✅ 導覧相關
+│            └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c) 
+│            
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
+│   │
 │   └── markdown/                    -- ✅ markdown編輯, toc相關
+│   
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── plugins/                     -- 插件相關的配置
 │   │   ├── init.lua                 -- 插件管理器 (packer.nvim 或 lazy.nvim) 的配置
@@ -267,4 +272,17 @@ mkdir -pv ~/.config/nvim/pack/git/start/
 
 ```bash
 git clone https://github.com/lewis6991/gitsigns.nvim.git ~/.config/nvim/pack/git/start/gitsigns.nvim
+```
+
+
+## tree
+
+```bash
+mkdir -pv ~/.config/nvim/pack/tree/start/
+```
+
+### [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua)
+
+```bash
+git clone https://github.com/nvim-tree/nvim-tree.lua.git ~/.config/nvim/pack/tree/start/nvim-tree.lua
 ```
