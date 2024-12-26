@@ -16,7 +16,7 @@
 
 ```
 *tag*         - 標籤定義
-|link|        - 鏈接到其他幫助主題, 透過 K (大寫，可以前往該tag，ctrl+o可以返回)
+|link|        - 鏈接到其他幫助主題, 透過 K (大寫，可以前往該tag，ctrl+o可以返回, ctrl+i上一個視窗)
 >command<     - 命令(or codeblock)
 `example`     - 代碼示例
 ```
@@ -40,7 +40,7 @@ ls -l
 >ls -l *.png<    
 ```
 
-# highlight
+# [highlight](https://stackoverflow.com/a/79308745/9935654)
 
 如果發現沒有顏色的突顯，可能是filetype不正確的關係，請用`:set ft`去設定
 
