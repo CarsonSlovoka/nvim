@@ -2,3 +2,6 @@
 *.pdf
 *.png
 .idea/*
+
+# doc/tags from `:helptags ~/.config/nvim/doc`
+doc/tags

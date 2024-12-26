@@ -16,7 +16,7 @@
 
 ```
 *tag*         - 標籤定義
-|link|        - 鏈接到其他幫助主題, 透過 K (大小，可以全往該tag)
+|link|        - 鏈接到其他幫助主題, 透過 K (大寫，可以前往該tag，ctrl+o可以返回)
 >command<     - 命令(or codeblock)
 `example`     - 代碼示例
 ```

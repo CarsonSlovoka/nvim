@@ -16,6 +16,15 @@ end
 
 -- config
 require("config.options").setup()
+require"config.filetype".setup {
+    (
+            {
+                pattern= "*/doc/*.txt",
+                filetype="help",
+                groupName = "DocHelp"
+            }
+    )
+}
 require("config.keymaps").setup()
 require("config.commands").setup()
 
