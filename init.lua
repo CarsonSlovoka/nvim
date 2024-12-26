@@ -54,13 +54,6 @@ if not status_ok then
 end
 -- 配置 precognition
 precognition.setup({
-    mappings = {
-        -- 開啟模糊跳轉按鍵
-        start_fuzzy = "<Leader>j",
-        next_result = "<Leader>n",
-        prev_result = "<Leader>p",
-    },
-
     -- 以下是 https://github.com/tris203/precognition.nvim/blob/531971e6d883e99b1572bf47294e22988d8fbec0/README.md?plain=1#L22-L46 的預設配置
     startVisible = true,
     showBlankVirtLine = true,
@@ -87,3 +80,31 @@ precognition.setup({
         "startify",
     },
 })
+
+local plugin_hop
+status_ok, plugin_hop = pcall(require, "hop") -- pack/motion/start/hop.nvim/lua/hop/
+if status_ok then
+    plugin_hop.setup {
+        keys = 'etovxqpdygfblzhckisuran'
+    }
+    -- https://github.com/smoka7/hop.nvim/blob/efe58182f71fbe592f82fb211ab026f2819e855d/README.md?plain=1#L90-L112
+    local directions = require('hop.hint').HintDirection
+    -- f 往下找，準確的定位
+    vim.keymap.set('', 'f', function()
+        plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
+    end, {remap=true})
+    -- F 類似f，只是它是往上找
+    vim.keymap.set('', 'F', function()
+        plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
+    end, {remap=true})
+
+    -- t 往下找，定位在指定位置的「前」一個字母上
+    vim.keymap.set('', 't', function()
+        plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 })
+    end, {remap=true})
+
+    -- T: 往上找，定位在指定位置的「後」一個字母上
+    vim.keymap.set('', 'T', function()
+        plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 })
+    end, {remap=true})
+end

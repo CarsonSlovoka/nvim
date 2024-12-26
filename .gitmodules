@@ -7,3 +7,6 @@
 [submodule "precognition.nvim"]
 	path = pack/motion/start/precognition.nvim
 	url = https://github.com/tris203/precognition.nvim.git
+[submodule "hop.nvim"]
+	path = pack/motion/start/hop.nvim
+	url = https://github.com/smoka7/hop.nvim.git
