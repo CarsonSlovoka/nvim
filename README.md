@@ -30,7 +30,7 @@ git submodule update --init --recursive
 │   │          
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
-│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的
+│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.2.0左右)
 │   │
 │   ├── motion/start/                -- ✅ 移動相關
 │   │          │
