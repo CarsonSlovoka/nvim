@@ -33,6 +33,10 @@ git submodule update --init --recursive
 │   │       │
 │   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.2.0左右)
 │   │
+│   ├── git/start/                   -- ✅ git
+│   │       │
+│   │       └── gitsigns.nvim/      -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0.prelease  5582fbd)
+│   │
 │   ├── motion/start/                -- ✅ 移動相關
 │   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2左右)
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
@@ -185,4 +189,16 @@ git clone https://github.com/tris203/precognition.nvim.git ~/.config/nvim/pack/m
 
 ```bash
 git clone https://github.com/smoka7/hop.nvim.git ~/.config/nvim/pack/motion/start/hop.nvim
+```
+
+## git
+
+```bash
+mkdir -pv ~/.config/nvim/pack/git/start/
+```
+
+### [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)
+
+```bash
+git clone https://github.com/lewis6991/gitsigns.nvim.git ~/.config/nvim/pack/git/start/gitsigns.nvim
 ```
