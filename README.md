@@ -28,8 +28,14 @@ git submodule update --init --recursive
 │   │          │
 │   │          └── nvim-treesitter/  -- ✅ 語法高亮
 │   │          
-│   ├── syntax/lsp/                  -- ✅ language server protocol
-│   │          └── nvim-lspconfig/   -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的
+│   ├── lsp/start/                   -- ✅ language server protocol
+│   │       │
+│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的
+│   │
+│   ├── motion/start/                -- ✅ 移動相關
+│   │          │
+│   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
+│   │          
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
 │   ├── markdown/                    -- ✅ markdown編輯, toc相關
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
@@ -79,6 +85,7 @@ git submodule update --init --recursive
 ```bash
 for dir in ./pack/*; do du -hs "$dir"; done
 ```
+
 
 ## nvim-treesitter
 
@@ -156,3 +163,17 @@ pip freeze | grep pyright
 which pyright | wl-copy
 # vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑 
 ```
+
+## motion
+
+```bash
+mkdir -pv ~/.config/nvim/pack/motion/start/
+```
+
+### [precognition](https://github.com/tris203/precognition.nvim.git)
+
+```bash
+git clone https://github.com/tris203/precognition.nvim.git ~/.config/nvim/pack/motion/start/precognition.nvim
+```
+
+> 插件特色: https://www.youtube.com/watch?v=7hQZhHve4HI

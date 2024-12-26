@@ -4,3 +4,6 @@
 [submodule "nvim-lspconfig"]
 	path = pack/lsp/start/nvim-lspconfig
 	url = https://github.com/neovim/nvim-lspconfig.git
+[submodule "precognition.nvim"]
+	path = pack/motion/start/precognition.nvim
+	url = https://github.com/tris203/precognition.nvim.git
