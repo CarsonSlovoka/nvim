@@ -129,7 +129,6 @@ precognition.setup({
     },
 })
 
-
 local plugin_hop
 status_ok, plugin_hop = pcall(require, "hop") -- pack/motion/start/hop.nvim/lua/hop/
 if status_ok then
@@ -141,49 +140,48 @@ if status_ok then
     -- f 往下找，準確的定位
     vim.keymap.set('', 'f', function()
         plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
-    end, {remap=true})
+    end, { remap = true })
     -- F 類似f，只是它是往上找
     vim.keymap.set('', 'F', function()
         plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
-    end, {remap=true})
+    end, { remap = true })
 
     -- t 往下找，定位在指定位置的「前」一個字母上
     vim.keymap.set('', 't', function()
         plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 })
-    end, {remap=true})
+    end, { remap = true })
 
     -- T: 往上找，定位在指定位置的「後」一個字母上
     vim.keymap.set('', 'T', function()
         plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 })
-    end, {remap=true})
+    end, { remap = true })
 end
-
 
 local plugin_gitsigns
 status_ok, plugin_gitsigns = pcall(require, "gitsigns")
 if status_ok then
     plugin_gitsigns.setup {
         signs = {
-            add          = { text = '┃' },
-            change       = { text = '┃' },
-            delete       = { text = '_' },
-            topdelete    = { text = '‾' },
+            add = { text = '┃' },
+            change = { text = '┃' },
+            delete = { text = '_' },
+            topdelete = { text = '‾' },
             changedelete = { text = '~' },
-            untracked    = { text = '┆' },
+            untracked = { text = '┆' },
         },
         signs_staged = {
-            add          = { text = '┃' },
-            change       = { text = '┃' },
-            delete       = { text = '_' },
-            topdelete    = { text = '‾' },
+            add = { text = '┃' },
+            change = { text = '┃' },
+            delete = { text = '_' },
+            topdelete = { text = '‾' },
             changedelete = { text = '~' },
-            untracked    = { text = '┆' },
+            untracked = { text = '┆' },
         },
         signs_staged_enable = true,
-        signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
-        numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
-        linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
-        word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+        signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+        numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+        linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+        word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
         watch_gitdir = {
             follow_files = true
         },
