@@ -26,8 +26,8 @@ git submodule update --init --recursive
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
 ├── pack/
 │   ├── syntax/start/
-│   │          │
-│   │          └── nvim-treesitter/  -- ✅ 語法高亮
+│   │          ├── nvim-treesitter/             -- ✅ 語法高亮
+│   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47) 
 │   │          
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
@@ -35,7 +35,7 @@ git submodule update --init --recursive
 │   │
 │   ├── git/start/                   -- ✅ git
 │   │       │
-│   │       └── gitsigns.nvim/      -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0.prelease  5582fbd)
+│   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0.prelease  5582fbd)
 │   │
 │   ├── motion/start/                -- ✅ 移動相關
 │   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2左右)
@@ -109,6 +109,72 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 ```yaml
 # 更新
 :TSUpdate
+```
+
+
+### [nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects)
+
+```bash
+git clone https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git ~/.config/nvim/pack/syntax/start/nvim-treesitter-textobjects
+```
+
+---
+
+此插件只要裝好就可以了，配置了話，要直接在[nvim-treesitter](#nvim-treesitter)的設定新增`textobjects`再輸入想要的內容即可
+
+```lua
+require 'nvim-treesitter.configs'.setup {
+    textobjects = {
+        select = {
+            -- ...
+        },
+        move = {
+            -- ...
+        },
+        swap = {
+            -- ...
+        }
+    }
+}
+```
+
+```yaml
+:TSUpdate
+```
+
+測試用腳本
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+// Add is a simple function that adds two integers.
+func Add(a int, b int) int {
+	result := a + b
+	return result
+}
+
+// Subtract is a simple function that subtracts one integer from another.
+func Subtract(a int, b int) int {
+	return a - b
+}
+
+type Calculator struct {
+	Name string
+}
+
+// Multiply multiplies two integers.
+func (c Calculator) Multiply(a int, b int) int {
+	return a * b
+}
+
+func main() {
+	calculator := Calculator{Name: "Basic Calculator"}
+	fmt.Println(calculator.Multiply(3, 4))
+}
 ```
 
 ## lsp

@@ -28,6 +28,7 @@ require "config.filetype".setup {
 require("config.keymaps").setup()
 require("config.commands").setup()
 
+
 -- pack/syntax/start/nvim-treesitter
 require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = {
@@ -37,7 +38,54 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
     highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
-    }
+    },
+
+    -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
+    textobjects = {
+        select = { -- visual模式才有效
+            enable = true, -- 啟用 textobjects
+            lookahead = true, -- 向前查找，可以更智能選擇
+            keymaps = {
+                -- 標準鍵位示例（根據需要調整）
+                ["af"] = "@function.outer", -- 整個函數塊
+                ["if"] = "@function.inner", -- 函數內部
+                ["ac"] = "@class.outer", -- 整個類別塊
+                ["ic"] = "@class.inner", -- 類別內部
+                ["ao"] = "@block.outer", -- 任何區塊的外部
+                ["io"] = "@block.inner" -- 任何區塊的內部
+            },
+        },
+        move = { -- 此功能還好，可以用hop來取代
+            enable = true,
+            set_jumps = true, -- 記錄跳轉位置
+            goto_next_start = {
+                ["]m"] = "@function.outer", -- 跳到下一個函數的開始
+                ["]]"] = "@class.outer" -- 跳到下一個類別的開始
+            },
+            goto_next_end = {
+                ["]M"] = "@function.outer", -- 跳到下一個函數的結束
+                ["]["] = "@class.outer" -- 跳到下一個類別的結束
+            },
+            goto_previous_start = {
+                ["[m"] = "@function.outer", -- 跳到上一個函數的開始
+                ["[["] = "@class.outer" -- 跳到上一個類別的開始
+            },
+            goto_previous_end = {
+                ["[M"] = "@function.outer", -- 跳到上一個函數的結束
+                ["[]"] = "@class.outer" -- 跳到上一個類別的結束
+            },
+        },
+        swap = { -- 不錯用，可以快速交換參數
+            enable = true,
+            swap_next = {
+                ["<leader>a"] = "@parameter.inner", -- 與下一個參數交換
+            },
+            swap_previous = {
+                ["<leader>A"] = "@parameter.inner", -- 與上一個參數交換
+            },
+        },
+    },
 }
 
 local lspconfig = require 'lspconfig'
