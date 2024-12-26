@@ -16,11 +16,11 @@ end
 
 -- config
 require("config.options").setup()
-require"config.filetype".setup {
+require "config.filetype".setup {
     (
             {
-                pattern= "*/doc/*.txt",
-                filetype="help",
+                pattern = "*/doc/*.txt",
+                filetype = "help",
                 groupName = "DocHelp"
             }
     )
@@ -29,7 +29,7 @@ require("config.keymaps").setup()
 require("config.commands").setup()
 
 -- pack/syntax/start/nvim-treesitter
-require'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
+require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = {
         "lua",
         "go",
@@ -40,10 +40,10 @@ require'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lu
     }
 }
 
-local lspconfig = require'lspconfig'
-lspconfig.pyright.setup{}
+local lspconfig = require 'lspconfig'
+lspconfig.pyright.setup {}
 vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
-lspconfig.gopls.setup{}
+lspconfig.gopls.setup {}
 -- lspconfig.tsserver.setup{}
 
 -- 加載 precognition 插件
