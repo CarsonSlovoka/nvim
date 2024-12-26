@@ -13,6 +13,9 @@
 [submodule "hop.nvim"]
 	path = pack/motion/start/hop.nvim
 	url = https://github.com/smoka7/hop.nvim.git
+[submodule "gitsigns"]
+	path = pack/git/start/gitsigns.nvim
+	url = https://github.com/lewis6991/gitsigns.nvim.git
 [submodule "nvim-tree.lua"]
 	path = pack/tree/start/nvim-tree.lua
 	url = https://github.com/nvim-tree/nvim-tree.lua
