@@ -293,7 +293,7 @@ git clone https://github.com/nvim-tree/nvim-tree.lua.git ~/.config/nvim/pack/tre
 下載 [Nerd Fonts](https://www.nerdfonts.com/)
 
 ```bash
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/FiraCode.zip
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
 unzip FiraCode.zip -d ~/.fonts
 
 # 刷新字體緩存
