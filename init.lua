@@ -237,9 +237,31 @@ if status_ok then
         },
         renderer = {
             group_empty = true,
+            -- :lua print("➜➜"") # 可以print這些試試，如果是亂碼，就是字型沒有提供，要安裝，並且改終端機的字型即可
+            icons = { -- (可選)
+                glyphs = {
+                    default = "", -- 預設找不到項目的圖標
+                    symlink = "",
+                    git = {
+                        unstaged = "",
+                        staged = "S",
+                        unmerged = "",
+                        renamed = "➜",
+                        deleted = "",
+                        untracked = "U", -- 自定前綴，定成U表示這個項目還沒有被git添加
+                    },
+                    folder = { -- 這些是預設，如果不喜歡，也可以自己改成喜歡的emoji
+                        default = "",
+                        open = "",
+                        empty = "",
+                        empty_open = "",
+                        symlink = "",
+                    },
+                },
+            },
         },
         filters = {
-            dotfiles = true,
+            dotfiles = true, -- 如果想要看到.開頭的檔案或目錄{.git/, .gitignore, .gitmodules, ...}，要設定成false
         },
     })
 end

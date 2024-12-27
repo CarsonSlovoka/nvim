@@ -274,7 +274,6 @@ mkdir -pv ~/.config/nvim/pack/git/start/
 git clone https://github.com/lewis6991/gitsigns.nvim.git ~/.config/nvim/pack/git/start/gitsigns.nvim
 ```
 
-
 ## tree
 
 ```bash
@@ -286,3 +285,35 @@ mkdir -pv ~/.config/nvim/pack/tree/start/
 ```bash
 git clone https://github.com/nvim-tree/nvim-tree.lua.git ~/.config/nvim/pack/tree/start/nvim-tree.lua
 ```
+
+#### 解決亂碼: Nerd Fonts
+
+下載 [Nerd Fonts](https://www.nerdfonts.com/)
+
+```bash
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/FiraCode.zip
+unzip FiraCode.zip -d ~/.fonts
+
+# 刷新字體緩存
+fc-cache -fv
+
+# 查看是否安裝成功
+fc-list | grep "FiraCode"
+# ~/.fonts/FiraCodeNerdFontMono-Retina.ttf: FiraCode Nerd Font Mono,FiraCode Nerd Font Mono Ret:style=Retina,Regular
+
+rm *.zip
+```
+
+記得還要在終端機上換掉字型才可以
+
+以foot終機為例，要在foot.int做以下調整
+```yaml
+# foot.ini 
+font=FiraCodeNerdFontMono-Retina:size=14
+```
+
+---
+
+我建議在您的其它編輯器上也裝上FiraCodeNerdFont, 如果不想要至少讓備用字型是它，以防缺字的情況
+
+![FireCode_NerdFont](.img/FireCode_NerdFont.webp)
