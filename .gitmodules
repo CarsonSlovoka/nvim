@@ -1,3 +1,6 @@
+# git submodule update --init --recursive
+# git submodule sync
+
 [submodule "nvim-treesitter"]
 	path = pack/syntax/start/nvim-treesitter
 	url = https://github.com/nvim-treesitter/nvim-treesitter.git
@@ -18,4 +21,7 @@
 	url = https://github.com/lewis6991/gitsigns.nvim.git
 [submodule "nvim-tree.lua"]
 	path = pack/tree/start/nvim-tree.lua
-	url = https://github.com/nvim-tree/nvim-tree.lua
+	url = https://github.com/nvim-tree/nvim-tree.lua.git
+[submodule "nvim-web-devicons"]
+	path = pack/icon/start/nvim-web-devicons
+	url = https://github.com/nvim-tree/nvim-web-devicons.git

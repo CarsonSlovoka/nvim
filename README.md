@@ -41,6 +41,8 @@ git submodule update --init --recursive
 │   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2左右)
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
 │   │
+│   ├── icon/start/                  -- ✅ 圖標類
+│            └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
 │   └── tree/start/                  -- ✅ 導覧相關
 │            └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c) 
 │            
@@ -312,8 +314,23 @@ rm *.zip
 font=FiraCodeNerdFontMono-Retina:size=14
 ```
 
+> 如果想讓圖標比較豐富可以再安裝[nvim-web-devicons](#nvim-web-devicons)
+
 ---
 
 我建議在您的其它編輯器上也裝上FiraCodeNerdFont, 如果不想要至少讓備用字型是它，以防缺字的情況
 
 ![FireCode_NerdFont](.img/FireCode_NerdFont.webp)
+
+
+## icon
+
+```bash
+mkdir -pv ~/.config/nvim/pack/icon/start/
+```
+
+### [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)
+
+```bash
+git clone https://github.com/nvim-tree/nvim-web-devicons.git ~/.config/nvim/pack/icon/start/nvim-web-devicons
+```

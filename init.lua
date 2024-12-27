@@ -212,6 +212,56 @@ if status_ok then
     }
 end
 
+local plugin_nvimWebDevicons
+status_ok, plugin_nvimWebDevicons = pcall(require, "nvim-web-devicons") -- 只要這個插件有，不需要用require，nvim-tree就會自動導入，所以也不一定要寫這些配置
+if status_ok then
+    plugin_nvimWebDevicons.setup {
+        -- todo: 試過改顏色可以，但是改icon沒有成功
+        -- https://github.com/nvim-tree/nvim-web-devicons/blob/63f552a7f59badc6e6b6d22e603150f0d5abebb7/README.md?plain=1#L70-L125
+        override = {
+            zsh = {
+                icon = "",
+                color = "#428850",
+                cterm_color = "65",
+                name = "Zsh"
+            }
+        };
+        color_icons = true;
+        default = true;
+        strict = true;
+        variant = "light|dark";
+        override_by_filename = {
+            [".gitignore"] = {
+                icon = "",
+                color = "#f1502f",
+                name = "Gitignore"
+            },
+            ["README.md"] = {
+                icon = "🧙",
+                color = "#00ff00",
+                name = "README"
+            }
+        };
+        override_by_extension = {
+            ["log"] = {
+                icon = "",
+                color = "#ffff00",
+                name = "Log"
+            }
+        };
+        override_by_operating_system = {
+            ["apple"] = {
+                icon = "",
+                color = "#A2AAAD",
+                cterm_color = "248",
+                name = "Apple",
+            },
+        };
+    }
+    -- set_default_icon(icon, color, cterm_color)
+    -- plugin_nvimWebDevicons.set_default_icon('😃', '#6d8086', 65)
+end
+
 local plugin_nvimTree
 status_ok, plugin_nvimTree = pcall(require, "nvim-tree")
 if status_ok then
@@ -251,8 +301,8 @@ if status_ok then
                         untracked = "U", -- 自定前綴，定成U表示這個項目還沒有被git添加
                     },
                     folder = { -- 這些是預設，如果不喜歡，也可以自己改成喜歡的emoji
-                        default = "",
-                        open = "",
+                        default = "", -- 📁
+                        open = "📂", -- 
                         empty = "",
                         empty_open = "",
                         symlink = "",
