@@ -13,6 +13,12 @@ mkdir -p ~/.config/nvim
 git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 cd ~/.config/nvim
 git submodule update --init --recursive
+
+# (可選) 安裝Nerd Fonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
+unzip FiraCode.zip -d ~/.fonts
+rm -v *.zip
+echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
 ```
 
 # 目錄結構
@@ -295,8 +301,9 @@ git clone https://github.com/nvim-tree/nvim-tree.lua.git ~/.config/nvim/pack/tre
 ```bash
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
 unzip FiraCode.zip -d ~/.fonts
+du -hs ~/.fonts # 45M
 
-# 刷新字體緩存
+# 刷新字體緩存(非必要樣)
 fc-cache -fv
 
 # 查看是否安裝成功
