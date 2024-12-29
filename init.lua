@@ -314,4 +314,71 @@ if status_ok then
             dotfiles = true, -- 如果想要看到.開頭的檔案或目錄{.git/, .gitignore, .gitmodules, ...}，要設定成false
         },
     })
+    vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
+end
+
+
+local plugin_telescope
+status_ok, plugin_telescope = pcall(require, "telescope")
+if status_ok then
+    -- 初始化 Telescope
+    plugin_telescope.setup({
+        defaults = {
+            -- 預設配置
+            vimgrep_arguments = {
+                "rg",
+                "--color=never",
+                "--no-heading",
+                "--with-filename",
+                "--line-number",
+                "--column",
+                "--smart-case"
+            },
+            prompt_prefix = "🔍 ", -- 搜索框前的圖標
+            selection_caret = " ", -- 選中時的指示符
+            entry_prefix = "  ",
+            sorting_strategy = "ascending",
+            layout_strategy = "horizontal",
+            layout_config = {
+                prompt_position = "top",
+                horizontal = {
+                    preview_width = 0.6,
+                },
+                vertical = {
+                    mirror = false,
+                },
+            },
+            file_ignore_patterns = { "node_modules", ".git/" }, -- 忽略文件或目錄模式
+            winblend = 0,
+            border = {},
+            borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+            path_display = { "truncate" },
+            set_env = { ["COLORTERM"] = "truecolor" }, -- 修正配色
+        },
+
+        pickers = {
+            -- 指定功能調整，如 find_files
+            find_files = {
+                hidden = true, -- 示示隱藏文件
+            },
+        },
+
+        extensions = {
+            -- 如果需要擴展，可以在這裡註冊
+        },
+    })
+
+    local builtin = require("telescope.builtin")
+
+    -- 搜索當前工作目錄下的文件
+    vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
+
+    -- 搜索文本
+    vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
+
+    -- 搜索已打開的 buffer
+    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "[Find Buffers]" })
+
+    -- 搜索幫助文檔
+    vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
 end

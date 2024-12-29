@@ -25,3 +25,10 @@
 [submodule "nvim-web-devicons"]
 	path = pack/icon/start/nvim-web-devicons
 	url = https://github.com/nvim-tree/nvim-web-devicons.git
+
+[submodule "plenary.nvim"]
+	path = pack/utils/start/plenary.nvim
+	url = https://github.com/nvim-lua/plenary.nvim.git
+[submodule "telescope.nvim"]
+	path = pack/search/start/telescope.nvim
+	url = https://github.com/nvim-telescope/telescope.nvim.git

@@ -30,7 +30,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
-├── pack/
+├── pack/                            -- git rev-parse --short master | wl-copy
 │   ├── syntax/start/
 │   │          ├── nvim-treesitter/             -- ✅ 語法高亮
 │   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47) 
@@ -48,21 +48,22 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
-│            └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
-│   └── tree/start/                  -- ✅ 導覧相關
-│            └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c) 
+│   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
+│   │ 
+│   ├── tree/start/                  -- ✅ 導覧相關
+│   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c)
+│   │
+│   ├── search/start/                -- ✅ 搜尋相關
+│   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, ... (v0.1.8... 2eca9ba)
+│   │
+│   └── utils/start/                 -- ✅ 常用函數包裝
+│             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617) 
 │            
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
 │   │
 │   └── markdown/                    -- ✅ markdown編輯, toc相關
 │   
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
-│   ├── plugins/                     -- 插件相關的配置
-│   │   ├── init.lua                 -- 插件管理器 (packer.nvim 或 lazy.nvim) 的配置
-│   │   ├── lsp.lua                  -- LSP 客戶端的配置
-│   │   ├── treesitter.lua           -- Treesitter 的配置
-│   │   ├── telescope.lua            -- Telescope 的配置
-│   │   └── ...                      -- 其他插件的配置
 │   ├── config/                      -- ✅ 基本設定
 │   │   ├── options.lua              -- ✅ 基本選項 (e.g., 編輯器行為、外觀設定)
 │   │   ├── commands.lua             -- ✅ 自定義的命令(:MyCommand, ...)
@@ -340,4 +341,76 @@ mkdir -pv ~/.config/nvim/pack/icon/start/
 
 ```bash
 git clone https://github.com/nvim-tree/nvim-web-devicons.git ~/.config/nvim/pack/icon/start/nvim-web-devicons
+```
+
+## utils
+
+```sh
+mkdir -pv ~/.config/nvim/pack/utils/start/
+```
+
+### [plenary](https://github.com/nvim-lua/plenary.nvim)
+
+是一個語法糖套件，也有些插件也會使用到此插件，例如
+
+- [telescope.nvim](#telescope)
+- vgit.nvim
+- neogit
+- neo-tree.nvim
+
+---
+
+安裝:
+
+```sh
+git clone https://github.com/nvim-lua/plenary.nvim ~/.config/nvim/pack/utils/start/plenary.nvim
+```
+
+#### USAGE
+
+它共有提供以下這些[模組](https://github.com/nvim-lua/plenary.nvim/blob/2d9b06177a975543726ce5c73fca176cedbffe9d/README.md?plain=1#L29-L39)
+
+- plenary.async
+- plenary.async_lib
+- plenary.job
+- plenary.path
+- plenary.scandir
+- plenary.context_manager
+- plenary.test_harness
+- plenary.filetype
+- plenary.strings
+
+
+##### Path
+
+```lua
+local Path=require('plenary.path')
+local path = Path:new("~/.config/nvim/init.lua")
+print(path:exists()) -- 文件是否存在
+print(path:is_dir()) -- 是否為一個目錄
+```
+
+##### test_harness
+
+```lua
+local tests = require('plenary.test_harness')
+tests.describe('basic tests', function()
+  tests.it('should add numbers', function()
+    assert.are.same(2 + 2, 4)
+  end)
+end)
+```
+
+## search
+
+```sh
+mkdir -pv ~/.config/nvim/pack/search/start/
+```
+
+### [telescope](https://github.com/nvim-telescope/telescope.nvim)
+
+此插件需要用到[plenary](#plenary)
+
+```sh
+git clone https://github.com/nvim-telescope/telescope.nvim ~/.config/nvim/pack/search/start/telescope.nvim
 ```
