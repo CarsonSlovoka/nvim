@@ -33,8 +33,8 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 ├── pack/                            -- git rev-parse --short master | wl-copy
 │   ├── syntax/start/
 │   │          ├── nvim-treesitter/             -- ✅ 語法高亮
-│   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47) 
-│   │          
+│   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47)
+│   │
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
 │   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.2.0左右)
@@ -49,7 +49,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
 │   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
-│   │ 
+│   │
 │   ├── tree/start/                  -- ✅ 導覧相關
 │   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c)
 │   │
@@ -57,12 +57,12 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, ... (v0.1.8... 2eca9ba)
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
-│             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617) 
-│            
+│             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
+│
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
 │   │
 │   └── markdown/                    -- ✅ markdown編輯, toc相關
-│   
+│
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── config/                      -- ✅ 基本設定
 │   │   ├── options.lua              -- ✅ 基本選項 (e.g., 編輯器行為、外觀設定)
@@ -246,7 +246,7 @@ pip install pyright
 pip freeze | grep pyright
 # pyright==1.1.391
 which pyright | wl-copy
-# vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑 
+# vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑
 ```
 
 ## motion
@@ -318,7 +318,7 @@ rm *.zip
 
 以foot終機為例，要在foot.int做以下調整
 ```yaml
-# foot.ini 
+# foot.ini
 font=FiraCodeNerdFontMono-Retina:size=14
 ```
 
