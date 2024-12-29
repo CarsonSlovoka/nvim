@@ -30,28 +30,28 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
-├── pack/                            -- git rev-parse --short master | wl-copy
+├── pack/                            -- git rev-parse --short HEAD | wl-copy
 │   ├── syntax/start/
-│   │          ├── nvim-treesitter/             -- ✅ 語法高亮
+│   │          ├── nvim-treesitter/             -- ✅ 語法高亮 (v0.9.3... 096babe)
 │   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47)
 │   │
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
-│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.2.0左右)
+│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.2.0 c580f34)
 │   │
 │   ├── git/start/                   -- ✅ git
 │   │       │
-│   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0.prelease  5582fbd)
+│   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0...  5582fbd)
 │   │
 │   ├── motion/start/                -- ✅ 移動相關
-│   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2左右)
-│   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0左右)
+│   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818)
+│   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e)
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
 │   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
 │   │
 │   ├── tree/start/                  -- ✅ 導覧相關
-│   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0.prelease 7b870f16c)
+│   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0... 7b870f1)
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
 │   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, ... (v0.1.8... 2eca9ba)
