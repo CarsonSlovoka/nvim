@@ -324,6 +324,7 @@ if status_ok then
   plugin_telescope.setup({
     defaults = {
       -- 預設配置
+      -- :lua print(vim.inspect(require('telescope.config').values.vimgrep_arguments))
       vimgrep_arguments = {
         "rg",
         "--color=never",
@@ -373,15 +374,44 @@ if status_ok then
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
   -- 使用 Find 搜索具有特殊條件的文件
   local function search_with_find()
+    -- 構建 find 命令
+    local find_cmd = table.concat({
+      "find .",
+      "\\(", -- 開始文件類型條件組
+      -- 以下可以自己新增其它的附檔名
+      "-name '*.sh'",
+      "-o -name '*.lua'",
+      "-o -name '*.md'",
+      "-o -name '*.go'",
+      "-o -name '*.c'",
+      "-o -name '*.c++'",
+      "-o -name '*.h'",
+      "-o -name '*.ts'",
+      "-o -name '*.js'",
+      "-o -name '*.html'",
+      "-o -name '*.scss'",
+      "-o -name '*.sass'",
+      "-o -name '*.css'",
+      "-o -name '*.py'",
+      "-o -name '*.json'",
+      "-o -name '*.toml'",
+      "-o -name '*.xml'",
+      "-o -name '*.bat'",
+      "\\)", -- 結束文件類型條件組
+      "-mmin -480", -- 時間限制
+
+      -- 以下可以自己要忽略目錄的目錄
+      "-not -path '*/telescope.nvim/*'", -- 忽略目錄
+      "-not -path '*/.cache/*'",
+      "-not -path '*/node_modules/*'",
+      "-print0", -- 使用 null 分隔輸出
+    }, " ")
+
+    -- 完整命令（加入排序）
     local cmd = {
       "bash",
       "-c",
-      [[ find . \(  -name '*.sh' -o -name '*.lua' -o -name '*.md' -o -name '*.go' \) ]]
-        .. [[ -mmin -480 ]]
-        .. [[ -not -path '*/telescope.nvim/*' ]]
-        .. [[ -not -path '*/.cache/*' ]]
-        .. [[ -not -path '*/node_modules/*' ]]
-        .. [[ -print0 | xargs -0 ls -t 2>/dev/null ]]
+      find_cmd .. " | xargs -0 ls -t 2>/dev/null"
     }
 
     -- 用 Telescope 呈現
