@@ -402,10 +402,11 @@ if status_ok then
       }
     end
 
-    -- 打印每個擴展名
+    --[[ 打印每個擴展名
     for _, ext in ipairs(extensions) do
       print(ext)
     end
+    ]]--
 
     -- 動態構建 -name 條件
     local name_conditions = {}
@@ -425,6 +426,13 @@ if status_ok then
       table.concat(name_conditions, " -o "),
       "\\)", -- 結束文件類型條件組
       "-mmin -480", -- 時間限制
+      "-type f",  -- 只匹配文件 (這很重要，因為我們用了ls -t才能排時間，因此ls的時候要排目錄都拿掉，不然會影響到)
+      --[[
+      "-a", -- AND 操作符
+      "\\(", -- 開始擴展名檢查條件組
+      "-regex '.*\\.[^/]*$'", -- 確保文件有擴展名
+      "\\)",
+      ]]--
 
       -- 以下可以自己要忽略目錄的目錄
       "-not -path '*/telescope.nvim/*'", -- 忽略目錄
@@ -440,6 +448,11 @@ if status_ok then
       find_cmd .. " | xargs -0 ls -t 2>/dev/null"
     }
 
+    -- print(table.concat(cmd, " "))
+    -- find . \( -name '*.lua' -o -name '*.md' \) -mmin -480 -not -path '*/telescope.nvim/*' -not -path '*/.cache/*' -not -path '*/node_modules/*' -exec ls -1rt "{}" +
+    -- find . \( -name '*.lua' -o -name '*.md' \) -mmin -480 -not -path '*/telescope.nvim/*' -not -path '*/.cache/*' -not -path '*/node_modules/*' -print0 | xargs -0 ls -t 2>/dev/null
+
+
     -- 用 Telescope 呈現
     builtin.find_files({
       find_command = cmd,
@@ -448,7 +461,7 @@ if status_ok then
   end
 
   -- 我的自定義: search_with_find
-  vim.keymap.set("n", "<leader>fs", search_with_find, { desc = "[Special Search For Recent Rile]" })
+  vim.keymap.set("n", "<leader>fr", search_with_find, { desc = "[Find Recent]" })
 
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
