@@ -28,6 +28,26 @@ local function setup_visual()
     end,
     { noremap = true, silent = true }
   )
+
+  -- 將工作目錄更改為當前檔案的目錄
+  vim.keymap.set("n", "<leader>cd", function()
+    local current_file = vim.fn.expand("%:p:h") -- 獲取當前檔案的目錄
+    if current_file == "" then
+      print("未打開任何檔案")
+      return
+    end
+    vim.cmd("cd " .. current_file) -- 使用 ':cd' 命令切換目錄
+    print("工作目錄已切換到: " .. current_file)
+
+    -- 如果 nvim-tree 已加載，更新其根目錄
+    local ok, nvim_tree = pcall(require, "nvim-tree.api")
+    if ok then
+      nvim_tree.tree.change_root(current_file) -- 更新 nvim-tree 的根目錄
+      print("nvim-tree 根目錄已更新到: " .. current_file)
+    else
+      print("nvim-tree 未加載")
+    end
+  end, { desc = "切換到檔案目錄" })
 end
 
 function keymaps.setup()
