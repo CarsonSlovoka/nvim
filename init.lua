@@ -369,6 +369,57 @@ if status_ok then
 
   local builtin = require("telescope.builtin")
 
+  -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*" -not -path "*/node_modules/*"
+  -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
+  -- 使用 Find 搜索具有特殊條件的文件
+  local function search_with_find()
+    -- 定義 mmin 和文件類型條件
+    local mmin = "-480" -- 480 分(差不多是一個工作天的時間)
+    local match_types = {
+      "*.sh", "*.lua",
+      "*.md",
+      "*.go",
+    }
+    local ignore_dirs = { "*/telescope.nvim/*", "*/.cache/*", "*/node_modules/*" }
+
+    -- 使用find功具搜尋
+    local find_cmd = {
+      "find", ".",
+      "-mmin", mmin,
+    }
+
+    -- 添加檔案匹配條件
+    table.insert(find_cmd, "(")
+    for i, file_type in ipairs(match_types) do
+      if i > 1 then
+        table.insert(find_cmd, "-o")
+      end
+      table.insert(find_cmd, "-name")
+      table.insert(find_cmd, file_type)
+    end
+    table.insert(find_cmd, ")")
+
+    -- 忽略特定目錄
+    for _, dir in ipairs(ignore_dirs) do
+      table.insert(find_cmd, "-not")
+      table.insert(find_cmd, "-path")
+      table.insert(find_cmd, dir)
+    end
+
+    -- 添加輸出選項
+    table.insert(find_cmd, "-print")
+    -- table.insert(find_cmd, "-print0") -- 用\0分隔
+
+    -- 用 Telescope 呈現
+    builtin.find_files({
+      find_command = find_cmd,
+      prompt_title = "Find (recent files)",
+    })
+  end
+
+  -- 我的自定義: search_with_find
+  vim.keymap.set("n", "<leader>fs", search_with_find, { desc = "[Special Search For Recent Rile]" })
+
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
 
