@@ -372,7 +372,7 @@ if status_ok then
 
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*" -not -path "*/node_modules/*"
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
-  -- 使用 Find 搜索具有特殊條件的文件
+  -- 使用 Find 搜索具有特殊條件的文件 TODO: 當找不到檔案時，會用ls列出所有項目，需要設計一個都沒有符合的項目就不再繼續
   local function search_with_find()
     -- 讓使用者輸入一組附檔名
     local input_exts = vim.fn.input("請輸入附檔名（例如: lua,sh,md）: ")
