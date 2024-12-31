@@ -424,18 +424,25 @@ if status_ok then
   })
 
   local builtin = require("telescope.builtin")
+  local str = require("utils.str")
 
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*" -not -path "*/node_modules/*"
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
   -- 使用 Find 搜索具有特殊條件的文件 TODO: 當找不到檔案時，會用ls列出所有項目，需要設計一個都沒有符合的項目就不再繼續
   local function search_with_find()
     -- 讓使用者輸入一組附檔名
-    local input_exts = vim.fn.input("請輸入附檔名（例如: lua,sh,md）: ")
+    local input = vim.fn.input("請輸入附檔名（例如: lua,sh,md:{mmin,amin,cmin,mtime,atime,ctime}:[+-]Number)", " |mmin:-480") -- 一開始給一個空白，避免str.split分離錯
+    local paras = str.split(input, '|')
+    local input_exts = string.gsub(paras[1], "%s+$", "") -- 將結尾空白替換成""
+    local timeOrMin = str.split(paras[2], ':')
 
     -- 將輸入的附檔名分割成表
     local extensions = {}
-    for ext in string.gmatch(input_exts, "[^,]+") do
-      table.insert(extensions, ext)
+
+    if input_exts and input_exts ~= " " then
+      for ext in string.gmatch(input_exts, "[^,]+") do
+        table.insert(extensions, ext)
+      end
     end
 
     -- 如果沒有輸入任何附檔名則使用預設值
@@ -461,6 +468,8 @@ if status_ok then
     for _, ext in ipairs(extensions) do
       print(ext)
     end
+    print(timeOrMin[1])
+    print(timeOrMin[2])
     ]]--
 
     -- 動態構建 -name 條件
@@ -480,7 +489,8 @@ if status_ok then
       --]]
       table.concat(name_conditions, " -o "),
       "\\)", -- 結束文件類型條件組
-      "-mmin -480", -- 時間限制
+      -- "-mmin -" .. mmin, -- 時間限制
+      "-" .. timeOrMin[1] .. " " .. timeOrMin[2],
       "-type f", -- 只匹配文件 (這很重要，因為我們用了ls -t才能排時間，因此ls的時候要排目錄都拿掉，不然會影響到)
       --[[
       "-a", -- AND 操作符
