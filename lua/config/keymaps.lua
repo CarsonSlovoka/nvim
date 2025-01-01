@@ -40,9 +40,9 @@ local function setup_visual()
     print("工作目錄已切換到: " .. current_file)
 
     -- 如果 nvim-tree 已加載，更新其根目錄
-    local ok, nvim_tree = pcall(require, "nvim-tree.api")
+    local ok, nvim_treeAPI = pcall(require, "nvim-tree.api")
     if ok then
-      nvim_tree.tree.change_root(current_file) -- 更新 nvim-tree 的根目錄
+      nvim_treeAPI.tree.change_root(current_file) -- 更新 nvim-tree 的根目錄
       print("nvim-tree 根目錄已更新到: " .. current_file)
     else
       print("nvim-tree 未加載")

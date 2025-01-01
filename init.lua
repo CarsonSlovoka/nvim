@@ -342,6 +342,31 @@ if status_ok then
     { desc = "顯示書籤選單" }
   )
 
+  vim.api.nvim_create_user_command("Bookmarks",
+    bookmark.show,
+    { desc = "顯示書籤選單" }
+  )
+
+  local nvim_treeAPI = require"nvim-tree.api"
+  vim.api.nvim_create_user_command("NvimTreeCD",
+    function(args)
+      -- print(args) -- table
+      if #args.args > 0 then
+        local params = vim.split(args.args, " ")
+        local path = params[1]
+        nvim_treeAPI.tree.open({ path = path })
+        nvim_treeAPI.tree.change_root(path)
+      else
+        nvim_treeAPI.tree.open({ path = "~" })
+        nvim_treeAPI.tree.change_root("~")
+      end
+    end,
+    {
+      nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
+      desc = "更改工作目錄"
+    }
+  )
+
   -- show window of bookmark list
   vim.keymap.set("n",
     "<leader>bk",
