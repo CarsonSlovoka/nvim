@@ -347,7 +347,7 @@ if status_ok then
     { desc = "顯示書籤選單" }
   )
 
-  local nvim_treeAPI = require"nvim-tree.api"
+  local nvim_treeAPI = require "nvim-tree.api"
   vim.api.nvim_create_user_command("NvimTreeCD",
     function(args)
       -- print(args) -- table
@@ -456,10 +456,10 @@ if status_ok then
   -- 使用 Find 搜索具有特殊條件的文件 TODO: 當找不到檔案時，會用ls列出所有項目，需要設計一個都沒有符合的項目就不再繼續
   local function search_with_find()
     -- 讓使用者輸入一組附檔名
-    local input = vim.fn.input("請輸入附檔名（例如: lua,sh,md:{mmin,amin,cmin,mtime,atime,ctime}:[+-]Number)", " |mmin:-480") -- 一開始給一個空白，避免str.split分離錯
-    local paras = str.split(input, '|')
+    local input = vim.fn.input("請輸入附檔名（例如: lua,sh,md:{mmin,amin,cmin,mtime,atime,ctime}:[+-]Number)", "|mmin:-480") -- 一開始給一個空白，避免str.split分離錯
+    local paras = vim.split(input, '|')
     local input_exts = string.gsub(paras[1], "%s+$", "") -- 將結尾空白替換成""
-    local timeOrMin = str.split(paras[2], ':')
+    local timeOrMin = vim.split(paras[2], ':')
 
     -- 將輸入的附檔名分割成表
     local extensions = {}
