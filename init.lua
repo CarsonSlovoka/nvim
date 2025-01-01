@@ -209,6 +209,55 @@ if status_ok then
       row = 0,
       col = 1
     },
+
+    on_attach = function(bufnr)
+      local function map(mode, l, r, opts)
+        opts = opts or {}
+        opts.buffer = bufnr
+        vim.keymap.set(mode, l, r, opts)
+      end
+
+      -- Navigation
+      map('n', ']c', function()
+        if vim.wo.diff then
+          vim.cmd.normal({']c', bang = true})
+        else
+          plugin_gitsigns.nav_hunk('next')
+        end
+      end)
+
+      map('n', '[c', function()
+        if vim.wo.diff then
+          vim.cmd.normal({'[c', bang = true})
+        else
+          plugin_gitsigns.nav_hunk('prev')
+        end
+      end)
+
+      -- Actions
+      -- map('n', '<leader>hs', plugin_gitsigns.stage_hunk)
+      -- map('n', '<leader>hr', plugin_gitsigns.reset_hunk)
+      -- map('v', '<leader>hs', function() plugin_gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+      -- map('v', '<leader>hr', function() plugin_gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+      -- map('n', '<leader>hS', plugin_gitsigns.stage_buffer)
+      -- map('n', '<leader>hu', plugin_gitsigns.undo_stage_hunk)
+      -- map('n', '<leader>hR', plugin_gitsigns.reset_buffer)
+      map('n', '<leader>hn', plugin_gitsigns.next_hunk)
+      map('n', '<leader>hp', plugin_gitsigns.preview_hunk) -- 查看單列的異動。我個人偏向用diffthis
+      map('n', '<leader>hb', function() plugin_gitsigns.blame_line{full=true} end) -- 有用，顯示這一列當時commit的所有內容
+      --[[ toggle_current_line_blame 可以瞭解這一列最後commit的訊息和時間點 ex: You, 6 days, aga - my commit message
+       建議如果有需要用:Gitsigns toggle_current_line_blame 去切換即可
+       一旦開啟之後，只要在每一列稍為停留就可以出現訊息
+       如果不想泿費效能，再使用一次: toggle_current_line_blame 即可關閉
+      -- map('n', '<leader>htb', plugin_gitsigns.toggle_current_line_blame)
+      --]]
+      map('n', '<leader>hd', plugin_gitsigns.diffthis) -- 很有用
+      map('n', '<leader>hD', function() plugin_gitsigns.diffthis('~') end) -- 有包含上一次的提交修改
+      -- map('n', '<leader>td', plugin_gitsigns.toggle_deleted)
+
+      -- Text object
+      -- map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+    end
   }
 end
 
