@@ -5,3 +5,6 @@
 
 # doc/tags from `:helptags ~/.config/nvim/doc`
 doc/tags
+
+# ctags
+tags
