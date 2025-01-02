@@ -242,8 +242,8 @@ if status_ok then
       -- map('n', '<leader>hS', plugin_gitsigns.stage_buffer)
       -- map('n', '<leader>hu', plugin_gitsigns.undo_stage_hunk)
       -- map('n', '<leader>hR', plugin_gitsigns.reset_buffer)
-      map('n', '<leader>hn', plugin_gitsigns.next_hunk)
-      map('n', '<leader>hp', plugin_gitsigns.preview_hunk) -- 查看單列的異動。我個人偏向用diffthis
+      -- map('n', '<leader>hn', plugin_gitsigns.next_hunk) -- 同等: plugin_gitsigns.nav_hunk('next')
+      map('n', '<leader>hp', plugin_gitsigns.preview_hunk) -- 查看單列(或連續列)的異動。我個人偏向用diffthis
       map('n', '<leader>hb', function() plugin_gitsigns.blame_line{full=true} end) -- 有用，顯示這一列當時commit的所有內容
       --[[ toggle_current_line_blame 可以瞭解這一列最後commit的訊息和時間點 ex: You, 6 days, aga - my commit message
        建議如果有需要用:Gitsigns toggle_current_line_blame 去切換即可
