@@ -379,7 +379,7 @@ if status_ok then
 
 
   -- vim.cmd("command! MyCommand lua print('hello')") -- MyCommand相當於執行lua後再執行print('hello')
-  local bookmark = require("config.bookmark")
+  local bookmark = require "config.bookmark"
   for _, bk in ipairs(bookmark.table) do
     -- vim.cmd("command! BookmarkHome NvimTreeOpen ~") -- 執行過程Lua -> VimScript -> 執行
     -- vim.cmd("command! Bookmark" .. bk.name .. " NvimTreeOpen " .. bk.path) -- 效率比較差，需要解析字符串來執行命令
@@ -462,6 +462,7 @@ local plugin_telescope
 status_ok, plugin_telescope = pcall(require, "telescope")
 if status_ok then
   -- 初始化 Telescope
+  local bookmark = require('telescope._extensions.bookmark')
   plugin_telescope.setup({
     defaults = {
       -- 預設配置
@@ -505,9 +506,14 @@ if status_ok then
     },
 
     extensions = {
-      -- 如果需要擴展，可以在這裡註冊
+      bookmark = {
+        list = bookmark.list_bookmarks,
+      }
     },
   })
+
+  -- 載入自定義的套件
+  plugin_telescope.load_extension('bookmark')
 
   -- Telescope 配合 LSP 的符號檢視 (知道有哪些function之類的)
   vim.api.nvim_set_keymap('n', '<Leader>s', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
@@ -671,10 +677,40 @@ if status_ok then
 
   -- 搜索幫助文檔
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
+
+
+  -- 快捷鍵綁定
+  -- vim.api.nvim_set_keymap('n', '<leader>tb', ':Telescope bookmark<CR>', { noremap = true, silent = true })
+  vim.keymap.set("n", "<leader>tb",
+    function()
+      local entries = bookmark.list_bookmarks()
+    end,
+    { desc = "[bookmarks]" }
+  )
+
+  -- 命令接口
+  vim.api.nvim_create_user_command('AddBookmark', function(opts)
+    local name = opts.args:match("([^%s]+)%s")
+    local path = opts.args:match("%s(.+)$") or vim.fn.expand('%:p')
+    bookmark.add_bookmark(name, path)
+    vim.notify("Bookmark added: " .. name)
+  end, { nargs = 1 })
+
+  vim.api.nvim_create_user_command('RemoveBookmark', function(opts)
+    bookmark.remove_bookmark(opts.args)
+    vim.notify("Bookmark removed: " .. opts.args)
+  end, { nargs = 1 })
+
+  vim.api.nvim_create_user_command('RenameBookmark', function(opts)
+    local old_name, new_name = opts.args:match("([^%s]+)%s(.+)$")
+    bookmark.rename_bookmark(old_name, new_name)
+    vim.notify("Bookmark renamed: " .. old_name .. " -> " .. new_name)
+  end, { nargs = 1 })
 end
 
 
 -- theme
 -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
 vim.cmd('colorscheme github_dark_default')
+
 
