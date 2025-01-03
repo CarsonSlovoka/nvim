@@ -504,7 +504,7 @@ if status_ok then
   })
 
   local builtin = require("telescope.builtin")
-  local str = require("utils.str")
+  local utilsInput = require("utils.input")
 
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*" -not -path "*/node_modules/*"
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
@@ -610,9 +610,52 @@ if status_ok then
 
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
+  vim.keymap.set("n", "<leader>ffe", function()
+    local extensions = utilsInput.extension()
+    -- 動態生成 `--glob` 條件
+    local glob_args = {}
+    for _, ext in ipairs(extensions) do
+      table.insert(glob_args, "--glob")
+      table.insert(glob_args, "*." .. ext)
+    end
+    builtin.find_files({
+      prompt_title = "查找指定類型的文件",
+      -- find_command = { "--glob", "*.lua", "--glob", "*.sh" }
+      find_command = vim.list_extend({
+        "rg", "--files",
+        "--with-filename",
+        "--color=never",
+        "--no-heading",
+        "--line-number",
+        "--column",
+        "--smart-case"
+      }, glob_args)
+    })
+  end, { desc = "查找指定類型的文件" })
 
   -- 搜索文本
   vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
+  vim.keymap.set("n", "<leader>fge", function()
+    builtin.live_grep({
+      prompt_title = "search content by extension",
+      additional_args = function()
+        local extensions = utilsInput.extension()
+        local glob_args = {}
+        for _, ext in ipairs(extensions) do
+          table.insert(glob_args, "--glob")
+          table.insert(glob_args, "*." .. ext)
+        end
+        return vim.list_extend({
+          "--with-filename",
+          "--color=never",
+          "--no-heading",
+          "--line-number",
+          "--column",
+          "--smart-case"
+        }, glob_args)
+      end,
+    })
+  end, { desc = "search content by extension" })
 
   -- 搜索已打開的 buffer
   vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "[Find Buffers]" })
