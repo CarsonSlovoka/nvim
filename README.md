@@ -263,6 +263,37 @@ snap list | grep bash-language-server
 # bash-language-server   4.7.0  69   latest/stable    alexmurray*  classic
 ```
 
+#### [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide)
+
+這是用rust寫的項目，如果還沒有安裝rust可以先[安裝](https://rust-lang.github.io/rustup/installation/other.html#other-installation-methods)
+
+安裝好了之後可以得到cargo，就可以透過cargo安裝
+
+
+**install rust**
+
+```yaml
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --help
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -v
+# metadata and tool chains
+ls ~/.rustup
+ls ~/.cargo
+ls ~/.cargo/bin # cargo, cargo-fmt, rustfmt, ...
+# ~/.profile # 會自動添加 `. "$HOME/.cargo/env"`
+# ~/.bashrc # 會自動添加 `. "$HOME/.cargo/env"`
+```
+
+**[install markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide/tree/main?tab=readme-ov-file#vscode)**
+
+```yaml
+cargo install --locked --git https://github.com/Feel-ix-343/markdown-oxide.git markdown-oxide
+cargo install --list
+# markdown-oxide v0.24.0 (https://github.com/Feel-ix-343/markdown-oxide.git#23f4d84f
+ls $(which markdown-oxide)
+# ~/.cargo/bin/markdown-oxide
+
+# cargo uninstall markdown-oxide
+```
 
 ## motion
 
