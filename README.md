@@ -21,6 +21,8 @@ rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
 ```
 
+> 如果有需要還要安裝想要的[lsp server](#安裝語言伺服器)
+
 # 目錄結構
 
 - ✅ 表示目前已經有實作
@@ -303,6 +305,28 @@ ls -l $(which clangd)
 # /usr/bin/clangd -> clangd-18
 ```
 
+#### [lua-language-server](https://github.com/luals/lua-language-server)
+
+```sh
+# 下載並且放到自己想要的目錄
+wget https://github.com/LuaLS/lua-language-server/releases/download/3.13.5/lua-language-server-3.13.5-linux-x64.tar.gz
+du -hs *.tar.gz
+# 3.5M lua-language-server-3.13.5-linux-x64.tar.gz
+mkdir -pv ~/lua-language-server/ # 依照個人喜號設定，我是選擇放到家目錄下
+mv -v lua-language-server-3.13.5-linux-x64.tar.gz ~/lua-language-server/
+
+# 解壓縮
+cd ~/lua-language-server/
+tar -xzvf lua-language-server-3.13.5-linux-x64.tar.gz # 於此目錄解壓縮，它不會在有多餘的目錄，直接會把檔案展開於此目錄
+rm lua-language-server-3.13.5-linux-x64.tar.gz
+ls -l ~/lua-language-server/bin/lua-language-server # 此檔案為執行檔
+
+# 連立連結
+sudo ln -s ~/lua-language-server/bin/lua-language-server /usr/bin/
+
+# 確認
+ls -l /usr/bin/lua-language-server
+```
 
 ## motion
 

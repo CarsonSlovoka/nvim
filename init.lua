@@ -98,6 +98,7 @@ lspconfig.markdown_oxide.setup {
   cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
 }
 lspconfig.clangd.setup {}
+lspconfig.lua_ls.setup {}
 
 -- 加載 precognition 插件
 local status_ok, precognition = pcall(require, "precognition")
