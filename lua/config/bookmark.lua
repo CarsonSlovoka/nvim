@@ -5,6 +5,25 @@ bookmark.table = {
   { name = "Config", path = "~/.config/nvim/init.lua" },
 }
 
+-- 動態加載外部設定檔
+local function load_external_bookmarks(file_path)
+  -- 使用 pcall 防止加載外部檔案時出錯
+  local ok, external_bookmarks = pcall(dofile, file_path)
+  if not ok or type(external_bookmarks) ~= "table" then
+    vim.notify("Failed to load bookmarks from " .. file_path, vim.log.levels.ERROR)
+    return
+  end
+
+  -- 合併外部書籤
+  for _, bk in ipairs(external_bookmarks) do
+    table.insert(bookmark.table, bk)
+  end
+end
+
+-- 在初始化時嘗試加載外部書籤 (例如: bookmarks.lua)
+local external_file_path = vim.fn.stdpath("config") .. "/bookmark.lua"
+load_external_bookmarks(external_file_path)
+
 -- 打開書籤的函數
 local function open_bookmark(path)
 

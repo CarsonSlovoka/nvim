@@ -14,11 +14,19 @@ git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 cd ~/.config/nvim
 git submodule update --init --recursive
 
+# 初始化自定義永定書籤
+echo 'return {
+   { name = "Documents", path = "~/Documents" },
+   { name = "Downloads", path = "~/Downloads" },
+}' >> ~/.config/nvim/bookmark.lua
+
+
 # (可選) 安裝Nerd Fonts
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
 unzip FiraCode.zip -d ~/.fonts
 rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
+}
 ```
 
 > 如果有需要還要安裝想要的[lsp server](#安裝語言伺服器)
@@ -31,6 +39,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 ```
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
+├── bookmark.lua                     -- ✅ 自定義永久書籤的內容
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
 ├── pack/                            -- git rev-parse --short HEAD | wl-copy
 │   ├── syntax/start/

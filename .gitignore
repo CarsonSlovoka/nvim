@@ -8,3 +8,6 @@ doc/tags
 
 # ctags
 tags
+
+# 此為自定義的永久書籤內容
+bookmark.lua
