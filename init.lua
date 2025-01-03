@@ -503,6 +503,9 @@ if status_ok then
     },
   })
 
+  -- Telescope 配合 LSP 的符號檢視 (知道有哪些function之類的)
+  vim.api.nvim_set_keymap('n', '<Leader>s', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
+
   local builtin = require("telescope.builtin")
   local utilsInput = require("utils.input")
 
