@@ -93,6 +93,7 @@ lspconfig.pyright.setup {}
 vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
 lspconfig.gopls.setup {}
 -- lspconfig.tsserver.setup{}
+lspconfig.bashls.setup {}
 
 -- 加載 precognition 插件
 local status_ok, precognition = pcall(require, "precognition")
