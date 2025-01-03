@@ -220,7 +220,7 @@ if status_ok then
       -- Navigation
       map('n', ']c', function()
         if vim.wo.diff then
-          vim.cmd.normal({']c', bang = true})
+          vim.cmd.normal({ ']c', bang = true })
         else
           plugin_gitsigns.nav_hunk('next')
         end
@@ -228,7 +228,7 @@ if status_ok then
 
       map('n', '[c', function()
         if vim.wo.diff then
-          vim.cmd.normal({'[c', bang = true})
+          vim.cmd.normal({ '[c', bang = true })
         else
           plugin_gitsigns.nav_hunk('prev')
         end
@@ -244,7 +244,10 @@ if status_ok then
       -- map('n', '<leader>hR', plugin_gitsigns.reset_buffer)
       -- map('n', '<leader>hn', plugin_gitsigns.next_hunk) -- 同等: plugin_gitsigns.nav_hunk('next')
       map('n', '<leader>hp', plugin_gitsigns.preview_hunk) -- 查看單列(或連續列)的異動。我個人偏向用diffthis
-      map('n', '<leader>hb', function() plugin_gitsigns.blame_line{full=true} end) -- 有用，顯示這一列當時commit的所有內容
+      map('n', '<leader>hb', function()
+        plugin_gitsigns.blame_line { full = true }
+      end
+      ) -- 有用，顯示這一列當時commit的所有內容
       --[[ toggle_current_line_blame 可以瞭解這一列最後commit的訊息和時間點 ex: You, 6 days, aga - my commit message
        建議如果有需要用:Gitsigns toggle_current_line_blame 去切換即可
        一旦開啟之後，只要在每一列稍為停留就可以出現訊息
@@ -252,7 +255,9 @@ if status_ok then
       -- map('n', '<leader>htb', plugin_gitsigns.toggle_current_line_blame)
       --]]
       map('n', '<leader>hd', plugin_gitsigns.diffthis) -- 很有用
-      map('n', '<leader>hD', function() plugin_gitsigns.diffthis('~') end) -- 有包含上一次的提交修改
+      map('n', '<leader>hD', function()
+        plugin_gitsigns.diffthis('~')
+      end) -- 有包含上一次的提交修改
       -- map('n', '<leader>td', plugin_gitsigns.toggle_deleted)
 
       -- Text object
