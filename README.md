@@ -289,11 +289,20 @@ ls ~/.cargo/bin # cargo, cargo-fmt, rustfmt, ...
 cargo install --locked --git https://github.com/Feel-ix-343/markdown-oxide.git markdown-oxide
 cargo install --list
 # markdown-oxide v0.24.0 (https://github.com/Feel-ix-343/markdown-oxide.git#23f4d84f
-ls $(which markdown-oxide)
+ls -l $(which markdown-oxide)
 # ~/.cargo/bin/markdown-oxide
 
 # cargo uninstall markdown-oxide
 ```
+
+#### [clangd](https://github.com/clangd/clangd)
+
+```sh
+sudo apt install clangd # 113MB
+ls -l $(which clangd)
+# /usr/bin/clangd -> clangd-18
+```
+
 
 ## motion
 

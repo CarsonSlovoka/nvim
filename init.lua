@@ -97,6 +97,7 @@ lspconfig.bashls.setup {}
 lspconfig.markdown_oxide.setup {
   cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
 }
+lspconfig.clangd.setup {}
 
 -- 加載 precognition 插件
 local status_ok, precognition = pcall(require, "precognition")
@@ -498,7 +499,7 @@ if status_ok then
     pickers = {
       -- 指定功能調整，如 find_files
       find_files = {
-        hidden = true, -- 示示隱藏文件
+        hidden = true, -- 顯示隱藏文件
       },
     },
 
