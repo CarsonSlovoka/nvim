@@ -377,37 +377,6 @@ if status_ok then
   })
   vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
 
-
-  -- vim.cmd("command! MyCommand lua print('hello')") -- MyCommand相當於執行lua後再執行print('hello')
-  local bookmark = require("config.bookmark")
-  for _, bk in ipairs(bookmark.table) do
-    -- vim.cmd("command! BookmarkHome NvimTreeOpen ~") -- 執行過程Lua -> VimScript -> 執行
-    -- vim.cmd("command! Bookmark" .. bk.name .. " NvimTreeOpen " .. bk.path) -- 效率比較差，需要解析字符串來執行命令
-    vim.api.nvim_create_user_command(-- 目的與vim.cmd, 只是此為Neovim的Lua API，直接使用Lua函數，可讀性和效率都比較好
-      "Bookmark" .. bk.name,
-      "NvimTreeOpen " .. bk.path,
-      { desc = "BookmarkXXX 等同於 NvimTreeOpen OOO" }
-    )
-
-    -- 定義bookmark的熱鍵
-    -- (可以直接定義熱鍵去觸發NvimTreeOpen就好，不需要定義command，但是command有個好處，如果忘記了熱鍵，還可以直接用打command(能打開提示)的方式來觸發
-    vim.keymap.set("n",
-      "<leader>b" .. bk.name, -- <leader>bMyBookmark
-      ":Bookmark" .. bk.name .. "<CR>", -- 等同執行:BookmarkMyBookmark, 而BookmarkMyBookmark是自定義的命令
-      { desc = "Bookmark: " .. bk.name }
-    )
-  end
-  -- show the bookmark window by command: Bookmarks
-  vim.api.nvim_create_user_command("Bookmarks",
-    bookmark.show,
-    { desc = "顯示書籤選單" }
-  )
-
-  vim.api.nvim_create_user_command("Bookmarks",
-    bookmark.show,
-    { desc = "顯示書籤選單" }
-  )
-
   local nvim_treeAPI = require "nvim-tree.api"
   vim.api.nvim_create_user_command("NvimTreeCD",
     function(args)
@@ -426,35 +395,6 @@ if status_ok then
       nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
       desc = "更改工作目錄"
     }
-  )
-
-  -- show window of bookmark list
-  vim.keymap.set("n",
-    "<leader>bk",
-    bookmark.show,
-    { desc = "show window of bookmark list" }
-  )
-
-  -- add the itme for bookmark
-  vim.keymap.set("n",
-    "<leader>afbk", -- add file bookmark
-    function()
-      local curFile = vim.fn.expand("%:p")
-      local name = vim.fn.input("bookmarkName: ")
-      bookmark.add(name, curFile)
-      print("已成功將檔案" .. curFile .. "加入書籤")
-    end,
-    { desc = "bookmarks.add" }
-  )
-  vim.keymap.set("n",
-    "<leader>adbk", -- add directory bookmark
-    function()
-      local curDir = vim.fn.expand("%:p:h")
-      local name = vim.fn.input("bookmarkName: ")
-      bookmark.add(name, curDir)
-      print("已成功將目錄" .. curDir .. "加入書籤")
-    end,
-    { desc = "bookmarks.add" }
   )
 end
 
@@ -671,10 +611,13 @@ if status_ok then
 
   -- 搜索幫助文檔
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
+
+  local telescope_bookmark = require "config.telescope_bookmark"
+  vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
+  vim.keymap.set("n", "<leader>tb", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
 end
 
 
 -- theme
 -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
 vim.cmd('colorscheme github_dark_default')
-
