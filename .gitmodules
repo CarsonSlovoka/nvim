@@ -32,3 +32,8 @@
 [submodule "telescope.nvim"]
 	path = pack/search/start/telescope.nvim
 	url = https://github.com/nvim-telescope/telescope.nvim.git
+
+[submodule "github-nvim-theme"]
+	path = pack/theme/start/github-nvim-theme
+	url = https://github.com/projekt0n/github-nvim-theme.git
+

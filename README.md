@@ -48,13 +48,16 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e)
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
-│   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a)
+│   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a) ([github-nvim-theme](#github-nvim-theme)可以輔助)
 │   │
 │   ├── tree/start/                  -- ✅ 導覧相關
 │   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.10.0... 7b870f1)
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
 │   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, ... (v0.1.8... 2eca9ba)
+│   │
+│   ├── theme/start/                 -- ✅ 主題相關 
+│   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -415,3 +418,18 @@ mkdir -pv ~/.config/nvim/pack/search/start/
 ```sh
 git clone https://github.com/nvim-telescope/telescope.nvim ~/.config/nvim/pack/search/start/telescope.nvim
 ```
+
+
+## theme
+
+```sh
+mkdir -pv ~/.config/nvim/pack/theme/start/
+```
+
+### [github-nvim-theme](https://github.com/projekt0n/github-nvim-theme)
+
+```sh
+git clone https://github.com/projekt0n/github-nvim-theme.git ~/.config/nvim/pack/theme/start/github-nvim-theme
+```
+
+

@@ -265,7 +265,8 @@ local plugin_nvimWebDevicons
 status_ok, plugin_nvimWebDevicons = pcall(require, "nvim-web-devicons") -- 只要這個插件有，不需要用require，nvim-tree就會自動導入，所以也不一定要寫這些配置
 if status_ok then
   plugin_nvimWebDevicons.setup {
-    -- todo: 試過改顏色可以，但是改icon沒有成功
+    -- 顏色不需要額外的項目就可以修改成功，但是icon要出現可能還需要額外的項目，例如: 使用github-nvim-theme後icon可以出現
+    -- https://github.com/projekt0n/github-nvim-theme
     -- https://github.com/nvim-tree/nvim-web-devicons/blob/63f552a7f59badc6e6b6d22e603150f0d5abebb7/README.md?plain=1#L70-L125
     override = {
       zsh = {
@@ -614,3 +615,9 @@ if status_ok then
   -- 搜索幫助文檔
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
 end
+
+
+-- theme
+-- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
+vim.cmd('colorscheme github_dark_default')
+
