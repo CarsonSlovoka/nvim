@@ -615,6 +615,7 @@ if status_ok then
   local telescope_bookmark = require "config.telescope_bookmark"
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>tb", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
+  vim.api.nvim_create_user_command("BkSave", telescope_bookmark.save, {})
 end
 
 

@@ -1,9 +1,12 @@
 local bookmark = {}
+local bookmark_db_path = vim.fn.stdpath("config") .. "/bookmark.lua"
 
 bookmark.table = {
-  { name = "HOME", path = "$HOME", row=nil },
-  { name = "Config", path = "~/.config/nvim/init.lua", row=1 },
-  { name = "Config row 1 row 5", path = "~/.config/nvim/init.lua", row=30, col=5},
+  --[[
+  { name = "HOME", path = "$HOME", row = nil },
+  { name = "Config", path = "~/.config/nvim/init.lua", row = 1 },
+  { name = "Config row 1 row 5", path = "~/.config/nvim/init.lua", row = 30, col = 5 },
+  --]]
 }
 
 -- 動態加載外部設定檔
@@ -21,9 +24,41 @@ local function load_external_bookmarks(file_path)
   end
 end
 
+function bookmark.delete(name)
+  for i, item in ipairs(bookmark.table) do
+    if item.name == name then
+      table.remove(bookmark.table, i)
+      break
+    end
+  end
+end
+
+function bookmark.save()
+  local file, err = io.open(bookmark_db_path, "w")
+  if not file then
+    vim.notify("Failed to open " .. bookmark_db_path .. " for writing:\n" .. err, vim.log.levels.ERROR)
+    return
+  end
+
+  -- 開始寫入檔案的表頭及內容
+  file:write("return {\n")
+
+  for _, bk in ipairs(bookmark.table) do
+    local row = bk.row and tostring(bk.row) or "nil"
+    local col = bk.col and tostring(bk.col) or "nil"
+
+    file:write(string.format("  { name = %q, path = %q, row = %s, col = %s },\n",
+      bk.name, bk.path, row, col))
+  end
+
+  file:write("}\n")
+  file:close()
+
+  vim.notify("Bookmarks saved to " .. bookmark_db_path, vim.log.levels.INFO)
+end
+
 -- 在初始化時嘗試加載外部書籤 (例如: bookmarks.lua)
-local external_file_path = vim.fn.stdpath("config") .. "/bookmark.lua"
-load_external_bookmarks(external_file_path)
+load_external_bookmarks(bookmark_db_path)
 
 -- 使用 telescope.nvim 顯示書籤列表
 function bookmark.show()
@@ -40,7 +75,13 @@ function bookmark.show()
     local display = bk.row and
       string.format("%s | %s (row: %d)", bk.name, bk.path, bk.row) or
       string.format("%s | %s", bk.name, bk.path)
-    table.insert(entries, { display = display, path = bk.path, row = bk.row, col=bk.col })
+    table.insert(entries, {
+      display = display, -- 呈現的內容
+      -- 以下可以給其它的屬性
+      name = bk.name,
+      path = bk.path,
+      row = bk.row, col = bk.col
+    })
   end
 
   -- 定義 Telescope 的 pickers
@@ -58,7 +99,7 @@ function bookmark.show()
     },
     sorter = conf.generic_sorter({}),
     attach_mappings = function(_, map)
-      -- 選擇書籤時的行為
+      -- 選擇書籤時的行為<Enter>鍵
       actions.select_default:replace(function()
         actions.close(_)
         local selection = action_state.get_selected_entry()
@@ -81,11 +122,25 @@ function bookmark.show()
         end
       end)
 
-      -- 可選：映射退出快捷鍵
-      map("i", "<esc>", actions.close)
+      -- 按下 d 觸發, 刪除該bookmark
+      map("n", "d", function(prompt_bufnr)
+        local selection = action_state.get_selected_entry() -- 獲取當前選中的項目
+        if selection then
+          -- print(vim.inspect(selection.value)) -- print + vim.inspect可以直接看到，就不需要在使用:mes去看
+          bookmark.delete(selection.value.name)
+        end
+        bookmark.save() -- 保存
+        -- 重啟
+        actions.close(prompt_bufnr) -- 關閉 Telescope
+        bookmark.show()
+      end)
+
+      -- 可選：映射退出快捷鍵 <-- 這樣不能選模式
+      -- map("i", "<esc>", actions.close)
       return true
     end,
-  }):find()
+
+  })     :find()
 end
 
 return bookmark
