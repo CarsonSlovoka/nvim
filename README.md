@@ -79,7 +79,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── config/                      -- ✅ 基本設定
-│   │   ├── bookmark.lua             -- ✅ 可以加入書籤(導引到該檔案或目錄)
+│   │   ├── telescope_bookmark.lua   -- ✅ 可以加入書籤(導引到該檔案或目錄)
 │   │   ├── options.lua              -- ✅ 基本選項 (e.g., 編輯器行為、外觀設定)
 │   │   ├── commands.lua             -- ✅ 自定義的命令(:MyCommand, ...)
 │   │   ├── keymaps.lua              -- ✅ 鍵位綁定

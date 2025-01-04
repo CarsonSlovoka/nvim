@@ -9,6 +9,10 @@ bookmark.table = {
   --]]
 }
 
+bookmark.config = {
+  preview_number_lines = 10
+}
+
 -- 動態加載外部設定檔
 local function load_external_bookmarks(file_path)
   -- 使用 pcall 防止加載外部檔案時出錯
@@ -93,6 +97,8 @@ function bookmark.show()
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
   local conf = require("telescope.config").values
+  local previewers = require("telescope.previewers")
+  -- local path_to_display = require("plenary.path").new
 
   -- 初始化書籤數據
   local entries = {}
@@ -114,17 +120,84 @@ function bookmark.show()
   -- 定義 Telescope 的 pickers
   pickers.new({}, {
     prompt_title = "書籤列表",
+
+    -- finder定義: 通常是將自定義的table傳入
     finder = finders.new_table {
       results = entries,
       entry_maker = function(entry)
-        return {
+        return { -- 此為preview的function參數entry內容
           value = entry,
           display = entry.display,
           ordinal = entry.display,
         }
       end,
     },
+
+    -- 排序定義
     sorter = conf.generic_sorter({}),
+
+    -- preview視窗(可選，如果有定義就會出現)
+    previewer = previewers.new_buffer_previewer({
+      define_preview = function(self, entry, _)
+        local filepath = entry.value.path:gsub("^~", os.getenv("HOME")) -- 處理跳轉路徑
+        local row = entry.value.row
+
+        -- 如果文件路徑有效，顯示內容
+        if filepath and vim.fn.filereadable(filepath) == 1 then
+          local lines = {}
+          local target_row = row or 1 -- 預設為行號 1
+          -- preview範圍: 上下: bookmark.config.preview_number_lines 行
+          local start_row = math.max(target_row - bookmark.config.preview_number_lines, 1)
+          local end_row = target_row + bookmark.config.preview_number_lines
+
+          -- 運用 Neovim 內建的方法讀取指定範圍的行
+          local f = io.open(filepath, "r")
+          if f then
+            local current_line = 1
+            for line in f:lines() do
+              if current_line >= start_row and current_line <= end_row then
+                table.insert(lines, line)
+              end
+              if current_line > end_row then
+                break
+              end
+              current_line = current_line + 1
+            end
+            f:close()
+          end
+
+          -- 設置行內容到 Telescope 的預覽窗口
+          if #lines > 0 then
+            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+            -- 加入高亮邏輯
+            if row then
+              local hl_row = row - start_row -- 不能直接放原本的列號，因為呈現的文本不是所有，只有部份內容，所以列號也要修正
+              vim.notify("hl_row" .. hl_row, vim.log.levels.INFO)
+              vim.api.nvim_buf_add_highlight(self.state.bufnr, -1,
+                "Visual",
+                hl_row, -- row
+                0, -- col-start
+                -1 -- col-end
+              )
+            end
+          else
+            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "無法讀取指定範圍的文件內容。" })
+          end
+        elseif vim.fn.isdirectory(filepath) == 1 then
+          local dir_content = vim.fn.readdir(filepath)
+          if #dir_content > 0 then
+            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "目錄內容：" })
+            vim.api.nvim_buf_set_lines(self.state.bufnr, -1, -1, false, dir_content)
+          else
+            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "此目錄為空：" .. filepath })
+          end
+        else
+          vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "文件無法讀取: " .. filepath })
+        end
+      end,
+    }),
+
+    -- 快捷鍵相關定義
     attach_mappings = function(_, map)
       -- 選擇書籤時的行為<Enter>鍵
       actions.select_default:replace(function()
@@ -166,7 +239,6 @@ function bookmark.show()
       -- map("i", "<esc>", actions.close)
       return true
     end,
-
   })     :find()
 end
 
