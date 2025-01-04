@@ -102,6 +102,18 @@ function bookmark.show()
 
   -- 初始化書籤數據
   local entries = {}
+
+  -- 計算填充寬度
+  local name_width = 0
+  local path_width = 0
+  for _, bk in ipairs(bookmark.table) do
+    if #bk.name > name_width then
+      name_width = #bk.name
+    end
+    if #bk.path > path_width then
+      path_width = #bk.path
+    end
+  end
   for _, bk in ipairs(bookmark.table) do
     -- 如果有行號，將其顯示在書籤列表中
     -- 有row就會有col
@@ -110,7 +122,13 @@ function bookmark.show()
       string.format("%s | %s (row: %d) (col: %d)", bk.name, bk.path, bk.row, bk.col) or
       string.format("%s | %s", bk.name, bk.path)
     --]]
-    local display = string.format("%s | %s", bk.name, bk.path) -- 可能也會用到檔案路徑搜尋，所以還是給上
+    local display = string.format(
+      "%-" .. name_width .. "s" ..  -- 類麼`%-5s` 其中-表示左對齊
+        " | " ..
+        "%-" .. path_width .. "s",
+      bk.name,
+      bk.path -- 可能也會用到檔案路徑搜尋，所以還是給上
+    )
     table.insert(entries, {
       display = display, -- 呈現的內容
       -- 以下可以給其它的屬性
@@ -216,6 +234,20 @@ function bookmark.show()
         end
       end,
     }),
+
+    -- 修改layout放法: 預設preview在右邊，如果書籤內容太長會被preview影響
+    --[[ -- 預設的layout_config已經很好了，不需要再特別調整
+    layout_config = {
+      preview_cutoff = 0, -- 窗口切分點，0 表示總是顯示 preview
+      horizontal = { -- 使用 horizontal 布局
+        preview_width = 0.5, -- 預覽窗口佔左右分佈的空間比重 (小於 1 的數字)
+      },
+      vertical = { -- 如果想改設為 vertical 布局
+        preview_height = 0.5, -- 預覽窗口佔上下分佈空間高度比重
+      },
+    },
+    ]]--
+    layout_strategy = "vertical", -- 規定窗口佈局為水平
 
     -- 快捷鍵相關定義
     attach_mappings = function(_, map)
