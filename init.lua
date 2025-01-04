@@ -378,7 +378,7 @@ if status_ok then
   vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
 
   local nvim_treeAPI = require "nvim-tree.api"
-  vim.api.nvim_create_user_command("NvimTreeCD",
+  vim.api.nvim_create_user_command("CD",
     function(args)
       -- print(args) -- table
       if #args.args > 0 then
