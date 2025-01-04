@@ -24,16 +24,23 @@ local function load_external_bookmarks(file_path)
   end
 end
 
-function bookmark.delete(name)
+--- @param name string
+--- @param opts table
+function bookmark.delete(name, opts)
   for i, item in ipairs(bookmark.table) do
     if item.name == name then
       table.remove(bookmark.table, i)
+      if opts.verbose then
+        vim.notify("✅已成功刪除書籤: " .. vim.inspect(item), vim.log.levels.INFO)
+      end
       break
     end
   end
 end
 
-function bookmark.save()
+--- 將書籤保存於實體檔案
+--- @param opts {verbose: boolean}
+function bookmark.save(opts)
   local file, err = io.open(bookmark_db_path, "w")
   if not file then
     vim.notify("Failed to open " .. bookmark_db_path .. " for writing:\n" .. err, vim.log.levels.ERROR)
@@ -54,7 +61,26 @@ function bookmark.save()
   file:write("}\n")
   file:close()
 
-  vim.notify("Bookmarks saved to " .. bookmark_db_path, vim.log.levels.INFO)
+  if opts.verbose then
+    vim.notify("Bookmarks saved to " .. bookmark_db_path, vim.log.levels.INFO)
+  end
+end
+
+--- 添加一個書籤
+--- @param name string 書籤名稱
+--- @param path string 文件路徑
+--- @param row number 行號
+--- @param col number 列號
+function bookmark.add(name, path, row, col)
+  row = row or nil
+  col = col or nil
+
+  table.insert(bookmark.table, {
+    name = name,
+    path = path,
+    row = row,
+    col = col,
+  })
 end
 
 -- 在初始化時嘗試加載外部書籤 (例如: bookmarks.lua)
@@ -72,8 +98,9 @@ function bookmark.show()
   local entries = {}
   for _, bk in ipairs(bookmark.table) do
     -- 如果有行號，將其顯示在書籤列表中
+    -- 有row就會有col
     local display = bk.row and
-      string.format("%s | %s (row: %d)", bk.name, bk.path, bk.row) or
+      string.format("%s | %s (row: %d) (col: %d)", bk.name, bk.path, bk.row, bk.col) or
       string.format("%s | %s", bk.name, bk.path)
     table.insert(entries, {
       display = display, -- 呈現的內容
@@ -126,13 +153,13 @@ function bookmark.show()
       map("n", "d", function(prompt_bufnr)
         local selection = action_state.get_selected_entry() -- 獲取當前選中的項目
         if selection then
-          -- print(vim.inspect(selection.value)) -- print + vim.inspect可以直接看到，就不需要在使用:mes去看
-          bookmark.delete(selection.value.name)
+          -- print(vim.inspect(selection.value)) -- vim.inspect可以將Lua的值結構化輸出，適合用來將複雜結構轉為方便人讀的字符串
+          bookmark.delete(selection.value.name, { verbose = true })
+          bookmark.save {} -- 保存
+          -- 重啟
+          actions.close(prompt_bufnr) -- 關閉 Telescope
+          bookmark.show()
         end
-        bookmark.save() -- 保存
-        -- 重啟
-        actions.close(prompt_bufnr) -- 關閉 Telescope
-        bookmark.show()
       end)
 
       -- 可選：映射退出快捷鍵 <-- 這樣不能選模式

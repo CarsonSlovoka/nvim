@@ -615,7 +615,38 @@ if status_ok then
   local telescope_bookmark = require "config.telescope_bookmark"
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>tb", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
-  vim.api.nvim_create_user_command("BkSave", telescope_bookmark.save, {})
+  vim.api.nvim_create_user_command("BkSave", function()
+    telescope_bookmark.save{
+      verbose = true
+    }
+  end, {})
+  vim.api.nvim_create_user_command("BkAdd", function(args)
+    local params = vim.split(args.args, " ")
+    local name = params[1]
+    -- local name = vim.fn.input("bookmarkName: ")
+    local filepath = vim.fn.expand("%:p")
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    telescope_bookmark.add(name, filepath, row, col)
+    telescope_bookmark.save{}
+    local filename = vim.fn.expand("%:t")
+    vim.notify("✅ 書籤已成功保存: " .. name ..
+      "filename: " .. filename ..
+      " (行: " .. row .. ", 列: " .. col .. ")", vim.log.levels.INFO)
+  end, {
+    nargs = 1,
+    desc = "加入書籤"
+  })
+  vim.api.nvim_create_user_command("BkAddDir", function(args)
+    local params = vim.split(args.args, " ")
+    local name = params[1]
+    local dirPath = vim.fn.expand("%:p:h")
+    telescope_bookmark.add(name, dirPath)
+    telescope_bookmark.save{}
+    vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
+  end, {
+    nargs = 1,
+    desc = "添加目錄到書籤"
+  })
 end
 
 
