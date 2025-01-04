@@ -105,9 +105,12 @@ function bookmark.show()
   for _, bk in ipairs(bookmark.table) do
     -- 如果有行號，將其顯示在書籤列表中
     -- 有row就會有col
+    --[[ 不需要顯示不重要的資訊，可能會影響搜尋，將這些資訊放到preview呈現
     local display = bk.row and
       string.format("%s | %s (row: %d) (col: %d)", bk.name, bk.path, bk.row, bk.col) or
       string.format("%s | %s", bk.name, bk.path)
+    --]]
+    local display = string.format("%s | %s", bk.name, bk.path) -- 可能也會用到檔案路徑搜尋，所以還是給上
     table.insert(entries, {
       display = display, -- 呈現的內容
       -- 以下可以給其它的屬性
@@ -137,10 +140,12 @@ function bookmark.show()
     sorter = conf.generic_sorter({}),
 
     -- preview視窗(可選，如果有定義就會出現)
+    -- preview要呈的內容是什麼都無所謂，選取的實際觸發內容定義在: attach_mappings
     previewer = previewers.new_buffer_previewer({
       define_preview = function(self, entry, _)
         local filepath = entry.value.path:gsub("^~", os.getenv("HOME")) -- 處理跳轉路徑
         local row = entry.value.row
+        local col = entry.value.col
 
         -- 如果文件路徑有效，顯示內容
         if filepath and vim.fn.filereadable(filepath) == 1 then
@@ -168,10 +173,25 @@ function bookmark.show()
 
           -- 設置行內容到 Telescope 的預覽窗口
           if #lines > 0 then
-            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+            -- 呈現的preview內容
+            -- -- 顯示書籤資訊於首三列
+            local extra_info = { -- 文本內容
+              filepath,
+              "row: " .. (row or "nil") .. " col: " .. (col or "nil"), -- 如果是透過指令加入，不會nil發生，但如果是手動編輯~/.config/nvim/bookmark.lua檔案，就有可能會發生失誤，因此這時候用nil呈現
+              "------------------------------------------------------------------"
+            }
+            vim.api.nvim_buf_set_lines(self.state.bufnr,
+              0, -- start 開始的列, 首列為0, -1可以自動接續下去寫
+              -1, -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
+              false, -- false為寬鬆如果超過start, end不會觸發錯誤
+              extra_info
+            )
+            -- -- 顯示文本內容
+            vim.api.nvim_buf_set_lines(self.state.bufnr, -1, -1, false, lines)
+
             -- 加入高亮邏輯
             if row then
-              local hl_row = row - start_row -- 不能直接放原本的列號，因為呈現的文本不是所有，只有部份內容，所以列號也要修正
+              local hl_row = row - start_row + #extra_info -- 不能直接放原本的列號，因為呈現的文本不是所有，只有部份內容，所以列號也要修正
               vim.notify("hl_row" .. hl_row, vim.log.levels.INFO)
               vim.api.nvim_buf_add_highlight(self.state.bufnr, -1,
                 "Visual",
