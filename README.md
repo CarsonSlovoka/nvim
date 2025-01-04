@@ -294,6 +294,60 @@ ls ~/.cargo/bin # cargo, cargo-fmt, rustfmt, ...
 # ~/.bashrc # 會自動添加 `. "$HOME/.cargo/env"`
 ```
 
+<details>
+
+<summary>sh.rustup.rs的互動訊息</summary>
+
+```
+Welcome to Rust!
+
+This will download and install the official compiler for the Rust
+programming language, and its package manager, Cargo.
+
+Rustup metadata and toolchains will be installed into the Rustup
+home directory, located at:
+
+  ~/.rustup
+
+This can be modified with the RUSTUP_HOME environment variable.
+
+The Cargo home directory is located at:
+
+  ~/.cargo
+
+This can be modified with the CARGO_HOME environment variable.
+
+The cargo, rustc, rustup and other commands will be added to
+Cargo's bin directory, located at:
+
+  ~/.cargo/bin
+
+This path will then be added to your PATH environment variable by
+modifying the profile files located at:
+
+  ~/.profile
+  ~/.bashrc
+
+You can uninstall at any time with rustup self uninstall and
+these changes will be reverted.
+
+Current installation options:
+
+
+   default host triple: x86_64-unknown-linux-gnu
+     default toolchain: stable (default)
+               profile: default
+  modify PATH variable: yes
+
+1) Proceed with standard installation (default - just press enter)
+2) Customize installation
+3) Cancel installation
+```
+
+</details>
+
+> 安裝完成之後，記得重新啟動終端機！
+
 **[install markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide/tree/main?tab=readme-ov-file#vscode)**
 
 ```yaml
@@ -327,7 +381,7 @@ mv -v lua-language-server-3.13.5-linux-x64.tar.gz ~/lua-language-server/
 # 解壓縮
 cd ~/lua-language-server/
 tar -xzvf lua-language-server-3.13.5-linux-x64.tar.gz # 於此目錄解壓縮，它不會在有多餘的目錄，直接會把檔案展開於此目錄
-rm lua-language-server-3.13.5-linux-x64.tar.gz
+rm -v lua-language-server-3.13.5-linux-x64.tar.gz
 ls -l ~/lua-language-server/bin/lua-language-server # 此檔案為執行檔
 
 # 連立連結
