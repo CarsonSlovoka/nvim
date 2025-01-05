@@ -70,4 +70,4 @@ local function show_toc_window()
 end
 
 -- 熱鍵綁定
-vim.keymap.set("n", "<leader>t", show_toc_window, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>wt", show_toc_window, { noremap = true, silent = true })
