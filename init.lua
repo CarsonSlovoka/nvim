@@ -443,6 +443,13 @@ if status_ok then
       find_files = {
         hidden = true, -- 顯示隱藏文件
       },
+      buffers = {
+        ignore_current_buffer = true, -- 通常當前的文件已經曉得，不需要再列出來
+
+        -- https://github.com/nvim-telescope/telescope.nvim/blob/2eca9ba22002184ac05eddbe47a7fe2d5a384dfc/doc/telescope.txt#L1462-L1467
+        -- sort_lastused = true, -- 預設為false, 會將"當前"和"最後一次"使用的緩衝放到頂部
+        sort_mru = true, -- 這個相當有用，它會將所有的都排序, 不會只像sort_lastused抓兩個而已, 因此如果不再意效能，可以都將其啟用
+      }
     },
 
     extensions = {
