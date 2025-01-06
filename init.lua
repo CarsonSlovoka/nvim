@@ -380,16 +380,17 @@ if status_ok then
   local nvim_treeAPI = require "nvim-tree.api"
   vim.api.nvim_create_user_command("CD",
     function(args)
-      -- print(args) -- table
+      local path
       if #args.args > 0 then
         local params = vim.split(args.args, " ")
-        local path = params[1]
-        nvim_treeAPI.tree.open({ path = path })
-        nvim_treeAPI.tree.change_root(path)
+        path = params[1]
       else
-        nvim_treeAPI.tree.open({ path = "~" })
-        nvim_treeAPI.tree.change_root("~")
+        path = "~"
       end
+      -- NOTE: 在nvim-tree上做CD的路徑和當前編輯的是不同的工作路徑, 如果有需要可以在nvim-tree: gf 複製絕對路徑後使用CD切換
+      vim.cmd("cd " .. path)
+      nvim_treeAPI.tree.open({ path = path })
+      nvim_treeAPI.tree.change_root(path)
     end,
     {
       nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
@@ -559,7 +560,7 @@ if status_ok then
 
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
-  vim.keymap.set("n", "<leader>ffe", function()
+  vim.keymap.set("n", "<leader>eff", function()
     local extensions = utilsInput.extension()
     -- 動態生成 `--glob` 條件
     local glob_args = {}
@@ -584,7 +585,7 @@ if status_ok then
 
   -- 搜索文本
   vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
-  vim.keymap.set("n", "<leader>fge", function()
+  vim.keymap.set("n", "<leader>efg", function()
     builtin.live_grep({
       prompt_title = "search content by extension",
       additional_args = function()
@@ -616,7 +617,7 @@ if status_ok then
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>bk", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
   vim.api.nvim_create_user_command("BkSave", function()
-    telescope_bookmark.save{
+    telescope_bookmark.save {
       verbose = true
     }
   end, {})
@@ -627,7 +628,7 @@ if status_ok then
     local filepath = vim.fn.expand("%:p")
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
     telescope_bookmark.add(name, filepath, row, col)
-    telescope_bookmark.save{}
+    telescope_bookmark.save {}
     local filename = vim.fn.expand("%:t")
     vim.notify("✅ 書籤已成功保存: " .. name ..
       "filename: " .. filename ..
@@ -641,7 +642,7 @@ if status_ok then
     local name = params[1]
     local dirPath = vim.fn.expand("%:p:h")
     telescope_bookmark.add(name, dirPath)
-    telescope_bookmark.save{}
+    telescope_bookmark.save {}
     vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
   end, {
     nargs = 1,
