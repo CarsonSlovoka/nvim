@@ -39,7 +39,7 @@ function M.show_toc_with_telescope()
 
 
   -- 取得當前文件的內容
-  local markdown_buffer = vim.api.nvim_get_current_buf() 
+  local markdown_buffer = vim.api.nvim_get_current_buf()
 
   local entries = {}
   for _, item in ipairs(toc) do
@@ -92,13 +92,14 @@ function M.show_toc_with_telescope()
         local numbered_lines = {}
         for i, line in ipairs(preview_lines) do
           local line_num = start_line + i - 1
-          local prefix = string.format("%4d | ", line_num)
+          local prefix
           -- 高亮選中的行
           if line_num == selected_line then
-            table.insert(numbered_lines, prefix .. "👉 " .. line)
+            prefix = string.format("%6d 👉 | ", line_num)
           else
-            table.insert(numbered_lines, prefix .. "  " .. line)
+            prefix = string.format("%6d    | ", line_num)
           end
+          table.insert(numbered_lines, prefix .. " " .. line)
         end
 
         -- 合併所有內容
