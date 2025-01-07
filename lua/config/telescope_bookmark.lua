@@ -167,13 +167,13 @@ function bookmark.show()
 
         -- 如果文件路徑有效，顯示內容
         if filepath and vim.fn.filereadable(filepath) == 1 then
-          local lines = {}
           local target_row = row or 1 -- 預設為行號 1
           -- preview範圍: 上下: bookmark.config.preview_number_lines 行
           local start_row = math.max(target_row - bookmark.config.preview_number_lines, 1)
           local end_row = target_row + bookmark.config.preview_number_lines
 
           -- 運用 Neovim 內建的方法讀取指定範圍的行
+          local lines = {}
           local f = io.open(filepath, "r")
           if f then
             local current_line = 1
@@ -188,6 +188,11 @@ function bookmark.show()
             end
             f:close()
           end
+
+          --[[ 也可以考慮一次讀，速度會比較快，但是會消耗比較多的記憶體
+          local lines = vim.fn.readfile(filepath, "", end_row)
+          lines = vim.list_slice(lines, start_row, end_row)
+          --]]
 
           -- 設置行內容到 Telescope 的預覽窗口
           if #lines == 0 then
