@@ -93,10 +93,15 @@ help文檔的所有tag的會出現，如果要找查找doc相關的幫助可能�
 
 與`maps`類似只是更好看,而且還可以篩選, 此時keymaps上的幫助就會很清楚
 
+選取確認之後可以執行
+
 ```yaml
 :Telescope keymaps
 :maps
 ```
+
+- gc: toggle comment (n, x模式都行)
+- gx: opens filepath or URI under cursor with the system handler(file explorer, web browser, ...)
 
 ## commands
 

@@ -41,6 +41,17 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
     additional_vim_regex_highlighting = false,
   },
 
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
+      init_selection = "gnn", -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
+      node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
+      scope_incremental = "grc",
+      node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
+    },
+  },
+
   -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
   textobjects = {
@@ -54,7 +65,7 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
         ["ac"] = "@class.outer", -- 整個類別塊
         ["ic"] = "@class.inner", -- 類別內部
         ["ao"] = "@block.outer", -- 任何區塊的外部
-        ["io"] = "@block.inner" -- 任何區塊的內部
+        ["io"] = "@block.inner", -- 任何區塊的內部
       },
     },
     move = { -- 此功能還好，可以用hop來取代
