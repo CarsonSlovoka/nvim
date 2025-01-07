@@ -216,21 +216,66 @@ function bookmark.show()
             end
 
             -- 合併所有內容
-            local final_content = vim.list_extend(context_header, numbered_lines)
+            local copy_context_header = vim.tbl_deep_extend("force", {}, context_header) -- 為了讓list_extend後不會異動原始的context_header，所以複製一份
+            local final_content = vim.list_extend(copy_context_header, numbered_lines) -- list_extend只直接改變第一個參數的數值
 
             -- 設置預覽緩衝區的內容
             vim.api.nvim_buf_set_lines(self.state.bufnr,
               0, -- start 開始的列, 首列為0, -1可以自動接續下去寫
-
               -1, -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
-
               false, -- false為寬鬆如果超過start, end不會觸發錯誤
-
               final_content
             )
 
-            -- 可選：設置語法高亮
-            vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', 'markdown')
+            -- 設置語法高亮為 markdown
+            --[[ nvim_buf_add_highlight 這種highlight是針對單行的方式，例如: 搜尋關鍵字等等
+            -- https://neovim.io/doc/user/api.html#nvim_buf_add_highlight()
+            vim.api.nvim_buf_add_highlight(self.state.bufnr,
+              -1, -- namespace ID, -1可以自動生成一個新的命名空間
+              "IncSearch", -- hl_group 可以由 :highlight 得知
+              0, -- line
+              0, -- col_start
+              -1 -- col_end
+            )
+            --]]
+
+            -- 根據文件類型動態設置後續部分的語法高亮
+            local file_extension = filepath:match("^.+(%..+)$")
+            if file_extension then
+              local filetype = vim.filetype.match({ filename = filepath }) or "text" -- 如果無法檢測則使用 "text"
+              vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', filetype)
+            else
+              vim.api.nvim_buf_add_highlight(self.state.bufnr, -1, 'text', #context_header, 0, -1)
+            end
+
+            -- 最後在調整context_header的部份用
+            --[[ nvim_buf_set_extmark 如果要做markdown的code-block突顯，就會需要用到此技巧
+              https://neovim.io/doc/user/api.html#nvim_buf_set_extmark()
+            --]]
+            -- 先都設定為Comment
+            local ns_id = vim.api.nvim_create_namespace('custom_highlight')
+            vim.api.nvim_buf_set_extmark(self.state.bufnr,
+              ns_id, -- 不能設定為-1
+              0, -- line
+              0, -- col
+              {
+                end_row = #context_header,
+                -- end_col = -1, -- 不能設定為-1
+                -- hl_group = 'IncSearch', -- 使用 :highlight 查看, Title
+                hl_group = 'Comment' -- 如果給的hl_group沒有突顯，會先用syntax的突顯
+              }
+            )
+
+            -- 在將path調整為@label
+            vim.api.nvim_buf_set_extmark(self.state.bufnr,
+              ns_id,
+              1,
+              0, -- col
+              {
+                end_row = 2,
+                hl_group = '@label' -- Title
+              }
+            )
           end
         elseif vim.fn.isdirectory(filepath) == 1 then
           local dir_content = vim.fn.readdir(filepath)

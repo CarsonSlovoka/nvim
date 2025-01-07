@@ -32,6 +32,7 @@ require("config.commands").setup()
 -- pack/syntax/start/nvim-treesitter
 require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
   ensure_installed = {
+    "bash",
     "lua",
     "go",
     "markdown", "markdown_inline" },
