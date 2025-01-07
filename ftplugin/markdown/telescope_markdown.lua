@@ -81,12 +81,12 @@ function M.show_toc_with_telescope()
           false
         )
 
-        -- 添加上下文信息
+        --[[ 添加上下文信息
         local context_header = {
           string.rep("-", 40),
           string.format("Preview around line %d", selected_line),
           string.rep("-", 40)
-        }
+        }--]]
 
         -- 在每行前添加行號
         local numbered_lines = {}
@@ -103,13 +103,14 @@ function M.show_toc_with_telescope()
         end
 
         -- 合併所有內容
-        local final_content = vim.list_extend(context_header, numbered_lines)
+        -- local final_content = vim.list_extend(context_header, numbered_lines)
+        local final_content = numbered_lines
 
         -- 設置預覽緩衝區的內容
         vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, final_content)
 
         -- 可選：設置語法高亮
-        vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', 'markdown')
+        -- vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', 'markdown') -- 就會變的很慢，上下移動就沒有那麼順了
       end
     }),
 

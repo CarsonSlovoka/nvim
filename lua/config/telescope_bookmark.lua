@@ -250,7 +250,7 @@ function bookmark.show()
               local filetype = vim.filetype.match({ filename = filepath }) or "text" -- 如果無法檢測則使用 "text"
               vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', filetype)
             else
-              vim.api.nvim_buf_add_highlight(self.state.bufnr, -1, 'text', #context_header, 0, -1)
+              vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', "text")
             end
 
             -- 最後在調整context_header的部份用
