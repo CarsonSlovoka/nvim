@@ -123,7 +123,7 @@ function bookmark.show()
       string.format("%s | %s", bk.name, bk.path)
     --]]
     local display = string.format(
-      "%-" .. name_width .. "s" ..  -- 類麼`%-5s` 其中-表示左對齊
+      "%-" .. name_width .. "s" .. -- 類麼`%-5s` 其中-表示左對齊
         " | " ..
         "%-" .. path_width .. "s",
       bk.name,
@@ -190,36 +190,47 @@ function bookmark.show()
           end
 
           -- 設置行內容到 Telescope 的預覽窗口
-          if #lines > 0 then
-            -- 呈現的preview內容
-            -- -- 顯示書籤資訊於首三列
-            local extra_info = { -- 文本內容
+          if #lines == 0 then
+            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "無法讀取指定範圍的文件內容。" })
+          else
+            -- 添加上下文信息
+            local context_header = {
+              string.rep("-", 40),
               filepath,
               "row: " .. (row or "nil") .. " col: " .. (col or "nil"), -- 如果是透過指令加入，不會nil發生，但如果是手動編輯~/.config/nvim/bookmark.lua檔案，就有可能會發生失誤，因此這時候用nil呈現
-              "------------------------------------------------------------------"
+              string.rep("-", 40)
             }
+
+            -- 在每行前添加行號
+            local numbered_lines = {}
+            for i, line in ipairs(lines) do
+              local line_num = start_row + i - 1
+              local prefix
+              -- 高亮選中的行
+              if line_num == target_row then
+                prefix = string.format("%4d 👉 | ", line_num)
+              else
+                prefix = string.format("%4d    | ", line_num)
+              end
+              table.insert(numbered_lines, prefix .. " " .. line)
+            end
+
+            -- 合併所有內容
+            local final_content = vim.list_extend(context_header, numbered_lines)
+
+            -- 設置預覽緩衝區的內容
             vim.api.nvim_buf_set_lines(self.state.bufnr,
               0, -- start 開始的列, 首列為0, -1可以自動接續下去寫
-              -1, -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
-              false, -- false為寬鬆如果超過start, end不會觸發錯誤
-              extra_info
-            )
-            -- -- 顯示文本內容
-            vim.api.nvim_buf_set_lines(self.state.bufnr, -1, -1, false, lines)
 
-            -- 加入高亮邏輯
-            if row then
-              local hl_row = row - start_row + #extra_info -- 不能直接放原本的列號，因為呈現的文本不是所有，只有部份內容，所以列號也要修正
-              vim.notify("hl_row" .. hl_row, vim.log.levels.INFO)
-              vim.api.nvim_buf_add_highlight(self.state.bufnr, -1,
-                "Visual",
-                hl_row, -- row
-                0, -- col-start
-                -1 -- col-end
-              )
-            end
-          else
-            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { "無法讀取指定範圍的文件內容。" })
+              -1, -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
+
+              false, -- false為寬鬆如果超過start, end不會觸發錯誤
+
+              final_content
+            )
+
+            -- 可選：設置語法高亮
+            vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', 'markdown')
           end
         elseif vim.fn.isdirectory(filepath) == 1 then
           local dir_content = vim.fn.readdir(filepath)
