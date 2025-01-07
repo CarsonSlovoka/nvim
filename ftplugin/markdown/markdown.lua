@@ -67,6 +67,10 @@ local function show_toc_window()
             vim.api.nvim_win_set_cursor(0, { toc[current_line].line, 0 }) -- 跳轉
         end
     end, { noremap = true, silent = true, buffer = buf })
+
+    vim.keymap.set("n", "<ESC>", function()
+        vim.api.nvim_win_close(win, true) -- 關閉窗口
+    end, { noremap = true, silent = true, buffer = buf })
 end
 
 -- 熱鍵綁定
