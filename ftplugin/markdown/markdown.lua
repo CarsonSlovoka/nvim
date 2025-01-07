@@ -1,3 +1,10 @@
+local ok, _ = pcall(require, "telescope")
+if ok then
+  -- 使用telescop代替
+  return
+end
+
+
 -- 生成 TOC 數據
 local function generate_toc()
   local toc = {}
