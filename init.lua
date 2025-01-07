@@ -459,11 +459,19 @@ if status_ok then
   })
 
   -- Telescope 配合 LSP 的符號檢視 (知道有哪些function之類的)
-  vim.api.nvim_set_keymap('n', '<Leader>s', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
-
   local builtin = require("telescope.builtin")
-  local utilsInput = require("utils.input")
 
+  -- vim.api.nvim_set_keymap('n', '<Leader>s', ':Telescope lsp_document_symbols<CR>', { noremap = true, silent = true })
+  -- https://github.com/nvim-telescope/telescope.nvim/blob/2eca9ba22002184ac05eddbe47a7fe2d5a384dfc/doc/telescope.txt#L1712-L1736
+  -- 如果已經將:helptags ~/.config/nvim/pack/search/start/telescope.nvim/doc/ 也可以
+  -- :help lsp_document_symbols
+  -- :Telescope help_tags
+  vim.keymap.set("n", "<leader>s",
+    builtin.lsp_document_symbols,
+    { desc = "watch variable, class, function, enum, ..." }
+  )
+
+  local utilsInput = require("utils.input")
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*" -not -path "*/node_modules/*"
   -- find . -mmin -480 -regex ".*\.\(sh\|md\)" -not -path "*/telescope.nvim/*" -not -path "*/.cache/*"  -not -path "*/node_modules/*" -print0 | xargs -0 ls -lt
   -- 使用 Find 搜索具有特殊條件的文件 TODO: 當找不到檔案時，會用ls列出所有項目，需要設計一個都沒有符合的項目就不再繼續
@@ -616,9 +624,12 @@ if status_ok then
   end, { desc = "search content by extension" })
 
   -- 搜索已打開的 buffer
-  vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "[Find Buffers]" })
+  -- :help telescope.builtin.buffers
+  vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "可以找到最近開啟的buffer" })
 
   -- 搜索幫助文檔
+  -- 記得要將plugin相關的doc加入才行
+  -- :helptags ~/.config/nvim/pack/GROUP/start/XXX_PLUGIN/doc/
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
 
   local telescope_bookmark = require "config.telescope_bookmark"

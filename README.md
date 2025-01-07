@@ -27,9 +27,21 @@ unzip FiraCode.zip -d ~/.fonts
 rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
 }
+
 ```
 
 > 如果有需要還要安裝想要的[lsp server](#安裝語言伺服器)
+
+
+添加doc
+
+```bash
+# (可選) tags
+:helptags ~/.config/nvim/doc
+:helptags ~/.config/nvim/pack/search/start/telescope.nvim/doc/
+:helptags ~/.config/nvim/pack/git/start/gitsigns.nvim/doc/
+:helptags ~/.config/nvim/pack/tree/start/nvim-tree.lua/doc/
+```
 
 # 目錄結構
 
