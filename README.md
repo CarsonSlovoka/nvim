@@ -76,6 +76,9 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
 │   │
 │   └── markdown/                    -- ✅ markdown編輯, toc相關
+│       ├── editor.lua               -- ✅ editor編輯相關
+│       ├── markdown.lua             -- ✅ markdown大綱生成 (除非沒有裝telescope才會用這種模式)
+│       └── telescope_markdown.lua   -- ✅ 使用telescope生成markdown大綱
 │
 ├── lua/                             -- ✅ Lua 配置模組的根目錄
 │   ├── config/                      -- ✅ 基本設定
