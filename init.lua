@@ -699,3 +699,15 @@ end
 -- theme
 -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
 vim.cmd('colorscheme github_dark_default')
+
+
+-- other
+
+-- other indent-blankline.nvim
+local plugin_indentBlankline
+status_ok, plugin_indentBlankline = pcall(require, "ibl") -- pack/other/start/indent-blankline.nvim/lua/ibl
+
+if status_ok then
+  plugin_indentBlankline.setup()
+end
+

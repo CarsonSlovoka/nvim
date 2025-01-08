@@ -37,3 +37,7 @@
 	path = pack/theme/start/github-nvim-theme
 	url = https://github.com/projekt0n/github-nvim-theme.git
 
+# other
+[submodule "indent-blankline.nvim"]
+	path = pack/other/start/indent-blankline.nvim
+	url = https://github.com/lukas-reineke/indent-blankline.nvim.git

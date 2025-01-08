@@ -80,7 +80,10 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... 2eca9ba)
 │   │
 │   ├── theme/start/                 -- ✅ 主題相關
-│   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)
+│   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)`
+│   │
+│   ├── other/start/                     -- ✅ 未分類
+│   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f)`
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -586,3 +589,14 @@ git clone https://github.com/projekt0n/github-nvim-theme.git ~/.config/nvim/pack
 ```
 
 
+## other
+
+```sh
+mkdir -pv ~/.config/nvim/pack/other/start/
+```
+
+### [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim)
+
+```sh
+git clone https://github.com/lukas-reineke/indent-blankline.nvim.git ~/.config/nvim/pack/other/start/indent-blankline.nvim
+```
