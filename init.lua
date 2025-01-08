@@ -661,14 +661,16 @@ if status_ok then
     telescope_bookmark.save {
       verbose = true
     }
-  end, {})
+  end, { desc = "如果想要永久的保存訪問過的時間，請手動呼叫此方法" })
   vim.api.nvim_create_user_command("BkAdd", function(args)
     local params = vim.split(args.args, " ")
     local name = params[1]
     -- local name = vim.fn.input("bookmarkName: ")
     local filepath = vim.fn.expand("%:p")
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    telescope_bookmark.add(name, filepath, row, col)
+    if not telescope_bookmark.add(name, filepath, row, col) then
+      return
+    end
     telescope_bookmark.save {}
     local filename = vim.fn.expand("%:t")
     vim.notify("✅ 書籤已成功保存: " .. name ..
@@ -682,7 +684,9 @@ if status_ok then
     local params = vim.split(args.args, " ")
     local name = params[1]
     local dirPath = vim.fn.expand("%:p:h")
-    telescope_bookmark.add(name, dirPath)
+    if telescope_bookmark.add(name, dirPath) then
+      return
+    end
     telescope_bookmark.save {}
     vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
   end, {

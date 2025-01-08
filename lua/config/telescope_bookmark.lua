@@ -5,7 +5,7 @@ bookmark.table = {
   --[[
   { name = "HOME", path = "$HOME", row = nil },
   { name = "Config", path = "~/.config/nvim/init.lua", row = 1 },
-  { name = "Config row 1 row 5", path = "~/.config/nvim/init.lua", row = 30, col = 5 },
+  { name = "Config row 1 row 5", path = "~/.config/nvim/init.lua", row = 30, col = 5, atime=os.time() },
   --]]
 }
 
@@ -48,7 +48,6 @@ function bookmark.save(opts)
   local file, err = io.open(bookmark_db_path, "w")
   if not file then
     vim.notify("Failed to open " .. bookmark_db_path .. " for writing:\n" .. err, vim.log.levels.ERROR)
-    return
   end
 
   -- 開始寫入檔案的表頭及內容
@@ -58,8 +57,11 @@ function bookmark.save(opts)
     local row = bk.row and tostring(bk.row) or "nil"
     local col = bk.col and tostring(bk.col) or "nil"
 
-    file:write(string.format("  { name = %q, path = %q, row = %s, col = %s },\n",
-      bk.name, bk.path, row, col))
+    file:write(string.format("  { name = %q, path = %q, row = %s, col = %s, atime = %d },\n",
+      bk.name, bk.path,
+      row, col,
+      bk.atime or os.time()
+    ))
   end
 
   file:write("}\n")
@@ -75,16 +77,43 @@ end
 --- @param path string 文件路徑
 --- @param row number 行號
 --- @param col number 列號
+--- @return boolean
 function bookmark.add(name, path, row, col)
   row = row or nil
   col = col or nil
+
+  -- 確認此name不存在
+  for _, item in ipairs(bookmark.table) do
+    if item.name == name then
+      vim.notify("❌ 此書籤名稱已存在" .. name, vim.log.levels.ERROR)
+      return false
+    end
+  end
 
   table.insert(bookmark.table, {
     name = name,
     path = path,
     row = row,
     col = col,
+    atime = os.time(), -- 訪問時間
   })
+  return true
+end
+
+--- 更新書籤, 如果要永久保存，請自行再呼叫save的方法
+function bookmark.update(name, opts)
+  opts = opts or {}
+  -- if #opts == 0 then -- ipairs也就是opts有序的才能這樣用
+  if next(opts) == nil then -- 對於無序的table，可以用next來確認是否為空
+    return
+  end
+
+  for i, item in ipairs(bookmark.table) do
+    if item.name == name then
+      bookmark.table[i].atime = opts.atime or os.time()
+      return
+    end
+  end
 end
 
 -- 在初始化時嘗試加載外部書籤 (例如: bookmarks.lua)
@@ -114,6 +143,12 @@ function bookmark.show()
       path_width = #bk.path
     end
   end
+
+  -- 先對table進行排序，如此就可以不需要之後再排
+  table.sort(bookmark.table, function(a, b)
+    return (a.atime or 0) > (b.atime or 0)
+  end)
+
   for _, bk in ipairs(bookmark.table) do
     -- 如果有行號，將其顯示在書籤列表中
     -- 有row就會有col
@@ -134,7 +169,8 @@ function bookmark.show()
       -- 以下可以給其它的屬性
       name = bk.name,
       path = bk.path,
-      row = bk.row, col = bk.col
+      row = bk.row, col = bk.col,
+      atime = bk.atime,
     })
   end
 
@@ -317,19 +353,23 @@ function bookmark.show()
         actions.close(_)
         local selection = action_state.get_selected_entry()
         if selection and selection.value then
-          local path = selection.value.path:gsub("^~", os.getenv("HOME"))
-          local row = selection.value.row
-          local col = selection.value.col
+          local bk = selection.value
+          print("select " .. bk.name)
+          local path = bk.path:gsub("^~", os.getenv("HOME"))
+          -- bk.atime = os.time() -- 錯誤，不是相同的物件
+          bookmark.update(bk.name, { atime = os.time() }) -- 更新最後的訪問時間
+          -- bookmark.save {} -- 請注意，我們不每一次都將訪問的時間寫入到檔案！
 
           -- 打開檔案並跳轉到行號（若行號存在）
-          vim.cmd("edit " .. path)
-          if row then
-            if col then
-              vim.fn.cursor(row, col)
+          vim.cmd("edit " .. path) -- 可以是檔案或者目錄都行
+          if bk.row then
+            if bk.col then
+              vim.fn.cursor(bk.row, bk.col)
             else
-              vim.fn.cursor(row, 0)
+              vim.fn.cursor(bk.row, 0)
             end
           end
+
         else
           vim.api.nvim_echo({ { "無效的選擇，請重試！", "ErrorMsg" } }, false, {})
         end
