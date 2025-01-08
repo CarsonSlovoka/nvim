@@ -28,6 +28,9 @@ require "config.filetype".setup {
 require("config.keymaps").setup()
 require("config.commands").setup()
 
+require("config.input").fcitx.setup(
+  "fcitx5-remote" -- which fcitx5-remote
+)
 
 -- pack/syntax/start/nvim-treesitter
 require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
