@@ -648,6 +648,12 @@ if status_ok then
   -- :helptags ~/.config/nvim/pack/GROUP/start/XXX_PLUGIN/doc/
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
 
+  vim.keymap.set("n",
+    "<C-S-f>", -- Ctrl+Shift+f
+    builtin.current_buffer_fuzzy_find,
+    { desc = "在當前文件進行搜尋" }
+  )
+
   local telescope_bookmark = require "config.telescope_bookmark"
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>bk", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
