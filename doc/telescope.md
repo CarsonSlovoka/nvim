@@ -100,6 +100,8 @@ help文檔的所有tag的會出現，如果要找查找doc相關的幫助可能�
 :maps
 ```
 
+> 注意，不同的文件其keymaps的內容可能會有不同，因為有些keymap是特定文件或者模式下才會有的
+
 - gc: toggle comment (n, x模式都行)
 - gx: opens filepath or URI under cursor with the system handler(file explorer, web browser, ...)
 
