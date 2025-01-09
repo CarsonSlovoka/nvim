@@ -11,12 +11,15 @@ local function setup_normal()
     { desc = "複製文件的絕對路徑" }
   )
 
-  map('n', '<leader>fmt',
+  map({
+      'n', -- 格式化整個內容
+      'x', -- 整列的選取模式, 格式化選取行
+    }, '<leader>fmt',
     function()
       vim.lsp.buf.format({
         -- async = false, -- 可以用異步，這樣還可以去處理別的事，但是所想要明確的等待完成
         timeout_ms = 3000,
-        -- range 有一個range的選項，可以只處理visual的那一部份，預設是對整個buffer都動作，檔案很大的時候可以考慮range
+        -- range -- 整列的選取模式，只會格式化選取的行
       })
       vim.notify("格式化結束", vim.log.levels.INFO)
     end,
