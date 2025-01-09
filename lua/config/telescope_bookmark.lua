@@ -77,16 +77,24 @@ end
 --- @param path string 文件路徑
 --- @param row number 行號
 --- @param col number 列號
+--- @param opts { force: boolean }
 --- @return boolean
-function bookmark.add(name, path, row, col)
+function bookmark.add(name, path, row, col, opts)
   row = row or nil
   col = col or nil
+  opts = opts or {}
 
   -- 確認此name不存在
-  for _, item in ipairs(bookmark.table) do
+  for i, item in ipairs(bookmark.table) do
     if item.name == name then
-      vim.notify("❌ 此書籤名稱已存在" .. name, vim.log.levels.ERROR)
-      return false
+      if opts.force == nil or not opts.force then
+        vim.notify("❌ 此書籤名稱已存在" .. name, vim.log.levels.ERROR)
+        return false
+      else
+        -- force 下將已存在的刪除，之後重加
+        table.remove(bookmark.table, i)
+        break
+      end
     end
   end
 
@@ -159,8 +167,8 @@ function bookmark.show()
     --]]
     local display = string.format(
       "%-" .. name_width .. "s" .. -- 類麼`%-5s` 其中-表示左對齊
-        " | " ..
-        "%-" .. path_width .. "s",
+      " | " ..
+      "%-" .. path_width .. "s",
       bk.name,
       bk.path -- 可能也會用到檔案路徑搜尋，所以還是給上
     )
@@ -169,7 +177,8 @@ function bookmark.show()
       -- 以下可以給其它的屬性
       name = bk.name,
       path = bk.path,
-      row = bk.row, col = bk.col,
+      row = bk.row,
+      col = bk.col,
       atime = bk.atime,
     })
   end
@@ -258,12 +267,12 @@ function bookmark.show()
 
             -- 合併所有內容
             local copy_context_header = vim.tbl_deep_extend("force", {}, context_header) -- 為了讓list_extend後不會異動原始的context_header，所以複製一份
-            local final_content = vim.list_extend(copy_context_header, numbered_lines) -- list_extend只直接改變第一個參數的數值
+            local final_content = vim.list_extend(copy_context_header, numbered_lines)   -- list_extend只直接改變第一個參數的數值
 
             -- 設置預覽緩衝區的內容
             vim.api.nvim_buf_set_lines(self.state.bufnr,
-              0, -- start 開始的列, 首列為0, -1可以自動接續下去寫
-              -1, -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
+              0,     -- start 開始的列, 首列為0, -1可以自動接續下去寫
+              -1,    -- end 結束的列, 可以用此範例可以用2，而用-1將會自己依據給定的文本
               false, -- false為寬鬆如果超過start, end不會觸發錯誤
               final_content
             )
@@ -297,8 +306,8 @@ function bookmark.show()
             local ns_id = vim.api.nvim_create_namespace('custom_highlight')
             vim.api.nvim_buf_set_extmark(self.state.bufnr,
               ns_id, -- 不能設定為-1
-              0, -- line
-              0, -- col
+              0,     -- line
+              0,     -- col
               {
                 end_row = #context_header,
                 -- end_col = -1, -- 不能設定為-1
@@ -343,7 +352,7 @@ function bookmark.show()
         preview_height = 0.5, -- 預覽窗口佔上下分佈空間高度比重
       },
     },
-    ]]--
+    ]]                            --
     layout_strategy = "vertical", -- 規定窗口佈局為水平
 
     -- 快捷鍵相關定義
@@ -369,7 +378,6 @@ function bookmark.show()
               vim.fn.cursor(bk.row, 0)
             end
           end
-
         else
           vim.api.nvim_echo({ { "無效的選擇，請重試！", "ErrorMsg" } }, false, {})
         end
@@ -381,7 +389,7 @@ function bookmark.show()
         if selection then
           -- print(vim.inspect(selection.value)) -- vim.inspect可以將Lua的值結構化輸出，適合用來將複雜結構轉為方便人讀的字符串
           bookmark.delete(selection.value.name, { verbose = true })
-          bookmark.save {} -- 保存
+          bookmark.save {}
           -- 重啟
           actions.close(prompt_bufnr) -- 關閉 Telescope
           bookmark.show()
@@ -392,7 +400,7 @@ function bookmark.show()
       -- map("i", "<esc>", actions.close)
       return true
     end,
-  })     :find()
+  }):find()
 end
 
 return bookmark

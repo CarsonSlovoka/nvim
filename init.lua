@@ -692,10 +692,11 @@ if status_ok then
   vim.api.nvim_create_user_command("BkAdd", function(args)
     local params = vim.split(args.args, " ")
     local name = params[1]
+    local force = (params[2] == "-f")
     -- local name = vim.fn.input("bookmarkName: ")
     local filepath = vim.fn.expand("%:p")
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    if not telescope_bookmark.add(name, filepath, row, col) then
+    if not telescope_bookmark.add(name, filepath, row, col, { force = force }) then
       return
     end
     telescope_bookmark.save {}
@@ -704,7 +705,7 @@ if status_ok then
       "filename: " .. filename ..
       " (行: " .. row .. ", 列: " .. col .. ")", vim.log.levels.INFO)
   end, {
-    nargs = 1,
+    nargs = "+", -- 至少1個
     desc = "加入書籤"
   })
   vim.api.nvim_create_user_command("BkAddDir", function(args)
@@ -718,7 +719,7 @@ if status_ok then
     vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
   end, {
     nargs = 1,
-    desc = "添加目錄到書籤"
+    desc = "添加目錄到書籤. 如果想要強制覆蓋可以加上-f參數"
   })
 
   vim.api.nvim_create_user_command("Gitst", function()
