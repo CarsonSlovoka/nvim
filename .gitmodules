@@ -41,3 +41,6 @@
 [submodule "indent-blankline.nvim"]
 	path = pack/other/start/indent-blankline.nvim
 	url = https://github.com/lukas-reineke/indent-blankline.nvim.git
+[submodule "lualine.nvim"]
+	path = pack/other/start/lualine.nvim
+	url = https://github.com/nvim-lualine/lualine.nvim.git

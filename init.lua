@@ -746,3 +746,9 @@ if status_ok then
     }
   )
 end
+
+local plugin_lualine
+status_ok, plugin_lualine = pcall(require, "lualine")
+if status_ok then
+  plugin_lualine.setup {}
+end
