@@ -48,7 +48,7 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
     enable = true,
     keymaps = {
       -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
-      init_selection = "gnn", -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
+      init_selection = "gnn",   -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
       node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
       scope_incremental = "grc",
       node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
@@ -58,22 +58,22 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
   -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
   textobjects = {
-    select = { -- visual模式才有效
-      enable = true, -- 啟用 textobjects
+    select = {          -- visual模式才有效
+      enable = true,    -- 啟用 textobjects
       lookahead = true, -- 向前查找，可以更智能選擇
       keymaps = {
         -- 標準鍵位示例（根據需要調整）
         ["af"] = "@function.outer", -- 整個函數塊
         ["if"] = "@function.inner", -- 函數內部
-        ["ac"] = "@class.outer", -- 整個類別塊
-        ["ic"] = "@class.inner", -- 類別內部
-        ["ao"] = "@block.outer", -- 任何區塊的外部
-        ["io"] = "@block.inner", -- 任何區塊的內部
+        ["ac"] = "@class.outer",    -- 整個類別塊
+        ["ic"] = "@class.inner",    -- 類別內部
+        ["ao"] = "@block.outer",    -- 任何區塊的外部
+        ["io"] = "@block.inner",    -- 任何區塊的內部
       },
     },
     move = {                        -- 此功能還好，可以用hop來取代
       enable = true,
-      set_jumps = true, -- 記錄跳轉位置
+      set_jumps = true,             -- 記錄跳轉位置
       goto_next_start = {
         ["]m"] = "@function.outer", -- 跳到下一個函數的開始
         ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
@@ -200,8 +200,8 @@ if status_ok then
     },
     signs_staged_enable = true,
     signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-    numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-    linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+    numhl = false,     -- Toggle with `:Gitsigns toggle_numhl`
+    linehl = false,    -- Toggle with `:Gitsigns toggle_linehl`
     word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
     watch_gitdir = {
       follow_files = true
@@ -220,7 +220,7 @@ if status_ok then
     current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
     sign_priority = 6,
     update_debounce = 100,
-    status_formatter = nil, -- Use default
+    status_formatter = nil,  -- Use default
     max_file_length = 40000, -- Disable if file is longer than this (in lines)
     preview_config = {
       -- Options passed to nvim_open_win
@@ -593,6 +593,20 @@ if status_ok then
 
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
+  vim.api.nvim_create_user_command("Findfiles", function(args)
+    if #args.args == 0 then
+      builtin.find_files()
+    else
+      local params = vim.split(args.args, " ")
+      local path = params[1]
+      -- local orgPath = vim.fn.getcwd()
+      builtin.find_files({ cwd = path })
+    end
+  end, {
+    nargs = "?",
+    desc = "同Telescope find_files但可以只定搜尋的工作路徑"
+  })
+
   vim.keymap.set("n", "<leader>eff", function()
     local extensions = utilsInput.extension()
     -- 動態生成 `--glob` 條件
@@ -618,6 +632,18 @@ if status_ok then
 
   -- 搜索文本
   vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
+  vim.api.nvim_create_user_command("Livegrep", function(args)
+    if #args.args == 0 then
+      builtin.live_grep()
+    else
+      local params = vim.split(args.args, " ")
+      local path = params[1]
+      builtin.live_grep({ cwd = path })
+    end
+  end, {
+    nargs = "?",
+    desc = "同Telescope live_grep但可以只定搜尋的工作路徑"
+  })
   vim.keymap.set("n", "<leader>efg", function()
     builtin.live_grep({
       prompt_title = "search content by extension",
