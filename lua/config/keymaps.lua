@@ -38,6 +38,14 @@ local function setup_normal()
   map('n', "<leader>xtv", ":vsp | terminal<CR>", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
   map('t', "<Esc>", "<C-\\><C-n>", { desc = "在terminal下可以離開該模式. 方便接下來選取內容或離開..." })
   map('n', "Q", ":q<CR>", {})
+
+  -- <C-w>c -- 關閉當前窗口
+  -- <C-w>o -- 關閉當前以外的窗口(頁籤窗口不算)
+  map('n', "<leader>W", "<C-w>w", { desc = "輪循切換視窗" })
+  map('n', "<leader>h", "<C-w>h", { desc = "往左切換視窗" })
+  map('n', "<leader>j", "<C-w>j", { desc = "往下切換視窗" })
+  map('n', "<leader>k", "<C-w>k", { desc = "往上切換視窗" })
+  map('n', "<leader>l", "<C-w>l", { desc = "往右切換視窗" })
 end
 
 local function setup_visual()
