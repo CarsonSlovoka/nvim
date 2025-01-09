@@ -37,6 +37,7 @@ local function setup_normal()
   })
   map('n', "<leader>xtv", ":vsp | terminal<CR>", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
   map('t', "<Esc>", "<C-\\><C-n>", { desc = "在terminal下可以離開該模式. 方便接下來選取內容或離開..." })
+  map('n', "Q", ":q<CR>", {})
 end
 
 local function setup_visual()
