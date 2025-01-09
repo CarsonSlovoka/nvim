@@ -720,6 +720,12 @@ if status_ok then
     nargs = 1,
     desc = "添加目錄到書籤"
   })
+
+  vim.api.nvim_create_user_command("Gitst", function()
+    require("telescope.builtin").git_status()
+  end, {
+    desc = "git status"
+  })
 end
 
 
