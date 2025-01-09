@@ -65,9 +65,16 @@ local function setup_visual()
   end, { desc = "切換到檔案目錄" })
 end
 
+local function setup_insert()
+  map('v', 'p', '"_dP', {
+    desc = '正常在visual下，於指定的反白處貼上內容後，下一次再貼的內容會是之前反白處的內容，為了避免如此讓其貼上的時候不要複製' }
+  )
+end
+
 function keymaps.setup()
   setup_normal()
   setup_visual()
+  setup_insert()
 end
 
 return keymaps
