@@ -25,6 +25,18 @@ local function setup_normal()
     end,
     { desc = "格式化代碼" }
   )
+
+  -- 以下可行，但用預設的會比較好
+  -- map('n', "<C-w>>", ":vertical resize +20<CR>", {})
+  -- map('n', "<C-w><", ":vertical resize -20<CR>", {})
+  -- map('n', "", ":resize +20<CR>", {})
+  -- map('n', "", ":resize -20<CR>", {})
+
+  map('n', "<leader>xts", ":sp | terminal<CR>", { -- sp可以切成上下的分割
+    desc = '進入之後i下可以開啟打命令; <C-\\><C-n>可以再變回normal模式，可以複製內容，也能再用v變成visual'
+  })
+  map('n', "<leader>xtv", ":vsp | terminal<CR>", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
+  map('t', "<Esc>", "<C-\\><C-n>", { desc = "在terminal下可以離開該模式. 方便接下來選取內容或離開..." })
 end
 
 local function setup_visual()
