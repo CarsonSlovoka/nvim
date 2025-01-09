@@ -12,6 +12,13 @@ function options.setup()
 
   vim.wo.cursorcolumn = true -- 光標所在的整欄也會highlight
 
+  -- 如果要摺行，可以在v下用 :'<,'>fold 的方式去摺
+  -- :1200,1600fold 這種方式也可以摺行
+  -- map: zc, zo 可以摺或展開
+  -- vim.opt.foldmethod = "indent" -- expr, syntax
+  -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+  -- vim.opt.foldenable = false
+
   -- 檢查是否有支援真彩色
   local supports_truecolor = vim.fn.getenv("COLORTERM") == "truecolor"
   if supports_truecolor then
