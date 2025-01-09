@@ -71,24 +71,24 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
         ["io"] = "@block.inner", -- 任何區塊的內部
       },
     },
-    move = { -- 此功能還好，可以用hop來取代
+    move = {                        -- 此功能還好，可以用hop來取代
       enable = true,
       set_jumps = true, -- 記錄跳轉位置
       goto_next_start = {
         ["]m"] = "@function.outer", -- 跳到下一個函數的開始
-        ["]]"] = "@class.outer" -- 跳到下一個類別的開始
+        ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
       },
       goto_next_end = {
         ["]M"] = "@function.outer", -- 跳到下一個函數的結束
-        ["]["] = "@class.outer" -- 跳到下一個類別的結束
+        ["]["] = "@class.outer"     -- 跳到下一個類別的結束
       },
       goto_previous_start = {
         ["[m"] = "@function.outer", -- 跳到上一個函數的開始
-        ["[["] = "@class.outer" -- 跳到上一個類別的開始
+        ["[["] = "@class.outer"     -- 跳到上一個類別的開始
       },
       goto_previous_end = {
         ["[M"] = "@function.outer", -- 跳到上一個函數的結束
-        ["[]"] = "@class.outer" -- 跳到上一個類別的結束
+        ["[]"] = "@class.outer"     -- 跳到上一個類別的結束
       },
     },
     swap = { -- 不錯用，可以快速交換參數
@@ -277,7 +277,8 @@ if status_ok then
         '<leader>tb', plugin_gitsigns.toggle_current_line_blame,
         { desc = "(git)可以瞭解這一列最後commit的訊息和時間點 ex: You, 6 days, ago - my commit message. 如果不想要浪費效能，建議不用的時候就可以關掉(再下一次指令)" })
 
-      map('n', '<leader>hd', plugin_gitsigns.diffthis, { desc = '(git)查看當前文件的所有異動. 如果要看本次所有文件上的異動，可以使用:Telescope git_status' })
+      map('n', '<leader>hd', plugin_gitsigns.diffthis,
+        { desc = '(git)查看當前文件的所有異動. 如果要看本次所有文件上的異動，可以使用:Telescope git_status' })
       map('n', '<leader>hD', function()
         plugin_gitsigns.diffthis('~')
       end) -- 有包含上一次的提交修改
@@ -303,11 +304,11 @@ if status_ok then
         cterm_color = "65",
         name = "Zsh"
       }
-    };
-    color_icons = true;
-    default = true;
-    strict = true;
-    variant = "light|dark";
+    },
+    color_icons = true,
+    default = true,
+    strict = true,
+    variant = "light|dark",
     override_by_filename = {
       [".gitignore"] = {
         icon = "",
@@ -319,14 +320,14 @@ if status_ok then
         color = "#00ff00",
         name = "README"
       }
-    };
+    },
     override_by_extension = {
       ["log"] = {
         icon = "",
         color = "#ffff00",
         name = "Log"
       }
-    };
+    },
     override_by_operating_system = {
       ["apple"] = {
         icon = "",
@@ -334,7 +335,7 @@ if status_ok then
         cterm_color = "248",
         name = "Apple",
       },
-    };
+    },
   }
   -- set_default_icon(icon, color, cterm_color)
   -- plugin_nvimWebDevicons.set_default_icon('😃', '#6d8086', 65)
@@ -349,7 +350,7 @@ if status_ok then
   :NvimTreeOpen
 
   g?
-  ]]--
+  ]] --
   vim.g.loaded_netrw = 1
   vim.g.loaded_netrwPlugin = 1
 
@@ -532,7 +533,7 @@ if status_ok then
     end
     print(timeOrMin[1])
     print(timeOrMin[2])
-    ]]--
+    ]] --
 
     -- 動態構建 -name 條件
     local name_conditions = {}
@@ -559,7 +560,7 @@ if status_ok then
       "\\(", -- 開始擴展名檢查條件組
       "-regex '.*\\.[^/]*$'", -- 確保文件有擴展名
       "\\)",
-      ]]--
+      ]] --
 
       -- 以下可以自己要忽略目錄的目錄
       "-not -path '*/telescope.nvim/*'", -- 忽略目錄
