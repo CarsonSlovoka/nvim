@@ -90,7 +90,7 @@ local function setup_visual()
   end, { desc = "切換到檔案目錄" })
 
   map('v', '<leader>r', 'y:%s/<C-R>"//gc<Left><Left><Left>',
-    { desc = "取代 (觸發後請直接打上要取代的文字就會看到有command出來了" }
+    { desc = "取代 如果是特定範圍可以改成 :66,100s/old/new/gc (觸發後請直接打上要取代的文字就會看到有command出來了" }
   )
 end
 

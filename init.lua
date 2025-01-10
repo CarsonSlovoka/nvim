@@ -650,6 +650,19 @@ if status_ok then
     nargs = "?",
     desc = "同Telescope live_grep但可以只定搜尋的工作路徑"
   })
+
+  vim.keymap.set("n",
+    "<C-S-f>",   -- Ctrl+Shift+f
+    -- 'gy:Livegrep <C-R>"<CR>', -- 在tree之中的gy可以複製絕對路徑, Livegrep是我們上面自定義的command <-- 無效
+    function()
+      require "nvim-tree.api".fs.copy.absolute_path()
+      local path = vim.fn.getreg('"')
+      builtin.live_grep( { cwd = path } )
+    end,
+    { desc = "在nvim-tree之中可以在某一個目錄進行文本搜尋" }
+  )
+
+
   vim.keymap.set("n", "<leader>efg", function()
     builtin.live_grep({
       prompt_title = "search content by extension",
@@ -682,14 +695,15 @@ if status_ok then
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
 
   vim.keymap.set("n",
-    "<C-S-f>", -- Ctrl+Shift+f
+    "<A-f>", -- Alt+f
     builtin.current_buffer_fuzzy_find,
     { desc = "在當前文件進行搜尋" }
   )
 
   vim.keymap.set("v",
-    "<C-S-f>",
-    '""y:Telescope current_buffer_fuzzy_find<CR><C-R>"',
+    "<A-f>",
+    -- '""y:Telescope current_buffer_fuzzy_find<CR><C-R>"', -- y的預設就會寫入到暫存器的"所以不需要再特別描述
+    'y:Telescope current_buffer_fuzzy_find<CR><C-R>"',
     { desc = "用當前選中的文字進行搜尋" }
   )
 
