@@ -2,7 +2,7 @@ local keymaps = {}
 
 local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
- -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
+-- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
 
 
 local function setup_normal()
@@ -33,10 +33,10 @@ local function setup_normal()
   -- map('n', "", ":resize +20<CR>", {})
   -- map('n', "", ":resize -20<CR>", {})
 
-  map('n', "<leader>xts", ":sp | terminal<CR>", { -- sp可以切成上下的分割
+  map('n', "<leader>xts", ":sp | terminal<CR>i", { -- sp可以切成上下的分割
     desc = '進入之後i下可以開啟打命令; <C-\\><C-n>可以再變回normal模式，可以複製內容，也能再用v變成visual'
   })
-  map('n', "<leader>xtv", ":vsp | terminal<CR>", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
+  map('n', "<leader>xtv", ":vsp | terminal<CR>i", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
   map('t', "<Esc>", "<C-\\><C-n>", { desc = "在terminal下可以離開該模式. 方便接下來選取內容或離開..." })
   map('n', "Q", ":q<CR>", {})
 
@@ -55,6 +55,9 @@ local function setup_visual()
     '"+y',       --
     { desc = "將選中的內容複製到系統剪貼板" }
   )
+
+  map('v', 'find', '""y/<C-R>"<CR>', -- 先將選中的內容保存到""內，之後在用搜尋去找該項目
+    { desc = "搜尋當前選中的項目" })
 
   map('x',
     '<leader><F5>',
