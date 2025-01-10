@@ -396,6 +396,12 @@ if status_ok then
   vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
 
   local nvim_treeAPI = require "nvim-tree.api"
+  vim.keymap.set("n", "<A-t>", function()
+      local cur_file_path = vim.fn.expand("%:p")
+      vim.cmd("tabnew " .. cur_file_path)
+    end,
+    { desc = "在新的頁籤開啟當前的文件" }
+  )
   vim.api.nvim_create_user_command("CD",
     function(args)
       local path
