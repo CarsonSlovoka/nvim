@@ -88,6 +88,10 @@ local function setup_visual()
       print("nvim-tree 未加載")
     end
   end, { desc = "切換到檔案目錄" })
+
+  map('v', '<leader>r', 'y:%s/<C-R>"//gc<Left><Left><Left>',
+    { desc = "取代 (觸發後請直接打上要取代的文字就會看到有command出來了" }
+  )
 end
 
 local function setup_insert()
