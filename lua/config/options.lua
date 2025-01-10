@@ -12,6 +12,9 @@ function options.setup()
 
   vim.wo.cursorcolumn = true -- 光標所在的整欄也會highlight
 
+  -- vim.o.tabline = "%t" -- 用這個只會有當前的檔案名稱，不會看到其它的頁籤名稱
+  vim.o.tabline = "%!v:lua.get_tabline()"
+
   -- 如果要摺行，可以在v下用 :'<,'>fold 的方式去摺
   -- :1200,1600fold 這種方式也可以摺行
   -- map: zc, zo 可以摺或展開
@@ -55,5 +58,26 @@ function options.setup()
     nbsp = ' ' -- U+00A0   non-breaking space
   }
 end
+
+function _G.get_tabline() -- 給全局變數
+  -- 獲取當前所有標籤頁的名稱
+  local s = ""
+  for tabnr = 1, vim.fn.tabpagenr('$') do
+    local winnr = vim.fn.tabpagewinnr(tabnr)
+    -- 獲取當前窗口的 buffer 名稱
+    local buflist = vim.fn.tabpagebuflist(tabnr)[winnr]
+    local bufname = vim.fn.bufname(buflist)
+    local bufname_short = vim.fn.fnamemodify(bufname, ":t")  -- 僅提取檔名名稱，不包含路徑
+
+    if tabnr == vim.fn.tabpagenr() then
+      s = s .. "%#TabLineSel#" .. " " .. tabnr .. ": " .. bufname_short .. " "
+    else
+      s = s .. "%#TabLine#" .. " " .. tabnr .. ": " .. bufname_short .. " "
+    end
+  end
+  s = s .. "%#TabLineFill#"
+  return s
+end
+
 
 return options
