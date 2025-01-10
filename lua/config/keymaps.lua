@@ -71,19 +71,19 @@ local function setup_visual()
 
   -- 將工作目錄更改為當前檔案的目錄
   map("n", "<leader>cd", function()
-    local current_file = vim.fn.expand("%:p:h") -- 獲取當前檔案的目錄
-    if current_file == "" then
+    local cur_dir = vim.fn.expand("%:p:h")
+    if cur_dir == "" then
       print("未打開任何檔案")
       return
     end
-    vim.cmd("cd " .. current_file) -- 使用 ':cd' 命令切換目錄
-    print("工作目錄已切換到: " .. current_file)
+    vim.cmd("cd " .. cur_dir) -- 使用 ':cd' 命令切換目錄
+    print("工作目錄已切換到: " .. cur_dir)
 
     -- 如果 nvim-tree 已加載，更新其根目錄
     local ok, nvim_treeAPI = pcall(require, "nvim-tree.api")
     if ok then
-      nvim_treeAPI.tree.change_root(current_file) -- 更新 nvim-tree 的根目錄
-      print("nvim-tree 根目錄已更新到: " .. current_file)
+      nvim_treeAPI.tree.change_root(cur_dir) -- 更新 nvim-tree 的根目錄
+      print("nvim-tree 根目錄已更新到: " .. cur_dir)
     else
       print("nvim-tree 未加載")
     end
