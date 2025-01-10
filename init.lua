@@ -365,6 +365,7 @@ if status_ok then
       width = 30,
     },
     renderer = {
+      -- highlight_opened_files = "name", -- :help highlight_opened_files
       group_empty = true,
       -- :lua print("➜➜"") # 可以print這些試試，如果是亂碼，就是字型沒有提供，要安裝，並且改終端機的字型即可
       icons = { -- (可選)
@@ -652,12 +653,12 @@ if status_ok then
   })
 
   vim.keymap.set("n",
-    "<C-S-f>",   -- Ctrl+Shift+f
+    "<C-S-f>", -- Ctrl+Shift+f
     -- 'gy:Livegrep <C-R>"<CR>', -- 在tree之中的gy可以複製絕對路徑, Livegrep是我們上面自定義的command <-- 無效
     function()
       require "nvim-tree.api".fs.copy.absolute_path()
       local path = vim.fn.getreg('"')
-      builtin.live_grep( { cwd = path } )
+      builtin.live_grep({ cwd = path })
     end,
     { desc = "在nvim-tree之中可以在某一個目錄進行文本搜尋" }
   )

@@ -1,14 +1,14 @@
 local options = {}
 
 function options.setup()
-  vim.g.mapleader = "," -- 預設是 \
+  vim.g.mapleader = ","      -- 預設是 \
 
-  vim.opt.expandtab = true  -- 使用空白代替Tab
-  vim.opt.tabstop = 2       -- Tab鍵等於2個空白
-  vim.opt.softtabstop = 2   -- 在插入模式下，Tab鍵也等於2空白
-  vim.opt.shiftwidth = 2    -- 自動縮進時使用 2 個空白
+  vim.opt.expandtab = true   -- 使用空白代替Tab
+  vim.opt.tabstop = 2        -- Tab鍵等於2個空白
+  vim.opt.softtabstop = 2    -- 在插入模式下，Tab鍵也等於2空白
+  vim.opt.shiftwidth = 2     -- 自動縮進時使用 2 個空白
 
-  vim.opt.wrap = false -- 禁止長行自動換行
+  vim.opt.wrap = false       -- 禁止長行自動換行
 
   vim.wo.cursorcolumn = true -- 光標所在的整欄也會highlight
 
@@ -36,7 +36,7 @@ function options.setup()
     highlight Visual guibg=#44475a
     highlight Search guibg=#ffcc00 guifg=#000000
     highlight DiagnosticError guifg=#ff5555
-    ]]--
+    ]] --
   else
     -- 回退到256色
     vim.cmd("highlight CursorColumn ctermbg=236")
@@ -67,7 +67,7 @@ function _G.get_tabline() -- 給全局變數
     -- 獲取當前窗口的 buffer 名稱
     local buflist = vim.fn.tabpagebuflist(tabnr)[winnr]
     local bufname = vim.fn.bufname(buflist)
-    local bufname_short = vim.fn.fnamemodify(bufname, ":t")  -- 僅提取檔名名稱，不包含路徑
+    local bufname_short = vim.fn.fnamemodify(bufname, ":t") -- 僅提取檔名名稱，不包含路徑
 
     if tabnr == vim.fn.tabpagenr() then
       s = s .. "%#TabLineSel#" .. " " .. tabnr .. ": " .. bufname_short .. " "
@@ -78,6 +78,5 @@ function _G.get_tabline() -- 給全局變數
   s = s .. "%#TabLineFill#"
   return s
 end
-
 
 return options
