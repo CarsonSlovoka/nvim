@@ -2,6 +2,7 @@ local keymaps = {}
 
 local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
+ -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
 
 
 local function setup_normal()
@@ -41,11 +42,11 @@ local function setup_normal()
 
   -- <C-w>c -- 關閉當前窗口
   -- <C-w>o -- 關閉當前以外的窗口(頁籤窗口不算)
-  map('n', "<leader>W", "<C-w>w", { desc = "輪循切換視窗" })
-  map('n', "<leader>h", "<C-w>h", { desc = "往左切換視窗" }) -- h被git hunk等相關佔用，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
-  map('n', "<leader>j", "<C-w>j", { desc = "往下切換視窗" })
-  map('n', "<leader>k", "<C-w>k", { desc = "往上切換視窗" })
-  map('n', "<leader>l", "<C-w>l", { desc = "往右切換視窗" })
+  map('n', "<A-w>", "<C-w>w", { desc = "輪循切換視窗" })
+  map('n', "<A-h>", "<C-w>h", { desc = "往左切換視窗" })
+  map('n', "<A-j>", "<C-w>j", { desc = "往下切換視窗" })
+  map('n', "<A-k>", "<C-w>k", { desc = "往上切換視窗" })
+  map('n', "<A-l>", "<C-w>l", { desc = "往右切換視窗" })
 end
 
 local function setup_visual()
