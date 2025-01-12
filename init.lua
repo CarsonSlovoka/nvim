@@ -813,3 +813,21 @@ status_ok, plugin_lualine = pcall(require, "lualine")
 if status_ok then
   plugin_lualine.setup {}
 end
+
+
+local plugin_atq
+status_ok, plugin_atq = pcall(require, "atq")
+if status_ok then
+  -- :lua require"atq".help()
+  -- :lua require"atq".add()
+  plugin_atq.setup()
+end
+
+--[[
+vim.keymap.set("n",
+  "<leader>test",
+  function()
+  end,
+  { desc = "test only" }
+)
+--]]

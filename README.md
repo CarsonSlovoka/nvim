@@ -41,6 +41,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 :helptags ~/.config/nvim/pack/search/start/telescope.nvim/doc/
 :helptags ~/.config/nvim/pack/git/start/gitsigns.nvim/doc/
 :helptags ~/.config/nvim/pack/tree/start/nvim-tree.lua/doc/
+:helptags ~/.config/nvim/pack/schedule/start/atq.nvim/doc/
 ```
 
 # 目錄結構
@@ -85,6 +86,9 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   ├── other/start/                     -- ✅ 未分類
 │   │         ├── lualine.nvim           -- ✅ statusbar (2a5bae9)
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
+│   │
+│   ├── schedule/start/                  -- ✅ 排程相關
+│   │         └── atq.nvim               -- ✅ 通知提醒 ( 396ed33 )
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -607,3 +611,17 @@ git clone https://github.com/lukas-reineke/indent-blankline.nvim.git ~/.config/n
 ```sh
 git clone https://github.com/nvim-lualine/lualine.nvim.git ~/.config/nvim/pack/other/start/lualine.nvim
 ```
+
+
+## schedule
+
+```sh
+mkdir -pv ~/.config/nvim/pack/schedule/start/
+```
+
+### [atq.nvim](https://github.com/CarsonSlovoka/atq.git)
+
+```sh
+git clone https://github.com/CarsonSlovoka/atq.git ~/.config/nvim/pack/schedule/start/atq.nvim
+```
+
