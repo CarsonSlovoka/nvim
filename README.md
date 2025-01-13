@@ -84,6 +84,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)`
 │   │
 │   ├── other/start/                     -- ✅ 未分類
+│   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v7.8.0... d7b646f)
 │   │         ├── lualine.nvim           -- ✅ statusbar (2a5bae9)
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │
@@ -610,6 +611,13 @@ git clone https://github.com/lukas-reineke/indent-blankline.nvim.git ~/.config/n
 
 ```sh
 git clone https://github.com/nvim-lualine/lualine.nvim.git ~/.config/nvim/pack/other/start/lualine.nvim
+```
+
+
+### [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)
+
+```sh
+git clone https://github.com/MeanderingProgrammer/render-markdown.nvim.git ~/.config/nvim/pack/other/start/render-markdown.nvim
 ```
 
 

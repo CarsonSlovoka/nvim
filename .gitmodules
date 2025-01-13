@@ -44,6 +44,9 @@
 [submodule "lualine.nvim"]
 	path = pack/other/start/lualine.nvim
 	url = https://github.com/nvim-lualine/lualine.nvim.git
+[submodule "render-markdown.nvim"]
+	path = pack/other/start/render-markdown.nvim
+	url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
 
 [submodule "atq.nvim"]
 	path = pack/schedule/start/atq.nvim

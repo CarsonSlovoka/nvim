@@ -831,3 +831,11 @@ vim.keymap.set("n",
   { desc = "test only" }
 )
 --]]
+
+
+
+local plugin_renderMarkdown
+status_ok, plugin_renderMarkdown = pcall(require, "render-markdown")
+if status_ok then
+  plugin_renderMarkdown.setup({})
+end
