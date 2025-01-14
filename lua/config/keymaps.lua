@@ -33,6 +33,7 @@ local function setup_normal()
   -- map('n', "", ":resize +20<CR>", {})
   -- map('n', "", ":resize -20<CR>", {})
 
+  -- map('n', "<leader>xts", ":cd ~/xxx | sp | terminal<CR>i", { -- sp可以切成上下的分割
   map('n', "<leader>xts", ":sp | terminal<CR>i", { -- sp可以切成上下的分割
     desc = '進入之後i下可以開啟打命令; <C-\\><C-n>可以再變回normal模式，可以複製內容，也能再用v變成visual'
   })
