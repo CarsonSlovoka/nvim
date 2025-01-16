@@ -30,7 +30,7 @@ map('n', '<leader>b', 'ciw**<C-r>"**<ESC>', { desc = "Bold" }) -- 加粗 -- ciw�
 map('n', '<leader>i', 'ciw*<C-r>"*<ESC>', { desc = "Italic" }) -- 斜體
 map('v', '<leader>b', 'c**<C-r>"**<ESC>', { desc = "視覺模式下加粗" })
 map('v', '<leader>i', 'c*<C-r>"*<ESC>', { desc = "視覺模式下斜體" })
-map('v', '<leader>dw', 'c~~<C-r>"~~<ESC>', { desc = "刪除線" })
+map('v', '<leader>dw', 'c~~<C-r>"~~<ESC>', { desc = "刪除線 strokethrough" })
 
 -- 代碼塊
 -- map('n', '<Leader>c', 'I```<ESC>o```<ESC>O', { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" })
@@ -49,13 +49,88 @@ map('n', '<Leader>`',
       "```"
     }
     vim.api.nvim_put(codeblock,
-      "l", -- (linewise mode) 插入整列(一個新的列)
+      "l",  -- (linewise mode) 插入整列(一個新的列)
       true, -- 先標之後插入
-      true -- follow, true會將光標移動到新插入的最後一列
+      true  -- follow, true會將光標移動到新插入的最後一列
     )
     -- 將游標移動到代碼塊的中間，方便用戶輸入代碼
     vim.api.nvim_command("normal! kkI")
     vim.cmd("startinsert")
   end,
-  { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" }
+  { desc = "codeblock 插入代碼塊, 可以先打上區塊代碼的名稱" }
 )
+
+-- map('v', '<C-l>', "dP", { desc = "Link" })
+map('v', '<C-l>', function()
+    vim.cmd('normal! d')                   -- 會保存在 "
+    local original_text = vim.fn.getreg('"') -- 使用寄存器獲得選中文本
+    -- 用戶輸入的連結
+    local link = vim.fn.input("Enter the link: ")
+    if link == nil or link == "" then
+      print("No link entered")
+      return
+    end
+    -- 格式化為 Markdown 標記
+    local markdown_link = string.format("[%s](%s)", original_text, link)
+    -- 將格式化後的內容放回
+    vim.fn.setreg('"', markdown_link)
+    -- 替換選中文本
+    vim.cmd('normal! P')
+  end,
+  { desc = "insert Link" }
+)
+
+-- Function to create markdown link from visual selection
+local function create_markdown_link()
+  -- Get the visual selection
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local line1, col1 = start_pos[2], start_pos[3]
+  local line2, col2 = end_pos[2], end_pos[3]
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Get the selected text
+  local lines = vim.api.nvim_buf_get_lines(bufnr, line1 - 1, line2, false) -- 截取每一列的「所有」欄內容. 得到的是一個table，每列佔一個元素
+  if #lines == 0 then
+    vim.notify("No text selected", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Handle multi-line selection
+  local selected_text = table.concat(lines, '')
+  if line1 == line2 then
+    -- Single line selection
+    selected_text = string.sub(lines[1], col1, col2) -- 取得該列的相關欄範圍
+  end
+
+  -- Prompt for the link URL
+  local url = vim.fn.input("Enter link URL: ")
+  if url == "" then
+    vim.notify("Link creation cancelled", vim.log.levels.INFO)
+    return
+  end
+
+  -- Create the markdown link
+  local markdown_link = string.format("[%s](%s)", selected_text, url)
+
+  -- Replace the selected text with the markdown link
+  if line1 == line2 then
+    -- Single line replacement
+    -- 這是重寫整列
+    -- local line = lines[1]
+    -- local new_line = string.sub(line, 1, col1-1) .. markdown_link .. string.sub(line, col2+1)
+    -- vim.api.nvim_buf_set_lines(bufnr, line1-1, line1, false, {new_line})
+    vim.api.nvim_buf_set_text(bufnr, line1 - 1, col1 - 1, line2 - 1, col2, { markdown_link })
+  else
+    -- Multi-line replacement
+    vim.api.nvim_buf_set_lines(bufnr, line1 - 1, line2, false, { markdown_link })
+  end
+end
+
+-- Register the command
+vim.api.nvim_create_user_command('L', function()
+  create_markdown_link()
+end, {
+  desc = "(這個指令會有問題，如果是中文結尾可能會怪怪的) insert link. Usage :'<,'>L",
+  range = true
+})
