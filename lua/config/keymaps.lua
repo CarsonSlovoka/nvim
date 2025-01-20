@@ -39,6 +39,20 @@ local function setup_normal()
   })
   map('n', "<leader>xtv", ":vsp | terminal<CR>i", { desc = '垂直分割，並於開啟終端機. 可以透過nvim-tree換到指定的工作路徑後再使用此熱鍵' })
   map('t', "<Esc>", "<C-\\><C-n>", { desc = "在terminal下可以離開該模式. 方便接下來選取內容或離開..." })
+  map('t', "<C-R>", function()
+      -- vim.fn.getchar() -- 等待用戶輸入
+      -- vim.fn.nr2char -- 轉換為字符
+      return (                                      -- 要將 expr 設定為true才會有用
+        "<C-\\><C-N>" ..                            -- 退回到一般模式
+        "\"" .. vim.fn.nr2char(vim.fn.getchar()) .. -- 使用暫存器
+        "pi"                                        -- 貼上 並且 再切換成insert的模式
+      )
+    end,
+    {
+      expr = true, -- 用按鍵方式的回傳，一定要將expr設定為true才會有效
+      desc = "可以使用<C-R>來使用暫儲器的內容",
+    }
+  )
   map('n', "Q", ":q<CR>", {})
 
   -- <C-w>c -- 關閉當前窗口
@@ -53,7 +67,7 @@ end
 local function setup_visual()
   map('v',       -- Visual 模式
     '<leader>c', -- 快捷鍵為 <leader>c
-    '"+y',       --
+    '"+y',
     { desc = "將選中的內容複製到系統剪貼板" }
   )
 
