@@ -433,13 +433,14 @@ if status_ok then
       -- 預設配置
       -- :lua print(vim.inspect(require('telescope.config').values.vimgrep_arguments))
       vimgrep_arguments = {
-        "rg",
+        "rg", -- man rg
         "--color=never",
         "--no-heading",
         "--with-filename",
         "--line-number",
         "--column",
-        "--smart-case"
+        "--smart-case",
+        "--fixed-strings" -- 啟用精準匹配
       },
       prompt_prefix = "🔍 ", -- 搜索框前的圖標
       selection_caret = " ", -- 選中時的指示符
