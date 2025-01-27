@@ -60,24 +60,46 @@ map('n', '<Leader>`',
   { desc = "codeblock 插入代碼塊, 可以先打上區塊代碼的名稱" }
 )
 
--- map('v', '<C-l>', "dP", { desc = "Link" })
-map('v', '<C-l>', function()
-    vim.cmd('normal! d')                   -- 會保存在 "
+-- map('v', '<C-L>', "dP", { desc = "Link" })
+map('v', '<C-L>', function()
+    vim.cmd('normal! d')                     -- 會保存在 " -- 此模式無法在expr中使用
     local original_text = vim.fn.getreg('"') -- 使用寄存器獲得選中文本
+    local write_mode = ""
+    if original_text ~= nil and original_text ~= '' then
+      local first_char = original_text:sub(1, 1) -- 取得第一個字元
+      -- #first_char -- 都是1
+      local first_byte = string.byte(first_char)
+      if first_byte >= 32 and first_byte <= 126 then
+        write_mode = "p"
+      else
+        write_mode = "P"
+      end
+    else
+      vim.notify("Empty content", vim.log.levels.ERROR)
+      return
+    end
+
     -- 用戶輸入的連結
     local link = vim.fn.input("Enter the link: ")
     if link == nil or link == "" then
-      print("No link entered")
+      vim.notify("No link entered", vim.log.levels.ERROR)
       return
     end
+
     -- 格式化為 Markdown 標記
     local markdown_link = string.format("[%s](%s)", original_text, link)
-    -- 將格式化後的內容放回
+    -- 將格式化後的內容保存在暫存器 "
     vim.fn.setreg('"', markdown_link)
+
     -- 替換選中文本
-    vim.cmd('normal! P')
+    vim.cmd('normal! ' .. write_mode)
+
+    -- return string.format("d<ESC>%s[<C-R>\"](%s)", write_mode, link) -- 這差一點可以，主要是沒辦法曉得剪貼簿的內容
   end,
-  { desc = "insert Link" }
+  {
+    -- expr = true,
+    desc = "insert Link"
+  }
 )
 
 -- Function to create markdown link from visual selection
