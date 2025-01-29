@@ -774,6 +774,11 @@ if status_ok then
       " (行: " .. row .. ", 列: " .. col .. ")", vim.log.levels.INFO)
   end, {
     nargs = "+", -- 至少1個
+    complete = function()
+      return {
+        "-f",
+      }
+    end,
     desc = "加入書籤"
   })
   vim.api.nvim_create_user_command("BkAddDir", function(args)

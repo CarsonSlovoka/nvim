@@ -30,7 +30,7 @@ function commands.setup()
   vim.api.nvim_create_user_command(
     "Cmd",
     function(args)
-      direction = "sp"
+      local direction = "sp"
       if #args.fargs > 0 and args.fargs[1] == "v" then
         direction = "vsp"
       end
@@ -52,6 +52,11 @@ function commands.setup()
     end,
     {
       nargs = "?",
+      complete = function()
+        return {
+          "v"
+        }
+      end,
       desc = "在當前路徑開啟terminal"
     }
   )
