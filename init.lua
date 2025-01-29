@@ -839,6 +839,18 @@ if status_ok then
           }
         }
       },
+      lualine_x = {
+        -- indent settings
+        function()
+          local indent_style = vim.opt_local.expandtab:get() and "Space" or "Tab"
+          if indent_style == "Space" then
+            local indent_size = vim.opt_local.tabstop:get()
+            return indent_size .. " spaces"
+          end
+          return indent_style
+        end,
+        'encoding', 'fileformat', 'filetype',
+      },
     }
   }
 end
