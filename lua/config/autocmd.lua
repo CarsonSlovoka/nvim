@@ -91,9 +91,11 @@ local function setup(opts)
     }
   )
 
+  vim.api.nvim_create_augroup("carson.editorconfig", { clear = true })
   create_autocmd(
     "FileType",
     {
+      group = "carson.editorconfig",
       pattern = "*", -- :set ft?
 
       callback = function()
@@ -101,23 +103,27 @@ local function setup(opts)
         vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白
         vim.opt_local.softtabstop = 4  -- 在插入模式下，Tab鍵也等於4空白
         vim.opt_local.shiftwidth = 4   -- 自動縮進時使用 4 個空白
-      end
+      end,
+      desc = "indent_style=Space, indent_size=4"
     }
   )
   create_autocmd(
     "FileType",
     {
+      group = "carson.editorconfig",
       pattern = { "md", "yml", "yaml", "json", "json5", "js", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
       callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2
         vim.opt_local.shiftwidth = 2
-      end
+      end,
+      desc = "indent_style=Space, indent_size=2"
     }
   )
   create_autocmd(
     "FileType",
     {
+      group = "carson.editorconfig",
       -- pattern = "go",
       pattern = { "go", "puml", "nsi", "nsh", "Makefile", "mk" },
       callback = function()
@@ -126,7 +132,8 @@ local function setup(opts)
         -- vim.opt_local.tabstop = 2
         -- vim.opt_local.softtabstop = 2
         -- vim.opt_local.shiftwidth = 2
-      end
+      end,
+      desc = "indent_style=tab"
     }
   )
 
