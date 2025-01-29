@@ -785,7 +785,7 @@ if status_ok then
     local params = vim.split(args.args, " ")
     local name = params[1]
     local dirPath = vim.fn.expand("%:p:h")
-    if telescope_bookmark.add(name, dirPath) then
+    if telescope_bookmark.add(name, dirPath, nil, nil, {}) then
       return
     end
     telescope_bookmark.save {}

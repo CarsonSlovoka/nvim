@@ -75,8 +75,8 @@ end
 --- 添加一個書籤
 --- @param name string 書籤名稱
 --- @param path string 文件路徑
---- @param row number 行號
---- @param col number 列號
+--- @param row number|nil 行號
+--- @param col number|nil 列號
 --- @param opts { force: boolean }
 --- @return boolean
 function bookmark.add(name, path, row, col, opts)
