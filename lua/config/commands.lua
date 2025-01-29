@@ -60,6 +60,21 @@ function commands.setup()
       desc = "在當前路徑開啟terminal"
     }
   )
+
+  vim.api.nvim_create_user_command(
+    "Edit",
+    function()
+      local selected_text = require("utils.range").get_selected_text()
+      if #selected_text == 0 then
+        return
+      end
+      vim.cmd("edit " .. selected_text)
+    end,
+    {
+      range = true,
+      desc = "edit",
+    }
+  )
 end
 
 return commands
