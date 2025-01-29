@@ -27,6 +27,9 @@ require "config.filetype".setup {
 }
 require("config.keymaps").setup()
 require("config.commands").setup()
+require("config.autocmd").setup({
+  autosave = true
+})
 
 require("config.input").fcitx.setup(
   "fcitx5-remote" -- which fcitx5-remote
