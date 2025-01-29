@@ -147,6 +147,10 @@ lspconfig.clangd.setup {}
 lspconfig.lua_ls.setup {
   settings = {
     Lua = {
+      runtime = {
+        version = 'LuaJIT',
+        path = "/usr/bin/lua5.1",
+      },
       diagnostics = {
         -- 告訴 LSP `vim` 是一個全域變數
         globals = { 'vim' }
@@ -763,7 +767,7 @@ if status_ok then
     local force = (params[2] == "-f")
     -- local name = vim.fn.input("bookmarkName: ")
     local filepath = vim.fn.expand("%:p")
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- for lua5.4: table.unpack https://stackoverflow.com/a/65655296/9935654
     if not telescope_bookmark.add(name, filepath, row, col, { force = force }) then
       return
     end
