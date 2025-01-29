@@ -62,6 +62,19 @@ local function setup_normal()
   map('n', "<A-j>", "<C-w>j", { desc = "往下切換視窗" })
   map('n', "<A-k>", "<C-w>k", { desc = "往上切換視窗" })
   map('n', "<A-l>", "<C-w>l", { desc = "往右切換視窗" })
+
+  for open, close in pairs({
+    ["("] = ")",
+    ["["] = "]",
+    ["{"] = "}",
+    ['"'] = '"',
+    ["`"] = "`",
+  }) do
+    map('i', open,
+      open .. close .. "<Left>", -- 輸入配對的括號並往左移動到中間，方便輸入括號內的內容
+      { desc = "自動補全" .. open }
+    )
+  end
 end
 
 local function setup_visual()
