@@ -66,11 +66,26 @@ local function setup(opts)
         -- e flags, 如果發生錯誤的時候不報錯
         vim.cmd([[%s/\s\+$//e]])
         if M.autoReformat then
-          vim.lsp.buf.format({
-            async = false,
-            timeout_ms = 3000,
-          })
-          vim.notify("lsp.buf.format done", vim.log.levels.INFO)
+          -- 檢查是否有LSP客戶端附加到當前的緩衝區
+          local clients = vim.lsp.get_active_clients({ bufnr = vim.api.nvim_get_current_buf() })
+          local has_formatter = false
+          for _, client in ipairs(clients) do
+            -- 也就檢查是否有支持格式化的功能
+            if client.supports_method("textDocument/formatting") then
+              has_formatter = true
+              break
+            end
+          end
+
+          if has_formatter then
+            vim.lsp.buf.format({
+              async = false,
+              timeout_ms = 3000,
+            })
+            vim.notify("lsp.buf.format done", vim.log.levels.INFO)
+          else
+            -- vim.notify("No LSP formatter available for current file, skipping format", vim.log.levels.WARN)
+          end
         end
       end
     }
