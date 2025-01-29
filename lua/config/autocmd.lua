@@ -44,6 +44,7 @@ local function setup()
     )
   end
 
+  -- trim_trailing_whitespace
   create_autocmd(
     "BufwritePre", -- 在寫入前執行的動作
     {
@@ -54,6 +55,45 @@ local function setup()
         -- 取代為空白
         -- e flags, 如果發生錯誤的時候不報錯
         vim.cmd([[%s/\s\+$//e]])
+      end
+    }
+  )
+
+  create_autocmd(
+    "FileType",
+    {
+      pattern = "*",       -- :set ft?
+
+      callback = function()
+        vim.opt_local.expandtab = true         -- 使用空白代替Tab
+        vim.opt_local.tabstop = 4              -- Tab鍵等於4個空白
+        vim.opt_local.softtabstop = 4          -- 在插入模式下，Tab鍵也等於4空白
+        vim.opt_local.shiftwidth = 4           -- 自動縮進時使用 4 個空白
+      end
+    }
+  )
+  create_autocmd(
+    "FileType",
+    {
+      pattern = { "md", "yml", "yaml", "json", "json5", "js", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
+      callback = function()
+        vim.opt_local.tabstop = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.shiftwidth = 2
+      end
+    }
+  )
+  create_autocmd(
+    "FileType",
+    {
+      -- pattern = "go",
+      pattern = { "go", "puml", "nsi", "nsh", "Makefile", "mk" },
+      callback = function()
+        vim.opt_local.expandtab = false
+        -- 以下還是可以設定，如果你想要讓tab看起來隔比較密(緊)可以考慮以下
+        -- vim.opt_local.tabstop = 2
+        -- vim.opt_local.softtabstop = 2
+        -- vim.opt_local.shiftwidth = 2
       end
     }
   )
