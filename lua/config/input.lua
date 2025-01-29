@@ -19,6 +19,8 @@ local Fcitx = {
 function Fcitx.ActiveFcitx()
   local state = tonumber(vim.fn.system(Fcitx.cmd))
   if state ~= 2 then
+    -- vim.notify(os.date("[fcitx debug] %Y-%m-%d %H:%M:%S"), vim.log.levels.DEBUG)
+
     -- 採取的策略是統一換回英文，如果有需要在自己使用shift+ctrl去切換
     -- 有寫與沒寫的差異是至少這樣可以確定一開始是英文, shift+ctrl可再切換成其它語言
     -- 如果沒有寫，一開始無法確定語言，如果當時是boshiamy，那麼進入後還是boshimay
@@ -51,28 +53,66 @@ function Fcitx.setup(cmd)
   vim.api.nvim_create_augroup("fcitx", { clear = true })
   vim.api.nvim_create_autocmd("InsertEnter", {
     group = "fcitx",
-    pattern = "*", -- *.txt etc.
-    callback = Fcitx.ActiveFcitx
+    pattern = "*",                -- *.txt etc.
+    callback = Fcitx.ActiveFcitx, -- 可以這樣寫，但是 :Telescope autocommands 的跳轉會到此函數的定義
+    desc = "ActiveFcitx"
   })
   vim.api.nvim_create_autocmd("InsertLeave", {
     group = "fcitx",
     pattern = "*",
-    callback = Fcitx.InActiveFcitx
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "InActiveFcitx"
+  })
+  vim.api.nvim_create_autocmd("TermOpen", {
+    group = "fcitx",
+    pattern = "*",
+    callback = function()
+      -- print("TermOpen")
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "進入終端機: InActiveFcitx"
+  })
+  vim.api.nvim_create_autocmd("TermEnter", {
+    group = "fcitx",
+    pattern = "*",
+    callback = function()
+      Fcitx.ActiveFcitx()
+    end,
+    desc = "終端機中的輸入模式: ActiveFcitx"
+  })
+  vim.api.nvim_create_autocmd("TermLeave", {
+    group = "fcitx",
+    pattern = "*",
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "離開終端機中的輸入模式: InActiveFcitx"
   })
   vim.api.nvim_create_autocmd("CmdlineEnter", {
     group = "fcitx",
     pattern = "[/\\?]", -- 搜尋的時候`/`, `?`
-    callback = Fcitx.ActiveFcitx
+    callback = function()
+      Fcitx.ActiveFcitx()
+    end,
+    desc = "搜尋模式: ActiveFcitx"
   })
   vim.api.nvim_create_autocmd("CmdlineEnter", {
     group = "fcitx",
     pattern = "[:]", -- 打指令的時候，也切換成英文
-    callback = Fcitx.InActiveFcitx
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "輸入指令時: InActiveFcitx"
   })
   vim.api.nvim_create_autocmd("CmdlineLeave", {
     group = "fcitx",
     pattern = "[/\\?]",
-    callback = Fcitx.InActiveFcitx
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "離開搜尋模式: InActiveFcitx"
   })
 
   -- print("setup fcitx success")

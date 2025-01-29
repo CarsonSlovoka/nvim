@@ -112,6 +112,41 @@ help文檔的所有tag的會出現，如果要找查找doc相關的幫助可能�
 # 為 :command 的加強，列出所有定義的command
 ```
 
+## autocommands
+
+```yaml
+:Telescope autocommands
+# 為 :autocmd 的加強
+```
+
+---
+
+所謂的autocommands舉凡是
+
+- [自動保存](https://github.com/CarsonSlovoka/nvim/blob/5f2a836b8f2481ce9a31794702e49e9766c1cc35/lua/config/autocmd.lua#L19-L54)
+- [自動格式化](https://github.com/CarsonSlovoka/nvim/blob/5f2a836b8f2481ce9a31794702e49e9766c1cc35/lua/config/autocmd.lua#L68-L86)
+- [editorconfig設定](https://github.com/CarsonSlovoka/nvim/blob/5f2a836b8f2481ce9a31794702e49e9766c1cc35/lua/config/autocmd.lua#L94-L131)
+- 輸入法切換
+- ...
+
+這些都需要用到自動化指令
+
+---
+
+可以用`group`去搜, `desc`也可以在裡面看到
+
+```lua
+vim.api.nvim_create_autocmd("TermOpen", {
+    group = "fcitx",
+    pattern = "*",
+    -- callback = Fcitx.ActiveFcitx, -- 可以這樣寫，但是 :Telescope autocommands 的跳轉會到此函數的定義
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "進入終端機: InActiveFcitx"
+})
+```
+
 ## ★ current_buffer_fuzzy_find
 
 ```yaml
