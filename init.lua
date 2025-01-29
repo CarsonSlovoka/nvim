@@ -782,16 +782,22 @@ if status_ok then
     desc = "加入書籤"
   })
   vim.api.nvim_create_user_command("BkAddDir", function(args)
-    local params = vim.split(args.args, " ")
-    local name = params[1]
+    -- local name = vim.split(args.args, " ")[1]
+    local name = args.fargs[1]
+    local force = args.fargs[2] == "-f"
     local dirPath = vim.fn.expand("%:p:h")
-    if telescope_bookmark.add(name, dirPath, nil, nil, {}) then
+    if not telescope_bookmark.add(name, dirPath, nil, nil, { force = force }) then
       return
     end
     telescope_bookmark.save {}
     vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
   end, {
-    nargs = 1,
+    nargs = "+",
+    complete = function()
+      return {
+        "-f",
+      }
+    end,
     desc = "添加目錄到書籤. 如果想要強制覆蓋可以加上-f參數"
   })
 
