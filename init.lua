@@ -144,7 +144,16 @@ lspconfig.markdown_oxide.setup {
   cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
 }
 lspconfig.clangd.setup {}
-lspconfig.lua_ls.setup {}
+lspconfig.lua_ls.setup {
+  settings = {
+    Lua = {
+      diagnostics = {
+        -- 告訴 LSP `vim` 是一個全域變數
+        globals = { 'vim' }
+      }
+    }
+  }
+}
 
 -- 加載 precognition 插件
 local status_ok, precognition = pcall(require, "precognition")
