@@ -45,7 +45,13 @@ require("config.autocmd").setup({
       end,
       {
         nargs = 1,
-        desc = "set autoReformat"
+        complete = function()
+          return {
+            "1",
+            "0"
+          }
+        end,
+        desc = "enable autoReformat"
       }
     )
   end
