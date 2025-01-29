@@ -28,8 +28,30 @@ require "config.filetype".setup {
 require("config.keymaps").setup()
 require("config.commands").setup()
 require("config.autocmd").setup({
-  autosave = true
+  callback = function(m)
+    vim.api.nvim_create_user_command(
+      "ToggleFMT",
+      function()
+        m.autoReformat = not m.autoReformat
+        vim.notify("autoReformat: " .. vim.inspect(m.autoReformat), vim.log.levels.INFO)
+      end,
+      { desc = "切換自動格式化" }
+    )
+    vim.api.nvim_create_user_command(
+      "SetAutoFmt",
+      function(args)
+        m.autoReformat = args.fargs[1] == "1"
+        vim.notify("autoReformat: " .. vim.inspect(m.autoReformat), vim.log.levels.INFO)
+      end,
+      {
+        nargs = 1,
+        desc = "set autoReformat"
+      }
+    )
+  end
 })
+
+--
 
 require("config.input").fcitx.setup(
   "fcitx5-remote" -- which fcitx5-remote

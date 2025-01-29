@@ -1,11 +1,21 @@
 local M = {
-  autosave = true,
+  autoSave = true,
+  autoReformat = true,
+  callback = function(module) end
 }
 
 local create_autocmd = vim.api.nvim_create_autocmd
 
-local function setup()
-  if M.autosave then
+local function setup(opts)
+  for k, v in pairs(opts) do
+    if M[k] ~= nil then
+      M[k] = v
+    end
+  end
+
+  -- print(vim.inspect(M))
+
+  if M.autoSave then
     create_autocmd(
       {
         "TextChanged", -- 如果用x, ce, undo, redo...也會觸發
@@ -55,6 +65,13 @@ local function setup()
         -- 取代為空白
         -- e flags, 如果發生錯誤的時候不報錯
         vim.cmd([[%s/\s\+$//e]])
+        if M.autoReformat then
+          vim.lsp.buf.format({
+            async = false,
+            timeout_ms = 3000,
+          })
+          vim.notify("lsp.buf.format done", vim.log.levels.INFO)
+        end
       end
     }
   )
@@ -62,13 +79,13 @@ local function setup()
   create_autocmd(
     "FileType",
     {
-      pattern = "*",       -- :set ft?
+      pattern = "*", -- :set ft?
 
       callback = function()
-        vim.opt_local.expandtab = true         -- 使用空白代替Tab
-        vim.opt_local.tabstop = 4              -- Tab鍵等於4個空白
-        vim.opt_local.softtabstop = 4          -- 在插入模式下，Tab鍵也等於4空白
-        vim.opt_local.shiftwidth = 4           -- 自動縮進時使用 4 個空白
+        vim.opt_local.expandtab = true -- 使用空白代替Tab
+        vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白
+        vim.opt_local.softtabstop = 4  -- 在插入模式下，Tab鍵也等於4空白
+        vim.opt_local.shiftwidth = 4   -- 自動縮進時使用 4 個空白
       end
     }
   )
@@ -97,6 +114,10 @@ local function setup()
       end
     }
   )
+
+  if opts.callback then
+    opts.callback(M)
+  end
 end
 
 return {
