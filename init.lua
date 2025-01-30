@@ -54,6 +54,23 @@ require("config.autocmd").setup({
         desc = "enable autoReformat"
       }
     )
+    vim.api.nvim_create_user_command(
+      "SetAutoSave",
+      function(args)
+        m.autoSave = args.fargs[1] == "1"
+        vim.notify("autoSave: " .. vim.inspect(m.autoSave), vim.log.levels.INFO)
+      end,
+      {
+        nargs = 1,
+        complete = function()
+          return {
+            "1",
+            "0"
+          }
+        end,
+        desc = "enable autoSave"
+      }
+    )
   end
 })
 
@@ -88,7 +105,7 @@ require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/l
 
   -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
-  textobjects = {
+  textobjects = {       -- 其實透過visual a{ 等已經很好用了，可以考慮不用textobjects
     select = {          -- visual模式才有效
       enable = true,    -- 啟用 textobjects
       lookahead = true, -- 向前查找，可以更智能選擇

@@ -15,44 +15,45 @@ local function setup(opts)
 
   -- print(vim.inspect(M))
 
-  if M.autoSave then
-    create_autocmd(
-      {
-        "TextChanged", -- 如果用x, ce, undo, redo...也會觸發
-        "InsertLeave",
-      },
-      {
+  create_autocmd(
+    {
+      -- "TextChanged", -- 如果用x, ce, undo, redo...也會觸發 -- 不要新增，否則redo會因為儲檔後無法復原
+      "InsertLeave",
+    },
+    {
 
-        pattern = "*",
-        -- command="silent write"
-        callback = function()
-          -- 獲取當前緩衝區的 buftype
-          -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
-          local buftype = vim.api.nvim_buf_get_option(0, "buftype")
+      pattern = "*",
+      -- command="silent write"
+      callback = function()
+        if not M.autoSave then
+          return
+        end
+        -- 獲取當前緩衝區的 buftype
+        -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
+        local buftype = vim.api.nvim_buf_get_option(0, "buftype")
 
-          -- 當 buftype 為空時才執行保存
-          if buftype == "" and
-              vim.bo.modified -- 可以曉得是否真的有異動
-          then
-            -- 先手動觸發 BufWritePre 自動命令
-            vim.api.nvim_exec_autocmds("BufWritePre", {
-              pattern = vim.fn.expand("%") -- 當前文件路徑
-            })
+        -- 當 buftype 為空時才執行保存
+        if buftype == "" and
+            vim.bo.modified -- 可以曉得是否真的有異動
+        then
+          -- 先手動觸發 BufWritePre 自動命令
+          vim.api.nvim_exec_autocmds("BufWritePre", {
+            pattern = vim.fn.expand("%") -- 當前文件路徑
+          })
 
-            vim.cmd("silent write")
-            vim.notify(string.format("%s %s saved",
-              os.date("%Y-%m-%d %H:%M:%S"),
-              vim.api.nvim_buf_get_name(0)
-            ), vim.log.levels.INFO)
-            -- elseif not vim.bo.modified then
-            --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
-            -- else
-            --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
-          end
-        end,
-      }
-    )
-  end
+          vim.cmd("silent write")
+          vim.notify(string.format("%s %s saved",
+            os.date("%Y-%m-%d %H:%M:%S"),
+            vim.api.nvim_buf_get_name(0)
+          ), vim.log.levels.INFO)
+          -- elseif not vim.bo.modified then
+          --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
+          -- else
+          --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
+        end
+      end,
+    }
+  )
 
   -- trim_trailing_whitespace
   create_autocmd(
