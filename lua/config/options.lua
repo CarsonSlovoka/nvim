@@ -1,7 +1,21 @@
 local options = {}
 
 function options.setup()
-  vim.g.mapleader = ","      -- 預設是 \
+  vim.g.mapleader = "," -- 預設是 \
+
+  -- vim.opt.relativenumber = false -- :set rnu 這是預設
+  vim.opt.relativenumber = true -- :set nornu 這樣用+, -找行的時候會比較簡單，尤其是區塊選取多行的時候
+  vim.opt.backup = false
+
+  -- vim.opt.hlsearch = true   -- 等同 :set hls
+  vim.opt.hlsearch = false -- 等同 :nohls -- 我認為不需要特別標示，而且如果高亮往往在結束搜尋的時候，還要自己在用:nohls有點麻煩
+
+
+  -- vim.opt.incsearch = false  -- :set noincsearch
+  vim.opt.incsearch = true -- :set incsearch 邊搜尋的時候，就會出現結果，而不需要等到enter才會有結果
+
+  -- vim.opt.colorcolumn = 120 -- :set colorcolumn=120 -- 欄的輔助線，用來提示該列已經太長，可能不易閱讀
+  vim.opt.termguicolors = true
 
   vim.opt.expandtab = true   -- 使用空白代替Tab
   vim.opt.tabstop = 2        -- Tab鍵等於2個空白
