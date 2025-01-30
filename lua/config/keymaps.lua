@@ -5,6 +5,15 @@ local map = require("utils.keymap").keymap
 -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
 
 
+-- 系統剪貼簿相關
+map("n", "<leader>y", '"+y', { desc = "複製到系統剪貼簿" })
+map("v", "<leader>y", '"+y', { desc = "複製到系統剪貼簿" })
+map("n", "<leader>Y", '"+Y', { desc = "複製到系統剪貼簿" })
+
+map("n", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
+map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
+map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
+
 local function setup_normal()
   map('n',                       -- normal mode
     '<leader>cwd',
@@ -78,7 +87,12 @@ local function setup_normal()
 end
 
 local function setup_visual()
-  map('v',       -- Visual 模式
+  -- :m '>+1 將當前選中的文本下移一行
+  -- gv 重新高亮選中的區域(在 > 和 < 定義的範圍內)
+  -- = 格式化文本
+  map("v", "J", ":m '>+1<CR>gv=gv", { desc = "將當前選中的文本下移一行" }) -- 如果用了 [TextChanged](https://github.com/CarsonSlovoka/nvim/blob/14828d70377b26c72e4a4239a510200441b18720/lua/config/autocmd.lua#L21)會儲檔，這個可能會變得怪怪的
+  map("v", "K", ":m '<-2<CR>gv=gv", { desc = "將當前選中的文本上移一行" })
+  map('v', -- Visual 模式
     '<leader>c', -- 快捷鍵為 <leader>c
     '"+y',
     { desc = "將選中的內容複製到系統剪貼板" }
