@@ -69,7 +69,7 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   │
 │   ├── motion/start/                -- ✅ 移動相關
 │   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818)
-│   │          └── precongnition.nvim-- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e)
+│   │          └── precognition.nvim -- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e)
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
 │   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a) ([github-nvim-theme](#github-nvim-theme)可以輔助)
