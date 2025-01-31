@@ -219,24 +219,25 @@ if status_ok then
   }
   -- https://github.com/smoka7/hop.nvim/blob/efe58182f71fbe592f82fb211ab026f2819e855d/README.md?plain=1#L90-L112
   local directions = require('hop.hint').HintDirection
-  -- f 往下找，準確的定位
+
   vim.keymap.set('', 'f', function()
-    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
-  end, { remap = true })
-  -- F 類似f，只是它是往上找
+    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = true })
+  end, { desc = "往下找，準確的定位(僅目前列)", remap = true })
+
   vim.keymap.set('', 'F', function()
-    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
-  end, { remap = true })
+    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true })
+  end, { desc = "往上找，準確的定位(僅目前列)", remap = true })
 
   -- t 往下找，定位在指定位置的「前」一個字母上
   vim.keymap.set('', 't', function()
-    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 })
-  end, { remap = true })
+    -- plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 }) -- 往下找，定位在指定位置的「前」一個字母上
+    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
+  end, { desc = "往下找，準確的定位", remap = true })
 
-  -- T: 往上找，定位在指定位置的「後」一個字母上
   vim.keymap.set('', 'T', function()
-    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 })
-  end, { remap = true })
+    -- plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 }) -- 往上找，定位在指定位置的「後」一個字母上
+    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
+  end, { desc = "往上找，準確的定位", remap = true })
 end
 
 local plugin_gitsigns
