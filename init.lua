@@ -74,117 +74,130 @@ require("config.autocmd").setup({
   end
 })
 
---
-
 require("config.input").fcitx.setup(
   "fcitx5-remote" -- which fcitx5-remote
 )
 
--- pack/syntax/start/nvim-treesitter
-require 'nvim-treesitter.configs'.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
-  ensure_installed = {
-    "bash",
-    "lua",
-    "go",
-    "markdown", "markdown_inline" },
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-  },
 
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
-      init_selection = "gnn",   -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
-      node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
-      scope_incremental = "grc",
-      node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
+local function install_nvimTreesitter()
+  -- pack/syntax/start/nvim-treesitter
+  local status_ok, m = pcall(require, "nvim-treesitter.configs")
+  if not status_ok then
+    return
+  end
+  m.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
+    ensure_installed = {
+      "bash",
+      "lua",
+      "go",
+      "markdown", "markdown_inline" },
+    highlight = {
+      enable = true,
+      additional_vim_regex_highlighting = false,
     },
-  },
 
-  -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-  -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
-  textobjects = {       -- 其實透過visual a{ 等已經很好用了，可以考慮不用textobjects
-    select = {          -- visual模式才有效
-      enable = true,    -- 啟用 textobjects
-      lookahead = true, -- 向前查找，可以更智能選擇
+    incremental_selection = {
+      enable = true,
       keymaps = {
-        -- 標準鍵位示例（根據需要調整）
-        ["af"] = "@function.outer", -- 整個函數塊
-        ["if"] = "@function.inner", -- 函數內部
-        ["ac"] = "@class.outer",    -- 整個類別塊
-        ["ic"] = "@class.inner",    -- 類別內部
-        ["ao"] = "@block.outer",    -- 任何區塊的外部
-        ["io"] = "@block.inner",    -- 任何區塊的內部
+        -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
+        init_selection = "gnn",   -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
+        node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
+        scope_incremental = "grc",
+        node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
       },
     },
-    move = {                        -- 此功能還好，可以用hop來取代
-      enable = true,
-      set_jumps = true,             -- 記錄跳轉位置
-      goto_next_start = {
-        ["]m"] = "@function.outer", -- 跳到下一個函數的開始
-        ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
-      },
-      goto_next_end = {
-        ["]M"] = "@function.outer", -- 跳到下一個函數的結束
-        ["]["] = "@class.outer"     -- 跳到下一個類別的結束
-      },
-      goto_previous_start = {
-        ["[m"] = "@function.outer", -- 跳到上一個函數的開始
-        ["[["] = "@class.outer"     -- 跳到上一個類別的開始
-      },
-      goto_previous_end = {
-        ["[M"] = "@function.outer", -- 跳到上一個函數的結束
-        ["[]"] = "@class.outer"     -- 跳到上一個類別的結束
-      },
-    },
-    swap = { -- 不錯用，可以快速交換參數
-      enable = true,
-      swap_next = {
-        ["<leader>a"] = "@parameter.inner", -- 與下一個參數交換
-      },
-      swap_previous = {
-        ["<leader>A"] = "@parameter.inner", -- 與上一個參數交換
-      },
-    },
-  },
-}
 
-local lspconfig = require 'lspconfig'
-lspconfig.pyright.setup {}
-vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
-lspconfig.gopls.setup {}
--- lspconfig.tsserver.setup{}
-lspconfig.bashls.setup {}
-lspconfig.markdown_oxide.setup {
-  cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
-}
-lspconfig.clangd.setup {}
-lspconfig.lua_ls.setup {
-  settings = {
-    Lua = {
-      runtime = {
-        version = 'LuaJIT',
-        path = "/usr/bin/lua5.1",
+    -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
+    textobjects = {       -- 其實透過visual a{ 等已經很好用了，可以考慮不用textobjects
+      select = {          -- visual模式才有效
+        enable = true,    -- 啟用 textobjects
+        lookahead = true, -- 向前查找，可以更智能選擇
+        keymaps = {
+          -- 標準鍵位示例（根據需要調整）
+          ["af"] = "@function.outer", -- 整個函數塊
+          ["if"] = "@function.inner", -- 函數內部
+          ["ac"] = "@class.outer",    -- 整個類別塊
+          ["ic"] = "@class.inner",    -- 類別內部
+          ["ao"] = "@block.outer",    -- 任何區塊的外部
+          ["io"] = "@block.inner",    -- 任何區塊的內部
+        },
       },
-      diagnostics = {
-        -- 告訴 LSP `vim` 是一個全域變數
-        globals = { 'vim' }
+      move = {                        -- 此功能還好，可以用hop來取代
+        enable = true,
+        set_jumps = true,             -- 記錄跳轉位置
+        goto_next_start = {
+          ["]m"] = "@function.outer", -- 跳到下一個函數的開始
+          ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
+        },
+        goto_next_end = {
+          ["]M"] = "@function.outer", -- 跳到下一個函數的結束
+          ["]["] = "@class.outer"     -- 跳到下一個類別的結束
+        },
+        goto_previous_start = {
+          ["[m"] = "@function.outer", -- 跳到上一個函數的開始
+          ["[["] = "@class.outer"     -- 跳到上一個類別的開始
+        },
+        goto_previous_end = {
+          ["[M"] = "@function.outer", -- 跳到上一個函數的結束
+          ["[]"] = "@class.outer"     -- 跳到上一個類別的結束
+        },
+      },
+      swap = { -- 不錯用，可以快速交換參數
+        enable = true,
+        swap_next = {
+          ["<leader>a"] = "@parameter.inner", -- 與下一個參數交換
+        },
+        swap_previous = {
+          ["<leader>A"] = "@parameter.inner", -- 與上一個參數交換
+        },
+      },
+    },
+  }
+end
+
+
+local function install_lspconfig()
+  local ok, m = pcall(require, "lspconfig")
+  if not ok then
+    vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
+    return
+  end
+  m.pyright.setup {}
+  vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
+  m.gopls.setup {}
+  -- m.tsserver.setup{}
+  m.bashls.setup {}
+  m.markdown_oxide.setup {
+    cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
+  }
+  m.clangd.setup {}
+  m.lua_ls.setup {
+    settings = {
+      Lua = {
+        runtime = {
+          version = 'LuaJIT',
+          path = "/usr/bin/lua5.1",
+        },
+        diagnostics = {
+          -- 告訴 LSP `vim` 是一個全域變數
+          globals = { 'vim' }
+        }
       }
     }
   }
-}
+end
+
 
 local function install_precognition()
   -- 加載 precognition 插件
-  local status_ok, precognition = pcall(require, "precognition")
-  if not status_ok then
+  local ok, m = pcall(require, "precognition")
+  if not ok then
     vim.notify("Failed to load precognition.nvim", vim.log.levels.ERROR)
     return
   end
   -- 配置 precognition
-  precognition.setup({
+  m.setup({
     -- 以下是 https://github.com/tris203/precognition.nvim/blob/531971e6d883e99b1572bf47294e22988d8fbec0/README.md?plain=1#L22-L46 的預設配置
     startVisible = true,
     showBlankVirtLine = true,
@@ -213,42 +226,47 @@ local function install_precognition()
   })
 end
 
--- install_precognition()
 
-
-local plugin_hop
-status_ok, plugin_hop = pcall(require, "hop") -- pack/motion/start/hop.nvim/lua/hop/
-if status_ok then
-  plugin_hop.setup {
+local function install_hop()
+  local status_ok, m = pcall(require, "hop") -- pack/motion/start/hop.nvim/lua/hop/
+  if not status_ok then
+    vim.notify("Failed to load hop", vim.log.levels.ERROR)
+    return
+  end
+  m.setup {
     keys = 'etovxqpdygfblzhckisuran'
   }
   -- https://github.com/smoka7/hop.nvim/blob/efe58182f71fbe592f82fb211ab026f2819e855d/README.md?plain=1#L90-L112
   local directions = require('hop.hint').HintDirection
 
   vim.keymap.set('', 'f', function()
-    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = true })
+    m.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = true })
   end, { desc = "往下找，準確的定位(僅目前列)", remap = true })
 
   vim.keymap.set('', 'F', function()
-    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true })
+    m.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true })
   end, { desc = "往上找，準確的定位(僅目前列)", remap = true })
 
   -- t 往下找，定位在指定位置的「前」一個字母上
   vim.keymap.set('', 't', function()
-    -- plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 }) -- 往下找，定位在指定位置的「前」一個字母上
-    plugin_hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
+    -- m.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false, hint_offset = -1 }) -- 往下找，定位在指定位置的「前」一個字母上
+    m.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false })
   end, { desc = "往下找，準確的定位", remap = true })
 
   vim.keymap.set('', 'T', function()
-    -- plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 }) -- 往上找，定位在指定位置的「後」一個字母上
-    plugin_hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
+    -- m.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 }) -- 往上找，定位在指定位置的「後」一個字母上
+    m.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
   end, { desc = "往上找，準確的定位", remap = true })
 end
 
-local plugin_gitsigns
-status_ok, plugin_gitsigns = pcall(require, "gitsigns")
-if status_ok then
-  plugin_gitsigns.setup {
+local function install_gitsigns()
+  local ok, plugin = pcall(require, "gitsigns")
+  if not ok then
+    vim.notify("Failed to load gitsigns", vim.log.levels.ERROR)
+    return
+  end
+
+  plugin.setup {
     signs = {
       add = { text = '┃' },
       change = { text = '┃' },
@@ -311,7 +329,7 @@ if status_ok then
         if vim.wo.diff then
           vim.cmd.normal({ ']c', bang = true })
         else
-          plugin_gitsigns.nav_hunk('next')
+          plugin.nav_hunk('next')
         end
       end, { desc = '(git)往下找到異動處' })
 
@@ -319,35 +337,35 @@ if status_ok then
         if vim.wo.diff then
           vim.cmd.normal({ '[c', bang = true })
         else
-          plugin_gitsigns.nav_hunk('prev')
+          plugin.nav_hunk('prev')
         end
       end, { desc = '(git)往上找到個異動處' })
 
       -- Actions
-      -- map('n', '<leader>hs', plugin_gitsigns.stage_hunk)
-      -- map('n', '<leader>hr', plugin_gitsigns.reset_hunk)
-      -- map('v', '<leader>hs', function() plugin_gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-      -- map('v', '<leader>hr', function() plugin_gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-      -- map('n', '<leader>hS', plugin_gitsigns.stage_buffer)
-      -- map('n', '<leader>hu', plugin_gitsigns.undo_stage_hunk)
-      -- map('n', '<leader>hR', plugin_gitsigns.reset_buffer)
-      -- map('n', '<leader>hn', plugin_gitsigns.next_hunk) -- 同等: plugin_gitsigns.nav_hunk('next')
-      map('n', '<leader>hp', plugin_gitsigns.preview_hunk,
+      -- map('n', '<leader>hs', plugin.stage_hunk)
+      -- map('n', '<leader>hr', plugin.reset_hunk)
+      -- map('v', '<leader>hs', function() plugin.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+      -- map('v', '<leader>hr', function() plugin.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+      -- map('n', '<leader>hS', plugin.stage_buffer)
+      -- map('n', '<leader>hu', plugin.undo_stage_hunk)
+      -- map('n', '<leader>hR', plugin.reset_buffer)
+      -- map('n', '<leader>hn', plugin.next_hunk) -- 同等: plugin.nav_hunk('next')
+      map('n', '<leader>hp', plugin.preview_hunk,
         { desc = '(git)Hunk x of x 開啟preview(光標處必需有異動才能開啟), 查看目前光標處的異動, 開啟後常與prev, next使用. 此指令與diffthis很像，但是專注於一列' })
 
       map('n', '<leader>hb', function()
-        plugin_gitsigns.blame_line { full = true }
+        plugin.blame_line { full = true }
       end, { desc = '(git)blame 顯示光標處(不限於異動，所有都能)與最新一次commit時的差異' }
       )
 
       map('v', -- 由於<leader>t對我有用，所以為了避免影響已存在熱鍵的開啟效率，將此toogle設定在view下才可使用
-        '<leader>tb', plugin_gitsigns.toggle_current_line_blame,
+        '<leader>tb', plugin.toggle_current_line_blame,
         { desc = "(git)可以瞭解這一列最後commit的訊息和時間點 ex: You, 6 days, ago - my commit message. 如果不想要浪費效能，建議不用的時候就可以關掉(再下一次指令)" })
 
-      map('n', '<leader>hd', plugin_gitsigns.diffthis,
+      map('n', '<leader>hd', plugin.diffthis,
         { desc = '(git)查看當前文件的所有異動. 如果要看本次所有文件上的異動，可以使用:Telescope git_status' })
       map('n', '<leader>hD', function()
-        plugin_gitsigns.diffthis('~')
+        plugin.diffthis('~')
       end) -- 有包含上一次的提交修改
       -- map('n', '<leader>td', plugin_gitsigns.toggle_deleted)
 
@@ -357,10 +375,14 @@ if status_ok then
   }
 end
 
-local plugin_nvimWebDevicons
-status_ok, plugin_nvimWebDevicons = pcall(require, "nvim-web-devicons") -- 只要這個插件有，不需要用require，nvim-tree就會自動導入，所以也不一定要寫這些配置
-if status_ok then
-  plugin_nvimWebDevicons.setup {
+
+local function install_nvimWebDevicons()
+  local ok, m = pcall(require, "nvim-web-devicons") -- 只要這個插件有，不需要用require，nvim-tree就會自動導入，所以也不一定要寫這些配置
+  if not ok then
+    vim.notify("Failed to load nvim-web-devicons", vim.log.levels.ERROR)
+    return
+  end
+  m.setup {
     -- 顏色不需要額外的項目就可以修改成功，但是icon要出現可能還需要額外的項目，例如: 使用github-nvim-theme後icon可以出現
     -- https://github.com/projekt0n/github-nvim-theme
     -- https://github.com/nvim-tree/nvim-web-devicons/blob/63f552a7f59badc6e6b6d22e603150f0d5abebb7/README.md?plain=1#L70-L125
@@ -405,12 +427,17 @@ if status_ok then
     },
   }
   -- set_default_icon(icon, color, cterm_color)
-  -- plugin_nvimWebDevicons.set_default_icon('😃', '#6d8086', 65)
+  -- m.set_default_icon('😃', '#6d8086', 65)
 end
 
-local plugin_nvimTree
-status_ok, plugin_nvimTree = pcall(require, "nvim-tree")
-if status_ok then
+
+local function install_nvim_tree()
+  local ok, m = pcall(require, "nvim-tree")
+  if not ok then
+    vim.notify("Failed to load nvim-tree", vim.log.levels.ERROR)
+    return
+  end
+
   --[[
   USAGE:
 
@@ -424,7 +451,7 @@ if status_ok then
   -- optionally enable 24-bit colour
   vim.opt.termguicolors = true
 
-  plugin_nvimTree.setup({
+  m.setup({
     sort = {
       sorter = "case_sensitive",
     },
@@ -492,11 +519,15 @@ if status_ok then
   )
 end
 
-local plugin_telescope
-status_ok, plugin_telescope = pcall(require, "telescope")
-if status_ok then
+
+local function install_telescope()
+  local ok, m = pcall(require, "telescope")
+  if not ok then
+    vim.notify("Failed to load telescope", vim.log.levels.ERROR)
+    return
+  end
   -- 初始化 Telescope
-  plugin_telescope.setup({
+  m.setup({
     defaults = {
       -- 預設配置
       -- :lua print(vim.inspect(require('telescope.config').values.vimgrep_arguments))
@@ -837,17 +868,13 @@ if status_ok then
 end
 
 
--- theme
--- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
-vim.cmd('colorscheme github_dark_default')
+local function install_ibl()
+  local ok, m = pcall(require, "ibl") -- pack/other/start/indent-blankline.nvim/lua/ibl
+  if not ok then
+    vim.notify("Failed to load ibl", vim.log.levels.ERROR)
+    return
+  end
 
-
--- other
-
--- other indent-blankline.nvim
-local plugin_ibl
-status_ok, plugin_ibl = pcall(require, "ibl") -- pack/other/start/indent-blankline.nvim/lua/ibl
-if status_ok then
   vim.api.nvim_create_user_command("Ibl",
     function(args)
       if #args.args == 0 then
@@ -888,10 +915,14 @@ if status_ok then
   )
 end
 
-local plugin_lualine
-status_ok, plugin_lualine = pcall(require, "lualine")
-if status_ok then
-  plugin_lualine.setup {
+
+local function install_lualine()
+  local ok, m = pcall(require, "lualine")
+  if not ok then
+    vim.notify("Failed to load lualine", vim.log.levels.ERROR)
+    return
+  end
+  m.setup {
     sections = {
       lualine_c = {
         {
@@ -931,28 +962,49 @@ if status_ok then
   }
 end
 
+local function install_atq()
+  local ok, m = pcall(require, "atq")
+  if not ok then
+    return
+  end
 
-local plugin_atq
-status_ok, plugin_atq = pcall(require, "atq")
-if status_ok then
   -- :lua require"atq".help()
   -- :lua require"atq".add()
-  plugin_atq.setup()
+  m.setup()
+
+  --[[
+  vim.keymap.set("n",
+    "<leader>test",
+    function()
+    end,
+    { desc = "test only" }
+  )
+  --]]
 end
 
---[[
-vim.keymap.set("n",
-  "<leader>test",
-  function()
-  end,
-  { desc = "test only" }
-)
---]]
 
-
-
-local plugin_renderMarkdown
-status_ok, plugin_renderMarkdown = pcall(require, "render-markdown")
-if status_ok then
-  plugin_renderMarkdown.setup({})
+local function install_renderMarkdown()
+  local ok, m = pcall(require, "render-markdown")
+  if not ok then
+    vim.notify("Failed to load render-markdown", vim.log.levels.ERROR)
+    return
+  end
+  m.setup({})
 end
+
+install_nvimTreesitter()
+install_lspconfig()
+-- install_precognition()
+install_hop()
+install_gitsigns()
+install_nvimWebDevicons()
+install_nvim_tree()
+install_telescope()
+
+-- theme
+-- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
+vim.cmd('colorscheme github_dark_default')
+install_ibl()
+install_lualine()
+install_atq()
+install_renderMarkdown()
