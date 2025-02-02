@@ -51,4 +51,7 @@
 [submodule "atq.nvim"]
 	path = pack/schedule/start/atq.nvim
 	url = https://github.com/CarsonSlovoka/atq.nvim.git
+[submodule "cmp.nvim"]
+	path = pack/schedule/start/cmp.nvim
+	url = https://github.com/CarsonSlovoka/cmp.nvim.git
 

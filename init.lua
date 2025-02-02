@@ -993,6 +993,24 @@ local function install_renderMarkdown()
   m.setup({})
 end
 
+local function install_cmp_list()
+  local ok, m = pcall(require, "cmp-list")
+  if not ok then
+    vim.notify("Failed to load cmp-list", vim.log.levels.ERROR)
+    return
+  end
+
+  m.setup({
+    presets = function(default_config)
+      return m.deep_merge({}, {
+        sh = require('external.cmp-list.sh'),
+        lua = require('external.cmp-list.lua')
+      })
+    end
+  })
+end
+
+
 install_nvimTreesitter()
 install_lspconfig()
 -- install_precognition()
@@ -1009,5 +1027,6 @@ install_ibl()
 install_lualine()
 install_atq()
 install_renderMarkdown()
+install_cmp_list()
 
 require("global-func") -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用

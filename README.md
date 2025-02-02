@@ -83,6 +83,9 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 │   ├── theme/start/                 -- ✅ 主題相關
 │   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)`
 │   │
+│   ├── edit/start/                  -- ✅ 與編輯相關
+│   │         └── cmp                -- ✅ 自動完成 (主要依靠`<C-X>`)
+│   │
 │   ├── other/start/                     -- ✅ 未分類
 │   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v7.8.0... d7b646f)
 │   │         ├── lualine.nvim           -- ✅ statusbar (2a5bae9)
@@ -633,3 +636,14 @@ mkdir -pv ~/.config/nvim/pack/schedule/start/
 git clone https://github.com/CarsonSlovoka/atq.git ~/.config/nvim/pack/schedule/start/atq.nvim
 ```
 
+## edit
+
+```sh
+mkdir -pv ~/.config/nvim/pack/edit/start/
+```
+
+### [cmp.nvim](https://github.com/CarsonSlovoka/cmp.git)
+
+```sh
+git clone https://github.com/CarsonSlovoka/cmp.git ~/.config/nvim/pack/edit/start/cmp.nvim
+```
