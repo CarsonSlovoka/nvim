@@ -234,7 +234,8 @@ local function install_hop()
     return
   end
   m.setup {
-    keys = 'etovxqpdygfblzhckisuran'
+    -- keys 可以定義少一點，但是這樣按到兩個鍵的可能性也會增加
+    keys = 'abcdefghijklmnopqrstuvwxyz'
   }
   -- https://github.com/smoka7/hop.nvim/blob/efe58182f71fbe592f82fb211ab026f2819e855d/README.md?plain=1#L90-L112
   local directions = require('hop.hint').HintDirection
@@ -879,7 +880,7 @@ local function install_ibl()
     function(args)
       if #args.args == 0 then
         -- 採用最簡單的配置
-        plugin_ibl.setup()
+        m.setup()
       else
         local highlight = {
           "RainbowRed",
@@ -901,7 +902,7 @@ local function install_ibl()
           vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
         end)
 
-        plugin_ibl.setup {
+        m.setup {
           indent = {
             highlight = highlight
           }
@@ -1008,3 +1009,5 @@ install_ibl()
 install_lualine()
 install_atq()
 install_renderMarkdown()
+
+require("global-func") -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
