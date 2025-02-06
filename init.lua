@@ -74,9 +74,15 @@ require("config.autocmd").setup({
   end
 })
 
-require("config.input").fcitx.setup(
-  "fcitx5-remote" -- which fcitx5-remote
-)
+-- windows的系統不適用，所以只在非windows系統使用
+if not string.find(
+      string.lower(vim.loop.os_uname().sysname), -- :help os_uname
+      "windows"
+    ) then
+  require("config.input").fcitx.setup(
+    "fcitx5-remote" -- which fcitx5-remote
+  )
+end
 
 
 local function install_nvimTreesitter()
