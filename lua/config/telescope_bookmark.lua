@@ -1,6 +1,29 @@
 local bookmark = {}
 local bookmark_db_path = vim.fn.stdpath("config") .. "/bookmark.lua"
 
+local function ensure_file_exists(path)
+  local file = io.open(path, "r")
+  if file then
+    file:close()
+    return
+  end
+
+  file = io.open(path, "w")
+  if not file then
+    vim.notify("無法創建檔案: " .. path, vim.log.levels.ERROR)
+    return
+  end
+
+  file:write([[return {
+  { name = "Documents", path = "~/Documents" },
+  { name = "Downloads", path = "~/Downloads" },
+}]])
+  file:close()
+  vim.notify("[telescope_bookmark] 初始化記錄檔: " .. path, vim.log.levels.INFO)
+end
+
+ensure_file_exists(bookmark_db_path)
+
 bookmark.table = {
   --[[
   { name = "HOME", path = "$HOME", row = nil },

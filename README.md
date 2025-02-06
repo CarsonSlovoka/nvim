@@ -14,7 +14,7 @@ git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 cd ~/.config/nvim
 git submodule update --init --recursive
 
-# 初始化自定義永定書籤
+# (可選) 初始化自定義永定書籤 (此檔案如果沒有, 會幫忙生成)
 echo 'return {
    { name = "Documents", path = "~/Documents" },
    { name = "Downloads", path = "~/Downloads" },
@@ -26,8 +26,6 @@ wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.z
 unzip FiraCode.zip -d ~/.fonts
 rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
-}
-
 ```
 
 > 如果有需要還要安裝想要的[lsp server](#安裝語言伺服器)
