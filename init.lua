@@ -62,7 +62,7 @@ require("config.autocmd").setup({
       end,
       {
         nargs = 1,
-        complete = function()
+        complete = function() -- complete 不能直接回傳一個table，一定要用一個function來包裝
           return {
             "1",
             "0"
@@ -1008,6 +1008,19 @@ local function install_cmp_list()
       })
     end
   })
+
+  local mWindow = require("cmp-list.window")
+  vim.keymap.set(
+    "n",
+    "<Leader>p",
+    mWindow.toggle_floating_window,
+    {
+      desc = "toogle cmp-list preview window",
+      noremap = true,
+      silent = true
+    }
+
+  )
 end
 
 
