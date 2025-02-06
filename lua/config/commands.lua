@@ -75,6 +75,20 @@ function commands.setup()
       desc = "edit",
     }
   )
+  vim.api.nvim_create_user_command(
+    "Help",
+    function()
+      local selected_text = require("utils.range").get_selected_text()
+      if #selected_text == 0 then
+        return
+      end
+      vim.cmd("help " .. selected_text)
+    end,
+    {
+      range = true,
+      desc = "edit",
+    }
+  )
 end
 
 return commands
