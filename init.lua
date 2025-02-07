@@ -174,7 +174,7 @@ local function install_lspconfig()
   m.gopls.setup {}
   -- m.tsserver.setup{}
   m.bashls.setup {}
-  m.markdown_oxide.setup {
+  m.markdown_oxide.setup {                                       -- 請安裝rust後透過cargo來取得
     cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
   }
   m.clangd.setup {}

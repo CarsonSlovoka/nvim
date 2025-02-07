@@ -387,6 +387,12 @@ Current installation options:
 
 > 安裝完成之後，記得重新啟動終端機！
 
+
+```sh
+cargo -V
+# cargo 1.84.1 (66221abde 2024-11-19)
+```
+
 **[install markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide/tree/main?tab=readme-ov-file#vscode)**
 
 ```yaml
