@@ -179,7 +179,8 @@ local function install_lspconfig()
   print(pyright_path)
   vim.g.lsp_pyright_path = pyright_path
   m.gopls.setup {}
-  m.tsserver.setup {}
+  -- m.tsserver.setup {} Deprecated servers: tsserver -> ts_ls
+  m.ts_ls.setup {}
   m.bashls.setup {}
 
   m.markdown_oxide.setup {                                              -- 請安裝rust後透過cargo來取得
