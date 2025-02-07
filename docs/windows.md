@@ -10,13 +10,32 @@
 :lua print(vim.fn.stdpath("config"))
 ```
 
+它所謂的`$XDG_CONFIG_DIRS`或者`XDG_CONFIG_HOME`都是指環境變數，例如你可以改成
+
+```bash
+setx XDG_CONFIG_HOME %userprofile%\.config # 加在使用者個人環境變數
+setx XDG_CONFIG_HOME %userprofile%\.config /M # 加在系統環境變數
+```
+
+如果沒特別的需求建議就用預設的不需要修改
+
 # PATH 環境變數
 
 windows預設的環境變數可能沒有`HOME`
 
 所以要自己將PATH也添加此路徑，設定成與`vim.fn.stdpath("config")`相同即可
 
-> 注意 .gitconfig 可能也會受到影響，也要將此文件放到`HOME`下
+```shell
+setx HOME %userprofile%\AppData\Local
+```
+
+> 注意 .gitconfig 可能也會受到影響，也要將此文件放到`HOME`
+
+```shell
+# 從 %userprofile%\.gitconfig 搬移至 %userprofile%\AppData\Local\.gitconfig
+# (不建議留兩個，可能會遇到gitk卡頓的問題(雖然我最後更新git之後就沒再遇到了，但是此時的.gitconfig我指留一份))
+```
+
 
 # Fonts
 
@@ -141,3 +160,25 @@ https://github.com/rjpcomputing/luaforwindows/releases/download/v5.1.5-52/LuaFor
 安裝完成之後首次會有一些lua的範例
 
 或者你也可以在這邊找[lua/examples](https://github.com/rjpcomputing/luaforwindows/tree/master/files/examples)
+
+# FAQ
+
+## gitk --all卡頓
+
+你會發現如果新增了`HOME`環境變數，使用`gitk --all`去查看時，可能就會卡住都沒有回應
+
+它與你環境變數設定在哪, 調整`GIT_CONFIG_GLOBAL`這些環境變數都無關，弄了還是可能會再遇到問題
+
+有可能是你的git版本太舊，直接重新下載git或者用`git update-git-for-windows`去升級後即可
+
+先查看git的版本
+
+```bash
+git --version
+# git version 2.33.1.windows.1
+
+# 升級git
+git update-git-for-windows
+git --version
+git version 2.47.1.windows.2
+```
