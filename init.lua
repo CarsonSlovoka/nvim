@@ -168,10 +168,18 @@ local function install_lspconfig()
     vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
     return
   end
-  -- m.pyright.setup {}
-  -- vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
+  m.pyright.setup {}
+  local pyright_path
+  if osUtils.IsWindows() then
+    -- 透過powershell的gcm來找pyright.exe的路徑
+    pyright_path = vim.fn.system('powershell -Command "(gcm pyright).Source"')
+  else
+    pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
+  end
+  print(pyright_path)
+  vim.g.lsp_pyright_path = pyright_path
   m.gopls.setup {}
-  -- m.tsserver.setup{}
+  m.tsserver.setup {}
   m.bashls.setup {}
 
   m.markdown_oxide.setup {                                              -- 請安裝rust後透過cargo來取得

@@ -273,6 +273,9 @@ which gopls
 
 #### python
 
+<details>
+<summary>用虛擬環境(不推薦)</summary>
+
 ```bash
 pyenv virtualenv 3.13.0 pyright-env
 pyenv activate pyright-env
@@ -291,11 +294,19 @@ which pyright | wl-copy
 pyenv activate pyright-env
 nivm ~/test.py
 ```
+</details>
 
 建議安裝在全局上，可以省得麻煩
 ```bash
+pyenv versions # 看本機有的python版本或者確認當前使用的python版本
+
+# 安裝指定版本 (如果已經安裝可以省略)
 pyenv install 3.13.0
+
+# 啟用指定版本的python
 pyenv global 3.13.0
+
+# 安裝pyright
 pip install pyright
 pip freeze | grep pyright
 # pyright==1.1.391

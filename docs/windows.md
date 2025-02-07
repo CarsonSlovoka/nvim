@@ -161,6 +161,46 @@ https://github.com/rjpcomputing/luaforwindows/releases/download/v5.1.5-52/LuaFor
 
 或者你也可以在這邊找[lua/examples](https://github.com/rjpcomputing/luaforwindows/tree/master/files/examples)
 
+## install pyenv
+
+目前[pyenv並不支持純windows](https://github.com/pyenv/pyenv/blob/d327702c4de949136e1d351bf3027513de90d1e9/README.md?plain=1#L163-L170)
+
+它的建議是可以找另一個分支
+
+> https://github.com/pyenv-win/pyenv-win
+
+使用powershell, 並且用管理員身分執行以下命令
+
+```bash
+# 安裝
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
+# 完成後建議重新啟動終端機
+
+
+# 查看
+pyenv --version
+# pyenv 3.1.1
+
+# 安裝
+pyenv install -l # 查看有哪些版本可以安裝
+pyenv intsll <version> # 找一個你想要安裝的版本
+pyenv versions # 查看當前你有裝了那些版本的python
+pyenv global <version> # 全局的解析器用此版本來套用
+
+# 安裝範例
+pyenv versions # 如果沒有裝在準備安裝
+pyenv install 3.13.1
+pyenv global 3.13.1
+pyenv versions # 看看是否真的有被套用(前面會加上 `*` )
+```
+
+確定以下兩個路徑真的有被加到`PATH`使用者環境變數 (安裝的腳本其實已經有做這個動作)
+```
+%userprofile%\.pyenv\pyenv-win\bin
+%userprofile%\.pyenv\pyenv-win\shims
+```
+
+
 # FAQ
 
 ## gitk --all卡頓
