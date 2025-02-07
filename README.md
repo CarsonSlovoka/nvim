@@ -44,6 +44,18 @@ windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
 :helptags ~/.config/nvim/pack/schedule/start/atq.nvim/doc/
 ```
 
+## [ripgrep](https://github.com/BurntSushi/ripgrep) (可選)
+
+```sh
+sudo apt install ripgrep
+```
+
+windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1 找到合適的選項下載,
+
+例如: [ripgrep-14.1.1-x86_64-pc-windows-gnu.zip](https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-x86_64-pc-windows-gnu.zip)
+
+完成之後解壓縮，並設定該目錄可以讓環境變數`PATH`抓到rg.exe, 例如: `C:\usr\bin\ripgrep\rg.exe`
+
 # 目錄結構
 
 - ✅ 表示目前已經有實作
