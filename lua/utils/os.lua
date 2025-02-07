@@ -1,5 +1,6 @@
 local M = {}
 
+--- @return boolean
 function M.IsWindows()
   if string.find(
         string.lower(vim.loop.os_uname().sysname), -- :help os_uname
@@ -15,12 +16,12 @@ end
 --- :lua print(vim.fn.stdpath("config"))
 --- 我不想要刻意調整它，不過像cargo這些預設的又會抓%userprofile%當底, 所以透過這種方法來自動抓能取道的項目
 --- @return string
-function M.GetExePathFromHome(exePath)
+function M.GetPathFromHome(path)
   for _, homePath in ipairs({
     os.getenv("HOME"),
     os.getenv("userprofile"),
   }) do
-    local fullPath = homePath .. exePath
+    local fullPath = homePath .. path
     if M.IsWindows() then
       fullPath = fullPath .. ".exe" -- 幫忙補上.exe
     end
@@ -30,6 +31,18 @@ function M.GetExePathFromHome(exePath)
     end
   end
   return ""
+end
+
+--- @return string
+function M.GetExePathFromHome(exePath)
+  local p = M.GetPathFromHome(exePath)
+  if p == "" then
+    return ""
+  end
+
+  if M.IsWindows() then
+    return p .. ".exe" -- 幫忙補上.exe
+  end
 end
 
 return M
