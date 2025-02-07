@@ -176,7 +176,6 @@ local function install_lspconfig()
   else
     pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
   end
-  print(pyright_path)
   vim.g.lsp_pyright_path = pyright_path
   m.gopls.setup {}
   -- m.tsserver.setup {} Deprecated servers: tsserver -> ts_ls
