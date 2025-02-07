@@ -7,8 +7,10 @@
 > https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
 >
 > (版本可以[找](https://github.com/ryanoasis/nerd-fonts/releases/)比較新的)
+>
+> 下載完安裝該字體即可, 建議用: `FiraCodeNerdFontMono-Retina.ttf`
 
-另外你的終端機也必須要有支持該字體, 才可以顯示
+另外你的終端機也必須要有支持該字體(否則會不到該字體), 才可以顯示
 
 建議可以用wt, 目前windows 11預設就已經用wt
 
