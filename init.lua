@@ -1,3 +1,5 @@
+local osUtils = require("utils.os")
+
 local HOME = os.getenv("HOME")
 
 -- runtimepath
@@ -75,10 +77,7 @@ require("config.autocmd").setup({
 })
 
 -- windows的系統不適用，所以只在非windows系統使用
-if not string.find(
-      string.lower(vim.loop.os_uname().sysname), -- :help os_uname
-      "windows"
-    ) then
+if not osUtils.IsWindows() then
   require("config.input").fcitx.setup(
     "fcitx5-remote" -- which fcitx5-remote
   )
@@ -169,13 +168,14 @@ local function install_lspconfig()
     vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
     return
   end
-  m.pyright.setup {}
-  vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
+  -- m.pyright.setup {}
+  -- vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
   m.gopls.setup {}
   -- m.tsserver.setup{}
   m.bashls.setup {}
-  m.markdown_oxide.setup {                                       -- 請安裝rust後透過cargo來取得
-    cmd = { os.getenv("HOME") .. "/.cargo/bin/markdown-oxide" }, -- 指定可執行檔的完整路徑
+
+  m.markdown_oxide.setup {                                              -- 請安裝rust後透過cargo來取得
+    cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
   }
   m.clangd.setup {}
   m.lua_ls.setup {
