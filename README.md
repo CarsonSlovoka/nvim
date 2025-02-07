@@ -28,6 +28,8 @@ rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
 ```
 
+windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
+
 > 如果有需要還要安裝想要的[lsp server](#安裝語言伺服器)
 
 
