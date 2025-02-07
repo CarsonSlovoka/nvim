@@ -3,6 +3,10 @@ local options = {}
 function options.setup()
   vim.g.mapleader = "," -- 預設是 \
 
+  -- :set fileformat=dos -- 這是\r\n
+  vim.o.fileformat = "unix" -- 讓windows上的換行符號也同unix都是用\n -- 如果你透過nvimTree的a來新增檔案它可能還是按造系統，可以手動用:set fileformat來調整
+  -- fileformat有沒有影響你可以直接用 nvim 一進來的空檔案，去檢查就會曉得了 :set fileformat?
+
   -- vim.opt.relativenumber = false -- :set rnu 這是預設
   vim.opt.relativenumber = true -- :set nornu 這樣用+, -找行的時候會比較簡單，尤其是區塊選取多行的時候
   vim.opt.backup = false
