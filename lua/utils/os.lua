@@ -43,6 +43,8 @@ function M.GetExePathFromHome(exePath)
   if M.IsWindows() then
     return p .. ".exe" -- 幫忙補上.exe
   end
+
+  return p
 end
 
 return M
