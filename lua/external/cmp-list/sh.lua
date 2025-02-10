@@ -3,7 +3,18 @@ local kind = {
   watch = "watch",
   count = "count",
   file = "file",
+  tool = "tool",
 }
+
+local desc = {
+  mkvToMp4 = [[
+# 轉檔
+# 如果確定當前工作目錄只有一個mkv檔案，可以直接用*.mkv
+ffmpeg -i *.mkv -c:v copy -c:a copy output.mp4
+]]
+
+}
+
 
 return {
   -- find
@@ -180,5 +191,39 @@ grep -rn --include="*.sh" "install" ~ | grep install.sh | head -n 3
     word = 'cat my_part_00 my_part_01 > my.pdf',
     kind = kind.file,
     info = "將my_part_00與my_part_01的內容合在一起成為my.pdf檔案"
+  },
+
+
+  -- wf-recorder
+  {
+    word = 'wf-recorder -g "$(slurp)" --audio --file="$(realpath ~/Documents/output.mkv)"',
+    kind = kind.tool,
+    abbr = 'recSelection',
+    -- menu = "💡",
+    info = [[
+  錄螢幕, 可選擇區域
+  ( 注意！ 如果要選區域，輸出格式只能是mkv)
+
+]],
+    user_data = {
+      example = [[
+wf-recorder -g "$(slurp)" --file=output.mkv
+]] .. desc.mkvToMp4
+    }
+  },
+  {
+    word = 'wf-recorder --audio --file="$(realpath ~/Documents/output.mkv)"',
+    kind = kind.tool,
+    abbr = 'recScreen',
+    -- menu = "💡",
+    info = [[
+  錄整個螢幕
+  (有多個螢幕時可挑)
+]],
+    user_data = {
+      example = [[
+wf-recorder --audio --file=output.mp4
+]] .. desc.mkvToMp4
+    }
   },
 }

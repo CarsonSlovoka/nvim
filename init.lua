@@ -1,4 +1,5 @@
 local osUtils = require("utils.os")
+local array = require("utils.array")
 
 local HOME = os.getenv("HOME")
 
@@ -1017,8 +1018,12 @@ local function install_cmp_list()
   m.setup({
     presets = function(default_config)
       return m.deep_merge({}, {
+        _global = array.Merge(
+          require('external.cmp-list.nvim-cmd'), -- vim中的command相關 :
+          require('external.cmp-list.tool')
+        ),
         sh = require('external.cmp-list.sh'),
-        lua = require('external.cmp-list.lua')
+        lua = require('external.cmp-list.lua'),
       })
     end
   })
