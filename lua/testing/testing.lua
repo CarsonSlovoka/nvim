@@ -8,7 +8,7 @@ function M.RunTest(allTestFunc, funcName)
     -- print("Executing function:", func_name)
     allTestFunc[funcName]()
   else
-    print("Error: No such function '" .. (func_name or "") .. "'")
+    print("Error: No such function '" .. (funcName or "") .. "'")
     print("Available functions:")
     for name, _ in pairs(allTestFunc) do
       print("  - " .. name)
