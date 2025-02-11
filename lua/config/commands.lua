@@ -1,3 +1,5 @@
+local path = require("utils.path")
+
 local commands = {}
 
 local function openCurrentDirWithFoot()
@@ -87,6 +89,39 @@ function commands.setup()
     {
       range = true,
       desc = "edit",
+    }
+  )
+
+  vim.api.nvim_create_user_command("SavePNG",
+    function(args)
+      local outputPath = ""
+      if #args.fargs > 0 then
+        outputPath = args.fargs[1]
+      else
+        local timestamp = os.date("%Y-%m-%d_%H-%M-%S")
+        local saveDir = vim.fn.expand("%:p:h")
+        outputPath = path.join(saveDir, timestamp .. ".png")
+      end
+
+      -- 確保輸出的目錄存在
+      local outputDir = vim.fn.fnamemodify(outputPath, ":h")
+      if vim.fn.isdirectory(outputDir) == 0 then
+        vim.fn.mkdir(outputDir, "p")
+      end
+
+      -- 使用 ws-paste 來保存
+      local cmd = 'wl-paste --type image/png > "' .. outputPath .. '"'
+      local result = os.execute(cmd)
+
+      if result == 0 then
+        print("圖片保存成功: " .. outputPath)
+      else
+        print("圖片保存失敗")
+      end
+    end,
+    {
+      nargs = "?",
+      desc = "保存剪貼簿的圖片(依賴ws-paste)"
     }
   )
 end
