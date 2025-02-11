@@ -7,10 +7,6 @@ local kind = {
 
 return {
   {
-    word = "vim.loop.fs_stat(filepath) ~= nil",
-    info = "fileExists"
-  },
-  {
     word = 'vim.fn.line(".")',
     info = "光標所在的列位置，首列為: 1",
   },

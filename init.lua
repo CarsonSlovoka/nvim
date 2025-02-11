@@ -1023,7 +1023,10 @@ local function install_cmp_list()
           require('external.cmp-list.tool')
         ),
         sh = require('external.cmp-list.sh'),
-        lua = require('external.cmp-list.lua'),
+        lua = array.Merge(
+          require('external.cmp-list.lua'),
+          require('external.cmp-list.vim-fn')
+        ),
       })
     end
   })
