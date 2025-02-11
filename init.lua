@@ -716,18 +716,37 @@ local function install_telescope()
 
   -- 搜索當前工作目錄下的文件
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
-  vim.api.nvim_create_user_command("Findfiles", function(args)
-    if #args.args == 0 then
-      builtin.find_files()
-    else
-      local params = vim.split(args.args, " ")
-      local path = params[1]
-      -- local orgPath = vim.fn.getcwd()
-      builtin.find_files({ cwd = path })
+  vim.api.nvim_create_user_command("FindFiles", function(args)
+    local opt = {}
+    local cwd = "."
+    if #args.fargs > 0 then
+      opt.cwd = args.fargs[1]
     end
+    if #args.fargs > 1 then
+      opt.search_file = vim.split(args.fargs[2], "　", { plain = true })[1]
+    end
+    print(vim.inspect(opt))
+    builtin.find_files(opt)
   end, {
-    nargs = "?",
-    desc = "同Telescope find_files但可以只定搜尋的工作路徑"
+    nargs = "*",
+    desc = "同Telescope find_files但可以只定搜尋的工作路徑",
+    complete = function(argLead, cmdLine, cursorPos)
+      local parts = vim.split(cmdLine, "%s+")
+      local argc = #parts - 1
+
+      if argc == 1 then
+        return vim.fn.getcompletion(argLead, "file")
+      elseif argc == 2 then
+        return {
+          "search_file",
+          ".gitmodules",
+          "*.{ttf,otf}",
+          "Fira*.ttf",
+          "F*.{ttf,otf}",
+          "README.md　只找檔名為README.md的文件",
+        }
+      end
+    end
   })
 
   vim.keymap.set("n", "<leader>eff", function()
