@@ -756,16 +756,43 @@ local function install_telescope()
   -- 搜索文本
   vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
   vim.api.nvim_create_user_command("Livegrep", function(args)
-    if #args.args == 0 then
-      builtin.live_grep()
-    else
-      local params = vim.split(args.args, " ")
-      local path = params[1]
-      builtin.live_grep({ cwd = path })
+    local opt = {}
+    local cwd = "."
+    if #args.fargs > 0 then
+      opt.cwd = args.fargs[1]
     end
+
+    if #args.fargs > 1 then
+      -- opt.glob_pattern = args.fargs[2] -- 如果是字串，似乎只能一種條件而已
+      -- 改成table可以有多個條件
+      local glob_pattern_table = vim.split(args.fargs[2], "|", { plain = true })
+      local glob_pattern = {}
+      for _, pattern in ipairs(glob_pattern_table) do
+        table.insert(glob_pattern, vim.split(pattern, "　")[1]) -- 只要資料，不要描述
+      end
+      opt.glob_pattern = glob_pattern
+    end
+    print(vim.inspect(opt))
+    builtin.live_grep(opt)
   end, {
-    nargs = "?",
-    desc = "同Telescope live_grep但可以只定搜尋的工作路徑"
+    nargs = "*",
+    desc = "同Telescope live_grep但可以只定搜尋的工作路徑",
+    complete = function(argLead, cmdLine, cursorPos)
+      local parts = vim.split(cmdLine, "%s+")
+      local argc = #parts - 1
+
+      if argc == 1 then
+        return vim.fn.getcompletion(argLead, "file")
+      elseif argc == 2 then
+        return {
+          "glob_pattern",
+          "*.lua",
+          "README.md　只找檔名為README.md的文件",
+          "!*.lua　不找lua檔案",
+          "*.lua|*.md　找lua或者md的檔名", -- 用U+3000做拆分
+        }
+      end
+    end
   })
 
   vim.keymap.set("n",
