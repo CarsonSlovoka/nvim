@@ -1,11 +1,11 @@
 local M = {}
 
 --- @return boolean
-function M.IsWindows()
+local function isWindows()
   if string.find(
-        string.lower(vim.loop.os_uname().sysname), -- :help os_uname
-        "windows"
-      ) then
+    string.lower(vim.loop.os_uname().sysname), -- :help os_uname
+    "windows"
+  ) then
     return true
   end
   return false
@@ -22,10 +22,6 @@ function M.GetPathFromHome(path)
     os.getenv("userprofile"),
   }) do
     local fullPath = homePath .. path
-    if M.IsWindows() then
-      fullPath = fullPath .. ".exe" -- 幫忙補上.exe
-    end
-
     if vim.loop.fs_stat(fullPath) ~= nil then
       return fullPath
     end
@@ -35,16 +31,17 @@ end
 
 --- @return string
 function M.GetExePathFromHome(exePath)
+  if M.IsWindows then
+    exePath = exePath .. ".exe" -- 幫忙補上.exe
+  end
   local p = M.GetPathFromHome(exePath)
   if p == "" then
     return ""
   end
 
-  if M.IsWindows() then
-    return p .. ".exe" -- 幫忙補上.exe
-  end
-
   return p
 end
+
+M.IsWindows = isWindows()
 
 return M

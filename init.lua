@@ -78,12 +78,11 @@ require("config.autocmd").setup({
 })
 
 -- windows的系統不適用，所以只在非windows系統使用
-if not osUtils.IsWindows() then
+if not osUtils.IsWindows then
   require("config.input").fcitx.setup(
     "fcitx5-remote" -- which fcitx5-remote
   )
 end
-
 
 local function install_nvimTreesitter()
   -- pack/syntax/start/nvim-treesitter
@@ -171,7 +170,7 @@ local function install_lspconfig()
   end
   m.pyright.setup {}
   local pyright_path
-  if osUtils.IsWindows() then
+  if osUtils.IsWindows then
     -- 透過powershell的gcm來找pyright.exe的路徑
     pyright_path = vim.fn.system('powershell -Command "(gcm pyright).Source"')
   else
