@@ -324,6 +324,17 @@ snap list | grep bash-language-server
 # bash-language-server   4.7.0  69   latest/stable    alexmurray*  classic
 ```
 
+另一種方式是透過npm
+
+```bash
+# choco install nodejs -y # 如果是windows，可以考慮用choco來裝nodejs裡面就會有提供npm工具
+# choco upgrade nodejs # 需要管理員權限
+# npm --version # 10.8.3
+# npm install -g npm@11.1.0 # 如果nodejs的版本太舊會沒辦法更新npm
+
+npm i -g bash-language-server
+```
+
 #### [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide)
 
 這是用rust寫的項目，如果還沒有安裝rust可以先[安裝](https://rust-lang.github.io/rustup/installation/other.html#other-installation-methods)
