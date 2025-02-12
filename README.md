@@ -435,6 +435,22 @@ ls -l $(which clangd)
 # /usr/bin/clangd -> clangd-18
 ```
 
+---
+
+windows: 可以到此[頁面](https://github.com/llvm/llvm-project/releases)，找一個喜歡的版本去下載,
+
+例如: [LLVM-20.1.0-rc1-win64.exe](https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.0-rc1/LLVM-20.1.0-rc1-win64.exe)
+
+選擇要安裝的目錄，假設你是裝在`D:\LLVM`, 那麼最後得到的clangd的位置是
+
+( 建議可以直接勾選添加環境變數，否則你要自己找出clangd的位置添加到PATH
+
+```
+(gcm clangd.exe).Source
+# D:\LLVM\bin\clangd.exe
+```
+
+
 #### [lua-language-server](https://github.com/luals/lua-language-server)
 
 ```sh
