@@ -76,6 +76,11 @@ local function setup(opts)
           -- italic = true,
           -- underline = true
         })
+
+        local groupTODO = "TODO"
+        -- vim.fn.matchadd(groupTODO, 'TODO:? .*') -- 無效
+        vim.fn.matchadd(groupTODO, 'TODO .*')
+        vim.api.nvim_set_hl(0, groupTODO, { fg = "#8bb33d", italic = true })
       end
     }
   )
