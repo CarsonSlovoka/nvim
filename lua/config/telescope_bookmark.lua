@@ -1,3 +1,5 @@
+local osUtils = require("utils.os")
+
 local bookmark = {}
 local bookmark_db_path = vim.fn.stdpath("config") .. "/bookmark.lua"
 
@@ -173,6 +175,10 @@ function bookmark.show()
     if #bk.path > path_width then
       path_width = #bk.path
     end
+  end
+
+  if osUtils.IsWindows and path_width >= 100 then
+    path_width = 99 -- string.format(%-101s) 會被報錯，暫時先限制長度
   end
 
   -- 先對table進行排序，如此就可以不需要之後再排
