@@ -222,3 +222,13 @@ git update-git-for-windows
 git --version
 git version 2.47.1.windows.2
 ```
+
+## [E138: main.shada.tmp.X files exist, cannot write ShaDa](https://github.com/neovim/neovim/issues/8587)
+
+[issues-11955](https://github.com/neovim/neovim/issues/11955)
+
+```shell
+cd ~\AppData\Local\nvim-data\shada
+ls # 查看檔案，應該會看到很多的tmp.xx的檔案
+rm main.shada.tmp.* # 將這些檔案都移除之後，錯誤應該就不會再有
+```
