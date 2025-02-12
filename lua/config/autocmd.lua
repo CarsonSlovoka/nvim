@@ -5,6 +5,13 @@ local M = {
 }
 
 local create_autocmd = vim.api.nvim_create_autocmd
+local groupName = {
+  editorconfig = "carson.editorconfig",
+  highlightSpecial = "highlightSpecial",
+}
+vim.api.nvim_create_augroup(groupName.editorconfig, { clear = true })
+vim.api.nvim_create_augroup(groupName.highlightSpecial, {})
+
 
 local function setup(opts)
   for k, v in pairs(opts) do
@@ -58,7 +65,8 @@ local function setup(opts)
   create_autocmd(
     { "BufRead", "BufNewFile" },
     {
-      group = vim.api.nvim_create_augroup("HighlightFullWidthSpace", {}),
+      -- group = vim.api.nvim_create_augroup("highlightSpecial", {}),
+      group = groupName.highlightSpecial,
       pattern = "*",
       callback = function()
         local groupCJKWhiteSpace = "CJKFullWidthSpace"
@@ -122,14 +130,14 @@ local function setup(opts)
     }
   )
 
-  vim.api.nvim_create_augroup("carson.editorconfig", { clear = true })
   create_autocmd(
     "FileType",
     {
-      group = "carson.editorconfig",
+      group = groupName.editorconfig,
       pattern = "*", -- :set ft?
 
       callback = function()
+        vim.o.fileformat = "unix"
         vim.opt_local.expandtab = true -- 使用空白代替Tab
         vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白
         vim.opt_local.softtabstop = 4  -- 在插入模式下，Tab鍵也等於4空白
@@ -141,7 +149,7 @@ local function setup(opts)
   create_autocmd(
     "FileType",
     {
-      group = "carson.editorconfig",
+      group = groupName.editorconfig,
       pattern = { "md", "yml", "yaml", "json", "json5", "js", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
       callback = function()
         vim.opt_local.tabstop = 2
@@ -154,7 +162,7 @@ local function setup(opts)
   create_autocmd(
     "FileType",
     {
-      group = "carson.editorconfig",
+      group = groupName.editorconfig,
       -- pattern = "go",
       pattern = { "go", "puml", "nsi", "nsh", "Makefile", "mk" },
       callback = function()
@@ -163,6 +171,19 @@ local function setup(opts)
         -- vim.opt_local.tabstop = 2
         -- vim.opt_local.softtabstop = 2
         -- vim.opt_local.shiftwidth = 2
+      end,
+      desc = "indent_style=tab"
+    }
+  )
+  create_autocmd(
+    "FileType",
+    {
+      group = groupName.editorconfig,
+      pattern = {
+        "dosbatch" -- bat
+      },
+      callback = function()
+        vim.o.fileformat = "dos"
       end,
       desc = "indent_style=tab"
     }
