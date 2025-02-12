@@ -55,6 +55,31 @@ local function setup(opts)
     }
   )
 
+  create_autocmd(
+    { "BufRead", "BufNewFile" },
+    {
+      group = vim.api.nvim_create_augroup("HighlightFullWidthSpace", {}),
+      pattern = "*",
+      callback = function()
+        local groupCJKWhiteSpace = "CJKFullWidthSpace"
+        vim.fn.matchadd(groupCJKWhiteSpace, '　') -- 創建群組(群組名稱如果不存在似乎會自己建立)對應關係: 匹配U+3000
+        -- vim.fn.matchadd(groupCJKWhiteSpace, 'A') -- 可以這樣添加其他要內容
+
+        -- 設定此群組的高亮
+        vim.api.nvim_set_hl(0, groupCJKWhiteSpace, {
+          -- bg = 'red',   -- 背景色
+          -- fg = 'white', -- 前景色
+          bg = "#a6a6a6",
+          fg = '#00ffff',
+          -- 你也可以添加其他屬性，例如：
+          -- bold = true,
+          -- italic = true,
+          -- underline = true
+        })
+      end
+    }
+  )
+
   -- trim_trailing_whitespace
   create_autocmd(
     "BufwritePre", -- 在寫入前執行的動作
