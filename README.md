@@ -271,6 +271,11 @@ which gopls
 # $GOPATH/bin/gopls
 ```
 
+> 注意! 當你的go版本有更新的時候，可能要重新再執行一次命令此命令來得到最新版本的解析器
+>
+> 不然在診斷(diagnostic)上可能會看到錯誤或警告
+
+
 #### python
 
 <details>
