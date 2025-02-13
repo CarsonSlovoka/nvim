@@ -5,6 +5,12 @@ local options = {}
 function options.setup()
   vim.g.mapleader = "," -- 預設是 \
 
+  -- :lua vim.opt.fileencoding = "cp950" -- 當你先開啟文件，再用此方法去換，看到的可能還是錯的，因為開啟的時候，會由fileencodings依次去轉，直到沒有錯的，
+  -- 它如果轉到了最後一個(latin1)那麼這種情況再由latin1轉到cp950看到的就不對
+  -- :e ++enc=cp950 filename.txt -- 可以用這種方式來確保一開始開啟時，就是用正確的編碼
+  -- :set fileencodings? -- 這個可以查看當前的設定
+  vim.opt.fileencodings = "ucs-bom,utf-8,default,cp950,big5,gbk,latin1"
+
   -- :set fileformat=dos -- 這是\r\n
   vim.o.fileformat = "unix" -- 讓windows上的換行符號也同unix都是用\n  -- 目前已透過autocmd的FileType事件強制調整(除了bat以外都是unix)
   -- fileformat有沒有影響你可以直接用 nvim 一進來的空檔案，去檢查就會曉得了 :set fileformat?
