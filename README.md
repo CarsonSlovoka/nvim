@@ -703,3 +703,39 @@ mkdir -pv ~/.config/nvim/pack/edit/start/
 ```sh
 git clone https://github.com/CarsonSlovoka/cmp.git ~/.config/nvim/pack/edit/start/cmp.nvim
 ```
+
+
+# [neovide](https://github.com/neovide/neovide)
+
+提供一個neovim的GUI, [特色](https://neovide.dev/features.html)
+
+## Installation
+
+### windows
+
+你可以到release的[頁面](https://github.com/neovide/neovide/releases)下載, 例如[0.14.0 neovide.msi](https://github.com/neovide/neovide/releases/download/0.14.0/neovide.msi)，接著點選後安裝完畢，就會得到`neovide.exe`
+
+或者透過[scoop](https://neovide.dev/installation.html#scoop)來安裝
+
+```bash
+# 如果是要透過scoop，要先確保有extras
+scoop bucket list
+# main
+# extras
+
+# 如果沒有請先添加 extras
+scoop bucket add extras
+
+# 接著就可以安裝
+scoop install neovide
+
+# 確認執行檔位置
+(gcm neovide).Source
+# %userprofile%\scoop\shims\neovide.exe
+
+# neovide -V # 如果用scoop來裝，這個可能會看不到任何內容，要改用scoop list來查看
+scoop list neovide
+# Name    Version Source Updated             Info
+# ----    ------- ------ -------             ----
+# neovide 0.14.0  extras 2025-02-12 17:57:53
+```

@@ -1,3 +1,5 @@
+require("config.neovide")
+
 local options = {}
 
 function options.setup()
