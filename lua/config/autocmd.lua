@@ -97,6 +97,7 @@ local function setup(opts)
   create_autocmd(
     "BufwritePre", -- 在寫入前執行的動作
     {
+      desc = "去除結尾多餘的space, tab",
       pattern = "*",
       callback = function()
         -- 其實就是使用vim的取代%s/.../...
@@ -106,11 +107,11 @@ local function setup(opts)
         vim.cmd([[%s/\s\+$//e]])
         if M.autoReformat then
           -- 檢查是否有LSP客戶端附加到當前的緩衝區
-          local clients = vim.lsp.get_active_clients({ bufnr = vim.api.nvim_get_current_buf() })
+          local clients = vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() })
           local has_formatter = false
           for _, client in ipairs(clients) do
             -- 也就檢查是否有支持格式化的功能
-            if client.supports_method("textDocument/formatting") then
+            if client:supports_method("textDocument/formatting") then
               has_formatter = true
               break
             end
