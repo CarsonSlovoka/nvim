@@ -711,6 +711,31 @@ git clone https://github.com/CarsonSlovoka/cmp.git ~/.config/nvim/pack/edit/star
 
 ## Installation
 
+### linux
+
+Ubuntu/Debian
+```sh
+sudo apt install -y curl \
+    gnupg ca-certificates git \
+    gcc-multilib g++-multilib cmake libssl-dev pkg-config \
+    libfreetype6-dev libasound2-dev libexpat1-dev libxcb-composite0-dev \
+    libbz2-dev libsndio-dev freeglut3-dev libxmu-dev libxi-dev libfontconfig1-dev \
+    libxcursor-dev
+
+# 安裝rust(如果已經裝了，可以略過)來取得cargo
+curl --proto '=https' --tlsv1.2 -sSf "https://sh.rustup.rs" | sh -v
+
+# fetch and build
+cargo install --git https://github.com/neovide/neovide
+# (如果你用ssh, 可以暫時先將~/.gitconfig相關的url有關於https://github.com先註解掉裝完再恢復)
+
+cargo install --list
+ls -l $(which neovide)
+# ~/.cargo/bin/neovide
+neovide -V
+# neovide 0.14.0
+```
+
 ### windows
 
 你可以到release的[頁面](https://github.com/neovide/neovide/releases)下載, 例如[0.14.0 neovide.msi](https://github.com/neovide/neovide/releases/download/0.14.0/neovide.msi)，接著點選後安裝完畢，就會得到`neovide.exe`
