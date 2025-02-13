@@ -55,3 +55,37 @@ vim.api.nvim_create_user_command(
     desc = "transparency 改變alpha的透明度"
   }
 )
+
+local config = {}
+config.neovide_scale_factor_step = 0.2
+
+vim.api.nvim_create_user_command(
+  "NeovideSetScaleFactorStep",
+  function(args)
+    config.neovide_scale_factor_step = tonumber(args.fargs[1])
+    print(config.neovide_scale_factor_step)
+  end,
+  {
+    nargs = 1,
+    complete = function()
+      return {
+        "0.1",
+        "0.2",
+        "0.5",
+        "1",
+        "1.5",
+        "5", -- 縮放很小的時候會有縮略圖的感覺
+      }
+    end,
+    desc = "vim.g.neovide_scale_factor += n"
+  }
+)
+
+
+vim.keymap.set({ "n", "v" }, "<C-=>", function()
+  vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + config.neovide_scale_factor_step
+end, { desc = "Neovide Zoom In " .. config.neovide_scale_factor_step })
+
+vim.keymap.set({ "n", "v" }, "<C-->", function()
+  vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - config.neovide_scale_factor_step
+end, { desc = "Neovide Zoom Out " .. config.neovide_scale_factor_step })
