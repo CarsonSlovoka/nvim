@@ -137,7 +137,10 @@ local function setup(opts)
       pattern = "*", -- :set ft?
 
       callback = function()
-        vim.o.fileformat = "unix"
+        if vim.o.fileformat ~= "unix" then
+          print(string.format("set fileformat from `%s` to `unix`", vim.o.fileformat)) -- 提示使用者有被自動轉換，使其如果不滿意還可以自己再轉回去
+          vim.o.fileformat = "unix"
+        end
         vim.opt_local.expandtab = true -- 使用空白代替Tab
         vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白
         vim.opt_local.softtabstop = 4  -- 在插入模式下，Tab鍵也等於4空白
