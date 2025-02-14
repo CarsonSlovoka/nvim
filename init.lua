@@ -272,6 +272,26 @@ local function install_lspconfig()
     }
   )
   vim.cmd("ToggleDiagnosticHover --quite")
+
+  vim.api.nvim_create_user_command(
+    "SetDiagnostics",
+    function(args)
+      if args.fargs[1] == "1" then
+        vim.diagnostic.enable()
+        vim.notify("diagnostic enable", vim.log.levels.INFO)
+      elseif args.fargs[1] == "0" then
+        vim.diagnostic.disable()
+        vim.notify("diagnostic disable", vim.log.levels.INFO)
+      end
+    end,
+    {
+      nargs = 1,
+      complete = function()
+        return { "1", "0" }
+      end,
+      desc = "set diagnostic"
+    }
+  )
 end
 
 
