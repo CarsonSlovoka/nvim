@@ -13,7 +13,7 @@ vim.api.nvim_create_augroup(groupName.editorconfig, { clear = true })
 vim.api.nvim_create_augroup(groupName.highlightSpecial, {})
 
 
-local function setup(opts)
+function M.setup(opts)
   for k, v in pairs(opts) do
     if M[k] ~= nil then
       M[k] = v
@@ -198,6 +198,4 @@ local function setup(opts)
   end
 end
 
-return {
-  setup = setup
-}
+return M

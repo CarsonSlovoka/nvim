@@ -1206,4 +1206,6 @@ install_atq()
 install_renderMarkdown()
 install_cmp_list()
 
-require("global-func") -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
+require("global-func")         -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
+
+pcall(require, "my-customize") -- 如果有一些自定義的設定，可以自己新增一個my-customize.lua來覆寫

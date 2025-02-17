@@ -37,6 +37,10 @@ windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
 
 ```bash
 # (可選) tags
+# ALL 會將所有runtimepath，有doc的資料夾自動去生成 tags 目錄
+:helptags ALL
+
+# 你也可以選擇各別添加
 :helptags ~/.config/nvim/doc
 :helptags ~/.config/nvim/pack/search/start/telescope.nvim/doc/
 :helptags ~/.config/nvim/pack/git/start/gitsigns.nvim/doc/
@@ -147,6 +151,22 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   └── ...                          -- 其他延遲加載配置
 └── README.md                        -- ✅ 簡單說明文件
 ```
+
+# my-customize.lua
+
+如果你有自定義的設定，可以加在`my-customize.lua`中, 例如:
+
+```sh
+echo '
+vim.cmd("ToggleDiagnosticVirtualText --quite")
+vim.cmd("ToggleDiagnosticHover --quite")
+vim.cmd("SetDiagnostics 0")
+require("config.autocmd").autoReformat = false
+-- vim.opt.runtimepath:append("/path/to/project/") -- 執行`:helptags ALL` 會生成`/path/to/project/doc/tags` 檔案
+-- vim.cmd("helptags ALL")
+' > ~/.config/nvim/lua/my-customize.lua
+```
+
 
 # pack
 

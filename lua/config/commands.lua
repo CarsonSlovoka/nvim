@@ -221,9 +221,9 @@ function commands.setup()
   vim.api.nvim_create_user_command("AddLocalHelp",
     function(args)
       -- :help add-local-help
-      -- # 注意，如果你新增其它的路徑在runtimepath下，就算生成了tags檔案，也還是沒辦法正常使用幫助
-      -- # :set runtimepath+=/path/to/your/runtime
-      -- vim.opt.runtimepath:append('/path/to/your/runtime') -- runtimepath有成功，但是doc一樣會出不來
+      -- # :set runtimepath+=/path/to/your/ -- 注意your下應該會有一個doc的目錄
+      -- vim.opt.runtimepath:append('/path/to/your/') -- 你也可以選擇在init進行永久添加的設定
+      -- :helptags ALL -- 如果你的tags還沒有生成，可以直接設定為ALL, 它會自己將所有runtimepath底下的doc都去生成tags，就不需要各別設定
       --
       -- :!mkdir -p ~/.local/share/nvim/site/doc # 注意，在doc底下在建立子目錄，是找不到的
       -- :!cp my-plutin/my-plugin-doc.txt ~/.local/share/nvim/site/doc/
