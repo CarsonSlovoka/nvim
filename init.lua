@@ -1159,7 +1159,10 @@ local function install_cmp_list()
           require('external.cmp-list.nvim-cmd'), -- vim中的command相關 :
           require('external.cmp-list.tool')
         ),
-        sh = require('external.cmp-list.sh'),
+        sh = array.Merge(
+          require('external.cmp-list.sh'),
+          require('external.cmp-list.notify')
+        ),
         lua = array.Merge(
           require('external.cmp-list.lua'),
           require('external.cmp-list.vim-fn')
