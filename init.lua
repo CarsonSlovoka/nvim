@@ -243,6 +243,7 @@ local function install_lspconfig()
   )
   vim.cmd("ToggleDiagnosticVirtualText --quite") -- 因為我的預設值設定為false，所以這樣相當改成預設會啟用
 
+  --- @type boolean|nil
   local diagnosticHoverAutocmdId = false
   vim.o.updatetime = 250
   vim.api.nvim_create_user_command(
@@ -831,6 +832,7 @@ local function install_telescope()
         return {
           "search_file",
           ".gitmodules",
+          "tags",
           "*.{ttf,otf}",
           "Fira*.ttf",
           "F*.{ttf,otf}",

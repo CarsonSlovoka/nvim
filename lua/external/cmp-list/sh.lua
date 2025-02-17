@@ -54,6 +54,9 @@ find ~/Downloads/ -type f -name "U2A*"
 
 # 指定附檔名為pdf
 find ~/Downloads/ -type f -name "U2A*.pdf"
+
+# 找tag文件
+find ~/.config/nvim/ -type f -name "tags"
 ]]
     }
   },

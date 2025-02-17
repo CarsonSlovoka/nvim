@@ -217,6 +217,49 @@ function commands.setup()
     end,
     desc = "保存剪貼簿中的圖片，儲成webp格式"
   })
+
+  vim.api.nvim_create_user_command("AddLocalHelp",
+    function(args)
+      -- :help add-local-help
+      -- # 注意，如果你新增其它的路徑在runtimepath下，就算生成了tags檔案，也還是沒辦法正常使用幫助
+      -- # :set runtimepath+=/path/to/your/runtime
+      -- vim.opt.runtimepath:append('/path/to/your/runtime') -- runtimepath有成功，但是doc一樣會出不來
+      --
+      -- :!mkdir -p ~/.local/share/nvim/site/doc # 注意，在doc底下在建立子目錄，是找不到的
+      -- :!cp my-plutin/my-plugin-doc.txt ~/.local/share/nvim/site/doc/
+      -- :helptags ~/.local/share/nvim/site/doc/
+      local localHelpDir = vim.fn.fnamemodify("~/.local/share/nvim/site/doc/", ":p")
+
+      -- 確保目錄存在
+      vim.fn.mkdir(localHelpDir, "p")
+
+      for _, txtPath in ipairs(args.fargs) do
+        if vim.fn.fnamemodify(txtPath, ":e") ~= "txt" then
+          vim.notify("[skip file. ext ~= txt]: " .. txtPath, vim.log.levels.INFO)
+        else
+          local destPath = vim.fn.fnamemodify(localHelpDir .. vim.fn.fnamemodify(txtPath, ":t"), ":p")
+          os.execute("cp -v " .. txtPath .. " " .. destPath)
+          vim.cmd("helptags " .. localHelpDir)
+          vim.notify("[copied file]: " .. txtPath .. " -> " .. destPath, vim.log.levels.INFO)
+        end
+      end
+    end,
+    {
+      nargs = "+",
+      complete = function(argLead, _, _)
+        -- 原始的文件和目錄列表
+        local all_files = vim.fn.getcompletion(argLead, "file")
+
+        -- 僅篩選出 .txt 文件
+        local txt_files = vim.tbl_filter(function(item)
+          return item:match("%.txt$")
+        end, all_files)
+
+        return txt_files
+      end,
+      desc = "添加自定義的vim help"
+    }
+  )
 end
 
 return commands

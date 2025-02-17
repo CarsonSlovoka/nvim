@@ -42,6 +42,7 @@ windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
 :helptags ~/.config/nvim/pack/git/start/gitsigns.nvim/doc/
 :helptags ~/.config/nvim/pack/tree/start/nvim-tree.lua/doc/
 :helptags ~/.config/nvim/pack/schedule/start/atq.nvim/doc/
+# > 會在該目錄下生成出tags的文件，如果這些目錄在runtimepath下，就會自動生成文檔
 ```
 
 ## [ripgrep](https://github.com/BurntSushi/ripgrep) (可選)
@@ -154,6 +155,19 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 :help :packadd
     pack/*/start/{name}
 ```
+
+---
+
+有關於插件的位置，其實放在`runtimepath`能找的到的地方都可以
+
+以下指令可查看其所有的位置
+
+```lua
+:echo &runtimepath -- 這是一個字串用,串接每一個路徑
+
+:echo join(split(&runtimepath, ','), "\n") -- 先用,拆成array, 在用\n來串接，可以把每一個路徑都呈現
+```
+
 
 ```bash
 for dir in ./pack/*; do du -hs "$dir"; done
