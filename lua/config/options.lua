@@ -10,6 +10,8 @@ function options.setup()
   -- :e ++enc=cp950 filename.txt -- 可以用這種方式來確保一開始開啟時，就是用正確的編碼
   -- :set fileencodings? -- 這個可以查看當前的設定
   vim.opt.fileencodings = "ucs-bom,utf-8,default,cp950,big5,gbk,latin1"
+  -- :set bomb -- 如果想要將檔案加上bom, 可以使用 https://stackoverflow.com/a/7204424/9935654
+  -- :set nobomb -- 不保存bom
 
   -- :set fileformat=dos -- 這是\r\n
   vim.o.fileformat = "unix" -- 讓windows上的換行符號也同unix都是用\n  -- 目前已透過autocmd的FileType事件強制調整(除了bat以外都是unix)
