@@ -1,5 +1,6 @@
 local osUtils = require("utils.os")
 local array = require("utils.array")
+local completion = require("utils.complete")
 
 local HOME = os.getenv("HOME")
 
@@ -810,14 +811,44 @@ local function install_telescope()
   vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
   vim.api.nvim_create_user_command("FindFiles", function(args)
     local opt = {}
-    local cwd = "."
+    opt.cwd = "."
     if #args.fargs > 0 then
+      if args.fargs[1] == "-h" then
+        local help = {
+          'FindFiles . tags',
+          'FindFiles . opt lua/ -- 可能是options.lua也會找到',
+          'FindFiles ~ *.{ttf,otf} ~/.fonts/',
+          'FindFiles . *.{md,lua} docs/ lua/',
+          'FindFiles . README.md docs/ lua/',
+        }
+        -- vim.notify(table.concat(help, '\n'), vim.log.levels.INFO)
+        -- 生成 `setqflist` 使用的 table
+        local qfList = {}
+        for idx, message in ipairs(help) do
+          table.insert(qfList, {
+            text = message, -- 快速修復條目的訊息
+            -- filename = '',     -- 如果有具體的檔案路徑，可以填入檔案名稱
+            lnum = idx,     -- 其實也可以不用給
+            -- bufnr = 0,
+          })
+        end
+        -- 將 Quickfix 條目設定到 Quickfix 列表
+        vim.fn.setqflist(qfList, 'r') -- 'r' 表示覆蓋當前列表
+        vim.cmd('copen')
+        return
+      end
       opt.cwd = args.fargs[1]
     end
     if #args.fargs > 1 then
       opt.search_file = vim.split(args.fargs[2], "　", { plain = true })[1]
     end
-    print(vim.inspect(opt))
+    if #args.fargs > 2 then
+      opt.search_dirs = {}
+      for i = 3, #args.fargs do
+        table.insert(opt.search_dirs, args.fargs[i])
+      end
+    end
+    -- print(vim.inspect(opt))
     builtin.find_files(opt)
   end, {
     nargs = "*",
@@ -825,9 +856,10 @@ local function install_telescope()
     complete = function(argLead, cmdLine, cursorPos)
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
+      local dirs = completion.getDirOnly(argLead)
 
       if argc == 1 then
-        return vim.fn.getcompletion(argLead, "file")
+        return dirs
       elseif argc == 2 then
         return {
           "search_file",
@@ -838,6 +870,8 @@ local function install_telescope()
           "F*.{ttf,otf}",
           "README.md　只找檔名為README.md的文件",
         }
+      else
+        return dirs -- 後面的全部都當成search_dirs
       end
     end
   })
