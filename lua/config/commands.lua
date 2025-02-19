@@ -262,6 +262,47 @@ function commands.setup()
     }
   )
 
+
+  vim.api.nvim_create_user_command("PrintBOM", -- 其實可以寫在autocmd中，但是我覺得不必要，除了老程式，目前用utf-8機乎是主流，不太需要寫入BOM來佔空間
+    function(args)
+      if args.fargs[1] == "-h" then
+        cmdUtils.showHelpAtQuickFix({
+          ':set fileencoding=utf-8',
+          ':set fileencoding=utf-16       -- 這個可能有BOM, 也可能沒有, 如果有了話則用系統的讀法決定是le還是be',
+          ':set fileencoding=utf-16le     -- 如果要確實改成le可以用這種方法',
+          ':set fileencoding=utf-16be     -- 記得更改完後要存檔才會生效',
+          ':set bomb',
+          ':set nobomb',
+        })
+        return
+      end
+      local file = io.open(vim.fn.expand("%"), "rb") -- 用二進位方式來開始當前的文件
+      if not file then
+        return
+      end
+
+      local bytes = file:read(3) -- 看有多少byte就盡可能的讀取 -- 如果長度不夠不會出錯，會得到nil而已
+      file:close()
+
+      if bytes then
+        if bytes:sub(1, 2) == '\255\254' then         -- FF FE
+          vim.notify("utf-16le with BOM (FF FE)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 2) == '\254\255' then     -- FE FF
+          vim.notify("utf-16be with BOM (FE FF)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 3) == '\239\187\191' then -- EF BB BF
+          vim.notify("utf-8 with BOM (EF BB BF)", vim.log.levels.INFO)
+        end
+      end
+    end,
+    {
+      nargs = "?",
+      desc = "如果文件有BOM(utf-16le, utf-16be, utf-8)則顯示",
+      complete = function()
+        return "-h"
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command(
     "HexView",
     function(args)
@@ -295,23 +336,7 @@ function commands.setup()
         return
       end
 
-      local file = io.open(vim.fn.expand("%"), "rb") -- 用二進位方式來開始當前的文件
-      if not file then
-        return
-      end
-
-      local bytes = file:read(3) -- 看有多少byte就盡可能的讀取 -- 如果長度不夠不會出錯，會得到nil而已
-      file:close()
-
-      if bytes then
-        if bytes:sub(1, 2) == '\255\254' then         -- FF FE
-          vim.notify("utf-16le with BOM (FF FE)", vim.log.levels.INFO)
-        elseif bytes:sub(1, 2) == '\254\255' then     -- FE FF
-          vim.notify("utf-16be with BOM (FE FF)", vim.log.levels.INFO)
-        elseif bytes:sub(1, 3) == '\239\187\191' then -- EF BB BF
-          vim.notify("utf-8 with BOM (EF BB BF)", vim.log.levels.INFO)
-        end
-      end
+      vim.cmd("PrintBOM")
 
       if #args.fargs == 0 then
         vim.cmd("%!xxd") -- hex dump, -c 預設使用預設(16) -- %只的是目前的文件
