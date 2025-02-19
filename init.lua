@@ -820,6 +820,7 @@ local function install_telescope()
           'FindFiles ~ *.{ttf,otf} ~/.fonts/',
           'FindFiles . *.{md,lua} docs/ lua/',
           'FindFiles . README.md docs/ lua/',
+          'FindFiles ~ *.myType -- 如果你想要找某一個目錄，你只要確定該目錄下有某一個類型的檔案，接著用開始搜尋的時候，再用篩選去找結果',
         }
         -- vim.notify(table.concat(help, '\n'), vim.log.levels.INFO)
         -- 生成 `setqflist` 使用的 table
@@ -905,6 +906,23 @@ local function install_telescope()
     local opt = {}
     local cwd = "."
     if #args.fargs > 0 then
+      if args.fargs[1] == "-h" then
+        local help = {
+          'Livegrep . *.lua lua/ ftplugin/',
+          'Livegrep . *.{txt,git}|LICENSE',
+          'Livegrep ~ *.{md,sh}',
+        }
+        local qfList = {}
+        for idx, message in ipairs(help) do
+          table.insert(qfList, {
+            text = message,
+            lnum = idx,
+          })
+        end
+        vim.fn.setqflist(qfList, 'r')
+        vim.cmd('copen')
+        return
+      end
       opt.cwd = args.fargs[1]
     end
 
@@ -918,7 +936,15 @@ local function install_telescope()
       end
       opt.glob_pattern = glob_pattern
     end
-    print(vim.inspect(opt))
+
+
+    if #args.fargs > 2 then
+      opt.search_dirs = {}
+      for i = 3, #args.fargs do
+        table.insert(opt.search_dirs, args.fargs[i])
+      end
+    end
+    -- print(vim.inspect(opt))
     builtin.live_grep(opt)
   end, {
     nargs = "*",
@@ -926,9 +952,10 @@ local function install_telescope()
     complete = function(argLead, cmdLine, cursorPos)
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
+      local dirs = completion.getDirOnly(argLead)
 
       if argc == 1 then
-        return vim.fn.getcompletion(argLead, "file")
+        return dirs
       elseif argc == 2 then
         return {
           "glob_pattern",
@@ -937,6 +964,8 @@ local function install_telescope()
           "!*.lua　不找lua檔案",
           "*.lua|*.md　找lua或者md的檔名", -- 用U+3000做拆分
         }
+      else
+        return dirs -- search_dirs
       end
     end
   })
