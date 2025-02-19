@@ -1,6 +1,7 @@
 local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
+local cmdUtils = require("utils.cmd")
 
 local HOME = os.getenv("HOME")
 
@@ -824,19 +825,7 @@ local function install_telescope()
           'FindFiles ~ *.myType -- 如果你想要找某一個目錄，你只要確定該目錄下有某一個類型的檔案，接著用開始搜尋的時候，再用篩選去找結果',
         }
         -- vim.notify(table.concat(help, '\n'), vim.log.levels.INFO)
-        -- 生成 `setqflist` 使用的 table
-        local qfList = {}
-        for idx, message in ipairs(help) do
-          table.insert(qfList, {
-            text = message, -- 快速修復條目的訊息
-            -- filename = '',     -- 如果有具體的檔案路徑，可以填入檔案名稱
-            lnum = idx,     -- 其實也可以不用給
-            -- bufnr = 0,
-          })
-        end
-        -- 將 Quickfix 條目設定到 Quickfix 列表
-        vim.fn.setqflist(qfList, 'r') -- 'r' 表示覆蓋當前列表
-        vim.cmd('copen')
+        cmdUtils.showHelpAtQuickFix(help)
         return
       end
       opt.cwd = args.fargs[1]
@@ -919,15 +908,7 @@ local function install_telescope()
           'Livegrep . !*.lua|*.md             -- 不找lua和txt檔案',
           'Livegrep . LICENSE                 -- 只找LICENSE文件',
         }
-        local qfList = {}
-        for idx, message in ipairs(help) do
-          table.insert(qfList, {
-            text = message,
-            lnum = idx,
-          })
-        end
-        vim.fn.setqflist(qfList, 'r')
-        vim.cmd('copen')
+        cmdUtils.showHelpAtQuickFix(help)
         return
       end
       opt.cwd = args.fargs[1]
