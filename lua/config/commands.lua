@@ -1,4 +1,5 @@
 local path = require("utils.path")
+local cmdUtils = require("utils.cmd")
 
 local commands = {}
 
@@ -258,6 +259,83 @@ function commands.setup()
         return txt_files
       end,
       desc = "添加自定義的vim help"
+    }
+  )
+
+  vim.api.nvim_create_user_command(
+    "HexView",
+    function(args)
+      if args.fargs[1] == "-h" then
+        cmdUtils.showHelpAtQuickFix({
+          "'<,'>!xxd                       -- ⭐ 只對選取的內容做xxd, 如果你的文件很大，用這種方式速度會很快，而且undo回來也快",
+          "'<,'>!xxd -c 1",
+          'HexView',
+          'HexView 1                       -- 每一列用1byte來呈現 xx',
+          'HexView 2                       -- 每一列用2byte來呈現 xxxx',
+          'HexView 3                       -- 每一列用3byte來呈現 xxxx xx',
+          'HexView 4                       -- 每一列用4byte來呈現 xxxx xxxx',
+          'HexView 16',
+          ':!xxd my.otf > ~/my_temp.hex    -- 💡 將結果放到其它的文件',
+          ':1,2!xxd > ~/my_temp.hex        -- ❗ 只轉換部份資料覆蓋到某一個某件, 注意！當前的文件1~2列也會被截掉，如果要不變要用undo',
+          ':5!xxd                          -- 💡只對第5列做轉換',
+          ':5!xxd -r                       -- 💡還原第5列',
+          ':20,100!xxd                     -- 💡只對部份的列做xxd',
+          'xxd my.otf | less               -- xxd與less其實都是外部工具, less可以用▽之後才呈現之後的內容',
+          '> [!TIP] 如果要恢復可以用undo',
+          '> [!TIP] 切換可以善用undo, redo',
+          '> [!TIP] 不建用 :%!xxd -r 來恢復(如果原始文件編碼非utf-8可能會錯)',
+          ':set fileencoding=utf-8',
+          ':set fileencoding=utf-16le',
+          ':set fileencoding=utf-16be',
+          ':set bomb',
+          ':set nobomb',
+          ':set binary   -- 不會解析文件的換行符、終止符或編碼',
+          ':set nobinary',
+        })
+        return
+      end
+
+      local file = io.open(vim.fn.expand("%"), "rb") -- 用二進位方式來開始當前的文件
+      if not file then
+        return
+      end
+
+      local bytes = file:read(3) -- 看有多少byte就盡可能的讀取 -- 如果長度不夠不會出錯，會得到nil而已
+      file:close()
+
+      if bytes then
+        if bytes:sub(1, 2) == '\255\254' then         -- FF FE
+          vim.notify("utf-16le with BOM (FF FE)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 2) == '\254\255' then     -- FE FF
+          vim.notify("utf-16be with BOM (FE FF)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 3) == '\239\187\191' then -- EF BB BF
+          vim.notify("utf-8 with BOM (EF BB BF)", vim.log.levels.INFO)
+        end
+      end
+
+      if #args.fargs == 0 then
+        vim.cmd("%!xxd") -- hex dump, -c 預設使用預設(16) -- %只的是目前的文件
+        return
+      end
+
+      vim.cmd("%!xxd -c " .. args.fargs[1])
+    end,
+    {
+      nargs = "?",
+      desc = "用16進位來檢視",
+      complete = function(_, cmdLine, _)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          return {
+            "1",
+            "2",
+            "3",
+            "4",
+            "16",
+          }
+        end
+      end
     }
   )
 end
