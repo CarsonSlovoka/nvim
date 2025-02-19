@@ -815,6 +815,7 @@ local function install_telescope()
     if #args.fargs > 0 then
       if args.fargs[1] == "-h" then
         local help = {
+          'FindFiles cwd search_file search_dirs...',
           'FindFiles . tags',
           'FindFiles . opt lua/ -- 可能是options.lua也會找到',
           'FindFiles ~ *.{ttf,otf} ~/.fonts/',
@@ -869,7 +870,7 @@ local function install_telescope()
           "*.{ttf,otf}",
           "Fira*.ttf",
           "F*.{ttf,otf}",
-          "README.md　只找檔名為README.md的文件",
+          "README.md",
         }
       else
         return dirs -- 後面的全部都當成search_dirs
@@ -908,9 +909,15 @@ local function install_telescope()
     if #args.fargs > 0 then
       if args.fargs[1] == "-h" then
         local help = {
-          'Livegrep . *.lua lua/ ftplugin/',
-          'Livegrep . *.{txt,git}|LICENSE',
+          'Livegrep cwd glob_pattern search_dirs...',
+          'Livegrep . *.lua lua/ ftplugin/    -- 只在當前的lua, ftplugin兩個目錄中找尋所有lua檔案',
+          'Livegrep . key*.lua                -- 例如keymap.lua, key.lua都會被搜到',
+          'Livegrep . *.{txt,git}|LICENSE     -- 對附檔名為txt,git以及文件名稱為LICENSE的檔案做內容的搜尋',
+          'Livegrep . *.lua|*.md              -- 搜尋所有附檔名為lua,md的文件內容',
           'Livegrep ~ *.{md,sh}',
+          'Livegrep . !*.lua                  -- 不找lua檔案',
+          'Livegrep . !*.lua|*.md             -- 不找lua和txt檔案',
+          'Livegrep . LICENSE                 -- 只找LICENSE文件',
         }
         local qfList = {}
         for idx, message in ipairs(help) do
@@ -929,7 +936,7 @@ local function install_telescope()
     if #args.fargs > 1 then
       -- opt.glob_pattern = args.fargs[2] -- 如果是字串，似乎只能一種條件而已
       -- 改成table可以有多個條件
-      local glob_pattern_table = vim.split(args.fargs[2], "|", { plain = true })
+      local glob_pattern_table = vim.split(args.fargs[2], "|", { plain = true }) -- 目前已經將complete的這種方式移除，所以此情況已經不會出現，只是保留此寫法來當作參考
       local glob_pattern = {}
       for _, pattern in ipairs(glob_pattern_table) do
         table.insert(glob_pattern, vim.split(pattern, "　")[1]) -- 只要資料，不要描述
@@ -960,9 +967,9 @@ local function install_telescope()
         return {
           "glob_pattern",
           "*.lua",
-          "README.md　只找檔名為README.md的文件",
-          "!*.lua　不找lua檔案",
-          "*.lua|*.md　找lua或者md的檔名", -- 用U+3000做拆分
+          "README.md",
+          "!*.lua",
+          "*.lua|*.md",
         }
       else
         return dirs -- search_dirs
