@@ -14,7 +14,27 @@ vim.o.guifont = "FiraCode Nerd Font Mono:h14"
 
 -- vim.g.neovide_transparency = 0.8
 
--- vim.g.neovide_cursor_animation_length = 0.1
+vim.g.neovide_cursor_animation_length = 0 -- 如果不想要有一點延遲可以完全關閉
+vim.api.nvim_create_user_command(
+  "NeovideSetCursorAnimationLength",
+  function(args)
+    vim.g.neovide_cursor_animation_length = tonumber(args.fargs[1])
+  end,
+  {
+    nargs = 1,
+    complete = function()
+      return {
+        "0",
+        "0.2",
+        "0.1",
+        "0.01",
+        "0.4",
+        "1",
+      }
+    end,
+    desc = "neovide_cursor_animation_length 動畫轉場的時間"
+  }
+)
 
 vim.api.nvim_create_user_command(
   "NeovideSetScale",
