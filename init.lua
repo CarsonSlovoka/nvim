@@ -1210,7 +1210,8 @@ local function install_cmp_list()
       return m.deep_merge({}, {
         _global = array.Merge(
           require('external.cmp-list.nvim-cmd'), -- vim中的command相關 :
-          require('external.cmp-list.tool')
+          require('external.cmp-list.tool'),
+          require('external.cmp-list.emoji')
         ),
         sh = array.Merge(
           require('external.cmp-list.sh'),
