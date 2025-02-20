@@ -40,6 +40,7 @@ local emoji_data = {
   { "🔑", "key" },
   { "🔒", "locked" },
   { "⚡", "fast" },
+  { "🌈", "rainbow" },
 }
 
 local M = {}
