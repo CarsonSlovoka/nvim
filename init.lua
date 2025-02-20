@@ -1221,6 +1221,9 @@ local function install_cmp_list()
           require('external.cmp-list.lua'),
           require('external.cmp-list.vim-fn')
         ),
+        markdown = array.Merge(
+          require('external.cmp-list.markdown')
+        ),
       })
     end
   })
