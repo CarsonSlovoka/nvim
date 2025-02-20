@@ -189,9 +189,39 @@ function M.setup(opts)
       callback = function()
         vim.o.fileformat = "dos"
       end,
-      desc = "indent_style=tab"
+      desc = "fileformat=dos crlf"
     }
   )
+
+
+  --[[ 以下是vs2010的mfc專案可能會有這樣的需求，你可以把這段放到 my-customize.lua 自己添加
+  (因為不曉得是不是所有rc, rc2都是如此，為了避免有爭議，讓使用者自己在 my-customize.lua 中新增 )
+  vim.api.nvim_create_autocmd(
+    "FileType",
+    {
+      -- group = groupName.editorconfig,
+      pattern = {
+        "rc",
+        "conf" -- "rc2"
+      },
+      callback = function()
+        vim.o.fileencoding = "utf-16le"
+        vim.o.fileformat = "dos"
+      end,
+      desc = "crlf, utf-16le"
+    }
+  )
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+    pattern = { "resource.h" },
+    callback = function()
+      vim.o.fileencoding = "utf-16le"
+      vim.o.fileformat = "dos"
+    end,
+    desc = "crlf, utf-16le"
+  })
+  --]]
+
 
   if opts.callback then
     opts.callback(M)
