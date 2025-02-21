@@ -93,6 +93,50 @@ function M.setup(opts)
     }
   )
 
+  -- 自定義命名空間（用於高亮）
+  local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
+  create_autocmd({
+    "BufEnter", "TextChanged", "TextChangedI",
+    "InsertLeave",
+  }, {
+    pattern = "*",
+    desc = '將文字 #xxxxxx 給予顏色',
+    callback = function()
+      local buf = vim.api.nvim_get_current_buf()
+      local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+
+      -- 清空之前的高亮（避免重複）
+      -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1)
+
+      -- 遍歷每一行
+      for lnum, line in ipairs(lines) do
+        -- 匹配 #RRGGBB 或 #RGB 格式的顏色代碼
+        for color in line:gmatch('#%x%x%x%x%x%x') do
+          -- 找到顏色代碼的起始和結束位置
+          local start_col = line:find(color, 1, true) - 1
+          local end_col = start_col + #color
+
+          -- 動態創建高亮組，背景色設為該顏色
+          local hl_group = 'Color_' .. color:sub(2) -- 去掉 # 作為高亮組名
+          vim.api.nvim_set_hl(0, hl_group, { bg = color })
+
+          -- 應用高亮到緩衝區
+          vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col)
+        end
+      end
+    end,
+  })
+
+  -- 進入插入模式時只清除 color_highlights 命名空間的高亮
+  vim.api.nvim_create_autocmd("InsertEnter", {
+    pattern = "*",
+    callback = function()
+      local buf = vim.api.nvim_get_current_buf()
+      vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1)
+    end,
+  })
+
+
   -- trim_trailing_whitespace
   create_autocmd(
     "BufwritePre", -- 在寫入前執行的動作
