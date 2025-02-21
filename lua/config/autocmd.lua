@@ -7,10 +7,16 @@ local M = {
 local create_autocmd = vim.api.nvim_create_autocmd
 local groupName = {
   editorconfig = "carson.editorconfig",
+  highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
 }
-vim.api.nvim_create_augroup(groupName.editorconfig, { clear = true })
-vim.api.nvim_create_augroup(groupName.highlightSpecial, {})
+for key, name in pairs(groupName) do
+  if name == groupName.editorconfig then
+    vim.api.nvim_create_augroup(name, { clear = true })
+  else
+    vim.api.nvim_create_augroup(name, {})
+  end
+end
 
 
 function M.setup(opts)
@@ -97,20 +103,22 @@ function M.setup(opts)
   local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
   create_autocmd({
     "BufEnter", "TextChanged", "TextChangedI",
-    "InsertLeave",
+    -- "InsertLeave",
   }, {
+    desc = '將文字 #RRGGBB 給予顏色. 例如: #ff0000  #00ff00 #0000ff',
     pattern = "*",
-    desc = '將文字 #xxxxxx 給予顏色',
+    group = groupName.highlightHexColor,
     callback = function()
       local buf = vim.api.nvim_get_current_buf()
       local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 
       -- 清空之前的高亮（避免重複）
-      -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1)
+      -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1) -- 這會清除所有，可能會勿清
+      vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1) -- 清理還是需要的，不然刪除後再打上其它內容還是會有突顯
 
       -- 遍歷每一行
       for lnum, line in ipairs(lines) do
-        -- 匹配 #RRGGBB 或 #RGB 格式的顏色代碼
+        -- 匹配 #RRGGBB
         for color in line:gmatch('#%x%x%x%x%x%x') do
           -- 找到顏色代碼的起始和結束位置
           local start_col = line:find(color, 1, true) - 1
@@ -127,14 +135,18 @@ function M.setup(opts)
     end,
   })
 
+  --[[ 我是覺得不必要清除，就算在insert下顯示也不是什麼壞事
   -- 進入插入模式時只清除 color_highlights 命名空間的高亮
   vim.api.nvim_create_autocmd("InsertEnter", {
+    desc = '插入模式下取消hex的顏色突顯',
     pattern = "*",
+    group = groupName.highlightHexColor,
     callback = function()
       local buf = vim.api.nvim_get_current_buf()
       vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1)
     end,
   })
+  --]]
 
 
   -- trim_trailing_whitespace
