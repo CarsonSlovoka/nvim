@@ -1,3 +1,5 @@
+local START_TIME = vim.loop.hrtime() -- 勿調整，用來得知nvim開啟的時間，如果要計算啟動花費時間會有用
+
 local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
@@ -1263,8 +1265,12 @@ install_atq()
 install_renderMarkdown()
 install_cmp_list()
 
-require("global-func")         -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
+require("global-func")  -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
 
-require("config.menu")         -- 起始畫面
+vim.defer_fn(function() -- 因為裡面要計算出，啟動nvim的時間，所以用defer放到最後才執行
+  require("config.menu").setup {
+    start_time = START_TIME
+  } -- 起始畫面
+end, 0)
 
 pcall(require, "my-customize") -- 如果有一些自定義的設定，可以自己新增一個my-customize.lua來覆寫
