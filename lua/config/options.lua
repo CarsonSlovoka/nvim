@@ -17,8 +17,10 @@ function options.setup()
   vim.o.fileformat = "unix" -- 讓windows上的換行符號也同unix都是用\n  -- 目前已透過autocmd的FileType事件強制調整(除了bat以外都是unix)
   -- fileformat有沒有影響你可以直接用 nvim 一進來的空檔案，去檢查就會曉得了 :set fileformat?
 
-  -- vim.opt.relativenumber = false -- :set rnu 這是預設
-  vim.opt.relativenumber = true -- :set nornu 這樣用+, -找行的時候會比較簡單，尤其是區塊選取多行的時候
+  -- vim.opt.relativenumber = false -- :set nornu
+  vim.opt.relativenumber = true -- :set rnu 這樣用+, -找行的時候會比較簡單，尤其是區塊選取多行的時候
+  -- :set nonu   -- 🧙 當你不想要看到列號的時候可以使用, 但是如果目前已經啟用relativenumber, 則要先用 :set nornu再用:set nonu才會真得看不到
+  -- :set number -- 此為絕對列號 (為預設)
   vim.opt.backup = false
 
   -- vim.opt.hlsearch = true   -- 等同 :set hls
