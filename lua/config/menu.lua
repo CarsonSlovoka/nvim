@@ -1,3 +1,7 @@
+-- 有關於此腳本，可以參考
+-- 最初版本: https://github.com/CarsonSlovoka/nvim/commit/9bdaf874f83edcf08ea3ba379275dfdf0f5ac09e
+-- 次版: https://github.com/CarsonSlovoka/nvim/blob/0a262fd1da23497e0ab65bd43dda1ecff2aada7c/lua/config/menu.lua
+
 local M = {}
 
 local function startup_time(start_time)
