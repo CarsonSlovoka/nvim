@@ -202,6 +202,8 @@ local function install_lspconfig()
       }
     }
   }
+  -- m.jsonls.setup {} -- https://github.com/microsoft/vscode-json-languageservice 可以考慮安裝
+
 
   -- 新增切換虛擬文本診斷的命令
   local diagnosticVirtualTextEnable = false
