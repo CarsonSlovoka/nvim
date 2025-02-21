@@ -287,7 +287,8 @@ local function install_lspconfig()
         vim.diagnostic.enable()
         vim.notify("diagnostic enable", vim.log.levels.INFO)
       elseif args.fargs[1] == "0" then
-        vim.diagnostic.disable()
+        -- vim.diagnostic.disable() -- 已被棄用
+        vim.diagnostic.enable(false)
         vim.notify("diagnostic disable", vim.log.levels.INFO)
       end
     end,
