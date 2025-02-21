@@ -31,11 +31,12 @@ map('n', '<leader>i', 'ciw*<C-r>"*<ESC>', { desc = "Italic" }) -- 斜體
 map('v', '<leader>b', 'c**<C-r>"**<ESC>', { desc = "視覺模式下加粗" })
 map('v', '<leader>i', 'c*<C-r>"*<ESC>', { desc = "視覺模式下斜體" })
 map('v', '<leader>dw', 'c~~<C-r>"~~<ESC>', { desc = "刪除線 strokethrough" })
+map('v', '<leader>~', 'c~~<C-r>"~~<ESC>', { desc = "刪除線 strokethrough" })
 
 -- 代碼塊
 -- map('n', '<Leader>c', 'I```<ESC>o```<ESC>O', { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" })
 -- map('n', '<Leader>c', 'I```<CR>```<C-o>O', { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" })
-map('n', '<Leader>`',
+map('n', '<Leader><leader>`',
   function()
     local name = vim.fn.input("codeblock name: ")
     if name == "" then

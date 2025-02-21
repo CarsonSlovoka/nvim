@@ -84,6 +84,26 @@ local function setup_normal()
       { desc = "自動補全" .. open }
     )
   end
+
+  -- 🧙 `< 和 `> 是跳到選取範圍的開頭和結尾
+  -- map('v', '<leader>"', '<Esc>`<i"<Esc>`>a"<Esc>') 這個會不對，因為先加上開頭的"之後，其實結尾的位置就變了，所以要先加結尾
+  map('v', '<leader>"', '<Esc>`>a"<Esc>`<i"<Esc>')
+  map('n', '<leader>"', 'i"<Esc>ea"<Esc>')
+
+  map('v', "<leader>'", "<Esc>`>a'<Esc>`<i'<Esc>")
+  map('n', "<leader>'", "i'<Esc>ea'<Esc>")
+
+  map('v', '<leader>`', '<Esc>`>a`<Esc>`<i`<Esc>')
+  map('n', '<leader>`', 'i`<Esc>ea`<Esc>')
+
+  map('v', '<leader>(', '<Esc>`>a)<Esc>`<i(<Esc>')
+  map('n', '<leader>(', 'i(<Esc>ea)<Esc>')
+
+  map('v', '<leader>[', '<Esc>`>a]<Esc>`<i[<Esc>')
+  map('n', '<leader>[', 'i[<Esc>ea]<Esc>')
+
+  map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>')
+  map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>')
 end
 
 local function setup_visual()
