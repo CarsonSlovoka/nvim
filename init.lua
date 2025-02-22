@@ -689,6 +689,13 @@ local function install_telescope()
             local commit_sha = entry.value
             -- vim.cmd("tabnew | r !git show " .. commit_sha)
 
+            -- 獲取 Git 根目錄
+            local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+            if vim.v.shell_error ~= 0 then
+              vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+              return
+            end
+
             -- 執行 git show --name-only 命令，獲取異動檔案列表
             local files = vim.fn.systemlist("git show --name-only --pretty=format: " .. commit_sha)
 
@@ -702,10 +709,12 @@ local function install_telescope()
               { text = 'term git show --name-only ' .. commit_sha },
               { text = 'term git show ' .. commit_sha .. "  " .. "用i往下走到底可以看到完整內容" },
             }
-            for _, file in ipairs(files) do
-              if file ~= "" then -- 忽略空行
+            for _, file_relativepath in ipairs(files) do
+              if file_relativepath ~= "" then -- 忽略空行
+                local abs_path = git_root .. "/" .. file_relativepath
                 table.insert(qf_entries, {
-                  filename = file,
+                  -- filename = file_relativepath, -- 這個僅在git的目錄使用能找到, 如果路徑不在此，得到的清單路徑會是錯的
+                  filename = abs_path, -- qflist的路徑(filename)如果是對的，就會自動依據當前的工作目錄去變化
                   lnum = 1,
                   -- text = "File changed in commit " .. commit_sha
                 })
