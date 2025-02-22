@@ -676,6 +676,53 @@ local function install_telescope()
       borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
       path_display = { "truncate" },
       set_env = { ["COLORTERM"] = "truecolor" }, -- 修正配色
+      mappings = {
+        i = {
+          ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
+          ["<C-x>"] = function(prompt_bufnr)
+            local action_state = require("telescope.actions.state")
+            local entry = action_state.get_selected_entry()
+            if not entry then
+              return
+            end
+
+            local commit_sha = entry.value
+            -- vim.cmd("tabnew | r !git show " .. commit_sha)
+
+            -- 執行 git show --name-only 命令，獲取異動檔案列表
+            local files = vim.fn.systemlist("git show --name-only --pretty=format: " .. commit_sha)
+
+            -- 獲取 commit 提交訊息（第一行，通常是標題）
+            local commit_message = vim.fn.systemlist("git show --pretty=format:%s " .. commit_sha)[1] or
+                "No commit message"
+
+            -- 過濾空行並構建 quickfix list 條目
+            local qf_entries = {
+              { text = string.format("[%s] %s", commit_sha, commit_message) },
+              { text = 'term git show --name-only ' .. commit_sha },
+              { text = 'term git show ' .. commit_sha .. "  " .. "用i往下走到底可以看到完整內容" },
+            }
+            for _, file in ipairs(files) do
+              if file ~= "" then -- 忽略空行
+                table.insert(qf_entries, {
+                  filename = file,
+                  lnum = 1,
+                  -- text = "File changed in commit " .. commit_sha
+                })
+              end
+            end
+
+            -- 將結果寫入 quickfix list
+            if #qf_entries > 0 then
+              vim.fn.setqflist(qf_entries)
+              vim.cmd("copen") -- 自動打開 quickfix list 視窗
+              -- require("telescope.actions").close(prompt_bufnr) -- 關閉 Telescope 視窗, 已經關閉了，不需要再關，不然反而會錯
+            else
+              vim.notify("No files changed in this commit", vim.log.levels.WARN)
+            end
+          end
+        },
+      },
     },
 
     pickers = {
