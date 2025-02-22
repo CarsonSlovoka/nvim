@@ -18,6 +18,20 @@
 # 查看本次異動的情況，就下用gitk查看當前所有的修改一樣
 ```
 
+> [!TIP]
+> 使用[Tab](https://github.com/nvim-telescope/telescope.nvim/blob/78857db9e8d819d3cc1a9a7bdc1d39d127a36495/lua/telescope/mappings.lua#L170)可以切換該文件是否要commit，如果已經是commit的狀態，無法再用`gitsigns.nav_hunk()`來跳轉
+> 此時就可以用 [Tab](https://github.com/nvim-telescope/telescope.nvim/blob/78857db9e8d819d3cc1a9a7bdc1d39d127a36495/lua/telescope/actions/init.lua#L885-L897)來改成未提交的狀態(再按一次又會commit了)
+
+> [!TIP]
+> <C-Q> [send_to_qflist + open_qflist](https://github.com/nvim-telescope/telescope.nvim/blob/78857db9e8d819d3cc1a9a7bdc1d39d127a36495/lua/telescope/mappings.lua#L172)
+> 如此可以透過quickFix的列表訪問到該文件
+>
+> 善用`:cp`, `:cn`來切換, 也可以用`:ncp`, 其中n為數字來一次跳多一點
+
+
+>
+> 如果有需要可以再到文件用`:Gitsign diffthis`來得到異動內容
+
 ## git_bcommits
 
 blame commits用該檔案去查看所其所有的歷史異動
