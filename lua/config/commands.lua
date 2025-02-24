@@ -1,5 +1,6 @@
 local path = require("utils.path")
 local cmdUtils = require("utils.cmd")
+local osUtils = require("utils.os")
 
 local commands = {}
 
@@ -358,6 +359,51 @@ function commands.setup()
             "3",
             "4",
             "16",
+          }
+        end
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command(
+    "GitDiff",
+    function(args)
+      -- https://stackoverflow.com/a/2183920/9935654
+      -- :term git diff --name-only --cached; echo -e "\n\n 👇 Diff 👇\n\n"; git --no-pager diff --cached; exec bash
+      local cached = ""
+      if #args.fargs > 0 then
+        cached = "--cached"
+      end
+      local files_cmd = "git diff --name-only " .. cached -- 整理出檔案名稱
+      local sep = 'echo -e "\\n\\n 👇 diff 👇\\n\\n"'
+      -- local diff_cmd = "git diff " .. cached -- 如果少了--no-pager，要慢慢往下才會所有東西都出來
+      local diff_cmd = "git --no-pager diff " .. cached
+      local git_status = "git status -s"
+      local bash_cmd = "exec bash"
+      if osUtils.IsWindows then
+        bash_cmd = "exec cmd"
+      end
+      vim.cmd("term " .. table.concat({
+        'echo -e "👇 file 👇\\n\\n"',
+        files_cmd,
+        'echo -e "\\n\\n 👇 diff 👇\\n\\n"',
+        diff_cmd,
+        'echo -e "\\n\\n 👇 status 👇\\n\\n"',
+        git_status,
+        'echo -e "\\n\\n 👇 cmd: 👇\\n\\n"',
+        bash_cmd,
+      }, ";"))
+    end,
+    {
+      desc = "git diff --cached (staged) ",
+      nargs = "?",
+      complete = function(argLead, cmdLine, _)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          return {
+            "--cached", --  相當於已經被git add進去的內容
+            -- "--staged", -- 效果同上
           }
         end
       end
