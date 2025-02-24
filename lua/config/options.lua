@@ -88,6 +88,10 @@ function options.setup()
     nbsp = ' ', -- U+00A0   non-breaking space (通常的用法是為了保持在同一列，但此列太長，所以讓UI利用此位做出拆行的顯示)
     -- ['U+3000'] = '⬜' -- CJK的全形空白, 使用 U+2B1C (White Large Square) 表示 <-- 目前不支持這種方法，只有特殊名稱可以被使用: https://stackoverflow.com/a/79432341/9935654
   }
+
+  -- 不建議windows換終端機, 還是用cmd會比較好
+  -- vim.opt.shell = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  -- vim.g.terminal_emulator='powershell'
 end
 
 function _G.get_tabline() -- 給全局變數

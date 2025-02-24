@@ -369,35 +369,40 @@ function commands.setup()
     "GitDiff",
     function(args)
       -- https://stackoverflow.com/a/2183920/9935654
-      -- :term git diff --name-only --cached; echo -e "\n\n 👇 Diff 👇\n\n"; git --no-pager diff --cached; exec bash
+      -- :term git diff --name-only --cached; echo -e "\n\n 👇 Diff 👇\n\n"; git --no-pager diff --cached; exec bash         -- linux
+      -- :term git diff --name-only --cached & echo. & echo. & echo 👇 & echo. & echo. & git --no-pager diff --cached & cmd  -- 這個可以在windows終端機為cmd使用
+      -- ❌ :term git diff --name-only --cached & echo `n`n👇`n`n & git --no-pager diff --cached & cmd  -- powersehll之中可用`n`n來換行，但是終端機換成powrsehll之後會怪怪的. 此外linux的foot終端機的&不是接下去，雖然也可以跑，但是他的&會是當成邏輯運算，執行順序會變
       local cached = ""
       if #args.fargs > 0 then
         cached = "--cached"
       end
       local files_cmd = "git diff --name-only " .. cached -- 整理出檔案名稱
-      local sep = 'echo -e "\\n\\n 👇 diff 👇\\n\\n"'
       -- local diff_cmd = "git diff " .. cached -- 如果少了--no-pager，要慢慢往下才會所有東西都出來
       local diff_cmd = "git --no-pager diff " .. cached
       local git_status = "git status -s"
       local bash_cmd = "exec bash"
+      local sep = ";"
       if osUtils.IsWindows then
-        bash_cmd = "exec cmd"
+        bash_cmd = "cmd"
+        sep = " & "
       end
-      vim.cmd("term " .. table.concat({
-        'echo -e "👇 file 👇\\n\\n"',
+      local run_cmd = "term " .. table.concat({
+        cmdUtils.echoMsg(0, "👇 file 👇", 2),
         files_cmd,
-        'echo -e "\\n\\n 👇 diff 👇\\n\\n"',
+        cmdUtils.echoMsg(2, "👇 diff 👇", 2),
         diff_cmd,
-        'echo -e "\\n\\n 👇 status 👇\\n\\n"',
+        cmdUtils.echoMsg(2, "👇 status 👇", 2),
         git_status,
-        'echo -e "\\n\\n 👇 cmd: 👇\\n\\n"',
+        cmdUtils.echoMsg(2, "👇 cmd: 👇", 2),
         bash_cmd,
-      }, ";"))
+      }, sep)
+      print(run_cmd)
+      vim.cmd(run_cmd)
     end,
     {
       desc = "git diff --cached (staged) ",
       nargs = "?",
-      complete = function(argLead, cmdLine, _)
+      complete = function(_, cmdLine, _)
         local parts = vim.split(cmdLine, "%s+")
         local argc = #parts - 1
         if argc == 1 then
@@ -414,13 +419,22 @@ function commands.setup()
     "GitCommit",
     function()
       -- :!foot git commit &
-      local terminal = os.getenv("TERM") -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
+      local terminal = ""
+      if osUtils.IsWindows then
+        vim.notify("not support windows.", vim.log.levels.ERROR)
+        return
+        -- terminal = "start cmd /k "
+        -- :!start cmd /k git show -- 這個可行, 但是如果換成git commit換不行
+      end
+      terminal = os.getenv("TERM") -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
       vim.cmd("!" .. terminal .. " git commit &")
       local bash_cmd = "exec bash"
+      local sep = ";"
       if osUtils.IsWindows then
-        bash_cmd = "exec cmd"
+        bash_cmd = "cmd"
+        sep = " & "
       end
-      vim.cmd("term " .. "git branch -av;" .. bash_cmd)
+      vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd)
     end,
     {
       desc = "git commit",
