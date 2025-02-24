@@ -393,6 +393,7 @@ function commands.setup()
         'echo -e "\\n\\n 👇 cmd: 👇\\n\\n"',
         bash_cmd,
       }, ";"))
+      -- 之後可能會接git branch -av
     end,
     {
       desc = "git diff --cached (staged) ",
@@ -407,6 +408,18 @@ function commands.setup()
           }
         end
       end
+    }
+  )
+
+  vim.api.nvim_create_user_command(
+    "GitCommit",
+    function()
+      -- :!foot git commit &
+      local terminal = os.getenv("TERM") -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
+      vim.cmd("!" .. terminal .. " git commit &")
+    end,
+    {
+      desc = "git commit",
     }
   )
 end
