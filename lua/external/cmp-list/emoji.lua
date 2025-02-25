@@ -36,6 +36,8 @@ local emoji_data = {
   { "😡", "angry" },
   { "🙂", "smiling" },
   { "😊", "smilingWithSmilingEyes" },
+  { "🥺", "pleadingFace" },
+  { "🙏", "please" },
   { "🔥", "fire" },
   { "🔑", "key" },
   { "🔒", "locked" },

@@ -147,7 +147,7 @@ function M.setup(opts)
     { { text = "", highlight = nil } },
 
     {
-      { text = "請幫助烏干達孩童", highlight = nil },
+      { text = "請幫助烏干達孩童😊", highlight = nil },
       { text = ":help iccf", highlight = "StartupMenu" },
       { text = "<Enter>", highlight = "Comment" },
     },
