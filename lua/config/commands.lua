@@ -534,7 +534,7 @@ function commands.setup()
   )
 
   vim.api.nvim_create_user_command(
-    "AddToQucikfix",
+    "QFAdd",
     function(args)
       local text = ""
       if #args.fargs > 0 then
@@ -558,6 +558,28 @@ function commands.setup()
       -- complete = function()
       --   return string.format("%s", vim.fn.getline('.')) -- ~~用目前這行的內容當成text訊息~~ 無效
       -- end
+    }
+  )
+  vim.api.nvim_create_user_command(
+    "QFRemove",
+    function()
+      local qf_list = vim.fn.getqflist()
+
+      -- 獲取當前光標所在的行號（從 1 開始），轉為索引（從 0 開始）
+      local cur_idx = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+      -- 檢查列表非空且索引有效
+      if next(qf_list) ~= nil and cur_idx >= 0 and cur_idx < #qf_list then
+        -- 移除當前項目
+        table.remove(qf_list, cur_idx + 1) -- table.remove 是 1-based，所以要 +1
+        vim.fn.setqflist(qf_list, 'r')     -- 'r' 表示替換整個列表
+      else
+        print()
+        vim.notify("無效的 quickfix 項目或列表為空", vim.log.levels.ERROR)
+      end
+    end,
+    {
+      desc = "刪除當前的quickfix的選中項目",
     }
   )
 end
