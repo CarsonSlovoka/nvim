@@ -194,7 +194,7 @@ function M.setup(opts)
       pattern = "*", -- :set ft?
 
       callback = function()
-        if vim.o.fileformat ~= "unix" then
+        if not vim.bo.readonly and vim.o.fileformat ~= "unix" then
           print(string.format("set fileformat from `%s` to `unix`", vim.o.fileformat)) -- 提示使用者有被自動轉換，使其如果不滿意還可以自己再轉回去
           vim.o.fileformat = "unix"
         end
