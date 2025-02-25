@@ -4,6 +4,35 @@
 
 local M = {}
 
+-- 新增函數：讀取圖片文本文件
+local function read_lines(file_path)
+  local file = io.open(file_path, "r")
+  if not file then
+    vim.notify("無法讀取圖片文件: " .. file_path, vim.log.levels.WARN)
+    return nil
+  end
+  local lines = {}
+  for line in file:lines() do
+    table.insert(lines, line)
+  end
+  file:close()
+  return lines
+end
+
+
+local ASCII_ART_TXT = [[
+                      _   ____________ _    ________  ___
+                     / | / / ____/ __ \ |  / /  _/  |/  /
+                    /  |/ / __/ / / / / | / // // /|_/ /
+                   / /|  / /___/ /_/ /| |/ // // /  / /
+                  /_/ |_/_____/\____/ |___/___/_/  /_/
+   _________    ____  _____ ____  _   __   ___________ _______   ________
+  / ____/   |  / __ \/ ___// __ \/ | / /  /_  __/ ___// ____/ | / / ____/
+ / /   / /| | / /_/ /\__ \/ / / /  |/ /    / /  \__ \/ __/ /  |/ / / __
+/ /___/ ___ |/ _, _/___/ / /_/ / /|  /    / /  ___/ / /___/ /|  / /_/ /
+\____/_/  |_/_/ |_|/____/\____/_/ |_/    /_/  /____/_____/_/ |_/\____/
+]]
+
 local function startup_time(start_time)
   if start_time == 0 then
     return "<na>"
@@ -35,11 +64,31 @@ function M.setup(opts)
   local win_height = vim.api.nvim_win_get_height(0)
   local win_width = vim.api.nvim_win_get_width(0)
 
+
+  -- 讀取圖片文本文件
+  -- Text to ASCII Art Generator: https://patorjk.com/
+  -- https://patorjk.com/software/taag/#p=display&h=2&v=1&f=Slant&t=%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20NEOVIM%0ACARSON%20TSENG
+  -- -- 不想在準備文件，直接將txt的內容當成字串處理即可
+  -- local image_lines = read_lines(vim.fn.expand("~/.config/nvim/menu_icon.txt")) or { -- 讀不到可以用預設文字
+  --   "NEOVIM",
+  --   "CARSON"
+  -- }
+  -- local ascii_art_title = {}
+  -- for _, line in ipairs(image_lines) do
+  --   table.insert(ascii_art_title, { { text = line, highlight = "StartupTitle" } })
+  -- end
+
+  local ascii_art_title = {}
+  local ascii_art_title_max_col_length = 0
+  for line in ASCII_ART_TXT:gmatch("[^\n]+") do
+    table.insert(ascii_art_title, { { text = line, highlight = "StartupTitle" } })
+    if #line > ascii_art_title_max_col_length then
+      ascii_art_title_max_col_length = #line
+    end
+  end
+
   -- 定義要顯示的內容（模擬你的畫面）
   local content = {
-    { { text = "NEOVIM", highlight = "StartupTitle" } },
-    { { text = "CARSON", highlight = "StartupTitle" } },
-
     { { text = "", highlight = nil } },
 
     {
@@ -108,6 +157,10 @@ function M.setup(opts)
     }
   }
 
+  for i = #ascii_art_title, 1, -1 do
+    table.insert(content, 1, ascii_art_title[i]) -- 從頭開始插入
+  end
+
   -- 計算需要添加的空行數以實現垂直居中
   local content_height = #content
   local padding_top = math.floor((win_height - content_height) / 2)
@@ -139,8 +192,15 @@ function M.setup(opts)
     end
 
     -- 計算每行需要添加的左邊空格數以實現水平居中
-    local line_length = #full_line            -- 假設所有字符寬度相同（簡單計算）
-    local padding_left = math.floor((win_width - line_length) / 2)
+    local line_length = #full_line -- 假設所有字符寬度相同（簡單計算）
+
+    local padding_left = 0
+    if n_row > #ascii_art_title then
+      padding_left = math.floor((win_width - line_length) / 2)
+    else
+      padding_left = math.floor((win_width - ascii_art_title_max_col_length) / 2) -- 標題因為是用Text to ASCII Art的方式，所以每一個字母的位置都很重要，要整體來統一標準，而非每列各至置中
+    end
+
     table.insert(padding_lefts, padding_left) -- 儲存每個 padding_left
     local padded_line = string.rep(" ", padding_left) .. full_line
     table.insert(centered_lines, padded_line)
