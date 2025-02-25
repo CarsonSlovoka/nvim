@@ -425,7 +425,7 @@ function commands.setup()
         -- terminal = "start cmd /k "
         -- :!start cmd /k git show -- 這個可行, 但是如果換成git commit換不行
       end
-      terminal = os.getenv("TERM") -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
+      terminal = os.getenv("TERM") or "" -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
       vim.cmd("!" .. terminal .. " git commit &")
       local bash_cmd = "exec bash"
       local sep = ";"
@@ -437,6 +437,46 @@ function commands.setup()
     end,
     {
       desc = "git commit; git branch -av",
+    }
+  )
+
+
+  vim.api.nvim_create_user_command(
+    "GitShow",
+    function(args)
+      local sha1 = ""
+      if #args.fargs > 0 then
+        sha1 = vim.split(args.fargs[1], "　")[1]
+      end
+      if osUtils.IsWindows then
+        vim.cmd("term git --no-pager show " .. sha1 .. " & cmd")
+      else
+        vim.cmd("term git --no-pager show " .. sha1 .. " ; exec bash")
+      end
+    end,
+    {
+      desc = "git --no-pager show",
+      nargs = "?",
+      complete = function(argLead, cmdLine, _)
+        -- local parts = vim.split(cmdLine, "%s+")
+        -- local argc = #parts - 1 -- 第幾個參數
+
+        local cmdLogCmd = 'git --no-pager log --pretty=format:"%H　%s　%ai"' -- %H為sha1, %s為提交的訊息 %ai是提交的時間, 分隔符用U+3000來區分
+        local git_logs = vim.fn.systemlist(cmdLogCmd)
+        if #argLead == 0 then
+          return git_logs
+        end
+
+        local input_sha_txt = string.sub(cmdLine, 9) -- (#"GitShow" + 1) + 1(空格)
+        local filtered_logs = {}
+        for _, line in ipairs(git_logs) do
+          -- if line:find(argLead) then -- 因為提交的訊息中間可能會有空行，這樣要再tab就要再整個刪除，所以用cmdLine來區分
+          if line:find(input_sha_txt) then
+            table.insert(filtered_logs, line)
+          end
+        end
+        return filtered_logs
+      end
     }
   )
 end
