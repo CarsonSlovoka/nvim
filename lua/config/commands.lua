@@ -550,7 +550,22 @@ function commands.setup()
           ["text"] = text,
         },
       }, 'a') -- a表示append
-      vim.cmd("copen")
+
+      -- 檢查是否有 quickfix 視窗開啟
+      local is_qf_open = false
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
+        if buftype == "quickfix" then
+          is_qf_open = true
+          break
+        end
+      end
+
+      -- 如果 quickfix 視窗未開啟，則執行 copen
+      if not is_qf_open then
+        vim.cmd("copen")
+      end
     end,
     {
       nargs = "?",
@@ -574,7 +589,6 @@ function commands.setup()
         table.remove(qf_list, cur_idx + 1) -- table.remove 是 1-based，所以要 +1
         vim.fn.setqflist(qf_list, 'r')     -- 'r' 表示替換整個列表
       else
-        print()
         vim.notify("無效的 quickfix 項目或列表為空", vim.log.levels.ERROR)
       end
     end,
