@@ -444,18 +444,54 @@ function commands.setup()
   vim.api.nvim_create_user_command(
     "GitShow",
     function(args)
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error ~= 0 then
+        vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+        return
+      end
+
       local sha1 = ""
       if #args.fargs > 0 then
         sha1 = vim.split(args.fargs[1], "　")[1]
       end
+      local sep = " ; "
+      local bash_cmd = "exec bash"
       if osUtils.IsWindows then
-        vim.cmd("term git --no-pager show " .. sha1 .. " & cmd")
-      else
-        vim.cmd("term git --no-pager show " .. sha1 .. " ; exec bash")
+        bash_cmd = "cmd"
+        sep = " & "
       end
+
+      -- git --no-pager show --name-only -- 這個還會有commit的訊息, 加上--pretty可以撈指定的資料
+      local files = vim.fn.systemlist("git --no-pager show --name-only --pretty=format: " .. sha1)
+      local abs_files = {}
+      for _, file_relativepath in ipairs(files) do
+        -- file_relativepath:gsub("%s+$", "")
+        table.insert(abs_files, cmdUtils.echoMsg(0, git_root .. "/" .. file_relativepath, 0)) -- echo本身就會換一次行，因此如果沒有要多換，可以省略
+      end
+
+      local run_cmd = "term " .. table.concat({
+        cmdUtils.echoMsg(0, " 👇 file 👇 ", 1),
+        -- "git --no-pager show --name-only " .. sha1, -- 顯示文件名稱
+        table.concat(abs_files, sep), -- TODO 目前如果重覆執行命令，前面的顯示會消失，可以該新的一個頁籤再執行，就會看到完整內容，有可能是term的bug有待釐清
+        cmdUtils.echoMsg(1, "👇 git show 👇", 2),
+        -- "git --no-pager show " .. sha1, -- 不要用--no-pager有，有的commit訊息似乎會受到影響，導致呈現的內容被截斷 (也有可能是nvim的term的問題)
+        "git show " .. sha1, -- 如果要一口氣呈現，可以用End即可，離開還要再按下q
+        cmdUtils.echoMsg(1, "👇 cmd: 👇", 1),
+        bash_cmd,
+      }, sep)
+      -- vim.cmd("vsplit | echo 'hello world'") -- 這個會被term蓋掉
+      vim.cmd(run_cmd)
+
+      -- 以下可以考慮用vsplit把檔案放到另一個視窗，但是我覺得放一起，如果有需要自己再分割就好
+      -- vim.cmd("vsplit | term " .. table.concat({
+      -- vim.cmd("leftabove vsplit | term " .. table.concat({ -- 同上
+      --   cmdUtils.echoMsg(2, " 👇 file 👇 ", 2),
+      --   -- "git --no-pager show --name-only " .. sha1,
+      --   table.concat(abs_files, sep),
+      -- }, sep))
     end,
     {
-      desc = "git --no-pager show",
+      desc = "git --no-pager show <sha1>",
       nargs = "?",
       complete = function(argLead, cmdLine, _)
         -- local parts = vim.split(cmdLine, "%s+")
