@@ -368,6 +368,12 @@ function commands.setup()
   vim.api.nvim_create_user_command(
     "GitDiff",
     function(args)
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error ~= 0 then
+        vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+        return
+      end
+
       -- https://stackoverflow.com/a/2183920/9935654
       -- :term git diff --name-only --cached; echo -e "\n\n 👇 Diff 👇\n\n"; git --no-pager diff --cached; exec bash         -- linux
       -- :term git diff --name-only --cached & echo. & echo. & echo 👇 & echo. & echo. & git --no-pager diff --cached & cmd  -- 這個可以在windows終端機為cmd使用
@@ -377,6 +383,12 @@ function commands.setup()
         cached = "--cached"
       end
       local files_cmd = "git diff --name-only " .. cached -- 整理出檔案名稱
+      local files = vim.fn.systemlist("git diff --name-only " .. cached)
+      local abs_files = {}
+      for _, file_relativepath in ipairs(files) do
+        table.insert(abs_files, cmdUtils.echoMsg(0, git_root .. "/" .. file_relativepath, 0))
+      end
+
       -- local diff_cmd = "git diff " .. cached -- 如果少了--no-pager，要慢慢往下才會所有東西都出來
       local diff_cmd = "git --no-pager diff " .. cached
       local git_status = "git status -s"
@@ -387,10 +399,13 @@ function commands.setup()
         sep = " & "
       end
       local run_cmd = "term " .. table.concat({
-        cmdUtils.echoMsg(0, "👇 file 👇", 2),
-        files_cmd,
+        cmdUtils.echoMsg(0, "👇 filepath: relative 👇", 2),
+        -- table.concat(abs_files, sep), -- ❗ 寫到這邊底下的內容可能會被截掉，不太曉得是為什麼
+        files_cmd, -- 因此這邊還是維持寫相對路徑
         cmdUtils.echoMsg(2, "👇 diff 👇", 2),
         diff_cmd,
+        cmdUtils.echoMsg(1, "👇 filepath: absolute 👇", 2),
+        table.concat(abs_files, sep), -- 這邊再給出絕對路徑
         cmdUtils.echoMsg(2, "👇 status 👇", 2),
         git_status,
         cmdUtils.echoMsg(2, "👇 cmd: 👇", 2),
@@ -433,7 +448,8 @@ function commands.setup()
         bash_cmd = "cmd"
         sep = " & "
       end
-      vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd)
+      -- vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd) -- 如果你目前已經在term，這個會蓋掉，雖然可以再透過<C-O>回去，但是點麻煩
+      print("git branch -av") -- 改用成提示，如果有需要可以在自己用msg來查看
     end,
     {
       desc = "git commit; git branch -av",
@@ -470,12 +486,13 @@ function commands.setup()
       end
 
       local run_cmd = "term " .. table.concat({
-        cmdUtils.echoMsg(0, " 👇 file 👇 ", 1),
-        -- "git --no-pager show --name-only " .. sha1, -- 顯示文件名稱
-        table.concat(abs_files, sep), -- TODO 目前如果重覆執行命令，前面的顯示會消失，可以該新的一個頁籤再執行，就會看到完整內容，有可能是term的bug有待釐清
+        cmdUtils.echoMsg(0, " 👇 filepath: relative 👇 ", 1),
+        "git --no-pager show --name-only " .. sha1, -- 顯示文件名稱
         cmdUtils.echoMsg(1, "👇 git show 👇", 2),
-        -- "git --no-pager show " .. sha1, -- 不要用--no-pager有，有的commit訊息似乎會受到影響，導致呈現的內容被截斷 (也有可能是nvim的term的問題)
-        "git show " .. sha1, -- 如果要一口氣呈現，可以用End即可，離開還要再按下q
+        "git --no-pager show " .. sha1,
+        -- "git show " .. sha1, -- 如果要一口氣呈現，可以用End即可，離開還要再按下q
+        cmdUtils.echoMsg(1, " 👇 filepath: absolute 👇 ", 1),
+        table.concat(abs_files, sep),
         cmdUtils.echoMsg(1, "👇 cmd: 👇", 1),
         bash_cmd,
       }, sep)
