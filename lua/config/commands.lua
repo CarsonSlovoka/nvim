@@ -396,7 +396,6 @@ function commands.setup()
         cmdUtils.echoMsg(2, "👇 cmd: 👇", 2),
         bash_cmd,
       }, sep)
-      print(run_cmd)
       vim.cmd(run_cmd)
     end,
     {
@@ -437,7 +436,7 @@ function commands.setup()
       vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd)
     end,
     {
-      desc = "git commit",
+      desc = "git commit; git branch -av",
     }
   )
 end

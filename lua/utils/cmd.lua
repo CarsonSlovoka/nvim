@@ -47,7 +47,7 @@ function M.echoMsg(startLn, msg, endLn)
   end
 
   -- 'echo -e "\\n\\n msg  \\n\\n"',
-  return string.format("echo -e %s%s%s",
+  return string.format('echo -e "%s%s%s"',
     string.rep("\\n", startLn),
     msg,
     string.rep("\\n", endLn)
