@@ -596,6 +596,47 @@ function commands.setup()
       desc = "刪除當前的quickfix的選中項目",
     }
   )
+
+  vim.api.nvim_create_user_command(
+    "QFDeleteMany",
+    function()
+      local qf_list = vim.fn.getqflist()
+
+      -- 檢查是否有視覺選擇
+      local start_pos = vim.fn.getpos("'<") -- 視覺選擇的起始位置
+      local end_pos = vim.fn.getpos("'>")   -- 視覺選擇的結束位置
+
+      -- 如果有有效的視覺選擇 (visual mode)
+      if start_pos[2] > 0 and end_pos[2] > 0 then
+        local start_idx = start_pos[2] - 1 -- 轉為 0-based 索引
+        local end_idx = end_pos[2] - 1     -- 轉為 0-based 索引
+
+        -- 確保索引在有效範圍內
+        if next(qf_list) ~= nil and start_idx >= 0 and end_idx < #qf_list then
+          -- 從後向前移除，避免索引偏移問題
+          for i = end_idx, start_idx, -1 do
+            table.remove(qf_list, i + 1) -- table.remove 是 1-based
+          end
+          vim.fn.setqflist(qf_list, 'r')
+        else
+          vim.notify("選中的 quickfix 項目無效或列表為空", vim.log.levels.ERROR)
+        end
+      else
+        -- 沒有視覺選擇時，移除當前行（原邏輯）
+        local cur_idx = vim.api.nvim_win_get_cursor(0)[1] - 1
+        if next(qf_list) ~= nil and cur_idx >= 0 and cur_idx < #qf_list then
+          table.remove(qf_list, cur_idx + 1)
+          vim.fn.setqflist(qf_list, 'r')
+        else
+          vim.notify("無效的 quickfix 項目或列表為空", vim.log.levels.ERROR)
+        end
+      end
+    end,
+    {
+      desc = "刪除選中的quickfix項目（支援多選, V-LINE",
+      range = true,
+    }
+  )
 end
 
 return commands
