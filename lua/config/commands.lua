@@ -264,14 +264,22 @@ function commands.setup()
   )
 
 
-  vim.api.nvim_create_user_command("PrintBOM", -- 其實可以寫在autocmd中，但是我覺得不必要，除了老程式，目前用utf-8機乎是主流，不太需要寫入BOM來佔空間
+  vim.api.nvim_create_user_command("PrintBOM",
     function(args)
       if args.fargs[1] == "-h" then
         cmdUtils.showHelpAtQuickFix({
-          ':set fileencoding=utf-8',
-          ':set fileencoding=utf-16       -- 這個可能有BOM, 也可能沒有, 如果有了話則用系統的讀法決定是le還是be',
-          ':set fileencoding=utf-16le     -- 如果要確實改成le可以用這種方法',
-          ':set fileencoding=utf-16be     -- 記得更改完後要存檔才會生效',
+          -- https://neovim.io/doc/user/mbyte.html
+          ':set fileencoding=utf-8        -- 32 bit UTF-8 encoded Unicode (ISO/IEC 10646-1)',
+          ':set fileencoding=utf-16       -- ucs-2 extended with double-words for more characters',
+          ':set fileencoding=utf-16le     -- like utf-16, little endian',
+          ':set fileencoding=unicode      -- same as ucs-2',
+          ':set fileencoding=ucs2be       -- same as ucs-2 (big endian)',
+          ':set fileencoding=ucs-2be      -- same as ucs-2 (big endian)',
+          ':set fileencoding=ucs-4        -- 32 bit UCS-4 encoded Unicode (ISO/IEC 10646-1)',
+          ':set fileencoding=ucs-4le      -- like ucs-4, little endian',
+          ':set fileencoding=utf-32       -- same as ucs-4',
+          ':set fileencoding=utf-32le     -- same as ucs-4le',
+          ':set fileencoding=ucs-4be      -- same as ucs-4 (big endian)',
           ':set bomb',
           ':set nobomb',
         })
@@ -282,22 +290,27 @@ function commands.setup()
         return
       end
 
-      local bytes = file:read(3) -- 看有多少byte就盡可能的讀取 -- 如果長度不夠不會出錯，會得到nil而已
+      local bytes = file:read(4) -- 看有多少byte就盡可能的讀取 -- 如果長度不夠不會出錯，會得到nil而已
       file:close()
 
       if bytes then
-        if bytes:sub(1, 2) == '\255\254' then         -- FF FE
+        -- 注意! UTF-32 的檢查要放在前面，因為它的 BOM 是 4 bytes，如果放在 UTF-16 後面會被誤判（因為 UTF-32LE 的前兩位也是 FF FE）
+        if bytes:sub(1, 4) == '\255\254\000\000' then     -- FF FE 00 00
+          vim.notify("utf-32le with BOM (FF FE 00 00)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 4) == '\000\000\254\255' then -- 00 00 FE FF
+          vim.notify("utf-32be with BOM (00 00 FE FF)", vim.log.levels.INFO)
+        elseif bytes:sub(1, 2) == '\255\254' then         -- FF FE
           vim.notify("utf-16le with BOM (FF FE)", vim.log.levels.INFO)
-        elseif bytes:sub(1, 2) == '\254\255' then     -- FE FF
+        elseif bytes:sub(1, 2) == '\254\255' then         -- FE FF
           vim.notify("utf-16be with BOM (FE FF)", vim.log.levels.INFO)
-        elseif bytes:sub(1, 3) == '\239\187\191' then -- EF BB BF
+        elseif bytes:sub(1, 3) == '\239\187\191' then     -- EF BB BF
           vim.notify("utf-8 with BOM (EF BB BF)", vim.log.levels.INFO)
         end
       end
     end,
     {
       nargs = "?",
-      desc = "如果文件有BOM(utf-16le, utf-16be, utf-8)則顯示",
+      desc = "如果文件有BOM(utf-8, utf-16le, utf-16be, utf-32le, utf-32be)則顯示",
       complete = function()
         return "-h"
       end
