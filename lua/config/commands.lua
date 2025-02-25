@@ -532,6 +532,34 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command(
+    "AddToQucikfix",
+    function(args)
+      local text = ""
+      if #args.fargs > 0 then
+        text = args.fargs[1]
+      else
+        text = vim.fn.getline('.')
+      end
+      vim.fn.setqflist({
+        {
+          filename = vim.fn.expand('%'),
+          lnum = vim.fn.line('.'),
+          col = vim.fn.col('.'),
+          ["text"] = text,
+        },
+      }, 'a') -- a表示append
+      vim.cmd("copen")
+    end,
+    {
+      nargs = "?",
+      desc = "將目前的內容附加到quickfix list清單中",
+      -- complete = function()
+      --   return string.format("%s", vim.fn.getline('.')) -- ~~用目前這行的內容當成text訊息~~ 無效
+      -- end
+    }
+  )
 end
 
 return commands
