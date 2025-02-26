@@ -940,7 +940,8 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("RecSelection",
     function(args)
-      local output_dir = args.args
+      local output_dir = args.fargs[1]
+      local output_filename = args.fargs[2] or "recording.mp4"
 
       -- 確保輸出目錄存在
       local output_dir_stat = vim.loop.fs_stat(output_dir)
@@ -949,8 +950,47 @@ function commands.setup()
         return
       end
 
+      -- Ensure output filename ends with .mp4
+      if not output_filename:match("%.mp4$") then
+        output_filename = output_filename .. ".mp4"
+      end
+
       local output_mkv_path = output_dir .. "/" .. 'recording.mkv'
-      local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
+      -- local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
+      local output_mp4_path = output_dir .. "/" .. output_filename
+
+      local mkv_exists = vim.loop.fs_stat(output_mkv_path)
+      local mp4_exists = vim.loop.fs_stat(output_mp4_path)
+
+      -- Check if MP4 file already exists
+      if mkv_exists or mp4_exists then
+        local msg = ""
+        if mkv_exists then
+          msg = output_mkv_path .. "\n"
+        end
+        if mp4_exists then
+          msg = msg .. output_mp4_path
+        end
+        local choice = vim.fn.confirm(
+          "File " .. msg .. " already exists. Overwrite?",
+          "&Yes\n&No",
+          2                 -- 默認的選擇, 也就是No
+        )
+        if choice ~= 1 then -- If not Yes, terminate
+          vim.notify("Recording cancelled", vim.log.levels.INFO)
+          return
+        end
+        -- 如果檔案已經存在，在錄置沒看到錯誤，但是實際上會得不到結果，所以之前需要先判斷檔案是否存在
+        -- 如果你是自己用終端機跑，其實wl-recorder也會問是否要取代，我在猜因為用term來跑，尋問的地方會有問題
+        -- 導致可以錄，但是結果出不來。總之如果要覆蓋，直接在這邊先刪除
+        -- Delete existing files if they exist
+        if mkv_exists then
+          os.remove(output_mkv_path)
+        end
+        if mp4_exists then
+          os.remove(output_mp4_path)
+        end
+      end
 
       local rec_cmd = 'wf-recorder -g "$(slurp)" --audio --file=' .. output_mkv_path
       vim.cmd('term ' .. rec_cmd)
@@ -968,11 +1008,33 @@ function commands.setup()
       })
     end,
     {
-      nargs = 1,
+      nargs = "+",
       desc = 'wf-recorder -g "$(slurp)" ...',
-      complete = function(argLead, _, _)
-        local dirs = completion.getDirOnly(argLead)
-        return dirs
+      complete = function(argLead, cmdLine, _)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          local dirs = completion.getDirOnly(argLead) -- 取得當前工作目錄下可用的目錄
+
+          -- Add common directories
+          local home = os.getenv("HOME")
+          table.insert(dirs, home .. "/Documents")
+          table.insert(dirs, home .. "/Downloads")
+
+          -- Filter duplicates and sort
+          local unique_dirs = {}
+          for _, dir in ipairs(dirs) do
+            unique_dirs[dir] = true -- 同個內容都在同一個key
+          end
+          dirs = vim.tbl_keys(unique_dirs)
+          table.sort(dirs)
+          return dirs
+        end
+
+        -- argc: 2
+        return {
+          "recording.mp4"
+        }
       end
     }
   )
