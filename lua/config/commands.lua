@@ -23,16 +23,14 @@ local function openCurrentDirWithFoot()
 end
 
 function commands.setup()
-  vim.api.nvim_create_user_command(
   -- 'foot', -- Invalid command name (must start with uppercase): 'foot'
-    "Foot",
+  vim.api.nvim_create_user_command("Foot",
     openCurrentDirWithFoot, -- 執行的函數
     { desc = "使用 Foot 開啟當前文件所在的目錄" } -- 描述信息（可選）
   )
 
 
-  vim.api.nvim_create_user_command(
-    "Cmd",
+  vim.api.nvim_create_user_command("Cmd",
     function(args)
       local direction = "sp"
       if #args.fargs > 0 and args.fargs[1] == "v" then
@@ -65,8 +63,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "Edit",
+  vim.api.nvim_create_user_command("Edit",
     function()
       local selected_text = require("utils.range").get_selected_text()
       if #selected_text == 0 then
@@ -79,8 +76,7 @@ function commands.setup()
       desc = "edit",
     }
   )
-  vim.api.nvim_create_user_command(
-    "Help",
+  vim.api.nvim_create_user_command("Help",
     function()
       local selected_text = require("utils.range").get_selected_text()
       if #selected_text == 0 then
@@ -317,8 +313,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "HexView",
+  vim.api.nvim_create_user_command("HexView",
     function(args)
       if args.fargs[1] == "-h" then
         cmdUtils.showHelpAtQuickFix({
@@ -378,8 +373,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "GitDiff",
+  vim.api.nvim_create_user_command("GitDiff",
     function(args)
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
       if vim.v.shell_error ~= 0 then
@@ -442,8 +436,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "GitCommit",
+  vim.api.nvim_create_user_command("GitCommit",
     function()
       -- :!foot git commit &
       local terminal = ""
@@ -470,8 +463,7 @@ function commands.setup()
   )
 
 
-  vim.api.nvim_create_user_command(
-    "GitShow",
+  vim.api.nvim_create_user_command("GitShow",
     function(args)
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
       if vim.v.shell_error ~= 0 then
@@ -546,8 +538,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "QFAdd",
+  vim.api.nvim_create_user_command("QFAdd",
     function(args)
       local text = ""
       if #args.fargs > 0 then
@@ -588,8 +579,7 @@ function commands.setup()
       -- end
     }
   )
-  vim.api.nvim_create_user_command(
-    "QFRemove",
+  vim.api.nvim_create_user_command("QFRemove",
     function()
       local qf_list = vim.fn.getqflist()
 
@@ -610,8 +600,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command(
-    "QFDeleteMany",
+  vim.api.nvim_create_user_command("QFDeleteMany",
     function()
       local qf_list = vim.fn.getqflist()
 

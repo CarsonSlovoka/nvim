@@ -660,7 +660,7 @@ local function install_telescope()
       selection_caret = " ", -- 選中時的指示符
       entry_prefix = "  ",
       sorting_strategy = "ascending",
-      layout_strategy = "horizontal",
+      layout_strategy = "vertical", -- 改用vertical可以看得比較完整 -- horizontal
       layout_config = {
         prompt_position = "top",
         horizontal = {
