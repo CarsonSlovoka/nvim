@@ -1,6 +1,7 @@
 local path = require("utils.path")
 local cmdUtils = require("utils.cmd")
 local osUtils = require("utils.os")
+local swayUtils = require("utils.sway")
 
 local commands = {}
 
@@ -637,6 +638,60 @@ function commands.setup()
     {
       desc = "刪除選中的quickfix項目（支援多選, V-LINE",
       range = true,
+    }
+  )
+
+  vim.api.nvim_create_user_command("SetWinOpacity",
+    function(args)
+      if #args.fargs < 2 then
+        vim.notify("請提供 <PID> 和 <透明度>，例如：SetWinOpacity 1234 0.8", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 匹配模式：(.*) 捕獲所有內容直到最後的數字，([%d%.]+) 捕獲結尾的數字（包括小數）
+      -- args.args:match("^(.*)[%s　]+([%d%.]+)$")
+      local arg1, opacity = args.args:match("^(.*)%s+([%d%.]+)$") -- U+3000會沒中
+      if arg1 and opacity then
+        local arg1Item = vim.split(arg1, "　") -- U+3000        local pid =
+        local name = arg1Item[1]
+        local pid = arg1Item[2]
+
+        local result = swayUtils.set_window_opacity(pid, opacity)
+        if result == 0 then
+          vim.notify(string.format("已將 %q PID %s 的透明度設為 %.2f", name, pid, opacity), vim.log.levels.INFO)
+        else
+          vim.notify("執行 swaymsg 失敗", vim.log.levels.ERROR)
+        end
+      else
+        vim.notify("命令格式錯誤，請使用：SetWinOpacity <pid> <opacity>", vim.log.levels.ERROR)
+      end
+    end,
+    {
+      desc = "設定Sway中指窗口的透明度",
+      nargs = "+",
+      complete = function(argLead, cmdLine, _)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+
+        if argc == 1 then
+          -- 第一個參數給出所有可用的PID, name
+          local nodes = swayUtils.get_tree()
+          local cmp = {}
+          for _, node in ipairs(nodes) do
+            table.insert(cmp, string.format("%s　%s", node.name, node.pid))
+          end
+          return cmp
+        end
+
+        if argc == 2 then
+          return {
+            0,
+            0.4,
+            0.8,
+            1,
+          }
+        end
+      end
     }
   )
 end
