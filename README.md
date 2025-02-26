@@ -45,7 +45,6 @@ windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
 :helptags ~/.config/nvim/pack/search/start/telescope.nvim/doc/
 :helptags ~/.config/nvim/pack/git/start/gitsigns.nvim/doc/
 :helptags ~/.config/nvim/pack/tree/start/nvim-tree.lua/doc/
-:helptags ~/.config/nvim/pack/schedule/start/atq.nvim/doc/
 # > 會在該目錄下生成出tags的文件，如果這些目錄在runtimepath下，就會自動生成文檔
 ```
 
@@ -109,7 +108,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │
 │   ├── schedule/start/                  -- ✅ 排程相關
-│   │         └── atq.nvim               -- ✅ 通知提醒 ( 396ed33 )
+│   │         └── ~~atq.nvim~~           -- ✅ 通知提醒 ( 396ed33 )
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -725,7 +724,7 @@ git clone https://github.com/MeanderingProgrammer/render-markdown.nvim.git ~/.co
 mkdir -pv ~/.config/nvim/pack/schedule/start/
 ```
 
-### [atq.nvim](https://github.com/CarsonSlovoka/atq.git)
+### ~~[atq.nvim](https://github.com/CarsonSlovoka/atq.git)~~ (使用`:NotifySend`  即可)
 
 ```sh
 git clone https://github.com/CarsonSlovoka/atq.git ~/.config/nvim/pack/schedule/start/atq.nvim

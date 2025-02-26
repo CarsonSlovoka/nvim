@@ -1318,7 +1318,7 @@ install_telescope()
 vim.cmd('colorscheme github_dark_default')
 install_ibl()
 install_lualine()
-install_atq()
+-- install_atq() -- 可以用command: NotifySend 即可
 install_renderMarkdown()
 install_cmp_list()
 

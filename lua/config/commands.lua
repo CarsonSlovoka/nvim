@@ -734,6 +734,79 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command("NotifySend",
+    function(args)
+      if args.fargs[1] == "-h" then
+        cmdUtils.showHelpAtQuickFix({
+          'NotifySend title body <datetime> <duration?>                     -- 如果參數有空白，請用下劃線(_)取代',
+          'NotifySend title body 08:00 3000',
+          'NotifySend title line1\\nline2\\nline3 08:00 3000',
+          '❌ NotifySend titleRow1\\nRow2 line1\\nline2\\nline3 08:00 3000  -- title的換行無效',
+          '!atq          -- 查看排程',
+          '!at -c 11     -- 查看任務編號為11所要做的內容',
+          '!atrm 11      -- 刪除編號為11的排程',
+        })
+        return
+      end
+
+      if #args.fargs < 3 then
+        vim.notify("參數不足", vim.log.levels.ERROR)
+        vim.cmd("NotifySend -h")
+        return
+      end
+      local title = string.gsub(args.fargs[1], "_", " ")
+      local body = string.gsub(args.fargs[2], "_", " ")
+      local datetime = string.gsub(args.fargs[3], "_", " ")
+      local duration = ""
+      if #args.fargs >= 4 then
+        local d = tonumber(args.fargs[4])
+        if duration then
+          duration = " -t " .. d
+        end
+      end
+      local full_command = string.format('echo \'notify-send %s %q %q\' | at %s', duration, title, body, datetime)
+      print(full_command)
+      os.execute(full_command)
+    end,
+    {
+      nargs = "+",
+      desc = "notify-send",
+      complete = function(argLead, cmdLine, _)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+
+        if argc == 1 then
+          return {
+            "title",
+          }
+        end
+
+        if argc == 2 then
+          return {
+            "body"
+          }
+        end
+
+        if argc == 3 then
+          return {
+            "08:00",
+            "now_+_1_hour",
+            "08:00_tomorrow",
+            "22:30_01/11/2025",
+          }
+        end
+
+        if argc == 4 then
+          return {
+            "3000",
+            "8000",
+            "12000",
+          }
+        end
+      end
+    }
+  )
 end
 
 return commands
