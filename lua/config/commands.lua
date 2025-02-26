@@ -685,7 +685,7 @@ function commands.setup()
         if result == 0 then
           vim.notify(string.format("已將 %q PID %s 的透明度設為 %.2f", name, pid, opacity), vim.log.levels.INFO)
         else
-          vim.notify("執行 swaymsg 失敗", vim.log.levels.ERROR)
+          vim.notify(string.format("執行 swaymsg 失敗: pid:%s opacity: %s", pid, opacity), vim.log.levels.ERROR)
         end
       else
         vim.notify("命令格式錯誤，請使用：SetWinOpacity <pid> <opacity>", vim.log.levels.ERROR)
@@ -701,16 +701,21 @@ function commands.setup()
         -- 🧙 注意！如果argc1用的是PID, name的組合，可能就會導致之後的參數完成判斷不易(因為第幾個參數可能受到名稱之中有空白，導致參數推斷不如遇期)
         if argc == 1 then
           return {
-            "0",
-            "0.4",
             "0.8",
+            "0.4",
             "1",
+            "0",
           }
         end
 
         if argc == 2 then
           -- 此參數為PID, name的結合
           local nodes = swayUtils.get_tree()
+          if #argLead > 0 then
+            nodes = vim.tbl_filter(function(node)
+              return string.find((node.name .. node.pid), argLead)
+            end, nodes)
+          end
           local cmp = {}
 
           -- 讓聚焦的窗口顯示在清單自動完成清單的上層
