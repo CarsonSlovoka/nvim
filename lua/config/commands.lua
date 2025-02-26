@@ -757,7 +757,11 @@ function commands.setup()
       end
       local title = string.gsub(args.fargs[1], "_", " ")
       local body = string.gsub(args.fargs[2], "_", " ")
-      local datetime = string.gsub(args.fargs[3], "_", " ")
+      local datetime = string.gsub(
+        vim.split(args.fargs[3], "　")[1], -- U+3000之後的當成註解，不取
+        "_",
+        " "
+      )
       local duration = ""
       if #args.fargs >= 4 then
         local d = tonumber(args.fargs[4])
@@ -789,7 +793,13 @@ function commands.setup()
         end
 
         if argc == 3 then
+          local now = os.time()
           return {
+            os.date("%H:%M"), -- HH:MM
+            -- os.date("%H:%M_%m/%d/%Y　"), -- HH:MM_mm/dd/YYYY
+            os.date("%H:%M_%m/%d/%Y　(%A)(today)"), -- HH:MM_mm/dd/YYYY -- %A是星期幾
+            os.date("%H:%M_%m/%d/%Y　(%A)(tomorrow)", now + 86400),
+            os.date("%H:%M_%m/%d/%Y　(%A)(next_week)", now + 86400 * 7),
             "08:00",
             "now_+_1_hour",
             "08:00_tomorrow",
