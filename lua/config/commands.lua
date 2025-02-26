@@ -2,6 +2,7 @@ local path = require("utils.path")
 local cmdUtils = require("utils.cmd")
 local osUtils = require("utils.os")
 local swayUtils = require("utils.sway")
+local completion = require("utils.complete")
 
 local commands = {}
 
@@ -863,6 +864,115 @@ function commands.setup()
           "hex",
           "preview"
         }
+      end
+    }
+  )
+
+  -- 失敗，連區域都不能選
+  -- local rec_job_id = nil
+  -- vim.api.nvim_create_user_command("RecSelection",
+  --   function(args)
+  --     -- if args.args:match("%.mp4$") == nil or args.args:match("%.mp4$") == nil then end
+  --     -- local output_dir = vim.fn.fnamemodify('path/to/123.mkv', ":h")
+  --
+  --     local output_dir = args.args
+  --
+  --     -- 確保輸出目錄存在
+  --     local output_dir_stat = vim.loop.fs_stat(output_dir)
+  --     if output_dir_stat and output_dir_stat.type ~= "directory" then
+  --       vim.notify("輸出的目錄不存在: " .. output_dir, vim.log.levels.ERROR)
+  --       return
+  --     end
+  --
+  --     local output_mkv_path = output_dir .. "/" .. 'recording.mkv'
+  --     local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
+  --
+  --     -- 執行錄製
+  --     -- local rec_cmd = 'wf-recorder -g "$(slurp)" --audio --file=' .. output_mkv_path -- 這個可能沒用，最好明確指名用shell
+  --     local rec_cmd = {
+  --       "sh", "-c",
+  --       "wf-recorder -g \"$(slurp)\" --audio --file=" .. vim.fn.shellescape(output_mkv_path)
+  --     }
+  --     -- os.execute(rec_cmd) -- 這個沒辦法給stop的訊號
+  --     print(table.concat(rec_cmd, " "))
+  --
+  --     rec_job_id = vim.fn.jobstart(rec_cmd, {
+  --       env = { WAYLAND_DISPLAY = os.getenv("WAYLAND_DISPLAY") }, -- 確保 Wayland 環境
+  --       on_exit = function(_, code)
+  --         if code == 0 then
+  --           print("錄製完成，開始轉換...")
+  --           local mkv_to_mp4_cmd = string.format('ffmpeg -i %s -c:v copy -c:a copy %s',
+  --             vim.fn.shellescape(output_mkv_path),
+  --             vim.fn.shellescape(output_mp4_path)
+  --           )
+  --           os.execute(mkv_to_mp4_cmd)
+  --           os.remove(output_mkv_path)
+  --           print("轉換完成，已保存為 " .. output_mp4_path)
+  --         else
+  --           print("錄製失敗，退出碼：" .. code)
+  --         end
+  --       end
+  --     })
+  --     vim.notify("開始錄製，按 :StopRec 結束", vim.log.levels.INFO)
+  --   end,
+  --   {
+  --     nargs = 1,
+  --     desc = 'wf-recorder -g "$(slurp)" ...',
+  --     complete = function(argLead, _, _)
+  --       local dirs = completion.getDirOnly(argLead)
+  --       return dirs
+  --     end
+  --   }
+  -- )
+  --
+  -- -- 停止錄製
+  -- vim.api.nvim_create_user_command('StopRec', function()
+  --   if rec_job_id then
+  --     vim.fn.jobstop(rec_job_id)
+  --     rec_job_id = nil
+  --   else
+  --     print("沒有正在進行的錄製")
+  --   end
+  -- end, {
+  --   desc = "僅在 :RecSelection 開始後有用. 用來結束錄製",
+  --   nargs = 0
+  -- })
+
+  vim.api.nvim_create_user_command("RecSelection",
+    function(args)
+      local output_dir = args.args
+
+      -- 確保輸出目錄存在
+      local output_dir_stat = vim.loop.fs_stat(output_dir)
+      if output_dir_stat and output_dir_stat.type ~= "directory" then
+        vim.notify("輸出的目錄不存在: " .. output_dir, vim.log.levels.ERROR)
+        return
+      end
+
+      local output_mkv_path = output_dir .. "/" .. 'recording.mkv'
+      local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
+
+      local rec_cmd = 'wf-recorder -g "$(slurp)" --audio --file=' .. output_mkv_path
+      vim.cmd('term ' .. rec_cmd)
+
+      -- 設置自動命令，在終端退出後轉換
+      vim.api.nvim_create_autocmd("TermClose", {
+        pattern = "*",
+        once = true,
+        callback = function()
+          os.execute('ffmpeg -i ' ..
+            vim.fn.shellescape(output_mkv_path) .. ' -c:v copy -c:a copy ' .. vim.fn.shellescape(output_mp4_path))
+          os.remove(output_mkv_path)
+          vim.notify("轉換完成，已保存為 " .. output_mp4_path, vim.log.levels.INFO)
+        end,
+      })
+    end,
+    {
+      nargs = 1,
+      desc = 'wf-recorder -g "$(slurp)" ...',
+      complete = function(argLead, _, _)
+        local dirs = completion.getDirOnly(argLead)
+        return dirs
       end
     }
   )
