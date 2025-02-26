@@ -643,11 +643,11 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("SetWinOpacity",
     function(args)
-      print(vim.inspect(args))
+      -- print(vim.inspect(args))
       if args.fargs[1] == "-h" then
         cmdUtils.showHelpAtQuickFix({
           ':SetWinOpacity <opacity> <PID>',
-          ':SetWinOpacity <opacity> <PID> <opacity>     -- 就只是方便您設定，如果你不想再回到前面去調整opacity',
+          ':SetWinOpacity <opacity> <PID> <opacity必需有小數點>     -- 就只是方便您設定，如果你不想再回到前面去調整opacity',
         })
         return
       end
@@ -677,7 +677,7 @@ function commands.setup()
       end
 
       if arg2 and opacity then
-        local item = vim.split(arg2, "　") -- U+3000        local pid =
+        local item = vim.split(arg2, "　") -- U+3000
         local name = item[1]
         local pid = item[2]
 
@@ -712,8 +712,17 @@ function commands.setup()
           -- 此參數為PID, name的結合
           local nodes = swayUtils.get_tree()
           local cmp = {}
+
+          -- 讓聚焦的窗口顯示在清單自動完成清單的上層
           for _, node in ipairs(nodes) do
-            table.insert(cmp, string.format("%s　%s", node.name, node.pid))
+            if node.focused then
+              table.insert(cmp, string.format("%s　%s", node.name, node.pid))
+            end
+          end
+          for _, node in ipairs(nodes) do
+            if not node.focused then
+              table.insert(cmp, string.format("%s　%s", node.name, node.pid))
+            end
           end
           return cmp
         end

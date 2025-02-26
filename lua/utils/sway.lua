@@ -1,6 +1,6 @@
 local M = {}
 
---- 取得到name, pid的資訊
+--- 取得到name, pid, focused的資訊
 --- @return table
 function M.get_tree()
   local handle = io.popen("swaymsg -t get_tree")
@@ -26,7 +26,8 @@ function M.get_tree()
       if node.pid and node.name then
         table.insert(windows, {
           name = node.name,
-          pid = node.pid
+          pid = node.pid,
+          focused = node.focused,
         })
       end
 
