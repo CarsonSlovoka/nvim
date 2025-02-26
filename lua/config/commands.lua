@@ -643,18 +643,43 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("SetWinOpacity",
     function(args)
-      if #args.fargs < 2 then
-        vim.notify("請提供 <PID> 和 <透明度>，例如：SetWinOpacity 1234 0.8", vim.log.levels.ERROR)
+      print(vim.inspect(args))
+      if args.fargs[1] == "-h" then
+        cmdUtils.showHelpAtQuickFix({
+          ':SetWinOpacity <opacity> <PID>',
+          ':SetWinOpacity <opacity> <PID> <opacity>     -- 就只是方便您設定，如果你不想再回到前面去調整opacity',
+        })
         return
+      end
+
+      if #args.fargs < 2 then
+        vim.notify("請提供 <透明度> 和 <PID>，例如：SetWinOpacity 0.8 1234", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 試圖從字串末尾匹配一個可能的浮點數(只能是浮點數(避免與pid衝突)
+      local opacity2 = args.args:match("([%d]+%.[%d]+)%s*$")
+
+      local input_args = ""
+      if opacity2 then
+        input_args = args.args:match("^(.-)%s*[%d]+%.[%d]+%s*$")
+      else
+        input_args = args.args
       end
 
       -- 匹配模式：(.*) 捕獲所有內容直到最後的數字，([%d%.]+) 捕獲結尾的數字（包括小數）
       -- args.args:match("^(.*)[%s　]+([%d%.]+)$")
-      local arg1, opacity = args.args:match("^(.*)%s+([%d%.]+)$") -- U+3000會沒中
-      if arg1 and opacity then
-        local arg1Item = vim.split(arg1, "　") -- U+3000        local pid =
-        local name = arg1Item[1]
-        local pid = arg1Item[2]
+      -- local arg1, opacity = args.args:match("^(.*)%s+([%d%.]+)$")
+      local opacity, arg2 = input_args:match("^([%d%.]+)%s+(.*)$")
+      -- print(opacity, arg2, opacity2)
+      if opacity2 then
+        opacity = tonumber(opacity2)
+      end
+
+      if arg2 and opacity then
+        local item = vim.split(arg2, "　") -- U+3000        local pid =
+        local name = item[1]
+        local pid = item[2]
 
         local result = swayUtils.set_window_opacity(pid, opacity)
         if result == 0 then
@@ -673,23 +698,24 @@ function commands.setup()
         local parts = vim.split(cmdLine, "%s+")
         local argc = #parts - 1
 
+        -- 🧙 注意！如果argc1用的是PID, name的組合，可能就會導致之後的參數完成判斷不易(因為第幾個參數可能受到名稱之中有空白，導致參數推斷不如遇期)
         if argc == 1 then
-          -- 第一個參數給出所有可用的PID, name
+          return {
+            "0",
+            "0.4",
+            "0.8",
+            "1",
+          }
+        end
+
+        if argc == 2 then
+          -- 此參數為PID, name的結合
           local nodes = swayUtils.get_tree()
           local cmp = {}
           for _, node in ipairs(nodes) do
             table.insert(cmp, string.format("%s　%s", node.name, node.pid))
           end
           return cmp
-        end
-
-        if argc == 2 then
-          return {
-            0,
-            0.4,
-            0.8,
-            1,
-          }
         end
       end
     }
