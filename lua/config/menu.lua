@@ -241,7 +241,12 @@ vim.api.nvim_buf_add_highlight(buf, 0, "StartupInfo", base_line + 14, padding_le
 
   -- 應用高亮
   for _, hl in ipairs(highlight_positions) do
-    vim.api.nvim_buf_add_highlight(buf, 0, hl.highlight, hl.line_num, hl.start_col, hl.end_col)
+    if hl.line_num >= 0 then
+      vim.api.nvim_buf_add_highlight(buf, 0, hl.highlight, hl.line_num, hl.start_col, hl.end_col)
+    else
+      vim.notify("menu的視窗空間不足, 故不使用顏色突顯", vim.log.levels.Info)
+      break
+    end
   end
 
   -- 設置 buffer 為不可編輯（只讀）
