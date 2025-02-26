@@ -817,6 +817,55 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command("ColorPicker",
+    function(args)
+      local handle = io.popen("zenity --color-selection --show-palette 2>/dev/null")
+      if not handle then
+        vim.notify("無法執行 zenity --color-section --show-palette ", vim.log.levels.ERROR)
+        return
+      end
+
+      if args.fargs[1] == "preview" then
+        return
+      end
+
+      local result = handle:read("*a")
+      handle:close()
+
+      -- 移除換行符並檢查是否有效
+      result = result:gsub("\n$", "")
+      if not result or result == "" then
+        vim.notify("未選擇任何顏色", vim.log.levels.INFO)
+        return
+      end
+
+      if args.fargs[1] == "hex" then
+        local function rgb_to_hex(rgb_str)
+          local r, g, b = rgb_str:match("rgb%((%d+),(%d+),(%d+)%)")
+          if r and g and b then
+            return string.format("#%02X%02X%02X", tonumber(r), tonumber(g), tonumber(b))
+          end
+          return nil
+        end
+        vim.api.nvim_put({ rgb_to_hex(result) or "" }, "c", true, true)
+        return
+      elseif args.fargs[1] == "rgb" then
+        vim.api.nvim_put({ result }, "c", true, true)
+      end
+    end,
+    {
+      nargs = 1,
+      desc = "Open a color picker and insert the selected color",
+      complete = function()
+        return {
+          "rgb",
+          "hex",
+          "preview"
+        }
+      end
+    }
+  )
 end
 
 return commands
