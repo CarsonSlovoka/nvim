@@ -949,9 +949,11 @@ function commands.setup()
       if args.fargs[1] == "-h" then
         cmdUtils.showHelpAtQuickFix({
           'man wf-recorder >> ~/temp.doc',
-          'RecSelection <output_dir> <filename> <fps?>',
+          'RecSelection <output_dir> <filename> <--framerate?> <--no-damage?> <--no-dmabuf?>',
           'RecSelection ~/Downloads/ my.mp4',
-          'RecSelection ~/Downloads/ my.mp4 --framerate_N           　指定的fps設定為N，其中N為一個整數',
+          'RecSelection ~/Downloads/ my.mp4 --framerate_N                    　指定的fps設定為N，其中N為一個整數',
+          'RecSelection ~/Downloads/ my.mp4 default --no-damage --no-dmabuf  　fps用預設, 其中如果影變錄出來有破格後面兩個可選項可能有幫助. 30sec約3.6M(但實際的大小還是取決於錄置的內容，僅參考)',
+          '執行的真實指令可以透過 :copen 去查看',
         })
         return
       end
@@ -1007,13 +1009,44 @@ function commands.setup()
         end
       end
 
-      local framerate = args.fargs[3] or ""
-      framerate = string.gsub(framerate, "_", " ")
+      local framerate_opt = args.fargs[3] or ""
+      if framerate_opt == 'default' then
+        framerate_opt = ""
+      end
+      if #framerate_opt > 0 then
+        framerate_opt = string.gsub(framerate_opt, "_", " ")
+      end
+
+      local no_damage_opt = args.fargs[4] or ""
+      if no_damage_opt == 'default' then
+        no_damage_opt = ""
+      end
+
+      local no_dmabuf_opt = args.fargs[5] or ""
+      if no_dmabuf_opt == 'default' then
+        no_dmabuf_opt = ""
+      end
 
       local rec_cmd = string.format(
-        'wf-recorder %s -g "$(slurp)" --audio --file=%s', framerate, output_mkv_path
+        'wf-recorder %s %s %s -g "$(slurp)" --audio --file=%s',
+        framerate_opt, no_damage_opt, no_dmabuf_opt,
+        output_mkv_path
       )
-      print(rec_cmd)
+
+      -- -- debug
+      -- print(rec_cmd) -- 用print還需要按Enter才能繼續 (所以寫到qflist)
+      -- if vim.fn.confirm("debug", "&Yes\n&No", 2) ~= 1 then
+      --   vim.notify("Recording cancelled", vim.log.levels.INFO)
+      --   return
+      -- end
+
+      -- 將指令寫入到quickFix的列表，幫助之後如果有需要可以查看實際運行的內容
+      vim.fn.setqflist({
+        {
+          text = rec_cmd,
+        },
+      }, 'a')
+
       vim.cmd('term ' .. rec_cmd)
 
       -- 設置自動命令，在終端退出後轉換
@@ -1058,13 +1091,27 @@ function commands.setup()
           }
         end
 
-
         if argc == 3 then
           return {
+            "default",
             "--framerate_60",
             "--framerate_25",
             "--framerate_10",
             "--framerate_5"
+          }
+        end
+
+        if argc == 4 then
+          return {
+            "default", -- by default, wf-recorder will request a new frame from the compositor only when screen updates.
+            "--no-damage",
+          }
+        end
+
+        if argc == 5 then
+          return {
+            "default", -- by default, wf-recorder will try to sue only GPU buffers and copies if using a GPU encorder.
+            "--no-dmabuf"
           }
         end
       end
