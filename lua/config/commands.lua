@@ -169,7 +169,7 @@ function commands.setup()
     complete = function(
         argLead,                              -- 當你打上某些關鍵字後使用tab時，它會記錄你的關鍵字
         cmdLine,                              -- 當前cmdLine上所有字串內容
-        cursorPos                             -- cursor在cmdLine上的位置(欄)
+        _                                     -- cursorPos在cmdLine上的位置(欄)
     )
       local parts = vim.split(cmdLine, "%s+") -- %s 匹配空白、製表符等
       local argc = #parts - 1                 -- 減去命令本身
@@ -450,12 +450,12 @@ function commands.setup()
       end
       terminal = os.getenv("TERM") or "" -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
       vim.cmd("!" .. terminal .. " git commit &")
-      local bash_cmd = "exec bash"
-      local sep = ";"
-      if osUtils.IsWindows then
-        bash_cmd = "cmd"
-        sep = " & "
-      end
+      -- local bash_cmd = "exec bash"
+      -- local sep = ";"
+      -- if osUtils.IsWindows then
+      --   bash_cmd = "cmd"
+      --   sep = " & "
+      -- end
       -- vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd) -- 如果你目前已經在term，這個會蓋掉，雖然可以再透過<C-O>回去，但是點麻煩
       print("git branch -av") -- 改用成提示，如果有需要可以在自己用msg來查看
     end,
@@ -777,7 +777,7 @@ function commands.setup()
     {
       nargs = "+",
       desc = "notify-send",
-      complete = function(argLead, cmdLine, _)
+      complete = function(_, cmdLine, _)
         local parts = vim.split(cmdLine, "%s+")
         local argc = #parts - 1
 

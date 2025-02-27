@@ -3,7 +3,7 @@ local highlight = {}
 --- https://github.com/orgs/community/discussions/16925
 function highlight:new(abbr)
   self.__index = self
-  word = string.format('> [!%s]', string.upper(abbr))
+  local word = string.format('> [!%s]', string.upper(abbr))
   return setmetatable({
     word = word,
     kind = word,

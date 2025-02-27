@@ -679,7 +679,9 @@ local function install_telescope()
       mappings = {
         i = {
           ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
-          ["<C-x>"] = function(prompt_bufnr)
+          ["<C-x>"] = function(
+          -- prompt_bufnr
+          )
             local action_state = require("telescope.actions.state")
             local entry = action_state.get_selected_entry()
             if not entry then
@@ -905,7 +907,7 @@ local function install_telescope()
   end, {
     nargs = "*",
     desc = "同Telescope find_files但可以只定搜尋的工作路徑",
-    complete = function(argLead, cmdLine, cursorPos)
+    complete = function(argLead, cmdLine, _)
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
       local dirs = completion.getDirOnly(argLead)
@@ -955,7 +957,6 @@ local function install_telescope()
   vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
   vim.api.nvim_create_user_command("Livegrep", function(args)
     local opt = {}
-    local cwd = "."
     if #args.fargs > 0 then
       if args.fargs[1] == "-h" then
         local help = {
@@ -972,7 +973,7 @@ local function install_telescope()
         cmdUtils.showHelpAtQuickFix(help)
         return
       end
-      opt.cwd = args.fargs[1]
+      opt.cwd = args.fargs[1] or "."
     end
 
     if #args.fargs > 1 then
@@ -998,7 +999,7 @@ local function install_telescope()
   end, {
     nargs = "*",
     desc = "同Telescope live_grep但可以只定搜尋的工作路徑",
-    complete = function(argLead, cmdLine, cursorPos)
+    complete = function(argLead, cmdLine, _)
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
       local dirs = completion.getDirOnly(argLead)
@@ -1267,7 +1268,9 @@ local function install_cmp_list()
   end
 
   m.setup({
-    presets = function(default_config)
+    presets = function(
+    -- default_config
+    )
       return m.deep_merge({}, {
         _global = array.Merge(
           require('external.cmp-list.nvim-cmd'), -- vim中的command相關 :
