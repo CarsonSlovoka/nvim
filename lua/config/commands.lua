@@ -939,7 +939,22 @@ function commands.setup()
   -- })
 
   vim.api.nvim_create_user_command("RecSelection",
+    -- man wf-recorder
+    -- https://man.archlinux.org/man/extra/wf-recorder/wf-recorder.1.en
+    -- -r, --framerate framerate (CFR, Constant Frame Rate) 如果實際的幀數不足，會重覆幀來達到指定的數值
+    -- -D, --no-damage: 如果加了此選項，它會持續錄製新幀，即使螢幕沒變化
+    -- -B, --buffrate buffrate (VFR, Variable Frame Rate 可以節省空間), 用來告訴編碼器預期的幀率，而不是直接控制輸出的FPS
+    -- --buffrate 是用來幫助某些編碼器(例如: SVT-AV1) 解決FPS限制問題，並保留可變幀率。因此這個選項不會強製輸出成指定的FPS, 而是作為一種建議值，實際幀率仍取決於顯示器或錄製內容的更新頻率
     function(args)
+      if args.fargs[1] == "-h" then
+        cmdUtils.showHelpAtQuickFix({
+          'man wf-recorder >> ~/temp.doc',
+          'RecSelection <output_dir> <filename> <fps?>',
+          'RecSelection ~/Downloads/ my.mp4',
+          'RecSelection ~/Downloads/ my.mp4 --framerate_N           　指定的fps設定為N，其中N為一個整數',
+        })
+        return
+      end
       local output_dir = args.fargs[1]
       local output_filename = args.fargs[2] or "recording.mp4"
 
@@ -992,7 +1007,13 @@ function commands.setup()
         end
       end
 
-      local rec_cmd = 'wf-recorder -g "$(slurp)" --audio --file=' .. output_mkv_path
+      local framerate = args.fargs[3] or ""
+      framerate = string.gsub(framerate, "_", " ")
+
+      local rec_cmd = string.format(
+        'wf-recorder %s -g "$(slurp)" --audio --file=%s', framerate, output_mkv_path
+      )
+      print(rec_cmd)
       vim.cmd('term ' .. rec_cmd)
 
       -- 設置自動命令，在終端退出後轉換
@@ -1031,10 +1052,21 @@ function commands.setup()
           return dirs
         end
 
-        -- argc: 2
-        return {
-          "recording.mp4"
-        }
+        if argc == 2 then
+          return {
+            "recording.mp4"
+          }
+        end
+
+
+        if argc == 3 then
+          return {
+            "--framerate_60",
+            "--framerate_25",
+            "--framerate_10",
+            "--framerate_5"
+          }
+        end
       end
     }
   )
