@@ -642,6 +642,14 @@ local function install_telescope()
     return
   end
   -- 初始化 Telescope
+  -- vertical, horizontal. vertical有助於看到整個名稱(但是preview會被壓縮，不過因為我們定義了 <C-p> 為 toggle_preview所以用成horizontal要看清整個名稱也很方便)
+  local telescope_layout_strategy = "horizontal"
+  local telescope_file_ignore_patterns = {
+    "node_modules",
+    -- ".git/", -- agit, bgit這種也會匹配到
+    "%.git/", -- 這種是精確匹配. 因為 % 會轉譯，也就是.並非任一字元，而是真的匹配.
+    -- "^pack\\", -- 忽略pack目錄, 再打指令的時候用一個 \  就好，此外不能用成 /
+  }           -- 忽略文件或目錄模式
   m.setup({
     defaults = {
       -- 預設配置
@@ -660,24 +668,36 @@ local function install_telescope()
       selection_caret = " ", -- 選中時的指示符
       entry_prefix = "  ",
       sorting_strategy = "ascending",
-      layout_strategy = "vertical", -- 改用vertical可以看得比較完整 -- horizontal
+      layout_strategy = telescope_layout_strategy,
       layout_config = {
         prompt_position = "top",
         horizontal = {
           preview_width = 0.6,
         },
         vertical = {
-          mirror = false,
+          mirror = true,        -- 翻轉，會影響提示輸入寬的位置, 為false時輸入在中間, preview在上
+          width = 0.8,          -- 視窗寬度佔比
+          height = 0.9,         -- 視窗高度佔比
+          preview_height = 0.5, -- 預覽區域佔整個視窗的比例
+          preview_cutoff = 0,   -- 當結果數量少於此值時隱藏預覽, 設為0保證永遠顯示
         },
       },
-      file_ignore_patterns = { "node_modules", ".git/" }, -- 忽略文件或目錄模式
+      file_ignore_patterns = telescope_file_ignore_patterns,
       winblend = 0,
       border = {},
       borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
       path_display = { "truncate" },
-      set_env = { ["COLORTERM"] = "truecolor" }, -- 修正配色
+      set_env = { ["COLORTERM"] = "truecolor" },                          -- 修正配色
       mappings = {
-        i = {
+        n = {                                                             -- 一般模式
+          ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
+
+          -- ["<leader>l"] = function(prompt_bufnr)                                               -- 用<leader>也可以
+          --   local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr) -- 這是mirror的toggle
+          --   picker.layout_strategy = "horizontal"
+          -- end
+        },
+        i = {                                                             -- 插入模式
           ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
           ["<C-x>"] = function(
           -- prompt_bufnr
@@ -867,6 +887,94 @@ local function install_telescope()
       prompt_title = "Find (時間排序)",
     })
   end
+
+
+  vim.api.nvim_create_user_command("TelescopeConfig", function(args)
+      -- vim.g.tellescope_... 並沒有這些東西，所以如果想要後面再修改這些配置，只能重新setup
+      -- local layout_strategy = vim.g.telescope_layout_strategy or "vertical"
+      -- local file_ignore_patterns = vim.g.telescope_file_ignore_patterns or { "%.git/" }
+
+      -- 解析 args.args
+      local arg_str = args.args
+      -- for opt, val in arg_str:gmatch("--(%S+)=([^%s]+)") do -- 使用這種opt的--也會被納入
+      for opt, val in arg_str:gmatch("--([a-zA-Z0-9_]+)=([^%s]+)") do
+        -- print(opt, val)
+        if opt == "layout_strategy" then
+          -- 如果有 --layout_strategy=xxx，更新 layout_strategy
+          telescope_layout_strategy = val
+        elseif opt == "file_ignore_patterns" then
+          -- 如果有 --file_ignore_patterns=xxx，將 xxx 以 ; 分割成 table
+          local patterns = {}
+          for pattern in val:gmatch("[^;]+") do
+            table.insert(patterns, pattern)
+          end
+          telescope_file_ignore_patterns = patterns
+        end
+      end
+
+      -- 應用配置到 Telescope
+      m.setup {
+        defaults = {
+          layout_strategy = telescope_layout_strategy,
+          file_ignore_patterns = telescope_file_ignore_patterns,
+        },
+      }
+
+      -- 輸出當前配置（可選，方便除錯）
+      print("Layout strategy: " .. telescope_layout_strategy)
+      print("File ignore patterns: " .. table.concat(telescope_file_ignore_patterns, ", "))
+    end,
+    {
+      desc = "可以調整其相關設定{layout_strategy, file_ignore_patterns, ...}請善用TAB來選擇",
+      nargs = "+",
+      complete = function(argLead)
+        -- 定義所有可用的設置選項
+        local all_settings = {
+          file_ignore_patterns = table.concat(telescope_file_ignore_patterns or { "%.git/" }, ";"),
+          layout_strategy = { "vertical", "horizontal" },
+        }
+
+        -- 儲存補全選項
+        local completions = {}
+
+        if #argLead == 0 then
+          for key in pairs(all_settings) do
+            table.insert(completions, "--" .. key)
+          end
+          return completions
+        end
+
+        -- 如果當前輸入的是選項名稱（以 -- 開頭但還沒到 =）
+        if argLead:match("^%-%-") and not argLead:match("=") then
+          for key in pairs(all_settings) do
+            if key:find(argLead:sub(3), 1, true) == 1 then
+              table.insert(completions, "--" .. key)
+            end
+          end
+          -- 如果已經輸入 --xxx=，則補全值
+        elseif argLead:match("^%-%-.*=") then
+          local opt = argLead:match("^%-%-(.*)=")
+          local current_val = all_settings[opt]
+          if current_val then
+            if type(current_val) == "table" then
+              -- layout_strategy 的補全
+              for _, val in ipairs(current_val) do
+                if val:find(argLead:match("=(.*)$"), 1, true) == 1 then
+                  table.insert(completions, "--" .. opt .. "=" .. val)
+                end
+              end
+            elseif type(current_val) == "string" then
+              -- file_ignore_patterns 的補全
+              if current_val:find(argLead:match("=(.*)$"), 1, true) == 1 then
+                table.insert(completions, "--" .. opt .. "=" .. current_val)
+              end
+            end
+          end
+        end
+
+        return completions
+      end,
+    })
 
   -- 我的自定義: search_with_find
   vim.keymap.set("n", "<leader>fr", search_with_find, { desc = "[Find Recent]" })

@@ -379,8 +379,8 @@ function bookmark.show()
         preview_height = 0.5, -- 預覽窗口佔上下分佈空間高度比重
       },
     },
-    ]]                            --
-    layout_strategy = "vertical", -- 規定窗口佈局為水平
+    ]]
+    -- layout_strategy = "vertical", -- 規定窗口佈局為水平 -- 不再定義，用原始的定義
 
     -- 快捷鍵相關定義
     attach_mappings = function(_, map)
