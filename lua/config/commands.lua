@@ -641,19 +641,22 @@ function commands.setup()
       else
         text = vim.fn.getline('.')
       end
-      vim.fn.setqflist({
-        {
-          filename = vim.fn.expand('%'),
-          lnum = vim.fn.line('.'),
-          col = vim.fn.col('.'),
-          ["text"] = text,
-        },
-      }, 'a') -- a表示append
+      local qflist = vim.fn.getqflist()
+      local new_entry = {
+        filename = vim.fn.expand('%'),
+        lnum = vim.fn.line('.'),
+        col = vim.fn.col('.'),
+        ["text"] = text,
+      }
+
+      -- vim.fn.setqflist(new_entry, 'a') -- a表示append 這個是放在最後面
+      table.insert(qflist, 1, new_entry)
+      vim.fn.setqflist(qflist, 'r') -- 目前似乎沒有其他更高效的方法，只能全部重寫
       cmdUtils.open_qflist_if_not_open()
     end,
     {
       nargs = "?",
-      desc = "將目前的內容附加到quickfix list清單中",
+      desc = "將目前的內容插入到quickfix list清單中的第一筆",
       -- complete = function()
       --   return string.format("%s", vim.fn.getline('.')) -- ~~用目前這行的內容當成text訊息~~ 無效
       -- end
