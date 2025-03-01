@@ -641,17 +641,26 @@ function commands.setup()
         vim.notify("Not in a Git repository", vim.log.levels.ERROR)
         return
       end
+
+      local bash_cmd = "exec bash"
+      local sep = ";"
+      if osUtils.IsWindows then
+        bash_cmd = "cmd"
+        sep = " & "
+      end
+
       if #args.fargs == 0 then
         -- git log 可以指定從哪一個sha1開始，如果省略就是從頭列到尾
         -- vim.cmd("term git log --reverse -- xxx.cpp")
-        vim.cmd("term git log")
+        vim.cmd("term git --no-pager log" .. sep .. bash_cmd)
+        return
       end
 
       local sha1 = ""
       if args.fargs[1] == "." or args.fargs[1] == "HEAD" then
         sha1 = ""
       else
-        sha1 = args.fargs[1]
+        sha1 = vim.split(args.fargs[1], "　")[1] -- U+3000來拆分
       end
 
       local opt_reverse = ""
@@ -676,12 +685,6 @@ function commands.setup()
       local run_cmd = string.format("term git log %s %s %s", sha1, opt_reverse, file_abs_paths)
       -- print(run_cmd)
       -- vim.cmd(run_cmd) -- 這個不能再繼續打指令
-      local bash_cmd = "exec bash"
-      local sep = ";"
-      if osUtils.IsWindows then
-        bash_cmd = "cmd"
-        sep = " & "
-      end
       vim.cmd(run_cmd .. sep .. bash_cmd)
     end,
     {
