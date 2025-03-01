@@ -3,6 +3,7 @@ local cmdUtils = require("utils.cmd")
 local osUtils = require("utils.os")
 local swayUtils = require("utils.sway")
 local completion = require("utils.complete")
+local arrayUtils = require("utils.array")
 
 local commands = {}
 
@@ -629,6 +630,128 @@ function commands.setup()
           end
         end
         return filtered_logs
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command("GitLog",
+    function(args)
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error ~= 0 then
+        vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+        return
+      end
+      if #args.fargs == 0 then
+        -- git log 可以指定從哪一個sha1開始，如果省略就是從頭列到尾
+        -- vim.cmd("term git log --reverse -- xxx.cpp")
+        vim.cmd("term git log")
+      end
+
+      local sha1 = ""
+      if args.fargs[1] == "." or args.fargs[1] == "HEAD" then
+        sha1 = ""
+      else
+        sha1 = args.fargs[1]
+      end
+
+      local opt_reverse = ""
+      for opt, val in args.fargs[2]:gmatch("--([a-zA-Z0-9_]+)=([^%s]+)") do
+        if opt == "reverse" and (val == "true" or val == "1") then
+          opt_reverse = "--reverse"
+        end
+      end
+
+      local files = {}
+      for i = 3, #args.fargs do
+        files[#files + 1] = git_root .. "/" .. args.fargs[i]
+      end
+
+      -- table.concat(table, concat_what, start, end)
+      -- local file_relative_path = table.concat(args.fargs, " ", 3) -- 接下來的每一個內容都是為檔案, 這可以，但是路徑是相對路徑，只能在root上使用
+      local file_abs_paths = table.concat(files, " ")
+      if #file_abs_paths > 0 then
+        -- file_relative_path = "-- " .. file_relative_path -- 相對路徑會吃工作目錄，工作目錄不對結果就出不來
+        file_abs_paths = "-- " .. file_abs_paths
+      end
+      local run_cmd = string.format("term git log %s %s %s", sha1, opt_reverse, file_abs_paths)
+      -- print(run_cmd)
+      -- vim.cmd(run_cmd) -- 這個不能再繼續打指令
+      local bash_cmd = "exec bash"
+      local sep = ";"
+      if osUtils.IsWindows then
+        bash_cmd = "cmd"
+        sep = " & "
+      end
+      vim.cmd(run_cmd .. sep .. bash_cmd)
+    end,
+    {
+      nargs = "*",
+      complete = function(argLead, cmdLine)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+
+        -- 先用git log找所有commit的sha1
+        -- local cmg_git_log = 'git --no-pager log --pretty=format:"%H　%s　%ai"' -- 分隔符用U+3000來區分, %H 是長版本的sha1 (40個字母)
+        local cmg_git_log = 'git --no-pager log --pretty=format:"%h　%s　%ai"' -- %h是短版本的sha1, 7個字母
+        local commit_info = vim.fn.systemlist(cmg_git_log)
+        if argc == 1 then
+          if #argLead == 0 then
+            -- 避免有多的空白. 遍歷 commit_info，每個項目中的換行和空白都替換成底線
+            for i, v in ipairs(commit_info) do
+              commit_info[i] = v:gsub("[%s\n]+", "_")
+            end
+
+            return commit_info
+          end
+
+          -- 篩選出argLead的項目就好
+          -- local input_sha_txt = parts[2]
+          local filtered_logs = {}
+          for _, line in ipairs(commit_info) do
+            if line:find(argLead) then
+              table.insert(filtered_logs, line)
+            end
+          end
+          for i, v in ipairs(filtered_logs) do
+            filtered_logs[i] = v:gsub("[%s\n]+", "_")
+          end
+          return filtered_logs
+        end
+
+
+        if argc == 2 then
+          return cmdUtils.get_complete_list(argLead, {
+            reverse = {
+              "true",
+              "false",
+            }
+          })
+        end
+
+        -- local sha1 = string.sub(cmdLine, 8, 14) -- (#"GitLog" + 1) + 1(空格), 之後會接sha1 -- 這可行但有點麻煩
+        local sha1 = ""
+        if parts[2] == "." or parts[2] == "HEAD" then
+          sha1 = ""
+        else
+          sha1 = string.sub(parts[2], 1, 7) -- parts[1] 是指令本身，這裡是GitLog
+        end
+
+        -- local files = vim.fn.systemlist("git --no-pager show --name-only --pretty=format: " .. sha1) -- 這個是取得當時後有異動的檔案
+        local files = vim.fn.systemlist("git --no-pager log --name-only --diff-filter=A --pretty=format: " .. sha1) -- 這是那時候，所有曾經被commit過的檔案都會出來 (主要就是靠--diff-filter=A) A是指Added
+        arrayUtils.remove_empty_items(files)
+
+        -- 這邊的files路徑，可以不需要轉換成絕對路徑，因為只要能辨識即可，真正在執行git的時候再轉成絕對路徑即可
+
+        if #argLead > 0 then
+          local filtered_files = {}
+          for i = 1, #files do
+            if files[i]:find(argLead) then
+              table.insert(filtered_files, files[i])
+            end
+          end
+          return filtered_files
+        end
+        return files
       end
     }
   )
