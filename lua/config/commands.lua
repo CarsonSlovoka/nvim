@@ -24,6 +24,99 @@ local function openCurrentDirWithFoot()
   end
 end
 
+
+--- 這個指令比較麻煩，因為還會牽扯到自動完成的事件，所以包裝在此函數
+local function create_user_command_jumps_to_qf_list()
+  local function update_qf_list()
+    local jumps, _ = unpack(vim.fn.getjumplist()) -- jumps, cur_idx
+    local qf_list = {}
+
+    -- for i, jump in ipairs(jumps) do
+    for i = #jumps, 1, -1 do -- step: -1 -- 反過來取，讓最近異動的顯示再qflist的第一筆
+      local jump = jumps[i]
+
+      local text = "" -- string.format("%03d", i), -- 顯示跳轉編號 沒什麼意義
+      if vim.api.nvim_buf_is_valid(jump.bufnr) then
+        local lines = vim.api.nvim_buf_get_lines(jump.bufnr, jump.lnum - 1, jump.lnum, false)
+        if #lines > 0 then
+          text = lines[1] -- 獲取該行內容
+        end
+      end
+
+      table.insert(qf_list, {
+        bufnr = jump.bufnr, -- 緩衝區號
+        lnum = jump.lnum,   -- 行號
+        col = jump.col + 1, -- 列號 (注意：Vim 的 col 從 0 開始，quickfix 從 1 開始)
+        text = text         -- (可選)
+      })
+    end
+
+    vim.fn.setqflist(qf_list)
+  end
+
+  --- 讓當qflist開啟的時候，會持續以jumps的內容來更新其清單，這樣就不需要自己一直調用JumpsToQFlist來更新
+  --- 如果不在需要自動加入的行為，請使用 :ccl, :cclose, 來將自動建立的autocmd移除
+  local function setup_autocmd()
+    -- vim.api.nvim_clear_autocmds({ group = "JumpsToQFlist" }) -- 如果group還沒有建立，這樣會錯
+
+    -- 創建自動命令組
+    vim.api.nvim_create_augroup("JumpsToQFlist", { clear = true }) -- clear為true會建立; 如果clear為false可以用來查詢已經建立的此id
+
+
+    -- 當光標移動時檢查並更新（因為跳轉會觸發 CursorMoved）
+    vim.api.nvim_create_autocmd("CursorMoved", {
+      group = "JumpsToQFlist",
+      callback = function()
+        if cmdUtils.is_qf_open() then
+          update_qf_list()
+        end
+      end,
+      desc = "Update qflist on jump change when qf is open",
+    })
+
+    -- 當 quickfix 視窗關閉時清理, 這個好像關不掉, 所以改用CmdlineLeave來幫忙
+    -- vim.api.nvim_create_autocmd("WinClosed", {
+    --   group = "JumpsToQFlist",
+    --   callback = function()
+    --     if not cmdUtils.is_qf_open() then
+    --       local id = vim.api.nvim_create_augroup("JumpsToQFlist", { clear = false })
+    --       vim.api.nvim_clear_autocmds({ group = id })
+    --     end
+    --   end,
+    --   desc = "Clear autocmds when qf is closed",
+    -- })
+
+    -- 當執行 :cclose 時清理自動命令
+    vim.api.nvim_create_autocmd("CmdlineLeave", {
+      pattern = ":",
+      group = "JumpsToQFlist",
+      callback = function()
+        local cmd = vim.fn.getcmdline() -- CmdlineEnter 如果是Enter事件，此時得到的都會是空值
+        if cmd == "cclose" or cmd == "ccl" then
+          vim.api.nvim_clear_autocmds({ group = "JumpsToQFlist" })
+        end
+      end,
+      desc = "Clear autocmds when :cclose is executed",
+    })
+  end
+
+  vim.api.nvim_create_user_command("JumpsToQFlist",
+    function()
+      -- init
+      update_qf_list()
+
+      cmdUtils.open_qflist_if_not_open()
+
+      -- 設定自動更新
+      setup_autocmd()
+    end,
+    {
+      -- hop.nvim的跳轉剛好會觸發, jumps列表的更新，可以記錄到你準備要跳轉前的位置
+      desc = "同步將jumps的內容寫入到qflist之中, 使用:ccl, :cclose可關閉同步的行為. 要配合hop.nvim使用會比較有感",
+    }
+  )
+end
+
 function commands.setup()
   -- 'foot', -- Invalid command name (must start with uppercase): 'foot'
   vim.api.nvim_create_user_command("Foot",
@@ -1102,38 +1195,8 @@ function commands.setup()
       end
     }
   )
-  vim.api.nvim_create_user_command("JumpsToQFlist",
-    function()
-      local jumps, _ = unpack(vim.fn.getjumplist()) -- jumps, cur_idx
-      local qf_list = {}
 
-      -- for i, jump in ipairs(jumps) do
-      for i = #jumps, 1, -1 do -- step: -1 -- 反過來取，讓最近異動的顯示再qflist的第一筆
-        local jump = jumps[i]
-
-        local text = "" -- string.format("%03d", i), -- 顯示跳轉編號 沒什麼意義
-        if vim.api.nvim_buf_is_valid(jump.bufnr) then
-          local lines = vim.api.nvim_buf_get_lines(jump.bufnr, jump.lnum - 1, jump.lnum, false)
-          if #lines > 0 then
-            text = lines[1] -- 獲取該行內容
-          end
-        end
-
-        table.insert(qf_list, {
-          bufnr = jump.bufnr, -- 緩衝區號
-          lnum = jump.lnum,   -- 行號
-          col = jump.col + 1, -- 列號 (注意：Vim 的 col 從 0 開始，quickfix 從 1 開始)
-          text = text         -- (可選)
-        })
-      end
-
-      vim.fn.setqflist(qf_list)
-      cmdUtils.open_qflist_if_not_open()
-    end,
-    {
-      desc = "將jumps的內容寫入到qflist之中",
-    }
-  )
+  create_user_command_jumps_to_qf_list()
 end
 
 return commands

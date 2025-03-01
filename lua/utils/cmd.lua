@@ -57,18 +57,20 @@ function M.echoMsg(startLn, msg, endLn)
   )
 end
 
-function M.open_qflist_if_not_open()
-  local is_qf_open = false
+function M.is_qf_open()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
-    local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
-    if buftype == "quickfix" then
-      is_qf_open = true
-      break
+    -- local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
+    -- if buftype == "quickfix" then -- 寫成這樣可行
+    if vim.bo[buf].buftype == "quickfix" then -- 不過用這種寫法比較乾淨
+      return true
     end
   end
+  return false
+end
 
-  if not is_qf_open then
+function M.open_qflist_if_not_open()
+  if not M.is_qf_open() then
     vim.cmd("copen")
   end
 end
