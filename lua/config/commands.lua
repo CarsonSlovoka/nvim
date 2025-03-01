@@ -556,22 +556,7 @@ function commands.setup()
           ["text"] = text,
         },
       }, 'a') -- a表示append
-
-      -- 檢查是否有 quickfix 視窗開啟
-      local is_qf_open = false
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
-        if buftype == "quickfix" then
-          is_qf_open = true
-          break
-        end
-      end
-
-      -- 如果 quickfix 視窗未開啟，則執行 copen
-      if not is_qf_open then
-        vim.cmd("copen")
-      end
+      cmdUtils.open_qflist_if_not_open()
     end,
     {
       nargs = "?",
@@ -1115,6 +1100,38 @@ function commands.setup()
           }
         end
       end
+    }
+  )
+  vim.api.nvim_create_user_command("JumpsToQFlist",
+    function()
+      local jumps, _ = unpack(vim.fn.getjumplist()) -- jumps, cur_idx
+      local qf_list = {}
+
+      -- for i, jump in ipairs(jumps) do
+      for i = #jumps, 1, -1 do -- step: -1 -- 反過來取，讓最近異動的顯示再qflist的第一筆
+        local jump = jumps[i]
+
+        local text = "" -- string.format("%03d", i), -- 顯示跳轉編號 沒什麼意義
+        if vim.api.nvim_buf_is_valid(jump.bufnr) then
+          local lines = vim.api.nvim_buf_get_lines(jump.bufnr, jump.lnum - 1, jump.lnum, false)
+          if #lines > 0 then
+            text = lines[1] -- 獲取該行內容
+          end
+        end
+
+        table.insert(qf_list, {
+          bufnr = jump.bufnr, -- 緩衝區號
+          lnum = jump.lnum,   -- 行號
+          col = jump.col + 1, -- 列號 (注意：Vim 的 col 從 0 開始，quickfix 從 1 開始)
+          text = text         -- (可選)
+        })
+      end
+
+      vim.fn.setqflist(qf_list)
+      cmdUtils.open_qflist_if_not_open()
+    end,
+    {
+      desc = "將jumps的內容寫入到qflist之中",
     }
   )
 end
