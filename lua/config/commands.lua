@@ -659,6 +659,17 @@ function commands.setup()
       -- end
     }
   )
+
+  vim.api.nvim_create_user_command("QFEmpty",
+    function()
+      vim.fn.setqflist({}, 'f') -- free
+      cmdUtils.open_qflist_if_not_open()
+    end,
+    {
+      nargs = 0,
+      desc = "清空quickfix列表",
+    }
+  )
   vim.api.nvim_create_user_command("QFRemove",
     function()
       local qf_list = vim.fn.getqflist()
