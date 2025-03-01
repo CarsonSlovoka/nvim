@@ -75,4 +75,47 @@ function M.open_qflist_if_not_open()
   end
 end
 
+--- 得到補全的清單
+--- @param argLead string
+--- @param cmp_table table
+function M.get_complete_list(argLead, cmp_table)
+  local completions = {}
+  if #argLead == 0 then
+    for key in pairs(cmp_table) do
+      table.insert(completions, "--" .. key)
+    end
+    return completions
+  end
+
+  -- 如果當前輸入的是選項名稱（以 -- 開頭但還沒到 =）
+  if argLead:match("^%-%-") and not argLead:match("=") then
+    for key in pairs(cmp_table) do
+      if key:find(argLead:sub(3), 1, true) == 1 then
+        table.insert(completions, "--" .. key)
+      end
+    end
+    -- 如果已經輸入 --xxx=，則補全值
+  elseif argLead:match("^%-%-.*=") then
+    local opt = argLead:match("^%-%-(.*)=")
+    local cmp_item = cmp_table[opt]
+    if cmp_item then
+      if type(cmp_item) == "table" then -- array的情況
+        -- 插入每一項
+        for _, val in ipairs(cmp_item) do
+          if val:find(argLead:match("=(.*)$"), 1, true) == 1 then
+            table.insert(completions, "--" .. opt .. "=" .. val)
+          end
+        end
+      elseif type(cmp_item) == "string" then
+        -- file_ignore_patterns 的補全
+        if cmp_item:find(argLead:match("=(.*)$"), 1, true) == 1 then
+          table.insert(completions, "--" .. opt .. "=" .. cmp_item)
+        end
+      end
+    end
+  end
+
+  return completions
+end
+
 return M

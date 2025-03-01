@@ -928,51 +928,10 @@ local function install_telescope()
       desc = "可以調整其相關設定{layout_strategy, file_ignore_patterns, ...}請善用TAB來選擇",
       nargs = "+",
       complete = function(argLead)
-        -- 定義所有可用的設置選項
-        local all_settings = {
+        return cmdUtils.get_complete_list(argLead, {
           file_ignore_patterns = table.concat(telescope_file_ignore_patterns or { "%.git/" }, ";"),
           layout_strategy = { "vertical", "horizontal" },
-        }
-
-        -- 儲存補全選項
-        local completions = {}
-
-        if #argLead == 0 then
-          for key in pairs(all_settings) do
-            table.insert(completions, "--" .. key)
-          end
-          return completions
-        end
-
-        -- 如果當前輸入的是選項名稱（以 -- 開頭但還沒到 =）
-        if argLead:match("^%-%-") and not argLead:match("=") then
-          for key in pairs(all_settings) do
-            if key:find(argLead:sub(3), 1, true) == 1 then
-              table.insert(completions, "--" .. key)
-            end
-          end
-          -- 如果已經輸入 --xxx=，則補全值
-        elseif argLead:match("^%-%-.*=") then
-          local opt = argLead:match("^%-%-(.*)=")
-          local current_val = all_settings[opt]
-          if current_val then
-            if type(current_val) == "table" then
-              -- layout_strategy 的補全
-              for _, val in ipairs(current_val) do
-                if val:find(argLead:match("=(.*)$"), 1, true) == 1 then
-                  table.insert(completions, "--" .. opt .. "=" .. val)
-                end
-              end
-            elseif type(current_val) == "string" then
-              -- file_ignore_patterns 的補全
-              if current_val:find(argLead:match("=(.*)$"), 1, true) == 1 then
-                table.insert(completions, "--" .. opt .. "=" .. current_val)
-              end
-            end
-          end
-        end
-
-        return completions
+        })
       end,
     })
 
