@@ -1336,6 +1336,36 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("Voice",
+    function(args)
+      os.execute("amixer sset Master " .. args.fargs[1])
+    end,
+    {
+      desc = "聲音調整",
+      nargs = 1,
+      complete = function(_, cmdLine)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          return {
+            "5%+", -- 相對音量
+            "5%-",
+            "20%", -- 音量設定為某數值
+          }
+        end
+      end
+    }
+  )
+  vim.api.nvim_create_user_command("VoiceToggle",
+    function()
+      os.execute("amixer sset Master toggle")
+    end,
+    {
+      desc = "靜音切換",
+      nargs = 0,
+    }
+  )
+
   create_user_command_jumps_to_qf_list()
 end
 
