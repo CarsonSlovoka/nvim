@@ -4,6 +4,8 @@
 
 local M = {}
 
+vim.opt_local.foldenable = false -- 此文件不啟用摺疊，不然就會因為收合沒看到東西
+
 -- 新增函數：讀取圖片文本文件
 local function read_lines(file_path)
   local file = io.open(file_path, "r")

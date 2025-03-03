@@ -46,11 +46,14 @@ function options.setup()
   vim.o.tabline = "%!v:lua.get_tabline()"
 
   -- 如果要摺行，可以在v下用 :'<,'>fold 的方式去摺
-  -- :1200,1600fold 這種方式也可以摺行
+  -- :1200,1600fold 這種方式也可以摺行 foldmethod為manual可用
   -- map: zc, zo 可以摺或展開
-  -- vim.opt.foldmethod = "indent" -- expr, syntax
+  -- vim.opt.foldmethod = "manual" -- 此為預設. 手動設定. 如果你在程式碼中可以自己用set改成indent或者其它的項目
+  vim.opt.foldmethod = "indent" -- expr, syntax -- :set foldmethod=indent
   -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
   -- vim.opt.foldenable = false
+  vim.opt.foldcolumn = "auto" -- 0-9也可以，如果有fold的清況下可以看到旁邊+-的摺顯示
+  vim.opt.foldlevel = 2       -- 💡 這個很有用！表示從第幾層後就可以摺疊，如果是0就是全部摺疊, 可以隨時用:set foldlevel?來觀察目前設定的數值
 
   -- 檢查是否有支援真彩色
   local supports_truecolor = vim.fn.getenv("COLORTERM") == "truecolor"
