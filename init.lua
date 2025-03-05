@@ -1223,6 +1223,17 @@ local function install_telescope()
   })
   vim.api.nvim_create_user_command("MyLivegrep", function(args)
     local opt = {}
+    local no_auto_dir = false
+    for i = 1, #args.fargs do
+      local str = args.fargs[i]
+      -- string.sub(str, 1, 2) == "--" 這個也行
+      if str:match("^%-%-no%-auto%-dir") then
+        no_auto_dir = true
+        table.remove(args.fargs, i)
+        break
+      end
+    end
+
     opt.cwd = "."
     opt.glob_pattern = args.fargs[1] or nil
 
@@ -1248,7 +1259,7 @@ local function install_telescope()
         if vim.fn.isdirectory(path) == 1 then
           -- 如果是目錄，直接加入
           dir = path
-        elseif vim.fn.filereadable(path) == 1 then
+        elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
           -- 如果是檔案，取得其父目錄
           dir = vim.fn.fnamemodify(path, ':h')
         end
@@ -1278,8 +1289,22 @@ local function install_telescope()
     nargs = "*",
     desc = "只搜尋自定義的目錄的內容 (目錄內容來至於bookmark.lua)",
     complete = function(argLead, cmdLine, _)
+      if string.sub(argLead, 1, 2) == "--" then
+        return {
+          "--no-auto-dir"
+        }
+      end
+
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
+
+      -- 不要因為可選項影響了自動完成
+      for i = 1, #parts do
+        if string.sub(parts[i], 1, 2) == "--" then
+          argc = argc - 1
+        end
+      end
+
       if argc == 1 then
         return {
           "!*.{exe,scm}",
@@ -1298,6 +1323,17 @@ local function install_telescope()
 
   vim.api.nvim_create_user_command("MyFindFiles", function(args)
     local opt = {}
+    local no_auto_dir = false
+    for i = 1, #args.fargs do
+      local str = args.fargs[i]
+      -- string.sub(str, 1, 2) == "--" 這個也行
+      if str:match("^%-%-no%-auto%-dir") then
+        no_auto_dir = true
+        table.remove(args.fargs, i)
+        break
+      end
+    end
+
     opt.cwd = "."
     opt.search_file = args.fargs[1] or nil
     opt.search_dirs = {}
@@ -1322,7 +1358,7 @@ local function install_telescope()
         if vim.fn.isdirectory(path) == 1 then
           -- 如果是目錄，直接加入
           dir = path
-        elseif vim.fn.filereadable(path) == 1 then
+        elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
           -- 如果是檔案，取得其父目錄
           dir = vim.fn.fnamemodify(path, ':h')
         end
@@ -1343,8 +1379,22 @@ local function install_telescope()
     nargs = "*",
     desc = "只搜尋自定義的目錄 (目錄內容來至於bookmark.lua)",
     complete = function(argLead, cmdLine, _)
+      if string.sub(argLead, 1, 2) == "--" then
+        return {
+          "--no-auto-dir"
+        }
+      end
+
       local parts = vim.split(cmdLine, "%s+")
       local argc = #parts - 1
+
+      -- 不要因為可選項影響了自動完成
+      for i = 1, #parts do
+        if string.sub(parts[i], 1, 2) == "--" then
+          argc = argc - 1
+        end
+      end
+
       if argc == 1 then
         return {
           ".gitmodules",
