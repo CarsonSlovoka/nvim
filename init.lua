@@ -1221,6 +1221,78 @@ local function install_telescope()
     end,
     desc = "添加目錄到書籤. 如果想要強制覆蓋可以加上-f參數"
   })
+  vim.api.nvim_create_user_command("MyLivegrep", function(args)
+    local opt = {}
+    opt.cwd = "."
+    opt.glob_pattern = args.fargs[1] or nil
+
+    opt.search_dirs = {}
+    local seen_dirs = {}      -- 防止相同的目錄被重加
+    for i = 2, #args.fargs do -- 這樣就算#args.fargs不足i的開始也不會有錯誤，即#args.fargs在一開始若已經小於i就不會執行for
+      local dir = args.fargs[i]
+      table.insert(opt.search_dirs, dir)
+      seen_dirs[dir] = true
+    end
+
+    -- -- 讀取 bookmark.lua 檔案
+    local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua' -- 假設檔案在 ~/.config/nvim/
+    local ok, bookmarks = pcall(function()
+      return dofile(bookmark_path)
+    end)
+
+    if ok and bookmarks then
+      for _, bookmark in ipairs(bookmarks) do
+        local path = bookmark.path
+        local dir
+        -- 檢查路徑是否存在
+        if vim.fn.isdirectory(path) == 1 then
+          -- 如果是目錄，直接加入
+          dir = path
+        elseif vim.fn.filereadable(path) == 1 then
+          -- 如果是檔案，取得其父目錄
+          dir = vim.fn.fnamemodify(path, ':h')
+        end
+
+        -- 只有在未見過該目錄時才加入
+        if dir and not seen_dirs[dir] then
+          table.insert(opt.search_dirs, dir)
+          seen_dirs[dir] = true
+        end
+      end
+    end
+
+    -- for _, dir in ipairs({
+    --   -- "~/.config/nvim/lua/ftplugin/", -- ok
+    --   -- "~/.config/nvim/lua/lua/", -- ok
+    --   -- "~/.config/nvim/lua/init.lua", -- 似乎不行
+    --   -- "~/.config/nvim/doc/*.md", -- 似乎不行
+    -- }) do
+    --   table.insert(opt.search_dirs, dir)
+    -- end
+
+    -- print(vim.inspect(opt))
+    require("telescope.builtin").live_grep(opt)
+  end, {
+    nargs = "*",
+    desc = "只搜尋自定義的目錄的內容 (目錄內容來至於bookmark.lua)",
+    complete = function(argLead, cmdLine, _)
+      local parts = vim.split(cmdLine, "%s+")
+      local argc = #parts - 1
+      if argc == 1 then
+        return {
+          "!*.{exe,scm}",
+          "*.{html,js,sass,scss,gohtml,css}",
+          "*.{go,gohtml,gotmpl,md}",
+          "*.{lua,md}",
+          "*.lua",
+          "lin*.md",
+          "README.md",
+        }
+      else
+        return completion.getDirOnly(argLead) -- search_dirs
+      end
+    end
+  })
 
   vim.api.nvim_create_user_command("Gitst", function()
     require("telescope.builtin").git_status()
