@@ -4,6 +4,7 @@ local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
+local rangeUtils = require("utils.range")
 
 local HOME = os.getenv("HOME")
 
@@ -1153,9 +1154,33 @@ local function install_telescope()
   end, { desc = "如果想要永久的保存訪問過的時間，請手動呼叫此方法" })
   vim.api.nvim_create_user_command("BkAdd", function(args)
     local params = vim.split(args.args, " ")
-    local name = params[1]
-    local force = (params[2] == "-f")
+    local force = false
     -- local name = vim.fn.input("bookmarkName: ")
+    local name = ""
+    if (#params > 0 and params[#params] == "-f") then
+      -- 如果有-f，其參數一定在最後
+      force = true
+      table.remove(params, #params) -- 如此剩下的參數只剩下name
+    end
+
+    if args.range > 0 and (#params == 0 or params[1] == "") then
+      -- local range_start, range_end = args.line1, args.line2
+      -- local lines = vim.api.nvim_buf_get_lines(0, range_start - 1, range_end, false)
+      -- name = table.concat(lines, "\n"):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "") -- 先併成一列，移除多餘的空白
+      name = rangeUtils.get_selected_text():gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+      if name == "" then
+        vim.notify("錯誤：選取範圍為空", vim.log.levels.ERROR)
+        return
+      end
+    else
+      -- 沒有 range 的清況，要求必須提供名稱
+      if #params == 0 or params[1] == "" then
+        vim.notify("錯誤：請提供書籤名稱", vim.log.levels.ERROR)
+        return
+      end
+      name = params[1]
+    end
+
     local filepath = vim.fn.expand("%:p")
     local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- for lua5.4: table.unpack https://stackoverflow.com/a/65655296/9935654
     if not telescope_bookmark.add(name, filepath, row, col, { force = force }) then
@@ -1164,10 +1189,12 @@ local function install_telescope()
     telescope_bookmark.save {}
     local filename = vim.fn.expand("%:t")
     vim.notify("✅ 書籤已成功保存: " .. name ..
-      "filename: " .. filename ..
+      " filename: " .. filename ..
       " (行: " .. row .. ", 列: " .. col .. ")", vim.log.levels.INFO)
   end, {
-    nargs = "+", -- 至少1個
+    -- nargs = "+", -- 至少1個, 因為改成了range，所以參數就變成可選
+    nargs = "*",
+    range = true,
     complete = function()
       return {
         "-f",
