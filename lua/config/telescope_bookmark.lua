@@ -80,10 +80,18 @@ function bookmark.save(opts)
     local row = bk.row and tostring(bk.row) or "nil"
     local col = bk.col and tostring(bk.col) or "nil"
 
-    file:write(string.format("  { name = %q, path = %q, row = %s, col = %s, atime = %d },\n",
+    local atime = bk.atime or os.time()
+    local formatted_atime
+    if type(atime) == "number" then
+      formatted_atime = os.date("%Y/%m/%d %H:%M:%S", atime) -- 保存的時間，用數字不太好觀察
+    else
+      -- string
+      formatted_atime = atime
+    end
+    file:write(string.format("  { name = %q, path = %q, row = %s, col = %s, atime = %q },\n",
       bk.name, bk.path,
       row, col,
-      bk.atime or os.time()
+      formatted_atime
     ))
   end
 
@@ -181,7 +189,38 @@ function bookmark.show()
 
   -- 先對table進行排序，如此就可以不需要之後再排
   table.sort(bookmark.table, function(a, b)
-    return (a.atime or 0) > (b.atime or 0)
+    -- return (a.atime or 0) > (b.atime or 0) -- 這個只適用在a, b的時間都是數字才有效
+
+    -- 定義一個輔助函數來將 atime 轉換為可比較的數字
+    local function getComparableTime(t)
+      if not t then return 0 end
+
+      -- 如果是數字，直接返回
+      if type(t) == "number" then return t end
+
+      -- 如果是字串，嘗試解析為時間戳
+      if type(t) == "string" then
+        -- 假設格式是 "YYYY/MM/DD HH:MM:SS"
+        local pattern = "(%d+)/(%d+)/(%d+) (%d+):(%d+):(%d+)"
+        local year, month, day, hour, min, sec = t:match(pattern)
+        if year then
+          return os.time({
+            year = tonumber(year),
+            month = tonumber(month),
+            day = tonumber(day),
+            hour = tonumber(hour),
+            min = tonumber(min),
+            sec = tonumber(sec)
+          })
+        end
+      end
+      -- 如果無法解析，返回0
+      return 0
+    end
+
+    local time_a = getComparableTime(a.atime)
+    local time_b = getComparableTime(b.atime)
+    return time_a > time_b
   end)
 
   for _, bk in ipairs(bookmark.table) do
