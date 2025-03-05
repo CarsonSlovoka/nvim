@@ -1234,7 +1234,7 @@ local function install_telescope()
       seen_dirs[dir] = true
     end
 
-    -- -- 讀取 bookmark.lua 檔案
+    -- 讀取 bookmark.lua 檔案
     local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua' -- 假設檔案在 ~/.config/nvim/
     local ok, bookmarks = pcall(function()
       return dofile(bookmark_path)
@@ -1254,7 +1254,9 @@ local function install_telescope()
         end
 
         -- 只有在未見過該目錄時才加入
-        if dir and not seen_dirs[dir] then
+        if dir and not seen_dirs[dir]
+            and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
+        then
           table.insert(opt.search_dirs, dir)
           seen_dirs[dir] = true
         end
@@ -1290,6 +1292,70 @@ local function install_telescope()
         }
       else
         return completion.getDirOnly(argLead) -- search_dirs
+      end
+    end
+  })
+
+  vim.api.nvim_create_user_command("MyFindFiles", function(args)
+    local opt = {}
+    opt.cwd = "."
+    opt.search_file = args.fargs[1] or nil
+    opt.search_dirs = {}
+    local seen_dirs = {}
+    for i = 2, #args.fargs do
+      local dir = args.fargs[i]
+      table.insert(opt.search_dirs, args.fargs[i])
+      seen_dirs[dir] = true
+    end
+
+    -- 讀取 bookmark.lua 檔案
+    local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua'
+    local ok, bookmarks = pcall(function()
+      return dofile(bookmark_path)
+    end)
+
+    if ok and bookmarks then
+      for _, bookmark in ipairs(bookmarks) do
+        local path = bookmark.path
+        local dir
+        -- 檢查路徑是否存在
+        if vim.fn.isdirectory(path) == 1 then
+          -- 如果是目錄，直接加入
+          dir = path
+        elseif vim.fn.filereadable(path) == 1 then
+          -- 如果是檔案，取得其父目錄
+          dir = vim.fn.fnamemodify(path, ':h')
+        end
+
+        -- 只有在未見過該目錄時才加入
+        if dir and not seen_dirs[dir]
+            and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
+        then
+          table.insert(opt.search_dirs, dir)
+          seen_dirs[dir] = true
+        end
+      end
+    end
+
+    -- print(vim.inspect(opt))
+    builtin.find_files(opt)
+  end, {
+    nargs = "*",
+    desc = "只搜尋自定義的目錄 (目錄內容來至於bookmark.lua)",
+    complete = function(argLead, cmdLine, _)
+      local parts = vim.split(cmdLine, "%s+")
+      local argc = #parts - 1
+      if argc == 1 then
+        return {
+          ".gitmodules",
+          "tags",
+          "*.{ttf,otf}",
+          "Fira*.ttf",
+          "F*.{ttf,otf}",
+          "README.md",
+        }
+      else
+        return completion.getDirOnly(argLead) -- 後面的全部都當成search_dirs
       end
     end
   })
