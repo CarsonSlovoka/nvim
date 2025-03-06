@@ -18,45 +18,100 @@ map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
   local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
 
-  local cur_idx -- 用來儲存當前 qflist 的絕對索引
-  -- 先找到當前 qflist 的絕對索引
-  local i = 1
-  while true do
-    local qf_list = vim.fn.getqflist({ id = i, title = 1 })
-    if qf_list.title == cur_title then
-      cur_idx = i
-      break
-    end
-    if not qf_list.title or qf_list.title == "" then
-      break
-    end
-    i = i + 1
-  end
+  -- 這要遍歷才可以
+  -- local cur_idx -- 用來儲存當前 qflist 的絕對索引
+  -- -- 先找到當前 qflist 的絕對索引
+  -- local total_nr = vim.fn.getqflist({ nr = '$' }).nr
+  -- for i = 1, total_nr do
+  --   local qf_list = vim.fn.getqflist({ id = i, title = 1 })
+  --   if qf_list.title == cur_title then
+  --     cur_idx = i
+  --     break
+  --   end
+  --   if not qf_list.title or qf_list.title == "" then
+  --     break
+  --   end
+  -- end
 
 
   print("=== Quickfix Lists ===")
-  i = 1 -- vim.fn.getqflist id如果是0, 或者idx為0都表示當前所在的qflist
-  -- for i = 0, 15 do
+  ---- i = 1 -- vim.fn.getqflist id如果是0, 或者idx為0都表示當前所在的qflist
+  ---- while true do
+  -- for i = 1, total_nr do -- 由於idx沒辦法推算，所以改寫法，但還是保留舊的參考
+  --   -- local qf_list = vim.fn.getqflist({ id = i, items = 1, title = 1 }) -- ❗🧙 id會自動給的，如果用-f清空之後，再去新增，id是接續之前的去給，所以要用idx
+  --   local qf_list = vim.fn.getqflist({ idx = i, items = 1, title = 1 }) -- 如果後面的title沒有用1，那麼取的項目就不會抓title，後面的此數值就是空的
+  --   -- print("debug", vim.inspect(qf_list))
+  --   local qf_title = qf_list.title
+  --   local item_count = #qf_list.items
+  --   local relative_pos = cur_idx and (i - cur_idx) or i -- 可以方便曉得要用:3colder, :2newer 之類的
+  --   local is_current = (qf_title == cur_title) and " 👈 current" or ""
+  --   if item_count > 0 then
+  --     print(string.format("qflist %2d: %s | %d items%s",
+  --       relative_pos, qf_list.title, item_count, is_current
+  --     ))
+  --   elseif qf_title and qf_title ~= "" then
+  --     print(string.format("qflist %2d: %s | %d empty%s",
+  --       relative_pos, qf_list.title, item_count, is_current
+  --     ))
+  --   end
+  -- end
+
+  local cur_nr = vim.fn.getqflist({ id = 0, all = 1 }).nr -- 最後還要再換回去原本的qflist
+  local total_nr = vim.fn.getqflist({ nr = '$' }).nr
+
+  -- 先切換到最舊的版本
+  local count_corder = 0 -- 表示調用了幾次到頂端
+  while pcall(vim.cmd, "colder") do
+    count_corder = count_corder + 1
+    -- 持續執行直到失敗（到達最舊版本）
+  end
+
+  local msg_list = {}               -- 由於是透過:cnewer來切換，中間都會有提示訊息，為了避免影響，統一在最後寫入
+  local relative_pos = count_corder -- 可以方便曉得要用:3colder, :2newer 之類的
+  local cur_found = false
   while true do
-    local qf_list = vim.fn.getqflist({ id = i, items = 1, title = 1 }) -- 如果後面的title沒有用1，那麼取的項目就不會抓title，後面的此數值就是空的
-    local qf_title = qf_list.title
-    local item_count = #qf_list.items
-    local relative_pos = cur_idx and (i - cur_idx) or i -- 可以方便曉得要用:3colder, :2newer 之類的
-    local is_current = (qf_title == cur_title) and " 👈 current" or ""
+    -- local qf = vim.fn.getqflist({ id = 0, idx = 1, items = 1, title = 1 }) -- 這個是錯誤，這樣idx就是1，沒用
+    local qf = vim.fn.getqflist({ id = 0, items = 1, title = 1 })
+    local qf_title = qf.title
+    local item_count = #qf.items
+
+    local is_current = (relative_pos == 0) and " 👈 current" or ""
+    if #is_current > 0 then
+      cur_found = true
+    end
+
     if item_count > 0 then
-      print(string.format("qflist %2d: %s | %d items%s",
-        relative_pos, qf_list.title, item_count, is_current
-      ))
+      table.insert(msg_list, { string.format("%2d: %s | %d items%s\n",
+        relative_pos, qf_title, item_count, is_current
+      ), "Normal" })
     elseif qf_title and qf_title ~= "" then
-      print(string.format("qflist %2d: %s | %d empty%s",
-        relative_pos, qf_list.title, item_count, is_current
-      ))
-    else
+      table.insert(msg_list, { string.format("%2d: %s | %d empty%s\n",
+        relative_pos, qf_title, item_count, is_current
+      ), "Normal" })
+    end
+
+    -- 嘗試切換到更新的版本
+    local status, _ = pcall(vim.cmd, "cnewer")
+    -- 如果無法再切換，退出
+    if not status then
       break
     end
-    i = i + 1
+
+    if not cur_found then
+      relative_pos = relative_pos - 1
+    else
+      relative_pos = relative_pos + 1
+    end
   end
-  vim.cmd("mes")
+
+  -- for _, line in ipairs(lines) do
+  --   vim.api.nvim_echo({{line, "Normal"}}, true, {})
+  -- end
+  vim.api.nvim_echo(msg_list, false, {})
+
+  if total_nr - cur_nr > 0 then
+    pcall(vim.cmd, "colder " .. total_nr - cur_nr)
+  end
 end, { desc = "List all quickfix lists" })
 
 local function setup_normal()
