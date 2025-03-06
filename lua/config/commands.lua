@@ -923,6 +923,7 @@ function commands.setup()
       end
     end,
     {
+      desc = "刪除指定名稱的qflist",
       nargs = 1,
       complete = function(argLead)
         local chistory_output = vim.fn.execute("chistory") -- 🚀 算是一種取巧的方法，不能要再用corder, cnewer很麻煩. 利用解析其輸出，得到想要的資料
