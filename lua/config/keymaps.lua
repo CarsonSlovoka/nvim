@@ -18,21 +18,38 @@ map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
   local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
 
+  local cur_idx -- 用來儲存當前 qflist 的絕對索引
+  -- 先找到當前 qflist 的絕對索引
+  local i = 1
+  while true do
+    local qf_list = vim.fn.getqflist({ id = i, title = 1 })
+    if qf_list.title == cur_title then
+      cur_idx = i
+      break
+    end
+    if not qf_list.title or qf_list.title == "" then
+      break
+    end
+    i = i + 1
+  end
+
+
   print("=== Quickfix Lists ===")
-  local i = 1 -- vim.fn.getqflist id如果是0, 或者idx為0都表示當前所在的qflist
+  i = 1 -- vim.fn.getqflist id如果是0, 或者idx為0都表示當前所在的qflist
   -- for i = 0, 15 do
   while true do
     local qf_list = vim.fn.getqflist({ id = i, items = 1, title = 1 }) -- 如果後面的title沒有用1，那麼取的項目就不會抓title，後面的此數值就是空的
     local qf_title = qf_list.title
     local item_count = #qf_list.items
+    local relative_pos = cur_idx and (i - cur_idx) or i -- 可以方便曉得要用:3colder, :2newer 之類的
     local is_current = (qf_title == cur_title) and " 👈 current" or ""
     if item_count > 0 then
       print(string.format("qflist %2d: %s | %d items%s",
-        i, qf_list.title, item_count, is_current
+        relative_pos, qf_list.title, item_count, is_current
       ))
     elseif qf_title and qf_title ~= "" then
       print(string.format("qflist %2d: %s | %d empty%s",
-        i, qf_list.title, item_count, is_current
+        relative_pos, qf_list.title, item_count, is_current
       ))
     else
       break
