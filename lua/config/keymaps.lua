@@ -14,6 +14,34 @@ map("n", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪�
 map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
 map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
 
+map("n", "<leader>ql", function()
+  -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
+  local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
+
+  print("=== Quickfix Lists ===")
+  local i = 1 -- vim.fn.getqflist id如果是0, 或者idx為0都表示當前所在的qflist
+  -- for i = 0, 15 do
+  while true do
+    local qf_list = vim.fn.getqflist({ id = i, items = 1, title = 1 }) -- 如果後面的title沒有用1，那麼取的項目就不會抓title，後面的此數值就是空的
+    local qf_title = qf_list.title
+    local item_count = #qf_list.items
+    local is_current = (qf_title == cur_title) and " 👈 current" or ""
+    if item_count > 0 then
+      print(string.format("qflist %2d: %s | %d items%s",
+        i, qf_list.title, item_count, is_current
+      ))
+    elseif qf_title and qf_title ~= "" then
+      print(string.format("qflist %2d: %s | %d empty%s",
+        i, qf_list.title, item_count, is_current
+      ))
+    else
+      break
+    end
+    i = i + 1
+  end
+  vim.cmd("mes")
+end, { desc = "List all quickfix lists" })
+
 local function setup_normal()
   map('n',                       -- normal mode
     '<leader>cwd',
