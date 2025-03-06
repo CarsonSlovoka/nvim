@@ -112,7 +112,7 @@ map("n", "<leader>ql", function()
   if total_nr - cur_nr > 0 then
     pcall(vim.cmd, "colder " .. total_nr - cur_nr)
   end
-end, { desc = "List all quickfix lists" })
+end, { desc = "List all quickfix lists. 類似於內建的 :chistory" })
 
 local function setup_normal()
   map('n',                       -- normal mode

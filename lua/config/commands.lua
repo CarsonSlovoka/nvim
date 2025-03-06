@@ -860,6 +860,93 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("QFNew", function(args)
+      local title = args.fargs[1]
+      vim.fn.setqflist({}, ' ', -- If {action} is not present or is set to ' ', then a new list is created
+        {
+          title = title,
+          user_data = {
+            c_time = os.date("%Y/%m/%d %H:%M:%S", os.time())
+          }
+        }
+      )
+    end,
+    {
+      desc = "建立新的qflist",
+      nargs = 1,
+      complete = function()
+        return { "title" }
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command('QFDestroy', function(args)
+      local title = args.args
+      local cur_qf = vim.fn.getqflist({ id = 0, all = 1 })
+      local total_nr = vim.fn.getqflist({ nr = '$' }).nr
+      local all_qf_list = {}                -- 先取得所有的qf_list
+      pcall(vim.cmd, "colder " .. total_nr) -- 先回到開始, 超過也沒關係，就是到第一筆為此
+      while true do
+        local qf = vim.fn.getqflist({ id = 0, all = 1 })
+        if qf.title ~= title and
+            qf.nr ~= cur_qf.nr then -- 這筆如果要增，放到最後，這樣比較方便再換回去
+          table.insert(all_qf_list, qf)
+        else
+          print("Destroyed qflist: " .. title)
+        end
+        if not pcall(vim.cmd, "cnewer") then
+          break
+        end
+      end
+
+      vim.fn.setqflist({}, 'f') -- 這個會所有的都清空，這也就是為什麼前面我們要先取的原因
+
+      -- 重新添加
+      for i = 1, #all_qf_list do
+        -- vim.fn.setqflist(all_qf_list[i], " ") -- 不能這樣
+        vim.fn.setqflist({}, " ", {
+          -- id = i, -- 這個不要去改，系統會自動算, 即便已經-f了，id自動分配還是接續之前的流水號
+          title = all_qf_list[i].title,
+          items = all_qf_list[i].items,
+          user_data = all_qf_list[i].user_data,
+        })
+      end
+
+      if cur_qf.title ~= title then
+        -- 將一開始的qf表插入到最下面
+        vim.fn.setqflist({}, " ", {
+          title = cur_qf.title,
+          items = cur_qf.items,
+          user_data = cur_qf.user_data,
+        })
+        pcall(vim.cmd, "cnewer " .. total_nr) -- 在移到最下面，如此qflist還是最原本的選中項
+      end
+    end,
+    {
+      nargs = 1,
+      complete = function(argLead)
+        local chistory_output = vim.fn.execute("chistory") -- 🚀 算是一種取巧的方法，不能要再用corder, cnewer很麻煩. 利用解析其輸出，得到想要的資料
+        local qf_title_list = {}
+        for line in chistory_output:gmatch("[^\r\n]+") do
+          local tail = line:match("errors%s+([^%s].+)$") -- 每一列結尾的文件就是title
+          if tail then
+            table.insert(qf_title_list, tail)
+          end
+        end
+
+        if #argLead == 0 then
+          return qf_title_list
+        end
+        local filtered = {}
+        for _, item in ipairs(qf_title_list) do
+          if item:find(ageLead) then
+            table.insert(filtered, item)
+          end
+        end
+        return filtered
+      end,
+    })
+
   vim.api.nvim_create_user_command("SetWinOpacity",
     function(args)
       -- print(vim.inspect(args))
