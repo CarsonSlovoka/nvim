@@ -988,14 +988,28 @@ function commands.setup()
           end
           new_item.user_data.c_time = os.date("%Y/%m/%d %H:%M:%S", os.time())
           new_item.user_data.copied_from = src_qf.title
-          vim.fn.setqflist({}, " ", new_item)
+          vim.fn.setqflist({}, "r", new_item) -- 覆蓋該qf list
           vim.notify("已從 " .. src_qf.title .. " 複製到 " .. qf.title)
-          break
+          return
         end
         if not pcall(vim.cmd, "cnewer") then
           break
         end
       end
+
+      -- 如果dst_title沒有找到，表示還沒有創建，這時候就視為新增
+      local new_item = {
+        title = dst_title,
+        items = src_qf.items,
+        user_data = src_qf.user_data,
+      }
+      if not new_item.user_data then
+        new_item.user_data = {}
+      end
+      new_item.user_data.c_time = os.date("%Y/%m/%d %H:%M:%S", os.time())
+      new_item.user_data.copied_from = src_qf.title
+      vim.fn.setqflist({}, " ", new_item) -- create
+      vim.notify("已從 " .. src_qf.title .. " 複製到新建立的: " .. dst_title)
     end,
     {
       -- 因為vimgrep都是在固定的qf表，所以如果想要將其保存到其它地方，就可以使用這種方法
