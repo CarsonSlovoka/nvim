@@ -1351,6 +1351,14 @@ function commands.setup()
         {
           text = rec_cmd,
         },
+        {
+          -- -c:v libx264 使用H.264編碼器重新編碼視訊
+          -- -c:a aac 用AAC編碼器重新編碼音訊
+          text = string.format("ffmpeg -i %s -c:v libx264 -c:a aac %s  👈 如果有些播放器不行播可以嘗試使用此指令重新編碼視、音訊來解決",
+            vim.fn.shellescape(output_mp4_path),                           -- input
+            vim.fn.shellescape(output_mp4_path:gsub("%.mp4$", "_fix.mp4")) -- output
+          )
+        }
       }, 'a')
 
       vim.cmd('term ' .. rec_cmd)
