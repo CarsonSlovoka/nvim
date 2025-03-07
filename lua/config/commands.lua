@@ -940,13 +940,91 @@ function commands.setup()
         end
         local filtered = {}
         for _, item in ipairs(qf_title_list) do
-          if item:find(ageLead) then
+          if item:find(argLead) then
             table.insert(filtered, item)
           end
         end
         return filtered
       end,
     })
+
+  vim.api.nvim_create_user_command("QFCopy", function(args)
+      local src_title = string.gsub(args.fargs[1], "　", " ")
+      local dst_title = string.gsub(args.fargs[2], "　", " ")
+
+      local total_nr = vim.fn.getqflist({ nr = '$' }).nr
+      pcall(vim.cmd, "colder " .. total_nr) -- 先回到開始
+
+      -- 獲取所有現有的 quickfix lists
+      local src_qf
+      while true do
+        local qf = vim.fn.getqflist({ id = 0, all = 1 })
+        if qf.title == src_title then
+          src_qf = qf
+          break
+        end
+        if not pcall(vim.cmd, "cnewer") then
+          break
+        end
+      end
+
+      if not src_qf then
+        vim.notify("src qflist:" .. src_title .. " not found", vim.log.levels.ERROR)
+        return
+      end
+
+      pcall(vim.cmd, "colder " .. total_nr) -- 再回到開始
+
+      while true do
+        local qf = vim.fn.getqflist({ id = 0, all = 1 })
+        if qf.title == dst_title then
+          local new_item = {
+            title = qf.title,
+            items = src_qf.items,
+            user_data = src_qf.user_data,
+          }
+          if not new_item.user_data then
+            new_item.user_data = {}
+          end
+          new_item.user_data.c_time = os.date("%Y/%m/%d %H:%M:%S", os.time())
+          new_item.user_data.copied_from = src_qf.title
+          vim.fn.setqflist({}, " ", new_item)
+          vim.notify("已從 " .. src_qf.title .. " 複製到 " .. qf.title)
+          break
+        end
+        if not pcall(vim.cmd, "cnewer") then
+          break
+        end
+      end
+    end,
+    {
+      -- 因為vimgrep都是在固定的qf表，所以如果想要將其保存到其它地方，就可以使用這種方法
+      desc = "複製指定的 quickfix list 到新的 quickfix list",
+      nargs = "+", -- 需要兩個參數：來源標題和目標標題
+      complete = function(argLead)
+        local chistory_output = vim.fn.execute("chistory")
+        local qf_title_list = {}
+        for line in chistory_output:gmatch("[^\r\n]+") do
+          local title = line:match("errors%s+([^%s].+)$")
+          if title then
+            local s = string.gsub(title, " ", "　")
+            table.insert(qf_title_list, s) -- 將空白換成U+3000避免參數分割錯
+          end
+        end
+
+        if #argLead == 0 then
+          return qf_title_list
+        end
+        local filtered = {}
+        for _, item in ipairs(qf_title_list) do
+          if item:find(argLead) then
+            table.insert(filtered, item)
+          end
+        end
+        return filtered
+      end,
+    }
+  )
 
   vim.api.nvim_create_user_command("SetWinOpacity",
     function(args)
