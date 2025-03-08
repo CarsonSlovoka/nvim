@@ -18,7 +18,7 @@ git submodule update --init --recursive
 echo 'return {
    { name = "Documents", path = "~/Documents" },
    { name = "Downloads", path = "~/Downloads" },
-}' >> ~/.config/nvim/bookmark.lua
+}' >> ~/.config/nvim/bookmarks/default.lua
 
 
 # (可選) 安裝Nerd Fonts
@@ -68,7 +68,10 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 ```
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
-├── bookmark.lua                     -- ✅ 自定義永久書籤的內容
+├── bookmarks/                       -- ✅ 自定義永久書籤的內容
+│   ├── default.lua                  -- 預設的永久書籤
+│   ├── other_bookmark.lua           -- (可選) 其他永久書籤
+│   └── ...
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
 ├── pack/                            -- git rev-parse --short HEAD | wl-copy
 │   ├── syntax/start/

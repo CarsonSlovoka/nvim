@@ -9,8 +9,9 @@ doc/tags
 # ctags
 tags
 
-# 此為自定義的永久書籤內容
-bookmark.lua
+# 此目錄保存您所有自定義的書籤
+bookmarks/
 
 # 此內容可以寫自己的自定義
 lua/my-customize.lua
+
