@@ -114,6 +114,22 @@ map("n", "<leader>ql", function()
   end
 end, { desc = "List all quickfix lists. 類似於內建的 :chistory" })
 
+for i = 0, 9 do
+  map("n", "<leader>fl" .. i, function()
+    vim.o.foldlevel = i
+  end, {
+    desc = ":set foldlevel=" .. i,
+  }
+  )
+  map("n", "<leader>fc" .. i, function()
+      vim.o.foldcolumn = i
+    end,
+    {
+      desc = ":set foldcolumn=" .. i,
+    }
+  )
+end
+
 local function setup_normal()
   map('n',                       -- normal mode
     '<leader>cwd',
