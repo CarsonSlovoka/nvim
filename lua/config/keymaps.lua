@@ -122,7 +122,7 @@ for i = 0, 9 do
   }
   )
   map("n", "<leader>fc" .. i, function()
-      vim.o.foldcolumn = i
+      vim.o.foldcolumn = tostring(i)
     end,
     {
       desc = ":set foldcolumn=" .. i,
