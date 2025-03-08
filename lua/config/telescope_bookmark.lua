@@ -397,7 +397,12 @@ function bookmark.show()
           -- 打開檔案並跳轉到行號（若行號存在）
           vim.cmd("edit " .. bk.path:gsub("^~", os.getenv("HOME"))) -- 選中就用edit開啟, 如果用~將其用HOME來展開
           -- 移動cursor到指定的row, col
-          vim.fn.cursor(bk.row or 0, bk.col + 1)
+          local col = 0
+          if bk.col then
+            col = bk.col + 1
+          end
+          -- vim.fn.cursor(bk.row or 0, bk.col + 1 or 0) -- 這在col沒定義, 也就是目錄的情況下會發生錯誤
+          vim.fn.cursor(bk.row or 0, col)
         else
           vim.api.nvim_echo({ { "無效的選擇，請重試！", "ErrorMsg" } }, false, {})
         end
