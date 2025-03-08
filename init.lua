@@ -4,7 +4,6 @@ local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
-local rangeUtils = require("utils.range")
 local telescope_bookmark = require "config.telescope_bookmark"
 
 local HOME = os.getenv("HOME")
@@ -1147,81 +1146,6 @@ local function install_telescope()
 
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>bk", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
-  vim.api.nvim_create_user_command("BkSave", function()
-    telescope_bookmark.save {
-      verbose = true
-    }
-  end, { desc = "如果想要永久的保存訪問過的時間，請手動呼叫此方法" })
-  vim.api.nvim_create_user_command("BkAdd", function(args)
-    local params = vim.split(args.args, " ")
-    local force = false
-    -- local name = vim.fn.input("bookmarkName: ")
-    local name = ""
-    if (#params > 0 and params[#params] == "-f") then
-      -- 如果有-f，其參數一定在最後
-      force = true
-      table.remove(params, #params) -- 如此剩下的參數只剩下name
-    end
-
-    if args.range > 0 and (#params == 0 or params[1] == "") then
-      -- local range_start, range_end = args.line1, args.line2
-      -- local lines = vim.api.nvim_buf_get_lines(0, range_start - 1, range_end, false)
-      -- name = table.concat(lines, "\n"):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "") -- 先併成一列，移除多餘的空白
-      name = rangeUtils.get_selected_text():gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
-      if name == "" then
-        vim.notify("錯誤：選取範圍為空", vim.log.levels.ERROR)
-        return
-      end
-    else
-      -- 沒有 range 的清況，要求必須提供名稱
-      if #params == 0 or params[1] == "" then
-        vim.notify("錯誤：請提供書籤名稱", vim.log.levels.ERROR)
-        return
-      end
-      name = params[1]
-    end
-
-    local filepath = vim.fn.expand("%:p")
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- for lua5.4: table.unpack https://stackoverflow.com/a/65655296/9935654
-    col = col + 1                                           -- 與右下的標號一致
-    if not telescope_bookmark.add(name, filepath, row, col, { force = force }) then
-      return
-    end
-    telescope_bookmark.save {}
-    local filename = vim.fn.expand("%:t")
-    vim.notify("✅ 書籤已成功保存: " .. name ..
-      " filename: " .. filename ..
-      " (列: " .. row .. ", 欄: " .. col .. ")", vim.log.levels.INFO)
-  end, {
-    -- nargs = "+", -- 至少1個, 因為改成了range，所以參數就變成可選
-    nargs = "*",
-    range = true,
-    complete = function()
-      return {
-        "-f",
-      }
-    end,
-    desc = "加入書籤"
-  })
-  vim.api.nvim_create_user_command("BkAddDir", function(args)
-    -- local name = vim.split(args.args, " ")[1]
-    local name = args.fargs[1]
-    local force = args.fargs[2] == "-f"
-    local dirPath = vim.fn.expand("%:p:h")
-    if not telescope_bookmark.add(name, dirPath, nil, nil, { force = force }) then
-      return
-    end
-    telescope_bookmark.save {}
-    vim.notify("✅已成功建立書籤: " .. name .. "path:" .. dirPath, vim.log.levels.INFO)
-  end, {
-    nargs = "+",
-    complete = function()
-      return {
-        "-f",
-      }
-    end,
-    desc = "添加目錄到書籤. 如果想要強制覆蓋可以加上-f參數"
-  })
   vim.api.nvim_create_user_command("MyLivegrep", function(args)
     local opt = {}
     local no_auto_dir = false
