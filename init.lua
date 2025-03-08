@@ -5,6 +5,7 @@ local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
 local rangeUtils = require("utils.range")
+local telescope_bookmark = require "config.telescope_bookmark"
 
 local HOME = os.getenv("HOME")
 
@@ -1144,7 +1145,6 @@ local function install_telescope()
     { desc = "用當前選中的文字進行搜尋" }
   )
 
-  local telescope_bookmark = require "config.telescope_bookmark"
   vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
   vim.keymap.set("n", "<leader>bk", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
   vim.api.nvim_create_user_command("BkSave", function()
@@ -1183,6 +1183,7 @@ local function install_telescope()
 
     local filepath = vim.fn.expand("%:p")
     local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- for lua5.4: table.unpack https://stackoverflow.com/a/65655296/9935654
+    col = col + 1                                           -- 與右下的標號一致
     if not telescope_bookmark.add(name, filepath, row, col, { force = force }) then
       return
     end
@@ -1190,7 +1191,7 @@ local function install_telescope()
     local filename = vim.fn.expand("%:t")
     vim.notify("✅ 書籤已成功保存: " .. name ..
       " filename: " .. filename ..
-      " (行: " .. row .. ", 列: " .. col .. ")", vim.log.levels.INFO)
+      " (列: " .. row .. ", 欄: " .. col .. ")", vim.log.levels.INFO)
   end, {
     -- nargs = "+", -- 至少1個, 因為改成了range，所以參數就變成可選
     nargs = "*",
@@ -1245,32 +1246,34 @@ local function install_telescope()
       seen_dirs[dir] = true
     end
 
-    -- 讀取 bookmark.lua 檔案
-    local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua' -- 假設檔案在 ~/.config/nvim/
-    local ok, bookmarks = pcall(function()
-      return dofile(bookmark_path)
-    end)
+    --[[ ~~讀取 bookmark.lua 檔案~~ 已經棄用，因為書籤可會會被切換，所以用抓取telescope_bookmark.table的內容才對
+    -- local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua' -- 假設檔案在 ~/.config/nvim/
+    -- local ok, bookmarks = pcall(function()
+    --   return dofile(bookmark_path)
+    -- end)
+    --
+    -- for _, bookmark in ipairs(bookmarks) do
+    --]]
 
-    if ok and bookmarks then
-      for _, bookmark in ipairs(bookmarks) do
-        local path = bookmark.path
-        local dir
-        -- 檢查路徑是否存在
-        if vim.fn.isdirectory(path) == 1 then
-          -- 如果是目錄，直接加入
-          dir = path
-        elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
-          -- 如果是檔案，取得其父目錄
-          dir = vim.fn.fnamemodify(path, ':h')
-        end
+    -- print(vim.inspect(telescope_bookmark.table))
+    for _, bookmark in ipairs(telescope_bookmark.table) do
+      local path = bookmark.path
+      local dir
+      -- 檢查路徑是否存在
+      if vim.fn.isdirectory(path) == 1 then
+        -- 如果是目錄，直接加入
+        dir = path
+      elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
+        -- 如果是檔案，取得其父目錄
+        dir = vim.fn.fnamemodify(path, ':h')
+      end
 
-        -- 只有在未見過該目錄時才加入
-        if dir and not seen_dirs[dir]
-            and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
-        then
-          table.insert(opt.search_dirs, dir)
-          seen_dirs[dir] = true
-        end
+      -- 只有在未見過該目錄時才加入
+      if dir and not seen_dirs[dir]
+          and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
+      then
+        table.insert(opt.search_dirs, dir)
+        seen_dirs[dir] = true
       end
     end
 
@@ -1344,32 +1347,24 @@ local function install_telescope()
       seen_dirs[dir] = true
     end
 
-    -- 讀取 bookmark.lua 檔案
-    local bookmark_path = vim.fn.stdpath('config') .. '/bookmark.lua'
-    local ok, bookmarks = pcall(function()
-      return dofile(bookmark_path)
-    end)
+    for _, bookmark in ipairs(telescope_bookmark.table) do
+      local path = bookmark.path
+      local dir
+      -- 檢查路徑是否存在
+      if vim.fn.isdirectory(path) == 1 then
+        -- 如果是目錄，直接加入
+        dir = path
+      elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
+        -- 如果是檔案，取得其父目錄
+        dir = vim.fn.fnamemodify(path, ':h')
+      end
 
-    if ok and bookmarks then
-      for _, bookmark in ipairs(bookmarks) do
-        local path = bookmark.path
-        local dir
-        -- 檢查路徑是否存在
-        if vim.fn.isdirectory(path) == 1 then
-          -- 如果是目錄，直接加入
-          dir = path
-        elseif not no_auto_dir and vim.fn.filereadable(path) == 1 then
-          -- 如果是檔案，取得其父目錄
-          dir = vim.fn.fnamemodify(path, ':h')
-        end
-
-        -- 只有在未見過該目錄時才加入
-        if dir and not seen_dirs[dir]
-            and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
-        then
-          table.insert(opt.search_dirs, dir)
-          seen_dirs[dir] = true
-        end
+      -- 只有在未見過該目錄時才加入
+      if dir and not seen_dirs[dir]
+          and dir ~= os.getenv("HOME") -- 如果已經有家目錄，找的範圍就已經很大了，其實已經沒什麼意義了
+      then
+        table.insert(opt.search_dirs, dir)
+        seen_dirs[dir] = true
       end
     end
 
