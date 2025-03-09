@@ -1554,6 +1554,86 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command('MatchLine',
+    function(args)
+      local hl_group = args.fargs[1]
+
+      -- 檢查高亮組是否存在
+      if vim.fn.hlexists(hl_group) == 0 then
+        vim.notify('Highlight group "' .. hl_group .. '" does not exist', vim.log.levels.WARN)
+        return
+      end
+
+      -- 處理剩餘的行號參數
+      local line_patterns = {}
+      for i = 2, #args.fargs do
+        local arg = args.fargs[i]
+        -- 處理範圍格式 (例如 10-15)
+        if arg:match('^%d+%-%d+$') then
+          local start_line, end_line = arg:match('^(%d+)%-(%d+)$')
+          start_line = tonumber(start_line)
+          end_line = tonumber(end_line)
+          if start_line and end_line then
+            if start_line > end_line then
+              start_line, end_line = end_line, start_line -- 交換大小值
+            end
+            local pattern = string.format([[\%%>%dl\%%<%dl]], start_line - 1, end_line + 1)
+            table.insert(line_patterns, pattern)
+          else
+            vim.notify('Invalid range specification: ' .. arg, vim.log.levels.WARN)
+          end
+          -- 處理單一行號
+        elseif arg:match('^%d+$') then
+          local line = tonumber(arg)
+          if line and line > 0 then
+            -- print("Line value before format: " .. tostring(line)) -- 檢查 line 的值
+            -- 改用拼接而不是 string.format，避免可能的問題
+            local pattern = [[\%]] .. line .. [[l]]
+            -- print("Single line pattern: " .. pattern) -- 檢查生成的單行模式
+            table.insert(line_patterns, pattern)
+          else
+            vim.notify('Invalid line number: ' .. arg, vim.log.levels.WARN)
+          end
+        else
+          vim.notify('Invalid line specification: ' .. arg, vim.log.levels.WARN)
+        end
+      end
+
+      -- 檢查是否有有效的模式
+      if #line_patterns == 0 then
+        vim.notify('No valid line numbers provided', vim.log.levels.ERROR)
+        return
+      end
+
+      -- 合併所有模式，使用 '|' 分隔
+      local pattern = table.concat(line_patterns, [[\|]])
+      -- print("Final pattern: " .. pattern) -- 調試最終模式
+
+      -- 應用 match 高亮
+      vim.fn.matchadd(hl_group, pattern)
+    end,
+    {
+      desc = 'Highlight specified lines with a highlight group',
+      nargs = '+',
+      complete = function(arg_lead, cmd_line)
+        local parts = vim.split(cmd_line, "%s+", { trimempty = true })
+        local argc = #parts - 1
+        if argc == 0 then
+          local hl_groups = vim.fn.getcompletion('', 'highlight')
+          if arg_lead ~= '' then
+            hl_groups = vim.tbl_filter(function(hl)
+              return hl:lower():find(arg_lead:lower(), 1, true) == 1
+            end, hl_groups)
+          end
+          return hl_groups
+        end
+        return {
+          "3 5 15-29", -- 提示可以這樣輸入
+        }
+      end
+    }
+  )
+
   create_user_command_jumps_to_qf_list()
 end
 
