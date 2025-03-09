@@ -1554,7 +1554,7 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command('MatchLine',
+  vim.api.nvim_create_user_command('Highlight',
     function(args)
       local hl_group = args.fargs[1]
 
@@ -1564,35 +1564,71 @@ function commands.setup()
         return
       end
 
+      -- 獲取當前光標行號和緩衝區最大行數
+      local current_line = vim.fn.line('.')
+      local max_lines = vim.fn.line('$')
+
       -- 處理剩餘的行號參數
       local line_patterns = {}
       for i = 2, #args.fargs do
         local arg = args.fargs[i]
-        -- 處理範圍格式 (例如 10-15)
-        if arg:match('^%d+%-%d+$') then
-          local start_line, end_line = arg:match('^(%d+)%-(%d+)$')
-          start_line = tonumber(start_line)
-          end_line = tonumber(end_line)
-          if start_line and end_line then
-            if start_line > end_line then
-              start_line, end_line = end_line, start_line -- 交換大小值
+        -- 處理範圍格式 (例如 10-15, +10-+15, -5--2)
+        if arg:match('^[+-]?%d+%-[+-]?%d+$') then
+          local start_str, end_str = arg:match('^([+-]?%d+)%-([+-]?%d+)$')
+          -- print("Range start: " .. start_str .. ", end: " .. end_str)
+          local start_clean = start_str:gsub('[+-]', '')
+          local end_clean = end_str:gsub('[+-]', '')
+          local start_line = tonumber(start_clean)
+          local end_line = tonumber(end_clean)
+          if not start_line or not end_line then
+            vim.notify('Invalid number in range: ' .. arg, vim.log.levels.WARN)
+          else
+            -- 處理相對位置
+            if start_str:match('^+') then
+              start_line = current_line + start_line
+            elseif start_str:match('^-') then
+              start_line = current_line - start_line
             end
-            local pattern = string.format([[\%%>%dl\%%<%dl]], start_line - 1, end_line + 1)
-            table.insert(line_patterns, pattern)
-          else
-            vim.notify('Invalid range specification: ' .. arg, vim.log.levels.WARN)
+            if end_str:match('^+') then
+              end_line = current_line + end_line
+            elseif end_str:match('^-') then
+              end_line = current_line - end_line
+            end
+            if start_line < 1 or end_line < 1 then
+              vim.notify('Range ' .. arg .. ' starts or ends before line 1', vim.log.levels.WARN)
+            elseif start_line > max_lines or end_line > max_lines then
+              vim.notify('Range ' .. arg .. ' exceeds buffer size (' .. max_lines .. ')', vim.log.levels.WARN)
+            else
+              if start_line > end_line then
+                start_line, end_line = end_line, start_line -- 交換大小值
+              end
+              local pattern = string.format([[\%%>%dl\%%<%dl]], start_line - 1, end_line + 1)
+              table.insert(line_patterns, pattern)
+            end
           end
-          -- 處理單一行號
-        elseif arg:match('^%d+$') then
-          local line = tonumber(arg)
-          if line and line > 0 then
-            -- print("Line value before format: " .. tostring(line)) -- 檢查 line 的值
-            -- 改用拼接而不是 string.format，避免可能的問題
-            local pattern = [[\%]] .. line .. [[l]]
-            -- print("Single line pattern: " .. pattern) -- 檢查生成的單行模式
-            table.insert(line_patterns, pattern)
+          -- 處理單一行號 (例如 5, +5, -5)
+        elseif arg:match('^[+-]?%d+$') then
+          local line_str = arg
+          -- print("Single line: " .. line_str)
+          local line_clean = line_str:gsub('[+-]', '')
+          local line = tonumber(line_clean)
+          if not line then
+            vim.notify('Invalid number: ' .. arg, vim.log.levels.WARN)
           else
-            vim.notify('Invalid line number: ' .. arg, vim.log.levels.WARN)
+            -- 處理相對位置
+            if line_str:match('^+') then
+              line = current_line + line
+            elseif line_str:match('^-') then
+              line = current_line - line
+            end
+            if line < 1 then
+              vim.notify('Line ' .. arg .. ' is before line 1', vim.log.levels.WARN)
+            elseif line > max_lines then
+              vim.notify('Line ' .. arg .. ' exceeds buffer size (' .. max_lines .. ')', vim.log.levels.WARN)
+            else
+              local pattern = [[\%]] .. line .. [[l]]
+              table.insert(line_patterns, pattern)
+            end
           end
         else
           vim.notify('Invalid line specification: ' .. arg, vim.log.levels.WARN)
@@ -1607,18 +1643,19 @@ function commands.setup()
 
       -- 合併所有模式，使用 '|' 分隔
       local pattern = table.concat(line_patterns, [[\|]])
-      -- print("Final pattern: " .. pattern) -- 調試最終模式
+      -- print("Final pattern: " .. pattern)
 
       -- 應用 match 高亮
       vim.fn.matchadd(hl_group, pattern)
+      -- :lua vim.fn.matchadd('Search', [[\%5l]])
     end,
     {
       desc = 'Highlight specified lines with a highlight group',
       nargs = '+',
       complete = function(arg_lead, cmd_line)
-        local parts = vim.split(cmd_line, "%s+", { trimempty = true })
+        local parts = vim.split(cmd_line, "%s+")
         local argc = #parts - 1
-        if argc == 0 then
+        if argc == 1 then
           local hl_groups = vim.fn.getcompletion('', 'highlight')
           if arg_lead ~= '' then
             hl_groups = vim.tbl_filter(function(hl)
@@ -1628,7 +1665,11 @@ function commands.setup()
           return hl_groups
         end
         return {
-          "3 5 15-29", -- 提示可以這樣輸入
+          "-3-+7",         -- 相對位置
+          "3 5 10-15",     -- 絕對位置
+          "+3 +5 +10-+15", -- 正相對位置
+          "3 +5 +10-+15",  -- 混合範例
+          "-3 -5 -10--10"  -- 負相對位置
         }
       end
     }
