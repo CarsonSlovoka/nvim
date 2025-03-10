@@ -198,7 +198,7 @@ function M.setup(opts)
           print(string.format("set fileformat from `%s` to `unix`", vim.o.fileformat)) -- 提示使用者有被自動轉換，使其如果不滿意還可以自己再轉回去
           vim.o.fileformat = "unix"
         end
-        vim.opt_local.expandtab = true -- 使用空白代替Tab
+        vim.opt_local.expandtab = true -- 使用空白代替Tab :set et?  -- :set expandtab -- :set et
         vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白
         vim.opt_local.softtabstop = 4  -- 在插入模式下，Tab鍵也等於4空白
         vim.opt_local.shiftwidth = 4   -- 自動縮進時使用 4 個空白
@@ -226,7 +226,7 @@ function M.setup(opts)
       -- pattern = "go",
       pattern = { "go", "puml", "nsi", "nsh", "Makefile", "mk" },
       callback = function()
-        vim.opt_local.expandtab = false
+        vim.opt_local.expandtab = false -- :set noexpandtab -- :set noet
         -- 以下還是可以設定，如果你想要讓tab看起來隔比較密(緊)可以考慮以下
         -- vim.opt_local.tabstop = 2
         -- vim.opt_local.softtabstop = 2
