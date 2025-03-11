@@ -184,7 +184,13 @@ local function install_lspconfig()
   vim.g.lsp_pyright_path = pyright_path
   m.gopls.setup {}
   -- m.tsserver.setup {} Deprecated servers: tsserver -> ts_ls
-  m.ts_ls.setup {}
+  m.ts_ls.setup {} -- javascript/typescript
+
+  -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
+  m.html.setup {}
+  m.cssls.setup {} -- css
+  m.jsonls.setup {}
+
   m.bashls.setup {}
 
   m.markdown_oxide.setup {                                              -- 請安裝rust後透過cargo來取得
@@ -205,7 +211,6 @@ local function install_lspconfig()
       }
     }
   }
-  -- m.jsonls.setup {} -- https://github.com/microsoft/vscode-json-languageservice 可以考慮安裝
 
 
   -- 新增切換虛擬文本診斷的命令

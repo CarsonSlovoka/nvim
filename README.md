@@ -515,7 +515,25 @@ sudo ln -s ~/lua-language-server/bin/lua-language-server /usr/bin/
 ls -l /usr/bin/lua-language-server
 ```
 
-## motion
+#### [vscode-langservers-extracted](https://github.com/hrsh7th/vscode-langservers-extracted)
+
+```bash
+# sudo npm install -g npm@11.2.0 # 更新(可選)
+sudo npm i -g vscode-langservers-extracted
+```
+
+```bash
+ls -l $(which vscode-html-language-server)
+...
+ls -l $(which vscode-eslint-language-server )
+# /usr/bin/vscode-html-language-server -> ../lib/node_modules/vscode-langservers-extracted/bin/vscode-html-language-server
+ls -l /usr/lib/node_modules/vscode-langservers-extracted/bin/
+# vscode-css-language-server
+# vscode-eslint-language-server
+# vscode-html-language-server
+# vscode-json-language-server
+# vscode-markdown-language-server
+```
 
 ```bash
 mkdir -pv ~/.config/nvim/pack/motion/start/
