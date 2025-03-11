@@ -252,6 +252,11 @@ function commands.setup()
 
     -- 直接透過管道，將剪貼簿的 PNG 內容透過 cwebp 轉換成 Webp 並保存
     local cmd = string.format('wl-paste --type image/png | cwebp -q %d -o "%s" -- -', quality, outputPath)
+    vim.fn.setqflist({
+      {
+        text = cmd,
+      },
+    }, 'a')
     local result = os.execute(cmd)
     if result == 0 then
       print("Webp 圖片保存成功: " .. vim.fn.fnamemodify(outputPath, ":p"))
