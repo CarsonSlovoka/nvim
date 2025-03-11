@@ -13,6 +13,7 @@ end
 local emoji_data = {
   { "⭐", "star" },
   { "❌", "error" },
+  { "❓", "redQuestionMark" },
   { "✅", "check" },
   { "⚠", "warning" },
   { "🎉", "ya" },
@@ -37,6 +38,7 @@ local emoji_data = {
   { "🙂", "smiling" },
   { "😊", "smilingWithSmilingEyes" },
   { "🥺", "pleadingFace" },
+  { "🤔", "confused" },
   { "🙏", "please" },
   { "🔥", "fire" },
   { "🔑", "key" },
