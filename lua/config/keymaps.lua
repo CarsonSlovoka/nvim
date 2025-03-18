@@ -1,5 +1,6 @@
 local keymaps = {}
 
+local rangeUtils = require("utils.range")
 local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
 -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
@@ -131,7 +132,69 @@ for i = 0, 9 do
       desc = ":set foldcolumn=" .. i,
     }
   )
+
+
+  -- 書籤相關
+  map('n', "<leader>by" .. i,
+    function()
+      local filepath = vim.fn.expand('%:p') -- 完整路徑
+      local line = vim.fn.line('.')         -- 當前行號
+      local col = vim.fn.col('.')           -- 當前列號
+      local location = string.format("%s:%d:%d", filepath, line, col)
+      vim.fn.setreg(tostring(i), location)
+      vim.fn.setreg('"', location)
+    end,
+    {
+      desc = "複製當前的位置到剪貼簿"
+    }
+  )
+  map('v', "<leader>by" .. i,
+    function()
+      local text = rangeUtils.get_selected_text()
+      local filepath = vim.fn.expand('%:p')
+      local line = vim.fn.line('.')
+      local col = vim.fn.col('.')
+      local location = string.format("%s:%d:%d", filepath, line, col)
+      local full_text = location .. " | " .. text
+      vim.fn.setreg(tostring(i), full_text)
+      vim.fn.setreg('"', full_text)
+      vim.api.nvim_input("<ESC>") -- 協助離開visaul模式
+    end,
+    {
+      desc = "複製當前的位置到剪貼簿, 並且用目前選取的內容來當成描述"
+    }
+  )
 end
+
+map('n', '<leader>gf',
+  function()
+    -- 記住當前光標位置
+    local original_pos = vim.api.nvim_win_get_cursor(0)
+
+    -- 移動到單詞開頭 (B) 和單詞結尾 (E)，提取範圍內的文字
+    vim.cmd("normal! B") -- 移動到單詞開頭
+    local start_col = vim.fn.col('.')
+    vim.cmd("normal! E") -- 移動到單詞結尾
+    local end_col = vim.fn.col('.')
+
+    -- 取得完單詞頭尾後就可以恢復原始光標位置
+    vim.api.nvim_win_set_cursor(0, original_pos)
+
+    local line = vim.api.nvim_get_current_line()
+    local selected_text = line:sub(start_col, end_col)
+    -- local path, lnum, col = line:match("([^:]+):(%d+):(%d+)")
+    local path, lnum, col = selected_text:match("([^:]+):(%d+):(%d+)")
+    if path and lnum and col then
+      vim.cmd("edit " .. path)
+      vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) - 1 })
+    else
+      vim.notify("無效的書籤格式", vim.log.levels.ERROR)
+    end
+  end,
+  {
+    desc = "跳轉到書籤, 適用於<leader>byN的產物"
+  }
+)
 
 local function setup_normal()
   map('n',                       -- normal mode
