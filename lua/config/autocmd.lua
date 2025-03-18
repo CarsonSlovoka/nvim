@@ -3,7 +3,6 @@ local M = {
   autoReformat = true,
   callback = function(module) end
 }
-
 local create_autocmd = vim.api.nvim_create_autocmd
 local groupName = {
   editorconfig = "carson.editorconfig",
@@ -63,6 +62,7 @@ function M.setup(opts)
           --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
           -- else
           --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
+          vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
         end
       end,
     }
@@ -151,7 +151,7 @@ function M.setup(opts)
 
   -- trim_trailing_whitespace
   create_autocmd(
-    "BufwritePre", -- 在寫入前執行的動作
+    "BufWritePre", -- 在寫入前執行的動作
     {
       desc = "去除結尾多餘的space, tab",
       pattern = "*",
@@ -174,10 +174,46 @@ function M.setup(opts)
           end
 
           if has_formatter then
+            -- 保存當前所有用戶定義的標記 (a-z, A-Z)
+            local marks = vim.fn.getmarklist('%')         -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
+            -- for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.^", ".") do -- 大寫的用這樣來取得
+            for char in string.gmatch("[0-9A-Z]", ".") do -- 大寫的用這樣來取得
+              local mark = "'" .. char
+              local pos = vim.fn.getpos(mark)
+              -- lua print(vim.inspect(vim.fn.getpos("'^")))
+              -- 如果標籤有效（pos[2] 是行號，pos[3] 是列號）
+              if pos[2] ~= 0 or pos[3] ~= 0 then
+                -- marks[mark] = pos
+                table.insert(marks, {
+                  mark = mark,
+                  pos = pos,
+                })
+              end
+            end
+            --[[ 顯式處理特殊標籤 '^ 和 '. 似乎沒有效，改用vim.api.nvim_input("i<ESC>")的方式來觸發`^
+            for _, mark in ipairs({ "'^", "'." }) do
+              local pos = vim.fn.getpos(mark)
+              if pos[2] ~= 0 or pos[3] ~= 0 then
+                marks[mark] = pos
+              end
+            end
+            --]]
+            -- print(vim.inspect(marks))
+
+
             vim.lsp.buf.format({
               async = false,
               timeout_ms = 3000,
             })
+
+            -- 恢復標籤
+            for _, mark in ipairs(marks) do
+              -- if mark.mark:match("^'[0-9a-zA-Z^.]") then
+              --   vim.fn.setpos(mark.mark, mark.pos)
+              -- end
+              vim.fn.setpos(mark.mark, mark.pos)
+            end
+
             vim.notify("lsp.buf.format done", vim.log.levels.INFO)
           else
             -- vim.notify("No LSP formatter available for current file, skipping format", vim.log.levels.WARN)
