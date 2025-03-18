@@ -3,7 +3,7 @@ require("config.neovide")
 local options = {}
 
 function options.setup()
-  vim.g.mapleader = "," -- 預設是 \
+  -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
 
   -- :lua vim.opt.fileencoding = "cp950" -- 當你先開啟文件，再用此方法去換，看到的可能還是錯的，因為開啟的時候，會由fileencodings依次去轉，直到沒有錯的，
   -- 它如果轉到了最後一個(latin1)那麼這種情況再由latin1轉到cp950看到的就不對

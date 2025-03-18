@@ -1516,7 +1516,7 @@ end
 install_nvimTreesitter()
 install_lspconfig()
 -- install_precognition()
-install_hop()
+-- install_hop()
 install_gitsigns()
 install_nvimWebDevicons()
 install_nvim_tree()
