@@ -140,7 +140,8 @@ for i = 0, 9 do
       local filepath = vim.fn.expand('%:p') -- 完整路徑
       local line = vim.fn.line('.')         -- 當前行號
       local col = vim.fn.col('.')           -- 當前列號
-      local location = string.format("%s:%d:%d", filepath, line, col)
+      -- local location = string.format("%s:%d:%d", filepath, line, col) -- 如果用: 在windows會被磁碟名稱影響
+      local location = string.format("%s|%d|%d", filepath, line, col)
       vim.fn.setreg(tostring(i), location)
       vim.fn.setreg('"', location)
     end,
@@ -154,7 +155,7 @@ for i = 0, 9 do
       local filepath = vim.fn.expand('%:p')
       local line = vim.fn.line('.')
       local col = vim.fn.col('.')
-      local location = string.format("%s:%d:%d", filepath, line, col)
+      local location = string.format("%s|%d|%d", filepath, line, col)
       local full_text = location .. " | " .. text
       vim.fn.setreg(tostring(i), full_text)
       vim.fn.setreg('"', full_text)
@@ -183,12 +184,12 @@ map('n', '<leader>gf',
     local line = vim.api.nvim_get_current_line()
     local selected_text = line:sub(start_col, end_col)
     -- local path, lnum, col = line:match("([^:]+):(%d+):(%d+)")
-    local path, lnum, col = selected_text:match("([^:]+):(%d+):(%d+)")
+    local path, lnum, col = selected_text:match("([^|]+)|(%d+)|(%d+)")
     if path and lnum and col then
       vim.cmd("edit " .. path)
       vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) - 1 })
     else
-      vim.notify("無效的書籤格式", vim.log.levels.ERROR)
+      vim.notify("無效的書籤格式:\n" .. selected_text, vim.log.levels.ERROR)
     end
   end,
   {
