@@ -14,6 +14,9 @@ map("n", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪�
 map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
 map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
 
+map("n", "/", 'ms/', { desc = "在搜尋前，先在目前的位置mark s再進行搜尋" })
+map("n", "?", 'ms?', { desc = "在搜尋前，先在目前的位置mark s再進行搜尋" })
+
 map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
   local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
