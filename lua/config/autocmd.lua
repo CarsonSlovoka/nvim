@@ -175,9 +175,10 @@ function M.setup(opts)
 
           if has_formatter then
             -- 保存當前所有用戶定義的標記 (a-z, A-Z)
-            local marks = vim.fn.getmarklist('%')         -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
-            -- for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.^", ".") do -- 大寫的用這樣來取得
-            for char in string.gmatch("[0-9A-Z]", ".") do -- 大寫的用這樣來取得
+            local marks = vim.fn.getmarklist('%')                                       -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
+            for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^.", ".") do -- 大寫的用這樣來取得
+              -- for char in string.gmatch("[0-9A-Z]", ".") do -- ❌ 這是錯的，這也只會得到: [, 0, 9, A, -, Z, ]
+              -- print(char)
               local mark = "'" .. char
               local pos = vim.fn.getpos(mark)
               -- lua print(vim.inspect(vim.fn.getpos("'^")))
