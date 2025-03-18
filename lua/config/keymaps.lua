@@ -231,11 +231,6 @@ local function setup_visual()
   -- = 格式化文本
   map("v", "J", ":m '>+1<CR>gv=gv", { desc = "將當前選中的文本下移一行" }) -- 如果用了 [TextChanged](https://github.com/CarsonSlovoka/nvim/blob/14828d70377b26c72e4a4239a510200441b18720/lua/config/autocmd.lua#L21)會儲檔，這個可能會變得怪怪的
   map("v", "K", ":m '<-2<CR>gv=gv", { desc = "將當前選中的文本上移一行" })
-  map('v', -- Visual 模式
-    '<leader>c', -- 快捷鍵為 <leader>c
-    '"+y',
-    { desc = "將選中的內容複製到系統剪貼板" }
-  )
 
   map('v', 'find', '""y/<C-R>"<CR>', -- 先將選中的內容保存到""內，之後在用搜尋去找該項目
     { desc = "搜尋當前選中的項目" })
