@@ -1576,7 +1576,17 @@ function commands.setup()
       local current_line = vim.fn.line('.')
       local max_lines = vim.fn.line('$')
 
-      if #args.fargs < 3 then
+
+      if args.range ~= 0 then
+        -- local start_pos = vim.fn.getpos("v") -- 視覺模式的起點
+        -- local end_pos = vim.fn.getpos(".")   -- 當前光標的位置當作終點, 這不行會與v同一行
+        local start_pos = vim.fn.getpos("'<")
+        local end_pos = vim.fn.getpos("'>")
+        local line1, _ = start_pos[2], start_pos[3]
+        local line2, _ = end_pos[2], end_pos[3]
+        args.fargs[3] = line1 .. "-" .. line2
+        print(line1 .. "|" .. line2)
+      elseif #args.fargs < 3 then
         -- 如果省略，就會用全部的範圍
         -- :match Search /func.*)/
         args.fargs[3] = "1-" .. max_lines
@@ -1674,6 +1684,7 @@ function commands.setup()
     end,
     {
       desc = 'Highlight specified lines with a highlight group',
+      range = true,
       nargs = '+',
       complete = function(arg_lead, cmd_line)
         local parts = vim.split(cmd_line, "%s+")
