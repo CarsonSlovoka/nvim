@@ -1,6 +1,5 @@
 local M = {}
 
--- M.set_conceal({id="my_conceal", patterns={"hello", "world"}, conceal="🎉"})
 function M.set_conceal(config)
   local ns_id = vim.api.nvim_create_namespace(config.id)
   local patterns = config.patterns
@@ -58,6 +57,77 @@ function M.set_conceal(config)
     {
       "BufEnter", "TextChanged", "TextChangedI",
       "ModeChanged" -- 當有任何的轉換，例如: normal > insert, insert > command, ... 都會觸發
+    },
+    {
+      desc = "用nvim_buf_set_extmark中的conceal來替換文字",
+      pattern = "*",
+      callback = function()
+        _set_conceal()
+      end,
+    }
+  )
+end
+
+function M.set_conceal_with_replacements(config)
+  local ns_id = vim.api.nvim_create_namespace(config.id)
+  local replacements = config.replacements or {}
+
+  local function _set_conceal()
+    local bufnr = vim.api.nvim_get_current_buf()
+
+
+    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+
+    if vim.fn.mode() ~= "n" then
+      return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    for lnum, line in ipairs(lines) do
+      local start_col = 0
+      while true do
+        local matched = false
+        local s, e, matched_replacement
+
+        for _, rep in ipairs(replacements) do
+          for _, pattern in ipairs(rep.patterns) do
+            s, e = line:find(pattern, start_col + 1)
+            if s then
+              matched = true
+              matched_replacement = rep
+              break
+            end
+          end
+          if matched then
+            break
+          end
+        end
+
+        if not matched then
+          break
+        end
+
+        vim.api.nvim_buf_set_extmark(bufnr,
+          ns_id,
+          lnum - 1,
+          s - 1,
+          {
+            end_col = e,
+            conceal = matched_replacement.conceal,
+          }
+        )
+        start_col = e
+      end
+    end
+
+    vim.opt_local.conceallevel = 2
+    vim.opt_local.concealcursor = "n"
+  end
+
+  vim.api.nvim_create_autocmd(
+    {
+      "BufEnter", "TextChanged", "TextChangedI",
+      "ModeChanged"
     },
     {
       desc = "用nvim_buf_set_extmark中的conceal來替換文字",
