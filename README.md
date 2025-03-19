@@ -8,10 +8,6 @@
 
 不過這些項目都有加到submodule之中，因此還是可以快速的完成配置
 
-如果新的需求目前都會自己寫lua補上
-
-由於很容易就能完成，所以這些補上的項目沒有特別再去開一個新的專案
-
 總之如果你想要自己完全作主，不想要依靠太多的插件，你可以從這個專案的一開始看起
 
 我相信能讓您得到很好的起發😊
@@ -83,7 +79,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 - ✅ 表示目前已經有實作
 - 沒有標記的部份就只是目前規劃
 
-```
+```lua
 ~/.config/nvim/
 ├── init.lua                         -- ✅ 主入口配置文件
 ├── bookmarks/                       -- ✅ 自定義永久書籤的內容
@@ -105,8 +101,8 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0...  5582fbd)
 │   │
 │   ├── motion/start/                -- ✅ 移動相關
-│   │          ├── hop.nvim          -- ✅ 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818)
-│   │          └── precognition.nvim -- ✅ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e)
+│   │          ├── hop.nvim          -- ⚠  使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818) -- 我後來選擇用vim預設的motion即可，你可以參考 :help motion.txt 把你面的東西看完，會發現預設的動作其實也不慢！
+│   │          └── precognition.nvim -- ⚠ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e) -- 這個可能是一個過度期會用到的東西，等你熟了以後應該是不再需要了，所以我已經移除，你可以選擇自己再加回
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
 │   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (63f552a) ([github-nvim-theme](#github-nvim-theme)可以輔助)
@@ -129,7 +125,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │
 │   ├── schedule/start/                  -- ✅ 排程相關
-│   │         └── ~~atq.nvim~~           -- ✅ 通知提醒 ( 396ed33 )
+│   │         └── ~~atq.nvim~~           -- ⚠  通知提醒 ( 396ed33 ) -- 不需要用到插件，寫一個簡單的command即可完成: https://github.com/CarsonSlovoka/nvim/blob/62f78b8b2f506b1b4a3eff6006b0fcbbcf06c890/lua/config/commands.lua#L1142-L1223
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
