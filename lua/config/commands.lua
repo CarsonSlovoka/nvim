@@ -1693,11 +1693,22 @@ function commands.setup()
             "*",
             "print",
             "m_[^.]*",          -- 找成員，例如m_foo, ...
+            [[m_\w]],           -- \w word(字母、數字、下劃線)
+            "m_[^.\\ ]*",       -- 不含.和空白
+            [[\d\d]],           -- 找兩個數字(含)以上
+            [[\v\d{4}]],        -- 至少4個數字
             [[m_.*\.Set.*)]],   -- 例如m_foo.Set
             [[\cm_.*\.Set.*)]], -- m_foo.Set...), m_bar.set...)
             "func.*)",
-            [[\vUser]],
-            [[\cUser]], -- 忽略大小寫
+            [[\v.*]],           -- very magic
+            [[\V.]],            -- very nomagic 用這樣就可以找所有`.`
+            [[\cuser]],         -- 忽略大小寫
+            [[\s]],             -- space, tab
+            [[\S]],             -- non space
+            [[\w]],             -- 字母、數字、下劃線
+            [[\W]],             -- 非\w
+            [[\d]],             -- 數字
+            [[\D]],             -- 非\d
           }
         end
         return {
