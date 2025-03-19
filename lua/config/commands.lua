@@ -1560,6 +1560,9 @@ function commands.setup()
   )
 
   vim.api.nvim_create_user_command('Highlight',
+    -- match Search /\%>11l\%<22l/ -- 整列
+    -- match Search /\%>11l\%<22l\vSearch_content/ -- 該範圍的指定內容, 後面要接\c(忽略大小寫)或者\v
+    -- match Search /\%>11l\%<22lend/ -- 也可以不接\c, \v直接用搜尋文字
     function(args)
       local hl_group = args.fargs[1]
 
@@ -1573,9 +1576,15 @@ function commands.setup()
       local current_line = vim.fn.line('.')
       local max_lines = vim.fn.line('$')
 
+      if #args.fargs < 3 then
+        -- 如果省略，就會用全部的範圍
+        -- :match Search /func.*)/
+        args.fargs[3] = "1-" .. max_lines
+      end
+
       -- 處理剩餘的行號參數
       local line_patterns = {}
-      for i = 2, #args.fargs do
+      for i = 3, #args.fargs do
         local arg = args.fargs[i]
         -- 處理範圍格式 (例如 10-15, +10-+15, -5--2)
         if arg:match('^[+-]?%d+%-[+-]?%d+$') then
@@ -1651,8 +1660,17 @@ function commands.setup()
       -- print("Final pattern: " .. pattern)
 
       -- 應用 match 高亮
+      local search_text = args.fargs[2]
+      if search_text ~= "*" then
+        pattern = pattern .. search_text
+      end
+      -- print(pattern)
+
       vim.fn.matchadd(hl_group, pattern)
       -- :lua vim.fn.matchadd('Search', [[\%5l]])
+      -- :lua vim.fn.matchadd('Search', '\\%>99l\\%<201l\\vim')
+      -- :lua vim.fn.matchadd('Search', [[\%>99l\%<201l\vim]])
+      -- :lua print([[\%>99l\%<201l\vim]])
     end,
     {
       desc = 'Highlight specified lines with a highlight group',
@@ -1668,6 +1686,16 @@ function commands.setup()
             end, hl_groups)
           end
           return hl_groups
+        end
+
+        if argc == 2 then
+          return {
+            "*",
+            "print",
+            "func.*)",
+            [[\vUser]],
+            [[\cUser]],
+          }
         end
         return {
           "-3-+7",         -- 相對位置
