@@ -1,7 +1,7 @@
 local M = {}
 
-function M.set_conceal(config)
-  local ns_id = vim.api.nvim_create_namespace(config.id)
+function M.set_conceal(id, config)
+  local ns_id = vim.api.nvim_create_namespace(id)
   local patterns = config.patterns
   local conceal_char = config.conceal
 
@@ -68,8 +68,8 @@ function M.set_conceal(config)
   )
 end
 
-function M.set_conceal_with_replacements(config)
-  local ns_id = vim.api.nvim_create_namespace(config.id)
+function M.set_conceal_with_replacements(id, config)
+  local ns_id = vim.api.nvim_create_namespace(id)
   local replacements = config.replacements or {}
 
   local function _set_conceal()
