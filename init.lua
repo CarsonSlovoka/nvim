@@ -1512,7 +1512,7 @@ local function install_cmp_list()
   )
 end
 
-
+require("config.highlight")
 install_nvimTreesitter()
 install_lspconfig()
 -- install_precognition()
