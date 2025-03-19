@@ -1692,9 +1692,12 @@ function commands.setup()
           return {
             "*",
             "print",
+            "m_[^.]*",          -- 找成員，例如m_foo, ...
+            [[m_.*\.Set.*)]],   -- 例如m_foo.Set
+            [[\cm_.*\.Set.*)]], -- m_foo.Set...), m_bar.set...)
             "func.*)",
             [[\vUser]],
-            [[\cUser]],
+            [[\cUser]], -- 忽略大小寫
           }
         end
         return {
