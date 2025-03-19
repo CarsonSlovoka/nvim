@@ -145,21 +145,8 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │   ├── keymaps.lua              -- ✅ 鍵位綁定
 │   │   ├── autocmds.lua             -- 自動命令 (autocommands)
 │   │   └── ...                      -- 其他相關設定
-│   ├── ui/                          -- 用戶界面相關配置
-│   │   ├── colorscheme.lua          -- 配色方案
-│   │   ├── statusline.lua           -- 狀態欄配置
-│   │   ├── tabline.lua              -- 標籤欄配置
-│   │   └── ...                      -- 其他界面配置
-│   ├── lsp/                         -- LSP 配置
-│   │   ├── init.lua                 -- LSP 加載邏輯
-│   │   ├── servers/                 -- 不同 LSP 伺服器的配置
-│   │   │   ├── lua_ls.lua           -- 示例：Lua 語言伺服器
-│   │   │   ├── pyright.lua          -- 示例：Python 語言伺服器
-│   │   │   └── ...                  -- 其他伺服器配置
 │   └── utils/                       -- 實用工具函數
 │       ├── exec.lua                 -- ✅ 執行工作相關
-│       ├── init.lua                 -- 工具函數的加載
-│       ├── mappings.lua             -- 鍵位綁定相關工具
 │       └── ...                      -- 其他工具
 ├── after/                           -- 用於延遲加載的配置
 │   ├── ftplugin/                    -- 文件類型相關的配置
