@@ -207,6 +207,11 @@ local function install_lspconfig()
         diagnostics = {
           -- 告訴 LSP `vim` 是一個全域變數
           globals = { 'vim' }
+        },
+        workspace = {
+          -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
+          library = vim.api.nvim_get_runtime_file('', true)
+          -- vim.api.nvim_ -- 👈 可以用
         }
       }
     }
