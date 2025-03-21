@@ -4,6 +4,7 @@ local osUtils = require("utils.os")
 local swayUtils = require("utils.sway")
 local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
+local rangeUtils = require("utils.range")
 
 local commands = {}
 
@@ -1559,6 +1560,7 @@ function commands.setup()
     }
   )
 
+
   vim.api.nvim_create_user_command('Highlight',
     -- match Search /\%>11l\%<22l/ -- 整列
     -- match Search /\%>11l\%<22l\vSearch_content/ -- 該範圍的指定內容, 後面要接\c(忽略大小寫)或者\v
@@ -1577,15 +1579,20 @@ function commands.setup()
       local max_lines = vim.fn.line('$')
 
 
-      if args.range ~= 0 then
+      if args.range ~= 0 then -- 似乎只有0與2(range)
         -- local start_pos = vim.fn.getpos("v") -- 視覺模式的起點
         -- local end_pos = vim.fn.getpos(".")   -- 當前光標的位置當作終點, 這不行會與v同一行
         local start_pos = vim.fn.getpos("'<")
         local end_pos = vim.fn.getpos("'>")
-        local line1, _ = start_pos[2], start_pos[3]
-        local line2, _ = end_pos[2], end_pos[3]
+        local line1, col1 = start_pos[2], start_pos[3] -- 1 開始 ~ 2147483647
+        local line2, col2 = end_pos[2], end_pos[3]
+        -- local mode = vim.fn.mode() -- 得到的都是n沒有辦法區分出v或V
+        if col1 ~= 1 then -- 因為如果是V一定是1, 雖然v也以是1，但是一般而言比較少(而且也可以避開，從2開始v就好)
+          -- v mode
+          args.fargs[2] = rangeUtils.get_selected_text()
+        end
         args.fargs[3] = line1 .. "-" .. line2
-        print(line1 .. "|" .. line2)
+        -- print(args.fargs[2], args.fargs[3])
       elseif #args.fargs < 3 then
         -- 如果省略，就會用全部的範圍
         -- :match Search /func.*)/
