@@ -333,7 +333,7 @@ function bookmark.show()
 
             -- 語法高亮設定
             local filetype = vim.filetype.match({ filename = filepath }) or "text" -- 如果找不到匹配就用text
-            vim.api.nvim_buf_set_option(self.state.bufnr, 'syntax', filetype)
+            vim.api.nvim_set_option_value('syntax', filetype, { buf = self.state.bufnr })
 
             -- 最後再調整context_header的高亮顯示(覆蓋)
             -- 用extmark來設定附加訊息的一些顏色設定

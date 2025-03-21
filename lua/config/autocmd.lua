@@ -42,9 +42,10 @@ function M.setup(opts)
         end
         -- 獲取當前緩衝區的 buftype
         -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
-        local buftype = vim.api.nvim_buf_get_option(0, "buftype")
+        -- local buftype = vim.api.nvim_buf_get_option(0, "buftype"  )
+        local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
 
-        -- 當 buftype 為空時才執行保存
+        -- 當 buftype 為空時才執行保存: 你可以嘗試用telescope的輸入視窗用insert，此時的buftype是prompt就不是空的
         if buftype == "" and
             vim.bo.modified -- 可以曉得是否真的有異動
         then

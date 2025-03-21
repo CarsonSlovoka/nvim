@@ -9,7 +9,8 @@ local telescope_bookmark = require "config.telescope_bookmark"
 local HOME = os.getenv("HOME")
 
 -- runtimepath
-local runtimepath = vim.api.nvim_get_option("runtimepath")
+-- local runtimepath = vim.api.nvim_get_option("runtimepath")
+local runtimepath = vim.api.nvim_get_option_value("runtimepath", {})
 vim.opt.runtimepath = runtimepath .. ",~/.vim,~/.vim/after"
 vim.opt.packpath = vim.opt.runtimepath:get()
 
@@ -100,7 +101,12 @@ local function install_nvimTreesitter()
       "bash",
       "lua",
       "go",
-      "markdown", "markdown_inline" },
+      "markdown", "markdown_inline"
+    },
+    sync_install = false,
+    auto_install = false,
+    ignore_install = {},
+    modules = {},
     highlight = {
       enable = true,
       additional_vim_regex_highlighting = false,
@@ -260,8 +266,8 @@ local function install_lspconfig()
   )
   vim.cmd("ToggleDiagnosticVirtualText --quite") -- 因為我的預設值設定為false，所以這樣相當改成預設會啟用
 
-  --- @type boolean|nil
-  local diagnosticHoverAutocmdId = false
+  --- @type number|nil
+  local diagnosticHoverAutocmdId
   vim.o.updatetime = 250
   vim.api.nvim_create_user_command(
     "ToggleDiagnosticHover",

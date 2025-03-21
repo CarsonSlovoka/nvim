@@ -59,8 +59,9 @@ function M.setup(opts)
   vim.api.nvim_command("enew") -- 開啟一個新 buffer
   local buf = vim.api.nvim_get_current_buf()
 
-  vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
-  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  -- vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
+  vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+  vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
 
   -- 獲取終端窗口的高度和寬度
   local win_height = vim.api.nvim_win_get_height(0)
@@ -252,7 +253,7 @@ vim.api.nvim_buf_add_highlight(buf, 0, "StartupInfo", base_line + 14, padding_le
   end
 
   -- 設置 buffer 為不可編輯（只讀）
-  vim.api.nvim_buf_set_option(buf, "modifiable", false)
+  vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
 return M
