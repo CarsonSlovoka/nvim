@@ -13,23 +13,88 @@ end
 local emoji_data = {
   { "⭐", "star" },
   { "❌", "error" },
-  { "❓", "questionMark" }, -- red question mark
-  { "⁉️", "questionExclamation" },
-  { "✅", "check" },
+  { "❓",
+    {
+      "questionMark",
+      "red question mark",
+    },
+  },
+  { "✅",
+    {
+      "check",
+      "ok",
+    },
+  },
+  { "👌",
+    {
+      "okHand",
+      "ok",
+    },
+  },
   { "⚠", "warning" },
   { "🎉", "ya" },
   { "❗", "exclamation" },
-  { "❣️", "exclamationHeart" }, -- heart Exclamation
-  { "⁉️", "exclamationQuestion" },
-  { "👆", "ptUp" }, -- pointing up
-  { "👇", "ptDown" },
-  { "👈", "ptLeft" },
-  { "👉", "ptRight" },
-  { "←", "arrowLeft" },
-  { "↑", "arrowUp" },
-  { "→", "arrowRight" },
-  { "↓", "arrowDown" },
-  { "💡", "tip" },
+  { "❣️",
+    {
+      "heartExclamation",
+      "exclamationHeart"
+    },
+  },
+  { "💯",
+    {
+      "hundredPoints",
+      "100points",
+    },
+  },
+  { "💥",
+    {
+      "collision",
+      "explode",
+      "boom",
+    },
+  },
+  { "⁉️",
+    {
+      "exclamationQuestion",
+      "questionExclamation",
+    },
+  },
+  { "👆",
+    {
+      "ptUp",
+      "potintingUp",
+      "up",
+    },
+  },
+  { "👇",
+    {
+      "ptDown",
+      "down",
+    },
+  },
+  { "👈",
+    {
+      "ptLeft",
+      "left",
+    },
+  },
+  { "👉",
+    {
+      "ptRight",
+      "right",
+    },
+  },
+  { "←", "arLeft" }, -- arrow
+  { "↑", "arUp" },
+  { "→", "arRight" },
+  { "↓", "arDown" },
+  { "💡",
+    {
+      "lightBulb",
+      "tip",
+      "idea",
+    },
+  },
   { "🚀", "rocket" },
   { "🧙", "mage" },
   { "🐘", "elephant" },
@@ -39,18 +104,79 @@ local emoji_data = {
   { "📢", "announcement" },
   { "😅", "sorry" },
   { "😡", "angry" },
+  { "😢",
+    {
+      "cryingFace",
+      "sad",
+    },
+  },
+  { "😭",
+    {
+      "loudlyCryingFace",
+      "crying",
+    },
+  },
+  { "🥺",
+    {
+      "pleadingFace",
+      "please",
+    },
+  },
+  { "🥹",
+    {
+      "faceHoldingBackTears",
+      "pleadingFace",
+      "thanks",
+    },
+  },
   { "🙂", "smiling" },
   { "😊", "smilingWithSmilingEyes" },
-  { "🥺", "pleadingFace" },
+  { "😊", "smilingFacewithHalo" },
+  { "😇", "pleadingFace" },
+  { "😎",
+    {
+      "smilingFaceWithSunGlasses",
+      "sunGlasses",
+    },
+  },
   { "🤔", "confused" },
   { "🙏", "please" },
-  { "💪", "flexedBiceps" },
+  { "🙇",
+    {
+      "personBowing",
+      "please",
+      "sorry",
+    },
+  },
+  { "👊",
+    {
+      "oncomingFist",
+      "fist",
+      "punch",
+    },
+  },
+  { "💪",
+    {
+      "flexedBiceps",
+      "strong",
+    },
+  },
   { "🤝", "handshake" },
   { "🔥", "fire" },
   { "🔑", "key" },
   { "🔒", "locked" },
-  { "⚡", "fast" },
-  { "⚡", "lighting" },
+  { "✨",
+    {
+      "sparkles",
+      "features",
+    },
+  },
+  { "⚡",
+    {
+      "fast",
+      "lighting",
+    },
+  },
   { "🌈", "rainbow" },
   { "🏠", "home" },
   { "🏰", "castle" },
@@ -71,8 +197,16 @@ local emoji_data = {
 local M = {}
 for _, e in ipairs(emoji_data) do
   local word = e[1]
-  local abbr = e[2]
-  table.insert(M, emoji:new(word, abbr))
+  local abbr_data = e[2]
+  if type(abbr_data) == "string" then
+    table.insert(M, emoji:new(word, abbr_data))
+  else
+    if type(abbr_data) == "table" then
+      for _, abbr in ipairs(abbr_data) do
+        table.insert(M, emoji:new(word, abbr))
+      end
+    end
+  end
 end
 
 return M
