@@ -5,6 +5,7 @@ local swayUtils = require("utils.sway")
 local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
 local rangeUtils = require("utils.range")
+local extmarkUtils = require("utils.extmark")
 
 local commands = {}
 
@@ -1741,6 +1742,36 @@ function commands.setup()
   )
 
   create_user_command_jumps_to_qf_list()
+
+
+  vim.api.nvim_create_user_command("SetConceal",
+    function(args)
+      local random_ns_id = "selection_conceal_" .. vim.fn.rand()
+      extmarkUtils.set_conceal(
+        random_ns_id,
+        {
+          patterns = { rangeUtils.get_selected_text() },
+          conceal = args.fargs[1] or "🫣"
+        }
+      )
+    end,
+    {
+      desc = "Hide selected text with conceal. 如果你已經有其它渲染(例如md)那麼隱藏的符號可能會看不到",
+      range = true,
+      nargs = 1,
+      complete = function(argLead, cmdLine)
+        local parts = vim.split(cmdLine, "%s+")
+        local argc = #parts - 1
+
+        if argc == 1 then
+          return {
+            "🫣",
+            "📦",
+          }
+        end
+      end
+    }
+  )
 end
 
 return commands
