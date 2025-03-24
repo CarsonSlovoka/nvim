@@ -135,10 +135,14 @@ for i = 0, 9 do
       desc = ":set foldcolumn=" .. i,
     }
   )
+end
 
-
+-- local strRegs = '0123456789+"*' -- 沒有辦法透過這樣的方式來更改+的內容
+local strRegs = '0123456789'
+for i = 1, #strRegs do
+  local c = strRegs:sub(i, i)
   -- 書籤相關
-  map('n', "<leader>by" .. i,
+  map('n', "<leader>by" .. c,
     function()
       local filepath = vim.fn.expand('%:p') -- 完整路徑
       local line = vim.fn.line('.')         -- 當前行號
@@ -146,7 +150,7 @@ for i = 0, 9 do
       -- local location = string.format("%s:%d:%d", filepath, line, col) -- 如果用: 在windows會被磁碟名稱影響
       local location = string.format("%s|%d|%d", filepath, line, col)
       vim.fn.setreg(tostring(i), location)
-      vim.fn.setreg('"', location)
+      vim.fn.setreg('"', location) -- 也複製到暫存器"
     end,
     {
       desc = "複製當前的位置到剪貼簿"
