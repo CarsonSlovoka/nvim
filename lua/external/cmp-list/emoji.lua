@@ -320,4 +320,43 @@ for _, e in ipairs(emoji_data) do
   end
 end
 
+
+--- 搜尋匹配的表符符號
+--- @param search_str string 如果給空值，則返回所有的表情符號
+--- @return table
+function M.get_emoji(search_str)
+  local matches = {}
+
+  -- 將搜尋字串轉為小寫以進行不區分大小寫的比較
+  search_str = string.lower(search_str)
+
+  -- 遍歷 emoji_data 表格
+  for _, emoji_entry in ipairs(emoji_data) do
+    local emoji = emoji_entry[1]        -- 表情符號本身
+    local descriptions = emoji_entry[2] -- 描述（可能是字串或表格）
+
+    -- 如果描述是單一字串
+    if type(descriptions) == "string" then
+      -- if search_str == "" or string.lower(descriptions) == search_str then
+      if search_str == "" or string.find(string.lower(descriptions), search_str) then
+        table.insert(matches, emoji)
+      end
+      -- 如果描述是一個表格
+    elseif type(descriptions) == "table" then
+      for _, desc in ipairs(descriptions) do
+        if search_str == "" or string.find(string.lower(desc), search_str) then
+          table.insert(matches, emoji)
+          break -- 找到匹配後跳出內部迴圈
+        end
+      end
+    end
+  end
+
+  if #matches > 0 then
+    return matches
+  else
+    return nil
+  end
+end
+
 return M

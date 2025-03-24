@@ -1744,30 +1744,29 @@ function commands.setup()
   create_user_command_jumps_to_qf_list()
 
 
-  vim.api.nvim_create_user_command("SetConceal",
+  vim.api.nvim_create_user_command("Conceal",
     function(args)
       local random_ns_id = "selection_conceal_" .. vim.fn.rand()
-      extmarkUtils.set_conceal(
+      extmarkUtils.set_conceal( -- 要等ModeChanged才會生效，所以之後v再換回
         random_ns_id,
         {
           patterns = { rangeUtils.get_selected_text() },
           conceal = args.fargs[1] or "🫣"
         }
       )
+      -- vim.cmd("redraw") -- 沒用
+      vim.api.nvim_input("v<ESC>")
     end,
     {
       desc = "Hide selected text with conceal. 如果你已經有其它渲染(例如md)那麼隱藏的符號可能會看不到",
       range = true,
       nargs = 1,
-      complete = function(argLead, cmdLine)
-        local parts = vim.split(cmdLine, "%s+")
+      complete = function(arg_lead, cmd_line)
+        local parts = vim.split(cmd_line, "%s+")
         local argc = #parts - 1
 
         if argc == 1 then
-          return {
-            "🫣",
-            "📦",
-          }
+          return require("external.cmp-list.emoji").get_emoji(arg_lead)
         end
       end
     }
