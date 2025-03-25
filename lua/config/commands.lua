@@ -1744,16 +1744,20 @@ function commands.setup()
   create_user_command_jumps_to_qf_list()
 
 
+  --- 保存conceal的記錄，使得有辦法去刪除
+  local conceal_mappings = {}
   vim.api.nvim_create_user_command("Conceal",
     function(args)
-      local random_ns_id = "selection_conceal_" .. vim.fn.rand()
+      local random_ns_id = "conceal_" .. vim.fn.rand()
+      local emoji = args.fargs[1] or "🫣"
       extmarkUtils.set_conceal( -- 要等ModeChanged才會生效，所以之後v再換回
         random_ns_id,
         {
           patterns = { rangeUtils.get_selected_text() },
-          conceal = args.fargs[1] or "🫣"
+          conceal = emoji
         }
       )
+      conceal_mappings[emoji] = random_ns_id
       -- vim.cmd("redraw") -- 沒用
       vim.api.nvim_input("v<ESC>")
     end,
@@ -1767,6 +1771,44 @@ function commands.setup()
 
         if argc == 1 then
           return require("external.cmp-list.emoji").get_emoji(arg_lead)
+        end
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command("ConcealDelete",
+    function(args)
+      local emoji = args.fargs[1]
+      if not emoji then
+        vim.notify("Error: Please provide an emoji to delete.", vim.log.levels.INFO)
+        return
+      end
+
+      local ns_id = conceal_mappings[emoji]
+      if ns_id then
+        -- Clear the namespace for the current buffer
+        vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace(ns_id), 0, -1)
+        -- Remove the mapping after deletion
+        conceal_mappings[emoji] = nil
+        vim.notify("Conceal namespace for " .. emoji .. " deleted.", vim.log.levels.INFO)
+      else
+        vim.notify("Error: No conceal namespace found for " .. emoji .. ".", vim.log.levels.ERROR)
+      end
+    end,
+    {
+      desc = "Delete a conceal namespace by emoji.",
+      nargs = 1,
+      complete = function(arg_lead, cmd_line)
+        local parts = vim.split(cmd_line, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          local emojis = {}
+          for emoji in pairs(conceal_mappings) do
+            if vim.startswith(emoji, arg_lead) then
+              table.insert(emojis, emoji)
+            end
+          end
+          return emojis
         end
       end
     }
