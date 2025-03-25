@@ -1562,6 +1562,7 @@ function commands.setup()
   )
 
 
+  local highlight_map = {}
   vim.api.nvim_create_user_command('Highlight',
     -- match Search /\%>11l\%<22l/ -- 整列
     -- match Search /\%>11l\%<22l\vSearch_content/ -- 該範圍的指定內容, 後面要接\c(忽略大小寫)或者\v
@@ -1684,11 +1685,13 @@ function commands.setup()
       end
       -- print(pattern)
 
-      vim.fn.matchadd(hl_group, pattern)
+      local m = vim.fn.matchadd(hl_group, pattern)
       -- :lua vim.fn.matchadd('Search', [[\%5l]])
       -- :lua vim.fn.matchadd('Search', '\\%>99l\\%<201l\\vim')
       -- :lua vim.fn.matchadd('Search', [[\%>99l\%<201l\vim]])
       -- :lua print([[\%>99l\%<201l\vim]])
+
+      highlight_map[pattern] = m
     end,
     {
       desc = 'Highlight specified lines with a highlight group',
@@ -1740,11 +1743,40 @@ function commands.setup()
       end
     }
   )
+  vim.api.nvim_create_user_command("HighlightDelete",
+    function(args)
+      local pattern = args.fargs[1]
+      local m = highlight_map[pattern]
+      if m then
+        vim.fn.matchdelete(m)
+        highlight_map[pattern] = nil
+      else
+        vim.notify("沒有匹配的highlight項目", vim.log.levels.ERROR)
+      end
+    end,
+    {
+      desc = "刪除透過Highlight命令加入的產物",
+      nargs = 1,
+      complete = function(arg_lead, cmd_line)
+        local parts = vim.split(cmd_line, "%s+")
+        local argc = #parts - 1
+        if argc == 1 then
+          local patterns = {}
+          for pattern in pairs(highlight_map) do
+            if string.find(pattern, arg_lead) then
+              table.insert(patterns, pattern)
+            end
+          end
+          return patterns
+        end
+      end
+    }
+  )
 
   create_user_command_jumps_to_qf_list()
 
 
-  --- 保存conceal的記錄，使得有辦法去刪除
+  --- 保存conceal的記錄，使得有辦法刪除
   local conceal_mappings = {}
   vim.api.nvim_create_user_command("Conceal",
     function(args)
