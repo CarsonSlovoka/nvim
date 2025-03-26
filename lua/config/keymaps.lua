@@ -190,13 +190,53 @@ map('n', '<leader>gf',
 
     local line = vim.api.nvim_get_current_line()
     local selected_text = line:sub(start_col, end_col)
+    -- selected_text = selected_text:gsub("[:|]+$", "") -- ../home/app.h:137: -- 避免有:或者|在最後面而產生干擾,  不過 home/app.h:137中文, 這種情況還是會有問題
+
     -- local path, lnum, col = line:match("([^:]+):(%d+):(%d+)")
-    local path, lnum, col = selected_text:match("([^|]+)|(%d+)|(%d+)")
-    if path and lnum and col then
+    -- local path, lnum, col = selected_text:match("([^|]+)[|:](%d+)[|:](%d+)") -- 讓|, :都可以當成分隔符，但是我想讓col可以不是必需的，所以用更複雜的方式寫
+
+    local path, lnum, col = nil, nil, nil
+    local patterns = {
+      -- { "^(.-):(%d+):(%d+)$", 3 }, -- "../../home/app.h:20:5" -- 數字不一定要在最後面，因此不需要$，不然 `home/app.h:137中文` 這樣會抓不到
+      -- { "^(.-):(%d+)$",       2 }, -- "../../home/app.h:20"
+      -- { "^(.-)|(%d+)|(%d+)$", 3 }, -- "../../home/app.h|20|5"
+      -- { "^(.-)|(%d+)$",       2 }, -- "../../home/app.h|20"
+      { "^(.-):(%d+):(%d+)", 3 }, -- "../../home/app.h:20:5"
+      { "^(.-):(%d+)", 2 },       -- "../../home/app.h:20"
+      { "^(.-)|(%d+)|(%d+)", 3 }, -- "../../home/app.h|20|5"
+      { "^(.-)|(%d+)", 2 },       -- "../../home/app.h|20"
+      { "^(.-)$", 1 }             -- "../../home/app.h" -- 處理只有路徑而沒有列行號, 只實這種情況可以用內鍵的gf也行
+    }
+    for _, pattern_info in ipairs(patterns) do
+      local pattern, num_captures = pattern_info[1], pattern_info[2]
+      local captures = { string.match(selected_text, pattern) }
+
+      if #captures > 0 then
+        if num_captures == 1 then
+          path = captures[1]
+        elseif num_captures == 2 then
+          path = captures[1]
+          lnum = tonumber(captures[2])
+        elseif num_captures == 3 then
+          path = captures[1]
+          lnum = tonumber(captures[2])
+          col = tonumber(captures[3])
+        end
+        break
+      end
+    end
+
+    if vim.fn.filereadable(path) == 1 then
+      -- vim.cmd("edit +" .. lnum .. " " .. path)
       vim.cmd("edit " .. path)
-      vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) - 1 })
+      if lnum then -- 如果沒有lnum，就不使用nvim_win_set_cursor，這是因為edit會自己記得上一次到此檔案的位置，因此應該會比安排到1, 1好
+        vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col or 1) - 1 })
+      end
     else
-      vim.notify("無效的書籤格式:\n" .. selected_text, vim.log.levels.ERROR)
+      vim.notify(string.format("無效的書籤格式:%s\npath:%s\nlnum:%s\n:%s",
+          selected_text, path, lnum, col),
+        vim.log.levels.ERROR
+      )
     end
   end,
   {
