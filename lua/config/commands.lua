@@ -167,11 +167,23 @@ function commands.setup()
       if #selected_text == 0 then
         return
       end
-      vim.cmd("edit " .. selected_text)
+      local parts = vim.split(selected_text, ":") -- grep -n就是用:分
+      local filepath = parts[1]
+      if #parts == 1 then
+        vim.cmd("edit " .. filepath)
+        return
+      end
+
+      local line_num = tonumber(parts[2])
+      if line_num then
+        vim.cmd("edit +" .. line_num .. " " .. filepath)
+      else
+        vim.cmd("edit " .. filepath)
+      end
     end,
     {
       range = true,
-      desc = "edit",
+      desc = "edit +123 <filepath>",
     }
   )
   vim.api.nvim_create_user_command("Help",
