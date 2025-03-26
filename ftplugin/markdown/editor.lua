@@ -19,12 +19,19 @@ end
 -- 標題相關
 -- map('n', '<Leader>h1', 'i# <ESC>a', opts) -- h按鍵很重要，不要隨便分配，不然用到的時候會有等待時間
 -- map('n', '<C-H>1', 'i# <ESC>a') -- ctrl+h不區分大小寫
-map('n', '<C-H>1', 'i#') -- ctrl+h不區分大小寫
-map('n', '<C-H>2', 'i##')
-map('n', '<C-H>3', 'i###')
-map('n', '<C-H>4', 'i####')
-map('n', '<C-H>5', 'i#####')
-map('n', '<C-H>6', 'i######')
+for i = 1, 6 do
+  local hashes = string.rep("#", i)
+  map('n',
+    '<C-H>' .. i,
+    'i' .. hashes .. ' ', -- 最後多補上一個空白
+    { desc = "insert <h" .. i .. ">" }
+  )
+  map('i',
+    '<C-H>' .. i,
+    hashes .. ' ',
+    { desc = "insert <h" .. i .. ">" }
+  )
+end
 
 -- 格式化文本
 map('n', '<leader>b', 'ciw**<C-r>"**<ESC>', { desc = "Bold" }) -- 加粗 -- ciw會剪下一個詞放到暫存器`"` 並進入編輯模式，在編輯模式下<C-r>可以指定要貼上哪一個暫存器的內容
