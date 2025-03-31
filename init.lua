@@ -112,63 +112,63 @@ local function install_nvimTreesitter()
       additional_vim_regex_highlighting = false,
     },
 
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
-        init_selection = "gnn",   -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
-        node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
-        scope_incremental = "grc",
-        node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
-      },
-    },
-
-    -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-    -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
-    textobjects = {       -- 其實透過visual a{ 等已經很好用了，可以考慮不用textobjects
-      select = {          -- visual模式才有效
-        enable = true,    -- 啟用 textobjects
-        lookahead = true, -- 向前查找，可以更智能選擇
-        keymaps = {
-          -- 標準鍵位示例（根據需要調整）
-          ["af"] = "@function.outer", -- 整個函數塊
-          ["if"] = "@function.inner", -- 函數內部
-          ["ac"] = "@class.outer",    -- 整個類別塊
-          ["ic"] = "@class.inner",    -- 類別內部
-          ["ao"] = "@block.outer",    -- 任何區塊的外部
-          ["io"] = "@block.inner",    -- 任何區塊的內部
-        },
-      },
-      move = {                        -- 此功能還好，可以用hop來取代
-        enable = true,
-        set_jumps = true,             -- 記錄跳轉位置
-        goto_next_start = {
-          ["]m"] = "@function.outer", -- 跳到下一個函數的開始
-          ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
-        },
-        goto_next_end = {
-          ["]M"] = "@function.outer", -- 跳到下一個函數的結束
-          ["]["] = "@class.outer"     -- 跳到下一個類別的結束
-        },
-        goto_previous_start = {
-          ["[m"] = "@function.outer", -- 跳到上一個函數的開始
-          ["[["] = "@class.outer"     -- 跳到上一個類別的開始
-        },
-        goto_previous_end = {
-          ["[M"] = "@function.outer", -- 跳到上一個函數的結束
-          ["[]"] = "@class.outer"     -- 跳到上一個類別的結束
-        },
-      },
-      swap = { -- 不錯用，可以快速交換參數
-        enable = true,
-        swap_next = {
-          ["<leader>a"] = "@parameter.inner", -- 與下一個參數交換
-        },
-        swap_previous = {
-          ["<leader>A"] = "@parameter.inner", -- 與上一個參數交換
-        },
-      },
-    },
+    -- incremental_selection = {
+    --   enable = true,
+    --   keymaps = {
+    --     -- 這些快截鍵如果不是被偵測到的附檔名(即ensure_installed沒有的，或者用:checkHealth看)就不會有
+    --     init_selection = "gnn",   -- n模式 初始化當前的節點(從光標位置開始) 通常都會先用這個來開始
+    --     node_incremental = "grn", -- x模式(v) -- gnn完了之後自動會被換行x模式，此時可以用grn，來將選擇往外「擴展」
+    --     scope_incremental = "grc",
+    --     node_decremental = "grm", -- 收縮選擇(可以看成grn的反悔)
+    --   },
+    -- },
+    --
+    -- -- 配置 textobjects 模塊, 須要插件: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    -- -- pack/syntax/start/nvim-treesitter-textobjects/lua/nvim-treesitter/textobjects/
+    -- textobjects = {       -- 其實透過visual a{ 等已經很好用了，可以考慮不用textobjects
+    --   select = {          -- visual模式才有效
+    --     enable = true,    -- 啟用 textobjects
+    --     lookahead = true, -- 向前查找，可以更智能選擇
+    --     keymaps = {
+    --       -- 標準鍵位示例（根據需要調整）
+    --       ["af"] = "@function.outer", -- 整個函數塊
+    --       ["if"] = "@function.inner", -- 函數內部
+    --       ["ac"] = "@class.outer",    -- 整個類別塊
+    --       ["ic"] = "@class.inner",    -- 類別內部
+    --       ["ao"] = "@block.outer",    -- 任何區塊的外部
+    --       ["io"] = "@block.inner",    -- 任何區塊的內部
+    --     },
+    --   },
+    --   move = {                        -- 此功能還好，可以用hop來取代
+    --     enable = true,
+    --     set_jumps = true,             -- 記錄跳轉位置
+    --     goto_next_start = {
+    --       ["]m"] = "@function.outer", -- 跳到下一個函數的開始
+    --       ["]]"] = "@class.outer"     -- 跳到下一個類別的開始
+    --     },
+    --     goto_next_end = {
+    --       ["]M"] = "@function.outer", -- 跳到下一個函數的結束
+    --       ["]["] = "@class.outer"     -- 跳到下一個類別的結束
+    --     },
+    --     goto_previous_start = {
+    --       ["[m"] = "@function.outer", -- 跳到上一個函數的開始
+    --       ["[["] = "@class.outer"     -- 跳到上一個類別的開始
+    --     },
+    --     goto_previous_end = {
+    --       ["[M"] = "@function.outer", -- 跳到上一個函數的結束
+    --       ["[]"] = "@class.outer"     -- 跳到上一個類別的結束
+    --     },
+    --   },
+    --   swap = { -- 不錯用，可以快速交換參數
+    --     enable = true,
+    --     swap_next = {
+    --       ["<leader>a"] = "@parameter.inner", -- 與下一個參數交換
+    --     },
+    --     swap_previous = {
+    --       ["<leader>A"] = "@parameter.inner", -- 與上一個參數交換
+    --     },
+    --   },
+    -- },
   }
 end
 

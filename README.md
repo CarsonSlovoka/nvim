@@ -12,15 +12,34 @@
 
 我相信能讓您得到很好的起發😊
 
+
+# Install neovim
+
+```bash
+sudo apt-get install ninja-build gettext cmake unzip curl build-essential
+git clone https://github.com/neovim/neovim.git ~/neovim
+
+git checkout v0.11.0 # a99c469
+
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+
+# https://github.com/neovim/neovim/blob/096ae3bfd7075dce69c70182ccedcd6d33e66d31/BUILD.md?plain=1#L16
+cd build && cpack -G DEB && sudo dpkg -i "nvim-linux-$(uname -m).deb"
+
+# check
+dpkg -l | grep neovim
+nvim -V1 -v
+```
+
 # Version
 
 ```
-NVIM v0.10.4
+NVIM v0.11.0
 Build type: RelWithDebInfo
-LuaJIT 2.1.1713484068
+LuaJIT 2.1.1741730670
 ```
 
-# INSTALL
+# INSTALL carson/nvim
 
 ```sh
 mkdir -p ~/.config/nvim
@@ -120,7 +139,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── cmp                -- ✅ 自動完成 (主要依靠`<C-X>`)
 │   │
 │   ├── other/start/                     -- ✅ 未分類
-│   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v7.8.0... d7b646f)
+│   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v8.1.1... a020c88)
 │   │         ├── lualine.nvim           -- ✅ statusbar (2a5bae9)
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │
