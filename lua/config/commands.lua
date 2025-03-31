@@ -1768,15 +1768,19 @@ function commands.setup()
             [[m_.*\.Set.*)]],   -- 例如m_foo.Set
             [[\cm_.*\.Set.*)]], -- m_foo.Set...), m_bar.set...)
             "func.*)",
-            [[\v.*]],           -- very magic
-            [[\V.]],            -- very nomagic 用這樣就可以找所有`.`
-            [[\cuser]],         -- 忽略大小寫
-            [[\s]],             -- space, tab
-            [[\S]],             -- non space
-            [[\w]],             -- 字母、數字、下劃線
-            [[\W]],             -- 非\w
-            [[\d]],             -- 數字
-            [[\D]],             -- 非\d
+
+            -- [[^\s*Bk.*]],    -- 這種匹配方法，前面的空白、制表符也都會被突顯，所以可以利用\zs來幫忙
+            [[^\s*\zsBk.*]], -- \zs zero-width assertions 零寬度斷言，代表會從這裡開始匹配
+
+            [[\v.*]],        -- very magic
+            [[\V.]],         -- very nomagic 用這樣就可以找所有`.`
+            [[\cuser]],      -- 忽略大小寫
+            [[\s]],          -- space, tab
+            [[\S]],          -- non space
+            [[\w]],          -- 字母、數字、下劃線
+            [[\W]],          -- 非\w
+            [[\d]],          -- 數字
+            [[\D]],          -- 非\d
           }
         end
         return {
