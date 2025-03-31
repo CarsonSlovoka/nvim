@@ -1529,6 +1529,7 @@ local function install_cmp_list()
     }
 
   )
+  -- vim.cmd("SetCmpListEnablePreivewWindow 0")
 end
 
 require("config.highlight")
