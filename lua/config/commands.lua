@@ -160,6 +160,30 @@ function commands.setup()
       desc = "在當前路徑開啟terminal"
     }
   )
+  vim.api.nvim_create_user_command("Cmd",
+    function(args)
+      if args.range == 0 then
+        vim.cmd(args.fargs[1])
+        return
+      end
+
+      local cmds = rangeUtils.get_selected_text()
+      if type(cmds) == "string" then
+        cmds = { cmds }
+      end
+      for _, cmd in ipairs(cmds) do
+        -- vim.cmd(cmd:match("^%s*:(.*)") or cmd) -- 空白、制表符: 都忽略. (注意連:都會忽略) <-- 不需要如此，指令有開始有多個:不影響，而且如果有Tab, 空白也沒事
+        vim.cmd(cmd)
+      end
+    end,
+    {
+      nargs = "?",
+      range = true,
+      desc = "等同 vim.cmd(...) 如果你想要將一些vim的指令直接寫在腳本，在用手動選取的方式去一次執行，可以使用此命令"
+      -- :Highlight YellowBold vim.api
+      -- :Highlight Purple \v^\s*Bk:.*
+    }
+  )
 
   vim.api.nvim_create_user_command("Edit",
     function()

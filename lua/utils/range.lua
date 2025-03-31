@@ -21,7 +21,7 @@ function M.get_selected_text()
   local line2, col2 = end_pos[2], end_pos[3]
   local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
   if #lines == 0 then
-    return
+    return ""
   end
 
   -- 同列
@@ -31,20 +31,21 @@ function M.get_selected_text()
 
   -- return table.concat(lines, '')
 
-  local l1 = string.sub(lines[1], col1)    -- col1的位置是有包含的, col2省略會取到結束
-  local l2 = string.sub(lines[1], 1, col2) -- sub可以0或1開始都行, 往後取col2個
+  local l_start = string.sub(lines[1], col1)       -- col1的位置是有包含的, col2省略會取到結束
+  local l_end = string.sub(lines[#lines], 1, col2) -- sub可以0或1開始都行, 往後取col2個
 
   -- 二列
   if line2 - line1 == 1 then
-    -- return l1 .. l2
     return {
-      l1,
-      l2,
+      l_start,
+      l_end,
     }
   end
 
   -- 兩列以上
-  return { l1, unpack(lines, 2, #lines - 1), l2 }
+  print("lines", vim.inspect(lines))
+  print("unpack", vim.inspect(unpack(lines, 2, #lines - 1)))
+  return { l_start, unpack(lines, 2, #lines - 1), l_end }
   -- return table.concat(all, "\n")
 end
 
