@@ -158,7 +158,11 @@ for i = 1, #strRegs do
   )
   map('v', "<leader>by" .. i,
     function()
-      local text = rangeUtils.get_selected_text()
+      local selected_text = rangeUtils.get_selected_text()
+      if type(selected_text) == "table" then
+        selected_text = table.concat(selected_text, " ")
+      end
+      local text = selected_text
       local filepath = vim.fn.expand('%:p')
       local line = vim.fn.line('.')
       local col = vim.fn.col('.')

@@ -163,7 +163,10 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Edit",
     function()
-      local selected_text = require("utils.range").get_selected_text()
+      local selected_text = rangeUtils.get_selected_text()
+      if type(selected_text) == "table" then
+        selected_text = table.concat(selected_text, "")
+      end
       if #selected_text == 0 then
         return
       end
@@ -188,7 +191,10 @@ function commands.setup()
   )
   vim.api.nvim_create_user_command("Help",
     function()
-      local selected_text = require("utils.range").get_selected_text()
+      local selected_text = rangeUtils.get_selected_text()
+      if type(selected_text) == "table" then
+        selected_text = table.concat(selected_text, "")
+      end
       if #selected_text == 0 then
         return
       end
@@ -1603,7 +1609,11 @@ function commands.setup()
         -- local mode = vim.fn.mode() -- 得到的都是n沒有辦法區分出v或V
         if col1 ~= 1 then -- 因為如果是V一定是1, 雖然v也以是1，但是一般而言比較少(而且也可以避開，從2開始v就好)
           -- v mode
-          args.fargs[2] = rangeUtils.get_selected_text()
+          local selected_text = rangeUtils.get_selected_text()
+          if type(selected_text) == "table" then
+            selected_text = table.concat(selected_text, "")
+          end
+          args.fargs[2] = selected_text
         end
         args.fargs[3] = line1 .. "-" .. line2
         -- print(args.fargs[2], args.fargs[3])
@@ -1794,10 +1804,14 @@ function commands.setup()
     function(args)
       local random_ns_id = "conceal_" .. vim.fn.rand()
       local emoji = args.fargs[1] or "🫣"
+      local selected_text = rangeUtils.get_selected_text()
+      if type(selected_text) == "table" then
+        selected_text = table.concat(selected_text, "")
+      end
       extmarkUtils.set_conceal( -- 要等ModeChanged才會生效，所以之後v再換回
         random_ns_id,
         {
-          patterns = { rangeUtils.get_selected_text() },
+          patterns = { selected_text },
           conceal = emoji
         }
       )

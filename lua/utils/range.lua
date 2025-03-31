@@ -1,5 +1,6 @@
 local M = {}
 
+--- @return string|table
 function M.get_selected_text()
   local mode = vim.fn.mode()
 
@@ -35,13 +36,16 @@ function M.get_selected_text()
 
   -- 二列
   if line2 - line1 == 1 then
-    return l1 .. l2
+    -- return l1 .. l2
+    return {
+      l1,
+      l2,
+    }
   end
 
   -- 兩列以上
-  local all = { l1, unpack(lines, 2, #lines - 1), l2 }
+  return { l1, unpack(lines, 2, #lines - 1), l2 }
   -- return table.concat(all, "\n")
-  return table.concat(all, "")
 end
 
 return M
