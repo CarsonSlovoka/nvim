@@ -4,6 +4,7 @@ local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
+local rangeUtils = require("utils.range")
 local telescope_bookmark = require "config.telescope_bookmark"
 
 local HOME = os.getenv("HOME")
@@ -641,11 +642,19 @@ local function install_nvim_tree()
   vim.api.nvim_create_user_command("CD",
     function(args)
       local path
-      if #args.args > 0 then
-        local params = vim.split(args.args, " ")
-        path = params[1]
+      if args.range == 0 then
+        if #args.args > 0 then
+          local params = vim.split(args.args, " ")
+          path = params[1]
+        else
+          path = "~"
+        end
       else
-        path = "~"
+        -- range
+        path = rangeUtils.get_selected_text()
+        if type(path) == "table" then
+          path = table.concat(path, "")
+        end
       end
       -- NOTE: 在nvim-tree上做CD的路徑和當前編輯的是不同的工作路徑, 如果有需要可以在nvim-tree: gf 複製絕對路徑後使用CD切換
       vim.cmd("cd " .. path)
@@ -654,7 +663,8 @@ local function install_nvim_tree()
     end,
     {
       nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
-      desc = "更改工作目錄"
+      desc = "更改工作目錄",
+      range = true,
     }
   )
 end
