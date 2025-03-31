@@ -298,6 +298,19 @@ function M.setup(opts)
     }
   )
 
+
+  create_autocmd("LspAttach",
+    {
+      callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client.supports_method("textDocument/completion") then
+          vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+        end
+      end,
+      desc = "cmp 自動補全，打上 `.` 的時候會自動觸發"
+    }
+  )
+
   --[[ 以下是vs2010的mfc專案可能會有這樣的需求，你可以把這段放到 my-customize.lua 自己添加
   (因為不曉得是不是所有rc, rc2都是如此，為了避免有爭議，讓使用者自己在 my-customize.lua 中新增 )
   vim.api.nvim_create_autocmd(

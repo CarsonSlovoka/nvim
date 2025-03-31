@@ -230,78 +230,80 @@ local function install_lspconfig()
   }
 
 
-  -- 新增切換虛擬文本診斷的命令
-  local diagnosticVirtualTextEnable = false
-  vim.api.nvim_create_user_command(
-    "ToggleDiagnosticVirtualText",
-    function(args)
-      if diagnosticVirtualTextEnable then
-        vim.diagnostic.config({
-          virtual_text = false
-        })
-      else
-        -- 診斷訊息顯示在行尾
-        vim.diagnostic.config({
-          virtual_text = {
-            prefix = '●', -- 前綴符號
-            suffix = '',
-            format = function(diagnostic)
-              -- print(vim.inspect(diagnostic))
-              return string.format([[
-  code: %s
-  source: %s
-  message: %s
-]],
-                diagnostic.code,
-                diagnostic.source,
-                diagnostic.message
-              )
-            end,
-          }
-        })
-      end
-      diagnosticVirtualTextEnable = not diagnosticVirtualTextEnable
-      if #args.fargs == 0 then
-        vim.notify("diagnosticVirtualTextEnable: " .. tostring(diagnosticVirtualTextEnable), vim.log.levels.INFO)
-      end
-    end,
-    {
-      nargs = "?",
-      desc = "切換診斷虛擬文本顯示"
-    }
-  )
-  vim.cmd("ToggleDiagnosticVirtualText --quite") -- 因為我的預設值設定為false，所以這樣相當改成預設會啟用
-
-  --- @type number|nil
-  local diagnosticHoverAutocmdId
-  vim.o.updatetime = 250
-  vim.api.nvim_create_user_command(
-    "ToggleDiagnosticHover",
-    function(args)
-      if diagnosticHoverAutocmdId then
-        -- 如果已經存在，則刪除特定的自動命令
-        vim.api.nvim_del_autocmd(diagnosticHoverAutocmdId)
-        diagnosticHoverAutocmdId = nil
-      else
-        -- 創建新的自動命令，並保存其ID
-        diagnosticHoverAutocmdId = vim.api.nvim_create_autocmd(
-          { "CursorHold", "CursorHoldI" }, {
-            callback = function()
-              vim.diagnostic.open_float(nil, { focus = false })
-            end
-          })
-      end
-
-      if #args.fargs == 0 then
-        vim.notify("DiagnosticHoverEnable: " .. tostring(diagnosticHoverAutocmdId ~= nil), vim.log.levels.INFO)
-      end
-    end,
-    {
-      nargs = "?",
-      desc = "切換診斷懸停顯示"
-    }
-  )
-  vim.cmd("ToggleDiagnosticHover --quite")
+  -- 使用virtual_lines比virtualText或者是diagnostic.open_float的方式都好，所以不再需要這些指令
+  --   -- 新增切換虛擬文本診斷的命令
+  --   local diagnosticVirtualTextEnable = false
+  --   vim.api.nvim_create_user_command(
+  --     "ToggleDiagnosticVirtualText",
+  --     function(args)
+  --       if diagnosticVirtualTextEnable then
+  --         vim.diagnostic.config({
+  --           virtual_text = false
+  --         })
+  --       else
+  --         -- 診斷訊息顯示在行尾
+  --         vim.diagnostic.config({
+  --           virtual_text = {
+  --             prefix = '●', -- 前綴符號
+  --             suffix = '',
+  --             format = function(diagnostic)
+  --               -- print(vim.inspect(diagnostic))
+  --               return string.format([[
+  --   code: %s
+  --   source: %s
+  --   message: %s
+  -- ]],
+  --                 diagnostic.code,
+  --                 diagnostic.source,
+  --                 diagnostic.message
+  --               )
+  --             end,
+  --           }
+  --         })
+  --       end
+  --       diagnosticVirtualTextEnable = not diagnosticVirtualTextEnable
+  --       if #args.fargs == 0 then
+  --         vim.notify("diagnosticVirtualTextEnable: " .. tostring(diagnosticVirtualTextEnable), vim.log.levels.INFO)
+  --       end
+  --     end,
+  --     {
+  --       nargs = "?",
+  --       desc = "切換診斷虛擬文本顯示"
+  --     }
+  --   )
+  --   vim.cmd("ToggleDiagnosticVirtualText --quite") -- 因為我的預設值設定為false，所以這樣相當改成預設會啟用
+  --
+  --   --- @type number|nil
+  --   local diagnosticHoverAutocmdId
+  --   vim.o.updatetime = 250
+  --   vim.api.nvim_create_user_command(
+  --     "ToggleDiagnosticHover",
+  --     function(args)
+  --       if diagnosticHoverAutocmdId then
+  --         -- 如果已經存在，則刪除特定的自動命令
+  --         vim.api.nvim_del_autocmd(diagnosticHoverAutocmdId)
+  --         diagnosticHoverAutocmdId = nil
+  --       else
+  --         -- 創建新的自動命令，並保存其ID
+  --         diagnosticHoverAutocmdId = vim.api.nvim_create_autocmd(
+  --           { "CursorHold", "CursorHoldI" }, {
+  --             callback = function()
+  --               vim.diagnostic.open_float(nil, { focus = false })
+  --             end
+  --           })
+  --       end
+  --
+  --       if #args.fargs == 0 then
+  --         vim.notify("DiagnosticHoverEnable: " .. tostring(diagnosticHoverAutocmdId ~= nil), vim.log.levels.INFO)
+  --       end
+  --     end,
+  --     {
+  --       nargs = "?",
+  --       desc = "切換診斷懸停顯示"
+  --     }
+  --   )
+  --   vim.cmd("ToggleDiagnosticHover --quite")
+  vim.diagnostic.config({ virtual_lines = { current_line = true } })
 
   vim.api.nvim_create_user_command(
     "SetDiagnostics",
