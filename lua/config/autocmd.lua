@@ -298,18 +298,36 @@ function M.setup(opts)
     }
   )
 
-
-  create_autocmd("LspAttach",
-    {
-      callback = function(ev)
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-        if client.supports_method("textDocument/completion") then
-          vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
-        end
-      end,
-      desc = "cmp 自動補全，打上 `.` 的時候會自動觸發"
-    }
-  )
+  create_autocmd('LspAttach', {
+    -- https://neovim.io/doc/user/lsp.html
+    desc = "auto-completion. 在`.`的時候會自動觸發補全 Note: Use CTRL-Y to select an item.",
+    group = vim.api.nvim_create_augroup('my.lsp', {}),
+    callback = function(args)
+      local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+      -- if client:supports_method('textDocument/implementation') then
+      --   -- Create a keymap for vim.lsp.buf.implementation ...
+      -- end
+      -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
+      if client:supports_method('textDocument/completion') then
+        -- Optional: trigger autocompletion on EVERY keypress. May be slow!
+        -- local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
+        -- client.server_capabilities.completionProvider.triggerCharacters = chars
+        vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
+      end
+      -- -- Auto-format ("lint") on save.
+      -- -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
+      -- if not client:supports_method('textDocument/willSaveWaitUntil')
+      --     and client:supports_method('textDocument/formatting') then
+      --   vim.api.nvim_create_autocmd('BufWritePre', {
+      --     group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
+      --     buffer = args.buf,
+      --     callback = function()
+      --       vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
+      --     end,
+      --   })
+      -- end
+    end,
+  })
 
   --[[ 以下是vs2010的mfc專案可能會有這樣的需求，你可以把這段放到 my-customize.lua 自己添加
   (因為不曉得是不是所有rc, rc2都是如此，為了避免有爭議，讓使用者自己在 my-customize.lua 中新增 )
