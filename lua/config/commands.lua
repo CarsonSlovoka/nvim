@@ -128,7 +128,7 @@ function commands.setup()
   )
 
 
-  vim.api.nvim_create_user_command("Cmd",
+  vim.api.nvim_create_user_command("Term",
     function(args)
       local direction = "sp"
       if #args.fargs > 0 and args.fargs[1] == "v" then
