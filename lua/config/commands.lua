@@ -950,7 +950,34 @@ function commands.setup()
       desc = "建立新的qflist",
       nargs = 1,
       complete = function()
-        return { "title" }
+        return {
+          string.format("%s", vim.fn.getline('.'):gsub(" ", ""))
+        }
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command("LNew", function(args)
+      local title = args.fargs[1]
+      vim.fn.setloclist(
+        0,   -- nr can be the window number or the window-ID
+        {},
+        ' ', -- If {action} is not present or is set to ' ', then a new list is created
+        {
+          title = title,
+          user_data = {
+            c_time = os.date("%Y/%m/%d %H:%M:%S", os.time())
+          }
+        }
+      )
+    end,
+    {
+      desc = "Create the location list for current window",
+      nargs = 1,
+      complete = function()
+        return {
+          string.format("%s", vim.fn.getline('.'):gsub(" ", ""))
+        }
       end
     }
   )
