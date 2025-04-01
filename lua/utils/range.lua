@@ -1,7 +1,8 @@
 local M = {}
 
+--- @param concat string|nil  "\n", ...
 --- @return string|table
-function M.get_selected_text()
+function M.get_selected_text(concat)
   local mode = vim.fn.mode()
 
   local start_pos
@@ -36,17 +37,21 @@ function M.get_selected_text()
 
   -- 二列
   if line2 - line1 == 1 then
-    return {
-      l_start,
-      l_end,
-    }
+    if concat then
+      return table.concat({ l_start, l_end }, "\n")
+    else
+      return { l_start, l_end, }
+    end
   end
 
   -- 兩列以上
-  print("lines", vim.inspect(lines))
-  print("unpack", vim.inspect(unpack(lines, 2, #lines - 1)))
-  return { l_start, unpack(lines, 2, #lines - 1), l_end }
-  -- return table.concat(all, "\n")
+  -- print("lines", vim.inspect(lines))
+  -- print("unpack", vim.inspect(unpack(lines, 2, #lines - 1)))
+  if concat then
+    return table.concat({ l_start, unpack(lines, 2, #lines - 1), l_end }, concat)
+  else
+    return { l_start, unpack(lines, 2, #lines - 1), l_end }
+  end
 end
 
 return M

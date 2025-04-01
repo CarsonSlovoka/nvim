@@ -832,9 +832,38 @@ function commands.setup()
     {
       nargs = "?",
       desc = "將目前的內容插入到quickfix list清單中的第一筆",
-      -- complete = function()
-      --   return string.format("%s", vim.fn.getline('.')) -- ~~用目前這行的內容當成text訊息~~ 無效
-      -- end
+      complete = function()
+        return { string.format("%s", vim.fn.getline('.')) }
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command("Ladd",
+    function(args)
+      local text
+      if args.range == 0 then
+        if #args.fargs > 0 then
+          text = args.fargs[1]
+        else
+          text = vim.fn.getline('.')
+        end
+      else
+        text = args.fargs[1] or rangeUtils.get_selected_text("")
+      end
+      local filepath = vim.fn.expand('%')
+      local cmd = string.format([[ laddexpr '%s' .. ":" .. line(".") .. ":" .. '%s' ]], filepath, text)
+      print(cmd)
+      vim.cmd(cmd)
+    end,
+    {
+      desc = "將目前的位置使用laddexpr插入",
+      nargs = "?",
+      range = true,
+      complete = function()
+        return {
+          string.format("%s", vim.fn.getline('.'):gsub(" ", "")) -- 用目前這列的內容當成提示
+        }
+      end
     }
   )
 
