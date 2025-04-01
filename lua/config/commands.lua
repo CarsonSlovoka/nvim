@@ -215,10 +215,7 @@ function commands.setup()
   )
   vim.api.nvim_create_user_command("Help",
     function()
-      local selected_text = rangeUtils.get_selected_text()
-      if type(selected_text) == "table" then
-        selected_text = table.concat(selected_text, "")
-      end
+      local selected_text = rangeUtils.get_selected_text("")
       if #selected_text == 0 then
         return
       end
@@ -1861,14 +1858,10 @@ function commands.setup()
     function(args)
       local random_ns_id = "conceal_" .. vim.fn.rand()
       local emoji = args.fargs[1] or "🫣"
-      local selected_text = rangeUtils.get_selected_text()
-      if type(selected_text) == "table" then
-        selected_text = table.concat(selected_text, "")
-      end
       extmarkUtils.set_conceal( -- 要等ModeChanged才會生效，所以之後v再換回
         random_ns_id,
         {
-          patterns = { selected_text },
+          patterns = { rangeUtils.get_selected_text("") },
           conceal = emoji
         }
       )
