@@ -12,7 +12,18 @@ end
 
 local emoji_data = {
   { "⭐", "star" },
-  { "❌", "error" },
+  { "❌",
+    {
+      "crossMark",
+      "error",
+    },
+  },
+  { "✖️",
+    {
+      "multiply",
+      "cross",
+    },
+  },
   { "❓",
     {
       "questionMark",
@@ -38,6 +49,12 @@ local emoji_data = {
     {
       "heartExclamation",
       "exclamationHeart"
+    },
+  },
+  { "❤️",
+    {
+      "redHeart",
+      "heart",
     },
   },
   { "💯",
@@ -302,6 +319,139 @@ local emoji_data = {
       "B",
       "button",
     },
+  },
+  { "🔹",
+    {
+      "smallBlueDiamond",
+      "itemBlueDiamond",
+      "itemDiamond",
+      "item",
+    },
+  },
+  { "🔷",
+    {
+      "largeBlueDiamond",
+      "itemBlueDiamond",
+      "itemDiamond",
+      "item",
+    },
+  },
+  { "🟩",
+    {
+      "greenSquare",
+      "itemGreenSquare",
+      "itemSquare",
+      "item",
+    },
+  },
+  { "🟦",
+    {
+      "blueSquare",
+      "itemBlueSquare",
+      "itemSquare",
+      "item",
+    },
+  },
+  { "🟥",
+    {
+      "redSquare",
+      "itemRedSquare",
+      "itemSquare",
+      "item",
+    },
+  },
+  { "🟧",
+    {
+      "orangeSquare",
+      "itemOrangeSquare",
+      "itemSquare",
+      "item",
+    },
+  },
+  { "🏳️",
+    {
+      "whiteFlag",
+      "flag",
+    },
+  },
+  { "🏴",
+    {
+      "blackFlag",
+      "flag",
+    },
+  },
+  { "🚩",
+    {
+      "triangularFlag",
+      "flag",
+    },
+  },
+  { "🏁",
+    {
+      "chequeredFlag",
+      "flag",
+    },
+  },
+  { "⚔️",
+    {
+      "crossedSwords",
+      "swords",
+    },
+  },
+  { "☠️",
+    {
+      "skullAndCrossbones",
+      "bones",
+      "gameOver",
+      "die",
+      "dead",
+    },
+  },
+  { "♦️",
+    {
+      "diamondSuit",
+      "itemRedDiamond",
+      "itemDiamond",
+      "item",
+      "card",
+    },
+  },
+  {
+    "♣️",
+    {
+      "clubSuit",
+      "card",
+    }
+  },
+  {
+    "♥️",
+    {
+      "heartSuit",
+      "heart",
+      "card",
+    }
+  },
+  {
+    "♠️",
+    {
+      "spadeSuit",
+      "card",
+    }
+  },
+  {
+    "🃏",
+    {
+      "joker",
+      "card",
+    }
+  },
+  {
+    "🎲",
+    {
+      "gameDie",
+      "die",
+      "one",
+    }
   },
 }
 
