@@ -380,6 +380,23 @@ local function setup_visual()
     end
   end, { desc = "切換到檔案目錄" })
 
+  map("v", "<leader>cd",
+    function()
+      local cur_dir = rangeUtils.get_selected_text("")
+      vim.cmd("cd " .. cur_dir)
+      print("工作目錄已切換到: " .. cur_dir)
+      local ok, nvim_treeAPI = pcall(require, "nvim-tree.api")
+      if ok then
+        nvim_treeAPI.tree.change_root(cur_dir)
+        print("nvim-tree 根目錄已更新到: " .. cur_dir)
+      end
+      return "<Esc>" -- 結束visual模式
+    end,
+    {
+      desc = "cd '<,'>",
+      expr = true,
+    })
+
   map('v', '<leader>r', 'y:%s/<C-R>"//gc<Left><Left><Left>',
     { desc = "取代 如果是特定範圍可以改成 :66,100s/old/new/gc (觸發後請直接打上要取代的文字就會看到有command出來了" }
   )
