@@ -184,8 +184,11 @@ map('n', '<leader>gf',
     local original_pos = vim.api.nvim_win_get_cursor(0)
 
     -- 移動到單詞開頭 (B) 和單詞結尾 (E)，提取範圍內的文字
-    vim.cmd("normal! B") -- 移動到單詞開頭
     local start_col = vim.fn.col('.')
+    if tonumber(start_col) ~= 1 then -- 如果是1，就不需要再使用B，這樣反而會跑到上一列去
+      vim.cmd("normal! B")           -- 移動到單詞開頭
+      start_col = vim.fn.col('.')
+    end
     vim.cmd("normal! E") -- 移動到單詞結尾
     local end_col = vim.fn.col('.')
 
@@ -230,7 +233,7 @@ map('n', '<leader>gf',
       end
     end
 
-    if vim.fn.filereadable(path) == 1 then
+    if path and vim.fn.filereadable(path) == 1 then
       -- vim.cmd("edit +" .. lnum .. " " .. path)
       vim.cmd("edit " .. path)
       if lnum then -- 如果沒有lnum，就不使用nvim_win_set_cursor，這是因為edit會自己記得上一次到此檔案的位置，因此應該會比安排到1, 1好
@@ -244,7 +247,7 @@ map('n', '<leader>gf',
     end
   end,
   {
-    desc = "跳轉到書籤, 適用於<leader>byN的產物"
+    desc = "rg --vimgrep時可以做跳轉 或 適用於<leader>byN的產物"
   }
 )
 
