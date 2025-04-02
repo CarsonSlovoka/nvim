@@ -849,7 +849,6 @@ function commands.setup()
       end
       local filepath = vim.fn.expand('%')
       local cmd = string.format([[ laddexpr '%s' .. ":" .. line(".") .. ":" .. '%s' ]], filepath, text)
-      print(cmd)
       vim.cmd(cmd)
     end,
     {
