@@ -1,0 +1,10 @@
+# pack/ 如果用才這樣，底下的!pack都會沒有用
+pack/*
+
+# 如果直接 !pack/schedule/start/ 是沒有用的，它的父一定是要被解開的狀態底下的才能搜到
+!pack/schedule/
+!pack/schedule/start/
+# pack/schedule/start/atq.nvim/doc/* # 錯誤
+# pack/schedule/start/atq.nvim/doc/** # 這個也沒用
+# 以下才是忽略doc整個目錄
+pack/schedule/start/atq.nvim/doc/
