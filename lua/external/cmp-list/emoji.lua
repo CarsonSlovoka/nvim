@@ -168,7 +168,18 @@ local emoji_data = {
       "sunGlasses",
     },
   },
-  { "🤔", "confused" },
+  { "🤔",
+    {
+      "confused",
+      "thinking",
+    },
+  },
+  { "🥳",
+    {
+      "partyFace",
+      "party",
+    },
+  },
   { "🫣",
     {
       "facewithPeekingEye",
