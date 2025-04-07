@@ -350,8 +350,8 @@ local function setup_visual()
   map("v", "J", ":m '>+1<CR>gv=gv", { desc = "將當前選中的文本下移一行" }) -- 如果用了 [TextChanged](https://github.com/CarsonSlovoka/nvim/blob/14828d70377b26c72e4a4239a510200441b18720/lua/config/autocmd.lua#L21)會儲檔，這個可能會變得怪怪的
   map("v", "K", ":m '<-2<CR>gv=gv", { desc = "將當前選中的文本上移一行" })
 
-  map('v', 'find', '""y/<C-R>"<CR>', -- 先將選中的內容保存到""內，之後在用搜尋去找該項目
-    { desc = "搜尋當前選中的項目" })
+  -- map('v', 'find', '""y/<C-R>"<CR>', -- 先將選中的內容保存到""內，之後在用搜尋去找該項目
+  --   { desc = "搜尋當前選中的項目" }) -- 不需要此熱鍵，用*, # 都可以達到此效果, 只是沒有複製到剪貼簿而已
 
   map('x',
     '<leader><F5>',
