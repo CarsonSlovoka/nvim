@@ -106,7 +106,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   ├── other_bookmark.lua           -- (可選) 其他永久書籤
 │   └── ...
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
-├── pack/                            -- git rev-parse --short HEAD | wl-copy
+├── pack/                            -- 🔹 git rev-parse --short HEAD | wl-copy 🔹 git branch -v
 │   ├── syntax/start/
 │   │          ├── nvim-treesitter/             -- ✅ 語法高亮 (v0.9.3... 096babe)
 │   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47)
@@ -133,7 +133,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... 2eca9ba)
 │   │
 │   ├── theme/start/                 -- ✅ 主題相關
-│   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)`
+│   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)
 │   │
 │   ├── edit/start/                  -- ✅ 與編輯相關
 │   │         └── cmp                -- ✅ 自動完成 (主要依靠`<C-X>`)
@@ -144,7 +144,13 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │
 │   ├── schedule/start/                  -- ✅ 排程相關
-│   │         └── ~~atq.nvim~~           -- ⚠  通知提醒 ( 396ed33 ) -- 不需要用到插件，寫一個簡單的command即可完成: https://github.com/CarsonSlovoka/nvim/blob/62f78b8b2f506b1b4a3eff6006b0fcbbcf06c890/lua/config/commands.lua#L1142-L1223
+│   │            └── ~~atq.nvim~~        -- ⚠  通知提醒 ( 396ed33 ) -- 不需要用到插件，寫一個簡單的command即可完成: https://github.com/CarsonSlovoka/nvim/blob/62f78b8b2f506b1b4a3eff6006b0fcbbcf06c890/lua/config/commands.lua#L1142-L1223
+│   │
+│   ├── debug/start/                 -- ✅ debug相關套件集
+│   │         ├── nvim-dap           -- ✅ 一個協議用於neovim上debug等相關事宜(需要再找每一個語言的debug adapter) (v0.10.0... 7aade9e) https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/
+│   │         ├── nvim-dap-ui        -- ✅ 取得 require"dapui" (v4.0.0... bc81f8d)
+│   │         ├── nvim-nio           -- ✅ 此為nvim-dap-ui需要用到的插件 (v1.10.1 21f5324)
+│   │         └── nvim-dap-go        -- ✅ debug adapter: go ( 8763ced)
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -783,6 +789,41 @@ mkdir -pv ~/.config/nvim/pack/edit/start/
 git clone https://github.com/CarsonSlovoka/cmp.git ~/.config/nvim/pack/edit/start/cmp.nvim
 ```
 
+## debug
+
+```sh
+mkdir -pv ~/.config/nvim/pack/debug/start/
+```
+
+### [go-delve](https://github.com/go-delve/delve)
+
+類似於gdb, 不過在go語言上會推薦用go-delve會更好
+
+```sh
+go install github.com/go-delve/delve/cmd/dlv@latest
+dlv version
+# Version: 1.24.1
+# Build: $Id: 7c2184d58d69f0717b8620fdebc56d34174f9945
+```
+
+
+### [nvim-dap](https://github.com/mfussenegger/nvim-dap)
+
+dap(Debug Adapter Protocol), 要有這個才可以在neovim上debug (接著還要自己找每一個語言用的debug adapter)
+
+```sh
+git clone https://github.com/mfussenegger/nvim-dap.git ~/.config/nvim/pack/debug/start/nvim-dap
+```
+
+#### [debug adapter](https://github.com/mfussenegger/nvim-dap/blob/master/doc/dap.txt)
+
+##### go [nvim-dap-go](https://github.com/leoluz/nvim-dap-go)
+
+```sh
+git clone https://github.com/nvim-neotest/nvim-nio.git ~/.config/nvim/pack/debug/start/nvim-nio # nvim-dap-ui需要用到的插件
+git clone https://github.com/rcarriga/nvim-dap-ui.git ~/.config/nvim/pack/debug/start/nvim-dap-ui # require"dapui"
+git clone https://github.com/leoluz/nvim-dap-go.git ~/.config/nvim/pack/debug/start/nvim-dap-go
+```
 
 # [neovide](https://github.com/neovide/neovide)
 

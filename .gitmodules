@@ -54,4 +54,16 @@
 [submodule "cmp.nvim"]
 	path = pack/edit/start/cmp.nvim
 	url = https://github.com/CarsonSlovoka/cmp.nvim.git
+[submodule "debug/nvim-nio"]
+    path = pack/debug/start/nvim-nio
+    url = https://github.com/nvim-neotest/nvim-nio.git
+[submodule "debug/nvim-dap-ui"]
+    path = pack/debug/start/nvim-dap-ui
+    url = https://github.com/rcarriga/nvim-dap-ui.git
+[submodule "debug/nvim-dap-go"]
+    path = pack/debug/start/nvim-dap-go
+    url = https://github.com/leoluz/nvim-dap-go.git
+[submodule "debug/nvim-dap"]
+    path = pack/debug/start/nvim-dap
+    url = https://github.com/mfussenegger/nvim-dap.git
 

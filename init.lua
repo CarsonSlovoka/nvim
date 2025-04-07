@@ -1542,6 +1542,94 @@ local function install_cmp_list()
   -- vim.cmd("SetCmpListEnablePreivewWindow 0")
 end
 
+local function install_nvim_dap()
+  -- :helptags ALL
+  local ok, dap = pcall(require, "dap")
+  if not ok then
+    vim.notify("Failed to load dap", vim.log.levels.ERROR)
+    return
+  end
+  local dapui = require "dapui" -- https://github.com/rcarriga/nvim-dap-ui
+  dapui.setup()
+
+  -- debug adapter
+  ---- go
+  require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/README.md?plain=1#L46-L100
+    -- Additional dap configurations can be added.
+    -- dap_configurations accepts a list of tables where each entry
+    -- represents a dap configuration. For more details do:
+    -- :help dap-configuration
+    dap_configurations = {
+      {
+        -- Must be "go" or it will be ignored by the plugin
+        type = "go",
+        name = "Attach remote",
+        mode = "remote",
+        request = "attach",
+      },
+    },
+    -- delve configurations
+    delve = {
+      -- the path to the executable dlv which will be used for debugging.
+      -- by default, this is the "dlv" executable on your PATH.
+      path = "dlv",
+      -- time to wait for delve to initialize the debug session.
+      -- default to 20 seconds
+      initialize_timeout_sec = 20,
+      -- a string that defines the port to start delve debugger.
+      -- default to string "${port}" which instructs nvim-dap
+      -- to start the process in a random available port.
+      -- if you set a port in your debug configuration, its value will be
+      -- assigned dynamically.
+      port = "${port}",
+      -- additional args to pass to dlv
+      args = {},
+      -- the build flags that are passed to delve.
+      -- defaults to empty string, but can be used to provide flags
+      -- such as "-tags=unit" to make sure the test suite is
+      -- compiled during debugging, for example.
+      -- passing build flags using args is ineffective, as those are
+      -- ignored by delve in dap mode.
+      -- avaliable ui interactive function to prompt for arguments get_arguments
+      build_flags = {},
+      -- whether the dlv process to be created detached or not. there is
+      -- an issue on delve versions < 1.24.0 for Windows where this needs to be
+      -- set to false, otherwise the dlv server creation will fail.
+      -- avaliable ui interactive function to prompt for build flags: get_build_flags
+      detached = vim.fn.has("win32") == 0,
+      -- the current working directory to run dlv from, if other than
+      -- the current working directory.
+      cwd = nil,
+    },
+    -- options related to running closest test
+    tests = {
+      -- enables verbosity when running the test.
+      verbose = false,
+    },
+  }
+
+  vim.keymap.set("n", "<F5>", dap.continue, { desc = "Start/Continue Debugging" })
+  vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step Over" })
+  vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step Into" })
+  vim.keymap.set("n", "<M-F11>", dap.step_out, { desc = "Step Out" })
+  vim.keymap.set("n",
+    "<F9>", -- "<leader>b",
+    dap.toggle_breakpoint,
+    { desc = "Toggle Breakpoint" }
+  )
+  vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Open Debug REPL" })
+
+  dap.listeners.after.event_initialized["dapui_config"] = function()
+    dapui.open()
+  end
+  dap.listeners.before.event_terminated["dapui_config"] = function()
+    dapui.close()
+  end
+  dap.listeners.before.event_exited["dapui_config"] = function()
+    dapui.close()
+  end
+end
+
 require("config.highlight")
 install_nvimTreesitter()
 install_lspconfig()
@@ -1560,6 +1648,7 @@ install_lualine()
 -- install_atq() -- 可以用command: NotifySend 即可
 install_renderMarkdown()
 install_cmp_list()
+install_nvim_dap()
 
 require("global-func")  -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
 
