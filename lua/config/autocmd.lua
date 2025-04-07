@@ -337,7 +337,7 @@ function M.setup(opts)
       -- group = groupName.editorconfig,
       pattern = {
         "rc",
-        "conf" -- "rc2"
+        -- "conf" -- "rc2" -- .ignore的檔案也是conf -- 因此不建議調整，通常這種檔案都會有bom，所以fileencoding如果有ucs-bom是可以直接識別，而不需要特別告知
       },
       callback = function()
         vim.o.fileencoding = "utf-16le"
