@@ -180,56 +180,6 @@ local function install_lspconfig()
     vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
     return
   end
-  m.pyright.setup {}
-  local pyright_path
-  if osUtils.IsWindows then
-    -- 透過powershell的gcm來找pyright.exe的路徑
-    pyright_path = vim.fn.system('powershell -Command "(gcm pyright).Source"')
-  else
-    pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
-  end
-  vim.g.lsp_pyright_path = pyright_path
-  m.gopls.setup {}
-  -- m.tsserver.setup {} Deprecated servers: tsserver -> ts_ls
-  m.ts_ls.setup {} -- javascript/typescript
-
-  -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
-  m.html.setup {}
-  m.cssls.setup {} -- css
-  m.jsonls.setup {}
-
-  m.bashls.setup {}
-
-  m.markdown_oxide.setup {                                              -- 請安裝rust後透過cargo來取得
-    cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
-  }
-  m.clangd.setup {}
-  m.lua_ls.setup {
-    settings = {
-      Lua = {
-        runtime = {
-          version = 'LuaJIT',
-          path = "/usr/bin/lua5.1",
-        },
-        diagnostics = {
-          -- 告訴 LSP `vim` 是一個全域變數
-          globals = { 'vim' },
-          -- disable = { "missing-fields" }, -- hrtime的警告還是會有
-        },
-        workspace = {
-          -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
-          library = vim.api.nvim_get_runtime_file('', true)
-          -- vim.api.nvim_ -- 👈 可以用來測試添加library的結果，如果沒有設定會看到Text並且沒有參數的提示
-        },
-
-        -- Do not send telemetry data containing a randomized but unique identifier
-        telemetry = {
-          enable = false
-        },
-      }
-    }
-  }
-
 
   -- 使用virtual_lines比virtualText或者是diagnostic.open_float的方式都好，所以不再需要這些指令
   --   -- 新增切換虛擬文本診斷的命令
@@ -1647,8 +1597,116 @@ local installs = {
     end,
     delay = 0
   },
-  { name = "nvimTreesitter",  fn = install_nvimTreesitter,  delay = 0 },
-  { name = "lspconfig",       fn = install_lspconfig,       delay = 0 },
+  { name = "nvimTreesitter", fn = install_nvimTreesitter, delay = 0 },
+
+  { name = "lspconfig",      fn = install_lspconfig,      delay = 0 },
+  {
+    name = "lspconfig pyright",
+    fn = function()
+      local pyright_path
+      if osUtils.IsWindows then
+        -- 透過powershell的gcm來找pyright.exe的路徑
+        pyright_path = vim.fn.system('powershell -Command "(gcm pyright).Source"')
+      else
+        pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
+      end
+      vim.g.lsp_pyright_path = pyright_path
+      require("lspconfig").pyright.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig gopls",
+    fn = function()
+      require("lspconfig").gopls.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig ts_ls",
+    fn = function()
+      -- require("lspconfig").tsserver.setup {} Deprecated servers: tsserver -> ts_ls
+      require("lspconfig").ts_ls.setup {} -- javascript/typescript
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig html",
+    fn = function()
+      -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
+      require("lspconfig").html.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig cssls",
+    fn = function()
+      require("lspconfig").cssls.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig jsonls",
+    fn = function()
+      require("lspconfig").jsonls.setup {}
+    end,
+    delay = 1500,
+  },
+
+  {
+    name = "lspconfig bashls",
+    fn = function()
+      require("lspconfig").bashls.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig markdown_oxide",
+    fn = function()
+      require("lspconfig").markdown_oxide.setup {                           -- 請安裝rust後透過cargo來取得
+        cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
+      }
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig clangd",
+    fn = function()
+      require("lspconfig").clangd.setup {}
+    end,
+    delay = 1500,
+  },
+  {
+    name = "lspconfig lua_ls",
+    fn = function()
+      require("lspconfig").lua_ls.setup {
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT',
+              path = "/usr/bin/lua5.1",
+            },
+            diagnostics = {
+              -- 告訴 LSP `vim` 是一個全域變數
+              globals = { 'vim' },
+              -- disable = { "missing-fields" }, -- hrtime的警告還是會有
+            },
+            workspace = {
+              -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
+              library = vim.api.nvim_get_runtime_file('', true)
+              -- vim.api.nvim_ -- 👈 可以用來測試添加library的結果，如果沒有設定會看到Text並且沒有參數的提示
+            },
+            -- Do not send telemetry data containing a randomized but unique identifier
+            telemetry = {
+              enable = false
+            },
+          }
+        }
+      }
+    end,
+    delay = 1500,
+  },
+
   -- { name = "precognition",    fn = install_precognition,    delay = 0 },
   -- { name = "hop",             fn = install_hop,             delay = 0 },
   { name = "gitsigns",        fn = install_gitsigns,        delay = 0 },

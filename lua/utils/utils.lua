@@ -1,3 +1,4 @@
 return {
-  time = require("utils.time")
+  os = require "utils.os",
+  time = require "utils.time",
 }
