@@ -6,7 +6,6 @@ local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
 local rangeUtils = require("utils.range")
 local utils = require("utils.utils")
-local telescope_bookmark = require "config.telescope_bookmark"
 
 local HOME = os.getenv("HOME")
 
@@ -1179,8 +1178,9 @@ local function install_telescope()
     { desc = "用當前選中的文字進行搜尋" }
   )
 
-  vim.api.nvim_create_user_command("TelescopeBookmarks", telescope_bookmark.show, {})
-  vim.keymap.set("n", "<leader>bk", telescope_bookmark.show, { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
+  vim.api.nvim_create_user_command("TelescopeBookmarks", require "config.telescope_bookmark".show, {})
+  vim.keymap.set("n", "<leader>bk", require "config.telescope_bookmark".show,
+    { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
   vim.api.nvim_create_user_command("MyLivegrep", function(args)
     local opt = {}
     local no_auto_dir = false
@@ -1215,7 +1215,7 @@ local function install_telescope()
     --]]
 
     -- print(vim.inspect(telescope_bookmark.table))
-    for _, bookmark in ipairs(telescope_bookmark.table) do
+    for _, bookmark in ipairs(require "config.telescope_bookmark".table) do
       local path = bookmark.path
       local dir
       -- 檢查路徑是否存在
@@ -1306,7 +1306,7 @@ local function install_telescope()
       seen_dirs[dir] = true
     end
 
-    for _, bookmark in ipairs(telescope_bookmark.table) do
+    for _, bookmark in ipairs(require "config.telescope_bookmark".table) do
       local path = bookmark.path
       local dir
       -- 檢查路徑是否存在
@@ -1633,6 +1633,13 @@ local function install_nvim_dap()
 end
 
 local installs = {
+  {
+    name = "config.telescope_bookmark",
+    fn = function()
+      require "config.telescope_bookmark"
+    end,
+    delay = 0
+  },
   {
     name = "config.highlight",
     fn = function()
