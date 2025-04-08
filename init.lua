@@ -5,6 +5,7 @@ local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
 local rangeUtils = require("utils.range")
+local utils = require("utils.utils")
 local telescope_bookmark = require "config.telescope_bookmark"
 
 local HOME = os.getenv("HOME")
@@ -1631,27 +1632,63 @@ local function install_nvim_dap()
   end
 end
 
-require("config.highlight")
-install_nvimTreesitter()
-install_lspconfig()
--- install_precognition()
--- install_hop()
-install_gitsigns()
-install_nvimWebDevicons()
-install_nvim_tree()
-install_telescope()
+local installs = {
+  {
+    name = "config.highlight",
+    fn = function()
+      require("config.highlight")
+    end,
+    delay = 0
+  },
+  { name = "nvimTreesitter",  fn = install_nvimTreesitter,  delay = 0 },
+  { name = "lspconfig",       fn = install_lspconfig,       delay = 0 },
+  -- { name = "precognition",    fn = install_precognition,    delay = 0 },
+  -- { name = "hop",             fn = install_hop,             delay = 0 },
+  { name = "gitsigns",        fn = install_gitsigns,        delay = 0 },
+  { name = "nvimWebDevicons", fn = install_nvimWebDevicons, delay = 0 },
+  { name = "nvim_tree",       fn = install_nvim_tree,       delay = 0 },
+  { name = "telescope",       fn = install_telescope,       delay = 0 },
+  {
+    name = "ibl",
+    fn = function()
+      -- theme
+      -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
+      vim.cmd('colorscheme github_dark_default')
+      install_ibl()
+    end,
+    delay = 3000
+  },
+  { name = "lualine",        fn = install_lualine,        delay = 0 },
+  -- { name = "atq",            fn = install_atq,            delay = 0 }, -- 可以用command: NotifySend 即可
+  { name = "renderMarkdown", fn = install_renderMarkdown, delay = 0 },
+  { name = "cmp_list",       fn = install_cmp_list,       delay = 0 },
+  { name = "nvim_dap",       fn = install_nvim_dap,       delay = 3000 }, -- 延遲 3 秒
+  {
+    name = "global-func",
+    fn = function()
+      require("global-func") -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
+    end,
+    delay = 0
+  },
+}
 
--- theme
--- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
-vim.cmd('colorscheme github_dark_default')
-install_ibl()
-install_lualine()
--- install_atq() -- 可以用command: NotifySend 即可
-install_renderMarkdown()
-install_cmp_list()
-install_nvim_dap()
+local show_time = false
+for _, install in ipairs(installs) do
+  if install.delay > 0 then
+    vim.defer_fn(function()
+      local time_ms = utils.time.it(install.fn)
+      if show_time then
+        print(string.format("%s (deferred) cost: %.5f ms", install.name, time_ms))
+      end
+    end, install.delay)
+  else
+    local time_ms = utils.time.it(install.fn)
+    if show_time then
+      print(string.format("%s cost: %.5f ms", install.name, time_ms))
+    end
+  end
+end
 
-require("global-func")  -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
 
 vim.defer_fn(function() -- 因為裡面要計算出，啟動nvim的時間，所以用defer放到最後才執行
   require("config.menu").setup {
