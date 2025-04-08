@@ -226,6 +226,19 @@ function commands.setup()
       desc = "edit",
     }
   )
+  vim.api.nvim_create_user_command("R",
+    function()
+      local selected_text = rangeUtils.get_selected_text("")
+      if #selected_text == 0 then
+        return
+      end
+      vim.cmd("r! " .. selected_text)
+    end,
+    {
+      range = true,
+      desc = ":r! :read!",
+    }
+  )
 
   vim.api.nvim_create_user_command("SavePNG",
     function(args)
