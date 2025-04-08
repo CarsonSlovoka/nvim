@@ -130,7 +130,13 @@ function M.setup(opts)
           vim.api.nvim_set_hl(0, hl_group, { bg = color })
 
           -- 應用高亮到緩衝區
-          vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col)
+          -- vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col) -- DEPRECATED IN 0.11 https://neovim.io/doc/user/deprecated.html
+          vim.api.nvim_buf_set_extmark(buf, ns_highlight_hex_or_rgb, lnum - 1, start_col,
+            {
+              end_col = end_col,
+              hl_group = hl_group,
+            }
+          )
         end
       end
     end,

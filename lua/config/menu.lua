@@ -245,7 +245,15 @@ vim.api.nvim_buf_add_highlight(buf, 0, "StartupInfo", base_line + 14, padding_le
   -- 應用高亮
   for _, hl in ipairs(highlight_positions) do
     if hl.line_num >= 0 then
-      vim.api.nvim_buf_add_highlight(buf, 0, hl.highlight, hl.line_num, hl.start_col, hl.end_col)
+      -- vim.api.nvim_buf_add_highlight(buf, 0, hl.highlight, hl.line_num, hl.start_col, hl.end_col) -- DEPRECATED IN 0.11 可以用vim.hl.range, vim.api.nvim_buf_set_extmark 這兩個都可以取代
+      local ns_id = vim.api.nvim_create_namespace("menu_highlight")
+      vim.hl.range(buf, ns_id, hl.highlight, { hl.line_num, hl.start_col }, { hl.line_num, hl.end_col }) -- ns_id不可以用0，一定要建立
+      -- vim.api.nvim_buf_set_extmark(buf, ns_id, hl.line_num, hl.start_col,
+      --   {
+      --     end_col = hl.end_col,
+      --     hl_group = hl.highlight,
+      --   }
+      -- ) -- 等同vim.hl.range
     else
       vim.notify("menu的視窗空間不足, 故不使用顏色突顯", vim.log.levels.Info)
       break
