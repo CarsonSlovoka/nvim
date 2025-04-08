@@ -1609,11 +1609,12 @@ local function install_nvim_dap()
   }
 
   vim.keymap.set("n", "<F5>", dap.continue, { desc = "Start/Continue Debugging" })
+  vim.keymap.set("n", "<F17>", dap.terminate, { desc = "Stop debug (Shift+F5)" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
   vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step Over" })
   vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step Into" })
-  vim.keymap.set("n", "<M-F11>", dap.step_out, { desc = "Step Out" })
+  vim.keymap.set("n", "<F23>", dap.step_out, { desc = "Step Out (Shift+F11)" })
   vim.keymap.set("n",
-    "<F9>", -- "<leader>b",
+    "<F9>",
     dap.toggle_breakpoint,
     { desc = "Toggle Breakpoint" }
   )
