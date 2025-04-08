@@ -1,0 +1,5 @@
+pack/*
+!pack/schedule/
+!pack/schedule/start/
+pack/schedule/start/atq.nvim/doc/
+
