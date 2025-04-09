@@ -130,7 +130,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.11.0... 6709463)
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
-│   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... 2eca9ba)
+│   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... a4ed825)
 │   │
 │   ├── theme/start/                 -- ✅ 主題相關
 │   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)
