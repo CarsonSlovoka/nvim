@@ -1670,9 +1670,20 @@ local installs = {
     delay = 1500,
   },
   {
+
+    -- https://github.com/neovim/nvim-lspconfig/blob/9ae789e/doc/configs.md#clangd
+    -- https://gist.github.com/gelldur/d7bc3ea226aebcf8cc879df1e8524236
+    -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html
     name = "lspconfig clangd",
     fn = function()
-      require("lspconfig").clangd.setup {}
+      require("lspconfig").clangd.setup { -- 格式化不與vim.o.shiftwidth有關，而是要吃.clang-format或者額外取代
+        cmd = {
+          -- https://www.reddit.com/r/neovim/comments/16qwp3d/clangd_autoindents_to_2_tabs_instead_of_4/?rdt=41934
+          "clangd",
+          "--fallback-style=webkit", -- https://www.webkit.org/code-style-guidelines/
+          -- webkit的風格indent size: 4
+        }
+      }
     end,
     delay = 1500,
   },
