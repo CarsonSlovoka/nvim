@@ -273,7 +273,8 @@ local function setup_normal()
         vim.log.levels.INFO
       )
     end,
-    { desc = "格式化代碼" }
+    -- 有可能該lsp服務器還沒有載入，就會導致抓不到而錯誤，如果沒有用:e只是單純的切換視窗會因為緩存的關係，還是會失敗，所以一定要用:e來重載即可
+    { desc = "格式化代碼, 如果遇到 Format request failed, nomatching language servers. 請用:e來重新載入" }
   )
 
   -- 以下可行，但用預設的會比較好
