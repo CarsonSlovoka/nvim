@@ -221,8 +221,10 @@ function M.setup(opts)
               -- end
               vim.fn.setpos(mark.mark, mark.pos)
             end
-
-            vim.notify("lsp.buf.format done", vim.log.levels.INFO)
+            vim.notify(
+              string.format("%s lsp.buf.format done ", os.date("%Y-%m-%d %H:%M:%S")),
+              vim.log.levels.INFO
+            )
           else
             -- vim.notify("No LSP formatter available for current file, skipping format", vim.log.levels.WARN)
           end

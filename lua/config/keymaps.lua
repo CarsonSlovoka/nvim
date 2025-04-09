@@ -268,7 +268,10 @@ local function setup_normal()
         timeout_ms = 3000,
         -- range -- 整列的選取模式，只會格式化選取的行
       })
-      vim.notify("格式化結束", vim.log.levels.INFO)
+      vim.notify(
+        string.format("%s lsp.buf.format done ", os.date("%Y-%m-%d %H:%M:%S")),
+        vim.log.levels.INFO
+      )
     end,
     { desc = "格式化代碼" }
   )
