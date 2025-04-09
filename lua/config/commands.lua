@@ -6,6 +6,7 @@ local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
 local rangeUtils = require("utils.range")
 local extmarkUtils = require("utils.extmark")
+local utils = require("utils.utils")
 
 local commands = {}
 
@@ -130,17 +131,24 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Term",
     function(args)
-      local direction = "sp"
-      if #args.fargs > 0 and args.fargs[1] == "v" then
-        direction = "vsp"
-      end
+      local para = utils.flag.parse(args.args)
+      local direction = para.opts["direction"] or "sp"
+
 
       -- 獲取當前文件
-      local filepath = vim.fn.expand('%:p')     -- 當前文件的完整路徑
+      local filepath = para.params[1] or vim.fn.expand('%:p') -- 當前文件的完整路徑
       if filepath == '' then
-        print("No file in the current buffer!") -- 提示用戶當前緩存沒文件
+        print("No file in the current buffer!")               -- 提示用戶當前緩存沒文件
         return
       end
+
+      filepath = vim.fn.expand(filepath) -- 處理自輸入可能用~的清況
+      local exists = vim.loop.fs_stat(filepath)
+      if not exists then
+        vim.notify("invalid work dir: " .. filepath, vim.log.levels.ERROR)
+        return
+      end
+
       local cwd
       if vim.fn.isdirectory(filepath) == 1 then
         cwd = filepath                           -- 如果是目錄，直接設為 cwd
@@ -151,11 +159,14 @@ function commands.setup()
       vim.cmd('startinsert') -- 自動切換到 Insert 模式
     end,
     {
-      nargs = "?",
-      complete = function()
-        return {
-          "v"
-        }
+      nargs = "*",
+      complete = function(arg_lead)
+        if arg_lead:match("^%-%-") then
+          return utils.cmd.get_complete_list(arg_lead, {
+            direction = { "vsp", "sp" },
+          })
+        end
+        return completion.getDirOnly(arg_lead)
       end,
       desc = "在當前路徑開啟terminal"
     }
