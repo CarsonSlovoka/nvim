@@ -272,9 +272,14 @@ local function setup_normal()
         string.format("%s lsp.buf.format done ", os.date("%Y-%m-%d %H:%M:%S")),
         vim.log.levels.INFO
       )
+      -- return "<Esc>" -- 結束visual -- 我用expr=true配合這個會錯，估計和裡面的函數實作也有關
+      vim.api.nvim_input('<C-\\><C-n>') -- 強制回到 normal 模式
     end,
     -- 有可能該lsp服務器還沒有載入，就會導致抓不到而錯誤，如果沒有用:e只是單純的切換視窗會因為緩存的關係，還是會失敗，所以一定要用:e來重載即可
-    { desc = "格式化代碼, 如果遇到 Format request failed, nomatching language servers. 請用:e來重新載入" }
+    {
+      desc = "格式化代碼, 如果遇到 Format request failed, nomatching language servers. 請用:e來重新載入",
+      -- expr = true,
+    }
   )
 
   -- 以下可行，但用預設的會比較好
