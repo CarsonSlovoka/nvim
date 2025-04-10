@@ -1491,10 +1491,11 @@ local function install_cmp_list()
   --   }
   -- )
 
-  m.config.presets["_global"] = utils.array.Merge(
-    m.config.presets._global,
-    require('external.cmp-list.boshiamy')
-  )
+  -- 🧙 👇 可以用以下的方式在自定的lua檔案新增，例如: my-customize 新增自定義的嘸蝦米查找列表
+  -- require("cmp-list").config.presets["_global"] = require("utils.utils").array.Merge(
+  --   require("cmp-list").config.presets._global,
+  --   require('external.cmp-list.boshiamy').setup({ { "觀察", "rmr nja" }, { "觀看", "rmr hmo" }, })
+  -- )
   -- print(vim.inspect(m.config.presets["_global"]))
 
   local mWindow = require("cmp-list.window")

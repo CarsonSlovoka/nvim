@@ -10,12 +10,6 @@ function boshiamy:new(word, kind, abbr)
   }, self)
 end
 
-local my_table = {
-  { "觀察", "rmr nja" },
-  { "觀看", "rmr hmo" },
-}
-
-
 -- 函數：將字符串按空格分隔成表
 local function split(str)
   local result = {}
@@ -45,26 +39,36 @@ end
 local char_to_code = {}
 
 local M = {}
-for _, entry in ipairs(my_table) do
-  local word = entry[1]           -- 中文詞彙
-  local codes = entry[2]          -- 碼位字符串
-  local chars = split_chars(word) -- 將詞彙拆成單字
-  local code_list = split(codes)  -- 將碼位拆成列表
 
-  -- 確保字數和碼位數匹配
-  if #chars == #code_list then
-    for i, char in ipairs(chars) do
-      -- 如果該字還沒記錄過，加入結果
-      if not char_to_code[char] then
-        char_to_code[char] = 1 -- 記錄出現了幾次
-      else
-        char_to_code[char] = char_to_code[char] + 1
-        char = char .. "_" .. char_to_code[char]                -- 相同的word，就算都插入到table之中，還是只能出現一筆，因此為了都可以呈現，就將後面的用_%d來表示
+--- setup 將傳入的table轉換為 :help complete-items 的對像
+--- @param t table ex: { { "觀察", "rmr nja" }, { "觀看", "rmr hmo" }, }
+function M.setup(t)
+  local boshiamy_table = {}
+  for _, entry in ipairs(t) do
+    local word = entry[1]           -- 中文詞彙
+    local codes = entry[2]          -- 碼位字符串
+    local chars = split_chars(word) -- 將詞彙拆成單字
+    local code_list = split(codes)  -- 將碼位拆成列表
+
+    -- 確保字數和碼位數匹配
+    if #chars == #code_list then
+      for i, char in ipairs(chars) do
+        -- 如果該字還沒記錄過，加入結果
+        if not char_to_code[char] then
+          char_to_code[char] = 1 -- 記錄出現了幾次
+        else
+          char_to_code[char] = char_to_code[char] + 1
+          char = char ..
+              "_" ..
+              char_to_code[char]                                  -- 相同的word，就算都插入到table之中，還是只能出現一筆，因此為了都可以呈現，就將後面的用_%d來表示
+        end
+        local code = code_list[i]                                 -- 輸入法碼位
+        local kind = string.format("%s %s %s", char, word, codes) -- 這個用來提示
+        table.insert(boshiamy_table, boshiamy:new(char, kind, code))
       end
-      local code = code_list[i]                                 -- 輸入法碼位
-      local kind = string.format("%s %s %s", char, word, codes) -- 這個用來提示
-      table.insert(M, boshiamy:new(char, kind, code))
     end
   end
+  return boshiamy_table
 end
+
 return M
