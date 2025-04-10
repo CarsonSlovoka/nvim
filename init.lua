@@ -1478,6 +1478,25 @@ local function install_cmp_list()
     end
   })
 
+  -- 如果有需要可以用以下的方式在不同的lua檔案新增自己要的內容
+  -- m.config.presets["text"] = utils.array.Merge(
+  --   {
+  --     { word = 'a123', kind = "test" },
+  --   }
+  -- )
+  -- m.config.presets["_global"] = utils.array.Merge(
+  --   m.config.presets._global,
+  --   {
+  --     { word = 'test12345', kind = "abcd" },
+  --   }
+  -- )
+
+  m.config.presets["_global"] = utils.array.Merge(
+    m.config.presets._global,
+    require('external.cmp-list.boshiamy')
+  )
+  -- print(vim.inspect(m.config.presets["_global"]))
+
   local mWindow = require("cmp-list.window")
   vim.keymap.set(
     "n",
