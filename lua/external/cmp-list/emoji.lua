@@ -44,6 +44,12 @@ local emoji_data = {
   },
   { "⚠", "warning" },
   { "🎉", "ya" },
+  { "🎇",
+    {
+      "sparkler",
+      "ya"
+    },
+  },
   { "❗", "exclamation" },
   { "❣️",
     {
@@ -54,6 +60,12 @@ local emoji_data = {
   { "❤️",
     {
       "redHeart",
+      "heart",
+    },
+  },
+  { "💖",
+    {
+      "sparklingHeart",
       "heart",
     },
   },
@@ -131,7 +143,13 @@ local emoji_data = {
   },
   { "📝", "memo" },
   { "📢", "announcement" },
-  { "😅", "sorry" },
+  { "😅",
+    {
+      "griningFaceWithSweat",
+      "sweat",
+      "sorry",
+    },
+  },
   { "😡", "angry" },
   { "😢",
     {
@@ -143,6 +161,19 @@ local emoji_data = {
     {
       "loudlyCryingFace",
       "crying",
+    },
+  },
+  { "😵‍💫",
+    {
+      "facewithSpiralEyes",
+      "dizzy",
+    },
+  },
+  { "😰",
+    {
+      "anxiousFaceWithSweat",
+      "sweat",
+      "bad",
     },
   },
   { "🥺",
@@ -162,6 +193,34 @@ local emoji_data = {
   { "😊", "smilingWithSmilingEyes" },
   { "😊", "smilingFacewithHalo" },
   { "😇", "pleadingFace" },
+  { "🤣",
+    {
+      "rollingOnTheFloorLaughing",
+      "laughing",
+      "happy",
+    },
+  },
+  { "😵",
+    {
+      "faceWithCrossedOutEyes",
+      "xd",
+    },
+  },
+  { "😆",
+    {
+      "grinningSquintingFace",
+      "smile",
+      "happy",
+      "xd",
+    },
+  },
+  { "😝",
+    {
+      "squintingFaceWithTongue",
+      "tongue",
+      "xd",
+    },
+  },
   { "😎",
     {
       "smilingFaceWithSunGlasses",
@@ -185,6 +244,29 @@ local emoji_data = {
       "facewithPeekingEye",
       "peek",
       "hide",
+    },
+  },
+  { "🫠",
+    {
+      "meltingFace",
+      "happy",
+    },
+  },
+  { "😑",
+    {
+      "expressionlessFace",
+    },
+  },
+  { "😈",
+    {
+      "smilingFaceWithHorns",
+      "evil",
+      "haha",
+    },
+  },
+  { "👻",
+    {
+      "ghost",
     },
   },
   { "🙏", "please" },
@@ -222,6 +304,80 @@ local emoji_data = {
     {
       "fast",
       "lighting",
+    },
+  },
+  { "👾",
+    {
+      "alienMonster",
+      "monster",
+    },
+  },
+  { "🐞",
+    {
+      "ladyBeetle",
+      "bug",
+    },
+  },
+  { "🐛",
+    {
+      "bug",
+    },
+  },
+  { "🦂",
+    {
+      "scorpion",
+      "poison",
+      "bug",
+    },
+  },
+  { "🕷️",
+    {
+      "spider",
+      "bug",
+    },
+  },
+  { "🐝",
+    {
+      "honeybee",
+      "bee",
+      "bug",
+    },
+  },
+  { "🐜",
+    {
+      "ant",
+    },
+  },
+  { "🐌",
+    {
+      "snail",
+      "slow",
+    },
+  },
+  { "🐸",
+    {
+      "frog",
+    },
+  },
+  { "🐢",
+    {
+      "turtle",
+    },
+  },
+  { "🦋",
+    {
+      "butterfly",
+      "fly",
+    },
+  },
+  { "🐢",
+    {
+      "turtle",
+    },
+  },
+  { "🐉",
+    {
+      "dragon",
     },
   },
   { "🌈", "rainbow" },
@@ -440,6 +596,14 @@ local emoji_data = {
       "heartSuit",
       "heart",
       "card",
+    }
+  },
+  {
+    "❤️‍🔥",
+    {
+      "heartOnFire",
+      "fireHeart",
+      "heart",
     }
   },
   {
