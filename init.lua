@@ -175,11 +175,19 @@ end
 
 
 local function install_lspconfig()
+  -- ⭐ 如果你的neovim是透過source來生成，那麼所有內建的lua都會被放到 /usr/share/nvim/runtime/lua 目錄下，例如:
+  --        ~/neovim/runtime/lua/vim/lsp.lua  # 假設你的neovim是clone到家目錄下，那麼此lsp.lua由source建立完成之後，就會被放到以下的目錄
+  -- /usr/share/nvim/runtime/lua/vim/lsp.lua  # 而這些檔案正是nvim啟動時候會載入的檔案，如果你真想要debug，可以直接修改這些檔案來print出一些想要看到的資訊
   local ok, m = pcall(require, "lspconfig")
   if not ok then
     vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
     return
   end
+
+  -- 🧙 ~/.local/state/nvim/lsp.log -- 在:checkhealth其實就可以看到log的路徑和目前log所佔的大小
+  -- :h vim.lsp.log_levels
+  -- vim.lsp.set_log_level("ERROR") -- 這樣可行，但我覺得用字串不太好
+  -- vim.lsp.set_log_level(vim.log.levels.OFF) -- 可以改用變數 -- 🧙 如果有需要可以自己加在my-customize.lua之中
 
   -- 使用virtual_lines比virtualText或者是diagnostic.open_float的方式都好，所以不再需要這些指令
   --   -- 新增切換虛擬文本診斷的命令
@@ -1631,7 +1639,12 @@ local installs = {
         pyright_path = vim.fn.expand('~/.pyenv/shims/pyright')
       end
       vim.g.lsp_pyright_path = pyright_path
-      require("lspconfig").pyright.setup {}
+      -- require("lspconfig").pyright.setup {} -- legacy https://github.com/neovim/nvim-lspconfig/blob/81920264a264144bd075f7f48f0c4356fc2c6236/README.md?plain=1#L34-L41
+      vim.lsp.enable('pyright')
+      vim.lsp.config('pyright',
+        require("lspconfig.configs.pyright") -- 預設用的cmd為pyright-langserver --stdio
+      )                                      -- https://github.com/neovim/nvim-lspconfig/blob/ecb74c22b4a6c41162153f77e73d4ef645fedfa0/lsp/pyright.lua#L36-L67
+      -- https://github.com/neovim/nvim-lspconfig/blob/81920264a264144bd075f7f48f0c4356fc2c6236/README.md?plain=1#L108-L120
     end,
     delay = 1500,
   },
