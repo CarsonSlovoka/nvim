@@ -113,7 +113,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
-│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v1.8.0... 9ae789e)
+│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v2.0.0... 8192026)
 │   │
 │   ├── git/start/                   -- ✅ git
 │   │       │
@@ -376,7 +376,7 @@ pyenv global 3.13.0
 # 安裝pyright
 pip install pyright
 pip freeze | grep pyright
-# pyright==1.1.391
+# pyright==1.1.399
 which pyright | wl-copy
 # vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑
 ```
