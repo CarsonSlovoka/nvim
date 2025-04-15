@@ -369,6 +369,17 @@ emoji_data.G.plant = {
   }
 }
 
+emoji_data.G.food = {
+  name = { "food", "snack" },
+  items = {
+    { "🍿",
+      {
+        "popcorn",
+      },
+    },
+  }
+}
+
 emoji_data.G._other = {
   name = "",
   items = {
@@ -761,8 +772,18 @@ for _, group in pairs(emoji_data.G) do
         end
       end
     end
+
     if group.name ~= "" then
-      table.insert(M, emoji:new(word, group.name)) -- 每一個項目的abbr也套用群組的名稱
+      -- 每一個項目的abbr也套用群組的名稱
+      if type(group.name) == "string" then
+        table.insert(M, emoji:new(word, group.name))
+      else
+        if type(group.name) == "table" then
+          for _, name in ipairs(group.name) do
+            table.insert(M, emoji:new(word, name))
+          end
+        end
+      end
     end
   end
 end
