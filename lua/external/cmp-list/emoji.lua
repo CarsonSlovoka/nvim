@@ -372,6 +372,13 @@ emoji_data.G.plant = {
 emoji_data.G.action = {
   alias = { "action" },
   items = {
+    { "⏳",
+      {
+        "hourglassNotDone",
+        "loading",
+        "waiting",
+      },
+    },
     { "💤",
       {
         "zzz",
