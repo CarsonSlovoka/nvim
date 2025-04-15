@@ -15,7 +15,7 @@ local emoji_data = {
 }
 
 emoji_data.G.hand = {
-  name = "hand", -- group name
+  alias = "hand",
   items = {
     { "👍",
       {
@@ -95,7 +95,7 @@ emoji_data.G.hand = {
 }
 
 emoji_data.G.heart = {
-  name = "heart",
+  alias = "heart",
   items = {
     { "❣️",
       {
@@ -125,7 +125,7 @@ emoji_data.G.heart = {
 }
 
 emoji_data.G.flag = {
-  name = "flag",
+  alias = "flag",
   items = {
     { "🏳️",
       {
@@ -155,7 +155,7 @@ emoji_data.G.flag = {
 }
 
 emoji_data.G.face = {
-  name = "face",
+  alias = "face",
   items = {
     { "😅",
       {
@@ -275,7 +275,7 @@ emoji_data.G.face = {
 }
 
 emoji_data.G.animal = {
-  name = "animal",
+  alias = "animal",
   items = {
     { "🐞",
       {
@@ -350,7 +350,7 @@ emoji_data.G.animal = {
 }
 
 emoji_data.G.plant = {
-  name = "plant",
+  alias = "plant",
   items = {
     { "🌱", "seedling" },
     { "🌳",
@@ -370,7 +370,7 @@ emoji_data.G.plant = {
 }
 
 emoji_data.G.food = {
-  name = { "food", "snack" },
+  alias = { "food", "snack" },
   items = {
     { "🍿",
       {
@@ -381,7 +381,7 @@ emoji_data.G.food = {
 }
 
 emoji_data.G._other = {
-  name = "",
+  alias = "",
   items = {
     { "⭐", "star" },
     { "❌",
@@ -773,14 +773,14 @@ for _, group in pairs(emoji_data.G) do
       end
     end
 
-    if group.name ~= "" then
-      -- 每一個項目的abbr也套用群組的名稱
-      if type(group.name) == "string" then
-        table.insert(M, emoji:new(word, group.name))
+    if group.alias ~= "" then
+      -- 每一個項目的abbr也套用該群組所有的別名
+      if type(group.alias) == "string" then
+        table.insert(M, emoji:new(word, group.alias))
       else
-        if type(group.name) == "table" then
-          for _, name in ipairs(group.name) do
-            table.insert(M, emoji:new(word, name))
+        if type(group.alias) == "table" then
+          for _, alias in ipairs(group.alias) do
+            table.insert(M, emoji:new(word, alias))
           end
         end
       end
