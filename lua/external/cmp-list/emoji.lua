@@ -377,6 +377,18 @@ emoji_data.G.action = {
         "zzz",
       },
     },
+    { "↩️",
+      {
+        "rightArrowCurvingLeft",
+        "back",
+      },
+    },
+    { "🔄",
+      {
+        "counterclockwiseArrowsButton",
+        "refresh",
+      },
+    },
   }
 }
 
@@ -391,10 +403,37 @@ emoji_data.G.food = {
   }
 }
 
+emoji_data.G.mood = {
+  alias = { "mood", "feeling" },
+  items = {
+    { "💢",
+      {
+        "angerSymbol",
+        "angry",
+      },
+    },
+  }
+}
+
 emoji_data.G._other = {
   alias = "",
   items = {
     { "⭐", "star" },
+    { "🔚",
+      {
+        "end",
+        "exit",
+        "quit",
+      },
+    },
+    { "⛔",
+      {
+        "noEntry",
+        "ban",
+        "disable",
+        "stop",
+      },
+    },
     { "❌",
       {
         "crossMark",
@@ -411,6 +450,11 @@ emoji_data.G._other = {
       {
         "questionMark",
         "red question mark",
+      },
+    },
+    { "🆗",
+      {
+        "ok",
       },
     },
     { "✅",
