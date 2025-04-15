@@ -183,7 +183,7 @@ function M.setup(opts)
           end
 
           -- lsp格式化 和 保存標籤
-          if has_formatter and vim.bo.filetype == "python" then                         -- 這部份是保存標籤，而由於python是用外部工具來格式化，保存標籤的這段不適用它
+          if has_formatter and vim.bo.filetype ~= "python" then                         -- 這部份是保存標籤，而由於python是用外部工具來格式化，保存標籤的這段不適用它
             -- 保存當前所有用戶定義的標記 (a-z, A-Z)
             local marks = vim.fn.getmarklist('%')                                       -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
             for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^.", ".") do -- 大寫的用這樣來取得
