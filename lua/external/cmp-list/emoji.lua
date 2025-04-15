@@ -11,713 +11,758 @@ function emoji:new(word, abbr)
 end
 
 local emoji_data = {
-  { "⭐", "star" },
-  { "❌",
-    {
-      "crossMark",
-      "error",
-    },
-  },
-  { "✖️",
-    {
-      "multiply",
-      "cross",
-    },
-  },
-  { "❓",
-    {
-      "questionMark",
-      "red question mark",
-    },
-  },
-  { "✅",
-    {
-      "check",
-      "ok",
-    },
-  },
-  { "⚠", "warning" },
-  { "🎉", "ya" },
-  { "🎇",
-    {
-      "sparkler",
-      "ya"
-    },
-  },
-  { "❗", "exclamation" },
-  { "❣️",
-    {
-      "heartExclamation",
-      "exclamationHeart"
-    },
-  },
-  { "❤️",
-    {
-      "redHeart",
-      "heart",
-    },
-  },
-  { "💖",
-    {
-      "sparklingHeart",
-      "heart",
-    },
-  },
-  { "💯",
-    {
-      "hundredPoints",
-      "100points",
-    },
-  },
-  { "💥",
-    {
-      "collision",
-      "explode",
-      "boom",
-    },
-  },
-  { "⁉️",
-    {
-      "exclamationQuestion",
-      "questionExclamation",
-    },
-  },
-  { "🔎",
-    {
-      "magnifyingGlassTiltedright",
-    },
-  },
-  { "🕵️‍♂️",
-    {
-      "manDetective",
-      "detective",
-      "letMeSee",
-    },
-  },
-  { "👍",
-    {
-      "thumbsUp",
-      "like",
-    },
-  },
-  { "👍",
-    {
-      "thumbsUp",
-      "like",
-    },
-  },
-  { "👎",
-    {
-      "thumbsDown",
-      "dislike",
-    },
-  },
-  { "👌",
-    {
-      "okHand",
-      "ok",
-    },
-  },
-  { "👆",
-    {
-      "ptUp",
-      "potintingUp",
-      "up",
-    },
-  },
-  { "👇",
-    {
-      "ptDown",
-      "down",
-    },
-  },
-  { "👈",
-    {
-      "ptLeft",
-      "left",
-    },
-  },
-  { "👉",
-    {
-      "ptRight",
-      "right",
-    },
-  },
-  { "🙏", "please" },
-  { "👊",
-    {
-      "oncomingFist",
-      "fist",
-      "punch",
-    },
-  },
-  { "💪",
-    {
-      "flexedBiceps",
-      "strong",
-    },
-  },
-  { "🤙",
-    {
-      "callMeHand",
-      "hand",
-    },
-  },
-  { "🤝",
-    {
-      "handshake",
-      "deal",
-      "hand",
-    },
-  },
-  { "", "handshake" },
-  { "←", "arLeft" }, -- arrow
-  { "↑", "arUp" },
-  { "→", "arRight" },
-  { "↓", "arDown" },
-  { "💡",
-    {
-      "lightBulb",
-      "tip",
-      "idea",
-    },
-  },
-  { "🚀", "rocket" },
-  { "🧙", "mage" },
-  { "🐘", "elephant" },
-  { "📁", "folder" },
-  { "📂", "folderOpen" },
-  { "📦",
-    {
-      "package",
-      "box",
-    },
-  },
-  { "🥡",
-    {
-      "takeoutBox",
-      "box",
-    },
-  },
-  { "📝", "memo" },
-  { "📄",
-    {
-      "pageFacingUp",
-      "newFile",
-      "file",
-    },
-  },
-  { "⚙️",
-    {
-      "gear",
-      "settings",
-    },
-  },
-  { "📢", "announcement" },
-  { "💬",
-    {
-      "speechBallon",
-      "speech",
-      "saySomething",
-    },
-  },
-  { "👀",
-    {
-      "eyes",
-      "look",
-      "peek",
-    },
-  },
-  { "👁️‍🗨️",
-    {
-      "eyeInSpeechBubble",
-      "look",
-      "peek",
-    },
-  },
-  { "😅",
-    {
-      "griningFaceWithSweat",
-      "sweat",
-      "sorry",
-    },
-  },
-  { "😡", "angry" },
-  { "😢",
-    {
-      "cryingFace",
-      "sad",
-    },
-  },
-  { "😭",
-    {
-      "loudlyCryingFace",
-      "crying",
-    },
-  },
-  { "😵‍💫",
-    {
-      "facewithSpiralEyes",
-      "dizzy",
-    },
-  },
-  { "😰",
-    {
-      "anxiousFaceWithSweat",
-      "sweat",
-      "bad",
-    },
-  },
-  { "🥺",
-    {
-      "pleadingFace",
-      "please",
-    },
-  },
-  { "🥹",
-    {
-      "faceHoldingBackTears",
-      "pleadingFace",
-      "thanks",
-    },
-  },
-  { "🙂", "smiling" },
-  { "😊", "smilingWithSmilingEyes" },
-  { "😊", "smilingFacewithHalo" },
-  { "😇", "pleadingFace" },
-  { "🤣",
-    {
-      "rollingOnTheFloorLaughing",
-      "laughing",
-      "happy",
-    },
-  },
-  { "😵",
-    {
-      "faceWithCrossedOutEyes",
-      "xd",
-    },
-  },
-  { "😆",
-    {
-      "grinningSquintingFace",
-      "smile",
-      "happy",
-      "xd",
-    },
-  },
-  { "😝",
-    {
-      "squintingFaceWithTongue",
-      "tongue",
-      "xd",
-    },
-  },
-  { "😎",
-    {
-      "smilingFaceWithSunGlasses",
-      "sunGlasses",
-    },
-  },
-  { "🤔",
-    {
-      "confused",
-      "thinking",
-    },
-  },
-  { "🥳",
-    {
-      "partyFace",
-      "party",
-    },
-  },
-  { "🫣",
-    {
-      "facewithPeekingEye",
-      "peek",
-      "hide",
-    },
-  },
-  { "🫠",
-    {
-      "meltingFace",
-      "happy",
-    },
-  },
-  { "😑",
-    {
-      "expressionlessFace",
-    },
-  },
-  { "😈",
-    {
-      "smilingFaceWithHorns",
-      "evil",
-      "haha",
-    },
-  },
-  { "👻",
-    {
-      "ghost",
-    },
-  },
-  { "🙇",
-    {
-      "personBowing",
-      "please",
-      "sorry",
-    },
-  },
-  { "🔥", "fire" },
-  { "🔑", "key" },
-  { "🔒", "locked" },
-  { "✨",
-    {
-      "sparkles",
-      "features",
-    },
-  },
-  { "⚡",
-    {
-      "fast",
-      "lighting",
-    },
-  },
-  { "👾",
-    {
-      "alienMonster",
-      "monster",
-    },
-  },
-  { "🐞",
-    {
-      "ladyBeetle",
-      "bug",
-    },
-  },
-  { "🐛",
-    {
-      "bug",
-    },
-  },
-  { "🦂",
-    {
-      "scorpion",
-      "poison",
-      "bug",
-    },
-  },
-  { "🕷️",
-    {
-      "spider",
-      "bug",
-    },
-  },
-  { "🐝",
-    {
-      "honeybee",
-      "bee",
-      "bug",
-    },
-  },
-  { "🐜",
-    {
-      "ant",
-    },
-  },
-  { "🐌",
-    {
-      "snail",
-      "slow",
-    },
-  },
-  { "🐸",
-    {
-      "frog",
-    },
-  },
-  { "🐢",
-    {
-      "turtle",
-    },
-  },
-  { "🦋",
-    {
-      "butterfly",
-      "fly",
-    },
-  },
-  { "🐢",
-    {
-      "turtle",
-    },
-  },
-  { "🐉",
-    {
-      "dragon",
-    },
-  },
-  { "🌈", "rainbow" },
-  { "🌳",
-    {
-      "deciduousTree",
-      "tree",
-    },
-  },
-  { "🌲",
-    {
-      "evergreenTree",
-      "christmas",
-      "tree",
-    },
-  },
-  { "🧊",
-    {
-      "ice",
-      "cold",
-    },
-  },
-  { "❄️",
-    {
-      "snowflake",
-      "christmas",
-      "ice",
-    },
-  },
-  { "☃️",
-    {
-      "snowman",
-      "christmas",
-    },
-  },
-  { "⛄",
-    {
-      "snowmanWithoutSnow",
-      "christmas",
-    },
-  },
-  { "🎅",
-    {
-      "santaClaus",
-      "christmas",
-    },
-  },
-  { "🌱", "seedling" },
-  { "♻️", "recycle" },
-  { "🚮",
-    {
-      "LitterInBinsign",
-      "trash",
-      "recycle",
-    },
-  },
-  { "🗑️",
-    {
-      "wastebasket",
-      "trash",
-      "recycle",
-    },
-  },
-  { "🏠", "home" },
-  { "🏰", "castle" },
-  { "🏯", "castleJapanese" },
-  { "🔗", "link" },
-  { "⚓", "anchor" },
-  { "🚢", "ship" },
-  { "⛴️", "shipFerry" },
-  { "📡", "satelliteAntenna" },
-  { "🌐", "globeWithMeridians" },
-  { "🌎", "globeAsiaAustralia" },
-  { "🌎", "globeAmericas" },
-  { "🌍", "globeEuropeAfrica" },
-  { "🗽", "statueOfLiberty" },
-  { "🪝", "hook" },
-  { "🆔",
-    {
-      "id",
-      "IDButton",
-      "button",
-    },
-  },
-  { "🆑",
-    {
-      "CLButton",
-      "button",
-      "clear",
-    },
-  },
-  { "🆘",
-    {
-      "SOS",
-      "help",
-    },
-  },
-  { "🅰️",
-    {
-      "A",
-      "button",
-    },
-  },
-  { "🅱️",
-    {
-      "B",
-      "button",
-    },
-  },
-  { "🔹",
-    {
-      "smallBlueDiamond",
-      "itemBlueDiamond",
-      "itemDiamond",
-      "item",
-    },
-  },
-  { "🔷",
-    {
-      "largeBlueDiamond",
-      "itemBlueDiamond",
-      "itemDiamond",
-      "item",
-    },
-  },
-  { "🟩",
-    {
-      "greenSquare",
-      "itemGreenSquare",
-      "itemSquare",
-      "item",
-    },
-  },
-  { "🟦",
-    {
-      "blueSquare",
-      "itemBlueSquare",
-      "itemSquare",
-      "item",
-    },
-  },
-  { "🟥",
-    {
-      "redSquare",
-      "itemRedSquare",
-      "itemSquare",
-      "item",
-    },
-  },
-  { "🟧",
-    {
-      "orangeSquare",
-      "itemOrangeSquare",
-      "itemSquare",
-      "item",
-    },
-  },
-  { "🏳️",
-    {
-      "whiteFlag",
-      "flag",
-    },
-  },
-  { "🏴",
-    {
-      "blackFlag",
-      "flag",
-    },
-  },
-  { "🚩",
-    {
-      "triangularFlag",
-      "flag",
-    },
-  },
-  { "🏁",
-    {
-      "chequeredFlag",
-      "flag",
-    },
-  },
-  { "⚔️",
-    {
-      "crossedSwords",
-      "swords",
-    },
-  },
-  { "☠️",
-    {
-      "skullAndCrossbones",
-      "bones",
-      "gameOver",
-      "die",
-      "dead",
-    },
-  },
-  { "♦️",
-    {
-      "diamondSuit",
-      "itemRedDiamond",
-      "itemDiamond",
-      "item",
-      "card",
-    },
-  },
-  {
-    "♣️",
-    {
-      "clubSuit",
-      "card",
-    }
-  },
-  {
-    "♥️",
-    {
-      "heartSuit",
-      "heart",
-      "card",
-    }
-  },
-  {
-    "❤️‍🔥",
-    {
-      "heartOnFire",
-      "fireHeart",
-      "heart",
-    }
-  },
-  {
-    "♠️",
-    {
-      "spadeSuit",
-      "card",
-    }
-  },
-  {
-    "🃏",
-    {
-      "joker",
-      "card",
-    }
-  },
-  {
-    "🎲",
-    {
-      "gameDie",
-      "die",
-      "one",
-    }
-  },
+  G = {} -- group
+}
+
+emoji_data.G.hand = {
+  name = "hand", -- group name
+  items = {
+    { "👍",
+      {
+        "thumbsUp",
+        "like",
+      },
+    },
+    { "👍",
+      {
+        "thumbsUp",
+        "like",
+      },
+    },
+    { "👎",
+      {
+        "thumbsDown",
+        "dislike",
+      },
+    },
+    { "👌",
+      {
+        "okHand",
+        "ok",
+      },
+    },
+    { "👆",
+      {
+        "ptUp",
+        "potintingUp",
+        "up",
+      },
+    },
+    { "👇",
+      {
+        "ptDown",
+        "down",
+      },
+    },
+    { "👈",
+      {
+        "ptLeft",
+        "left",
+      },
+    },
+    { "👉",
+      {
+        "ptRight",
+        "right",
+      },
+    },
+    { "🙏", "please" },
+    { "👊",
+      {
+        "oncomingFist",
+        "fist",
+        "punch",
+      },
+    },
+    { "💪",
+      {
+        "flexedBiceps",
+        "strong",
+      },
+    },
+    { "🤙",
+      {
+        "callMeHand",
+      },
+    },
+    { "🤝",
+      {
+        "handshake",
+        "deal",
+      },
+    },
+  }
+}
+
+emoji_data.G.heart = {
+  name = "heart",
+  items = {
+    { "❣️",
+      {
+        "heartExclamation",
+        "exclamationHeart"
+      },
+    },
+    { "❤️",
+      {
+        "redHeart",
+      },
+    },
+    { "💖",
+      {
+        "sparklingHeart",
+      },
+    },
+    {
+      "❤️‍🔥",
+      {
+        "heartOnFire",
+        "fireHeart",
+        "heart",
+      }
+    },
+  }
+}
+
+emoji_data.G.flag = {
+  name = "flag",
+  items = {
+    { "🏳️",
+      {
+        "whiteFlag",
+        "flag",
+      },
+    },
+    { "🏴",
+      {
+        "blackFlag",
+        "flag",
+      },
+    },
+    { "🚩",
+      {
+        "triangularFlag",
+        "flag",
+      },
+    },
+    { "🏁",
+      {
+        "chequeredFlag",
+        "flag",
+      },
+    },
+  }
+}
+
+emoji_data.G.face = {
+  name = "face",
+  items = {
+    { "😅",
+      {
+        "griningFaceWithSweat",
+        "sweat",
+        "sorry",
+      },
+    },
+    { "😡", "angry" },
+    { "😢",
+      {
+        "cryingFace",
+        "sad",
+      },
+    },
+    { "😭",
+      {
+        "loudlyCryingFace",
+        "crying",
+      },
+    },
+    { "😵‍💫",
+      {
+        "facewithSpiralEyes",
+        "dizzy",
+      },
+    },
+    { "😰",
+      {
+        "anxiousFaceWithSweat",
+        "sweat",
+        "bad",
+      },
+    },
+    { "🥺",
+      {
+        "pleadingFace",
+        "please",
+      },
+    },
+    { "🥹",
+      {
+        "faceHoldingBackTears",
+        "pleadingFace",
+        "thanks",
+      },
+    },
+    { "🙂", "smiling" },
+    { "😊", "smilingWithSmilingEyes" },
+    { "😊", "smilingFacewithHalo" },
+    { "😇", "pleadingFace" },
+    { "🤣",
+      {
+        "rollingOnTheFloorLaughing",
+        "laughing",
+        "happy",
+      },
+    },
+    { "😵",
+      {
+        "faceWithCrossedOutEyes",
+        "xd",
+      },
+    },
+    { "😆",
+      {
+        "grinningSquintingFace",
+        "smile",
+        "happy",
+        "xd",
+      },
+    },
+    { "😝",
+      {
+        "squintingFaceWithTongue",
+        "tongue",
+        "xd",
+      },
+    },
+    { "😎",
+      {
+        "smilingFaceWithSunGlasses",
+        "sunGlasses",
+      },
+    },
+    { "🤔",
+      {
+        "confused",
+        "thinking",
+      },
+    },
+    { "🥳",
+      {
+        "partyFace",
+        "party",
+      },
+    },
+    { "🫣",
+      {
+        "facewithPeekingEye",
+        "peek",
+        "hide",
+      },
+    },
+    { "🫠",
+      {
+        "meltingFace",
+        "happy",
+      },
+    },
+    { "😑",
+      {
+        "expressionlessFace",
+      },
+    },
+  }
+}
+
+emoji_data.G.animal = {
+  name = "animal",
+  items = {
+    { "🐞",
+      {
+        "ladyBeetle",
+        "bug",
+      },
+    },
+    { "🐛",
+      {
+        "bug",
+      },
+    },
+    { "🦂",
+      {
+        "scorpion",
+        "poison",
+        "bug",
+      },
+    },
+    { "🕷️",
+      {
+        "spider",
+        "bug",
+      },
+    },
+    { "🐝",
+      {
+        "honeybee",
+        "bee",
+        "bug",
+      },
+    },
+    { "🐜",
+      {
+        "ant",
+      },
+    },
+    { "🐌",
+      {
+        "snail",
+        "slow",
+      },
+    },
+    { "🐸",
+      {
+        "frog",
+      },
+    },
+    { "🐢",
+      {
+        "turtle",
+      },
+    },
+    { "🦋",
+      {
+        "butterfly",
+        "fly",
+      },
+    },
+    { "🐢",
+      {
+        "turtle",
+      },
+    },
+    { "🐉",
+      {
+        "dragon",
+      },
+    },
+
+  }
+}
+
+emoji_data.G.plant = {
+  name = "plant",
+  items = {
+    { "🌱", "seedling" },
+    { "🌳",
+      {
+        "deciduousTree",
+        "tree",
+      },
+    },
+    { "🌲",
+      {
+        "evergreenTree",
+        "christmas",
+        "tree",
+      },
+    },
+  }
+}
+
+emoji_data.G._other = {
+  name = "",
+  items = {
+    { "⭐", "star" },
+    { "❌",
+      {
+        "crossMark",
+        "error",
+      },
+    },
+    { "✖️",
+      {
+        "multiply",
+        "cross",
+      },
+    },
+    { "❓",
+      {
+        "questionMark",
+        "red question mark",
+      },
+    },
+    { "✅",
+      {
+        "check",
+        "ok",
+      },
+    },
+    { "⚠", "warning" },
+    { "🎉", "ya" },
+    { "🎇",
+      {
+        "sparkler",
+        "ya"
+      },
+    },
+    { "❗", "exclamation" },
+    { "💯",
+      {
+        "hundredPoints",
+        "100points",
+      },
+    },
+    { "💥",
+      {
+        "collision",
+        "explode",
+        "boom",
+      },
+    },
+    { "⁉️",
+      {
+        "exclamationQuestion",
+        "questionExclamation",
+      },
+    },
+    { "🔎",
+      {
+        "magnifyingGlassTiltedright",
+      },
+    },
+    { "🕵️‍♂️",
+      {
+        "manDetective",
+        "detective",
+        "letMeSee",
+      },
+    },
+    { "", "handshake" },
+    { "←", "arLeft" }, -- arrow
+    { "↑", "arUp" },
+    { "→", "arRight" },
+    { "↓", "arDown" },
+    { "💡",
+      {
+        "lightBulb",
+        "tip",
+        "idea",
+      },
+    },
+    { "🚀", "rocket" },
+    { "🧙", "mage" },
+    { "🐘", "elephant" },
+    { "📁", "folder" },
+    { "📂", "folderOpen" },
+    { "📦",
+      {
+        "package",
+        "box",
+      },
+    },
+    { "🥡",
+      {
+        "takeoutBox",
+        "box",
+      },
+    },
+    { "📝", "memo" },
+    { "📄",
+      {
+        "pageFacingUp",
+        "newFile",
+        "file",
+      },
+    },
+    { "⚙️",
+      {
+        "gear",
+        "settings",
+      },
+    },
+    { "📢", "announcement" },
+    { "💬",
+      {
+        "speechBallon",
+        "speech",
+        "saySomething",
+      },
+    },
+    { "👀",
+      {
+        "eyes",
+        "look",
+        "peek",
+      },
+    },
+    { "👁️‍🗨️",
+      {
+        "eyeInSpeechBubble",
+        "look",
+        "peek",
+      },
+    },
+    { "😈",
+      {
+        "smilingFaceWithHorns",
+        "evil",
+        "haha",
+      },
+    },
+    { "👻",
+      {
+        "ghost",
+      },
+    },
+    { "🙇",
+      {
+        "personBowing",
+        "please",
+        "sorry",
+      },
+    },
+    { "🔥", "fire" },
+    { "🔑", "key" },
+    { "🔒", "locked" },
+    { "✨",
+      {
+        "sparkles",
+        "features",
+      },
+    },
+    { "⚡",
+      {
+        "fast",
+        "lighting",
+      },
+    },
+    { "👾",
+      {
+        "alienMonster",
+        "monster",
+      },
+    },
+    { "🌈", "rainbow" },
+    { "🧊",
+      {
+        "ice",
+        "cold",
+      },
+    },
+    { "❄️",
+      {
+        "snowflake",
+        "christmas",
+        "ice",
+      },
+    },
+    { "☃️",
+      {
+        "snowman",
+        "christmas",
+      },
+    },
+    { "⛄",
+      {
+        "snowmanWithoutSnow",
+        "christmas",
+      },
+    },
+    { "🎅",
+      {
+        "santaClaus",
+        "christmas",
+      },
+    },
+    { "♻️", "recycle" },
+    { "🚮",
+      {
+        "LitterInBinsign",
+        "trash",
+        "recycle",
+      },
+    },
+    { "🗑️",
+      {
+        "wastebasket",
+        "trash",
+        "recycle",
+      },
+    },
+    { "🏠", "home" },
+    { "🏰", "castle" },
+    { "🏯", "castleJapanese" },
+    { "🔗", "link" },
+    { "⚓", "anchor" },
+    { "🚢", "ship" },
+    { "⛴️", "shipFerry" },
+    { "📡", "satelliteAntenna" },
+    { "🌐", "globeWithMeridians" },
+    { "🌎", "globeAsiaAustralia" },
+    { "🌎", "globeAmericas" },
+    { "🌍", "globeEuropeAfrica" },
+    { "🗽", "statueOfLiberty" },
+    { "🪝", "hook" },
+    { "🆔",
+      {
+        "id",
+        "IDButton",
+        "button",
+      },
+    },
+    { "🆑",
+      {
+        "CLButton",
+        "button",
+        "clear",
+      },
+    },
+    { "🆘",
+      {
+        "SOS",
+        "help",
+      },
+    },
+    { "🅰️",
+      {
+        "A",
+        "button",
+      },
+    },
+    { "🅱️",
+      {
+        "B",
+        "button",
+      },
+    },
+    { "🔹",
+      {
+        "smallBlueDiamond",
+        "itemBlueDiamond",
+        "itemDiamond",
+        "item",
+      },
+    },
+    { "🔷",
+      {
+        "largeBlueDiamond",
+        "itemBlueDiamond",
+        "itemDiamond",
+        "item",
+      },
+    },
+    { "🟩",
+      {
+        "greenSquare",
+        "itemGreenSquare",
+        "itemSquare",
+        "item",
+      },
+    },
+    { "🟦",
+      {
+        "blueSquare",
+        "itemBlueSquare",
+        "itemSquare",
+        "item",
+      },
+    },
+    { "🟥",
+      {
+        "redSquare",
+        "itemRedSquare",
+        "itemSquare",
+        "item",
+      },
+    },
+    { "🟧",
+      {
+        "orangeSquare",
+        "itemOrangeSquare",
+        "itemSquare",
+        "item",
+      },
+    },
+    { "⚔️",
+      {
+        "crossedSwords",
+        "swords",
+      },
+    },
+    { "☠️",
+      {
+        "skullAndCrossbones",
+        "bones",
+        "gameOver",
+        "die",
+        "dead",
+      },
+    },
+    { "♦️",
+      {
+        "diamondSuit",
+        "itemRedDiamond",
+        "itemDiamond",
+        "item",
+        "card",
+      },
+    },
+    {
+      "♣️",
+      {
+        "clubSuit",
+        "card",
+      }
+    },
+    {
+      "♥️",
+      {
+        "heartSuit",
+        "heart",
+        "card",
+      }
+    },
+    {
+      "♠️",
+      {
+        "spadeSuit",
+        "card",
+      }
+    },
+    {
+      "🃏",
+      {
+        "joker",
+        "card",
+      }
+    },
+    {
+      "🎲",
+      {
+        "gameDie",
+        "die",
+        "one",
+      }
+    },
+  }
 }
 
 local M = {}
-for _, e in ipairs(emoji_data) do
-  local word = e[1]
-  local abbr_data = e[2]
-  if type(abbr_data) == "string" then
-    table.insert(M, emoji:new(word, abbr_data))
-  else
-    if type(abbr_data) == "table" then
-      for _, abbr in ipairs(abbr_data) do
-        table.insert(M, emoji:new(word, abbr))
+for _, group in pairs(emoji_data.G) do
+  for _, e in ipairs(group.items) do
+    local word = e[1]
+    local abbr_data = e[2]
+    if type(abbr_data) == "string" then
+      table.insert(M, emoji:new(word, abbr_data))
+    else
+      if type(abbr_data) == "table" then
+        for _, abbr in ipairs(abbr_data) do
+          table.insert(M, emoji:new(word, abbr))
+        end
       end
+    end
+    if group.name ~= "" then
+      table.insert(M, emoji:new(word, group.name)) -- 每一個項目的abbr也套用群組的名稱
     end
   end
 end
