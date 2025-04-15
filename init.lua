@@ -1586,6 +1586,10 @@ local function install_nvim_dap()
       verbose = false,
     },
   }
+  require('dap-python').setup(
+  -- "/usr/bin/python3" -- 如果要debug fontforge之類的要再切換, 但是/usr/bin/pip3也要安裝，但是ubuntu上這是鎖版本的
+  -- vim.fn.expand("~/.pyenv/shims/python3") -- 預設會自己抓
+  ) -- https://github.com/mfussenegger/nvim-dap-python/blob/34282820bb713b9a5fdb120ae8dd85c2b3f49b51/README.md?plain=1#L62-L142
 
   vim.keymap.set("n", "<F5>", dap.continue, { desc = "Start/Continue Debugging" })
   vim.keymap.set("n", "<F17>", dap.terminate, { desc = "Stop debug (Shift+F5)" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應

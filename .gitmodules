@@ -66,4 +66,6 @@
 [submodule "debug/nvim-dap"]
     path = pack/debug/start/nvim-dap
     url = https://github.com/mfussenegger/nvim-dap.git
-
+[submodule "debug/nvim-dap-python"]
+    path = pack/debug/start/nvim-dap-python
+    url = https://github.com/mfussenegger/nvim-dap-python.git

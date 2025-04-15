@@ -150,7 +150,8 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── nvim-dap           -- ✅ 一個協議用於neovim上debug等相關事宜(需要再找每一個語言的debug adapter) (v0.10.0... 7aade9e) https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/
 │   │         ├── nvim-dap-ui        -- ✅ 取得 require"dapui" (v4.0.0... bc81f8d)
 │   │         ├── nvim-nio           -- ✅ 此為nvim-dap-ui需要用到的插件 (v1.10.1 21f5324)
-│   │         └── nvim-dap-go        -- ✅ debug adapter: go ( 8763ced)
+│   │         ├── nvim-dap-python    -- ✅ debug adapter: python ( 3428282 )
+│   │         └── nvim-dap-go        -- ✅ debug adapter: go ( 8763ced )
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -382,6 +383,9 @@ which pyright | wl-copy
 
 # 取得black, isort兩個格式化python用的工具
 pip install black isort
+
+# debugpy 在debug python的時候會需要用到: https://github.com/microsoft/debugpy
+pip install debugpy
 ```
 
 #### [bash-language-server](https://github.com/bash-lsp/bash-language-server)
@@ -823,9 +827,17 @@ git clone https://github.com/mfussenegger/nvim-dap.git ~/.config/nvim/pack/debug
 ##### go [nvim-dap-go](https://github.com/leoluz/nvim-dap-go)
 
 ```sh
-git clone https://github.com/nvim-neotest/nvim-nio.git ~/.config/nvim/pack/debug/start/nvim-nio # nvim-dap-ui需要用到的插件
 git clone https://github.com/rcarriga/nvim-dap-ui.git ~/.config/nvim/pack/debug/start/nvim-dap-ui # require"dapui"
+git clone https://github.com/nvim-neotest/nvim-nio.git ~/.config/nvim/pack/debug/start/nvim-nio # nvim-dap-ui需要用到的插件
 git clone https://github.com/leoluz/nvim-dap-go.git ~/.config/nvim/pack/debug/start/nvim-dap-go
+```
+
+
+##### python [nvim-dap-python](https://github.com/mfussenegger/nvim-dap-python)
+
+```sh
+# pip install debugpy # nvim-dap-python 有需要依賴debugpy這個工具
+git clone https://github.com/mfussenegger/nvim-dap-python.git ~/.config/nvim/pack/debug/start/nvim-dap-python
 ```
 
 # [neovide](https://github.com/neovide/neovide)
