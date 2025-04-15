@@ -1646,14 +1646,14 @@ local installs = {
       )                                      -- https://github.com/neovim/nvim-lspconfig/blob/ecb74c22b4a6c41162153f77e73d4ef645fedfa0/lsp/pyright.lua#L36-L67
       -- https://github.com/neovim/nvim-lspconfig/blob/81920264a264144bd075f7f48f0c4356fc2c6236/README.md?plain=1#L108-L120
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig gopls",
     fn = function()
       require("lspconfig").gopls.setup {}
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig ts_ls",
@@ -1661,7 +1661,7 @@ local installs = {
       -- require("lspconfig").tsserver.setup {} Deprecated servers: tsserver -> ts_ls
       require("lspconfig").ts_ls.setup {} -- javascript/typescript
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig html",
@@ -1669,21 +1669,21 @@ local installs = {
       -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
       require("lspconfig").html.setup {}
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig cssls",
     fn = function()
       require("lspconfig").cssls.setup {}
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig jsonls",
     fn = function()
       require("lspconfig").jsonls.setup {}
     end,
-    delay = 1500,
+    delay = 5,
   },
 
   {
@@ -1691,7 +1691,7 @@ local installs = {
     fn = function()
       require("lspconfig").bashls.setup {}
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig markdown_oxide",
@@ -1700,7 +1700,7 @@ local installs = {
         cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
       }
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
 
@@ -1718,7 +1718,7 @@ local installs = {
         }
       }
     end,
-    delay = 1500,
+    delay = 5,
   },
   {
     name = "lspconfig lua_ls",
@@ -1748,7 +1748,7 @@ local installs = {
         }
       }
     end,
-    delay = 1500,
+    delay = 5,
   },
 
   -- { name = "precognition",    fn = install_precognition,    delay = 0 },
@@ -1765,13 +1765,13 @@ local installs = {
       vim.cmd('colorscheme github_dark_default')
       install_ibl()
     end,
-    delay = 3000
+    delay = 5
   },
   { name = "lualine",        fn = install_lualine,        delay = 0 },
   -- { name = "atq",            fn = install_atq,            delay = 0 }, -- 可以用command: NotifySend 即可
   { name = "renderMarkdown", fn = install_renderMarkdown, delay = 0 },
   { name = "cmp_list",       fn = install_cmp_list,       delay = 0 },
-  { name = "nvim_dap",       fn = install_nvim_dap,       delay = 3000 }, -- 延遲 3 秒
+  { name = "nvim_dap",       fn = install_nvim_dap,       delay = 5 },
   {
     name = "global-func",
     fn = function()
