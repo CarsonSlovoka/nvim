@@ -49,21 +49,26 @@ function M.setup(opts)
         if buftype == "" and
             vim.bo.modified -- 可以曉得是否真的有異動
         then
-          -- 先手動觸發 BufWritePre 自動命令
+          if M.autoReformat and vim.bo.filetype == "python" then
+            vim.cmd("FmtPython --reload=0")
+            vim.defer_fn(function()
+              vim.cmd("silent e")
+            end, 50) -- 要等到InsertLeave才能重載，不然會有錯
+            return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+          end
+
+          -- 先手動觸發 BufWritePre 自動命令 (去除多餘的空白、格式化、保存tag等等)
           vim.api.nvim_exec_autocmds("BufWritePre", {
             pattern = vim.fn.expand("%") -- 當前文件路徑
           })
 
-          vim.cmd("silent write")
-          vim.notify(string.format("%s %s saved",
-            os.date("%Y-%m-%d %H:%M:%S"),
-            vim.api.nvim_buf_get_name(0)
-          ), vim.log.levels.INFO)
+          vim.cmd("silent write")      -- 如果文件是被外部工具改變這時候用write就會被尋問是否要載入
+          vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
+
           -- elseif not vim.bo.modified then
           --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
           -- else
           --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
-          vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
         end
       end,
     }
@@ -160,27 +165,25 @@ function M.setup(opts)
   create_autocmd(
     "BufWritePre", -- 在寫入前執行的動作
     {
-      desc = "去除結尾多餘的space, tab",
+      desc = "格式化和去除結尾多餘的space, tab",
       pattern = "*",
       callback = function()
-        -- 其實就是使用vim的取代%s/.../...
-        -- \s\+  \s+ 任意空白字符(空格, 制表符等)一個或多個
-        -- 取代為空白
-        -- e flags, 如果發生錯誤的時候不報錯
-        vim.cmd([[%s/\s\+$//e]])
+        local has_formatter = M.autoReformat and vim.bo.filetype == "python" -- 如果是python用外部工具來格式化
         if M.autoReformat then
           -- 檢查是否有LSP客戶端附加到當前的緩衝區
           local clients = vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() })
-          local has_formatter = false
-          for _, client in ipairs(clients) do
-            -- 也就檢查是否有支持格式化的功能
-            if client:supports_method("textDocument/formatting") then
-              has_formatter = true
-              break
+          if not has_formatter then
+            for _, client in ipairs(clients) do
+              -- 也就檢查是否有支持格式化的功能
+              if client:supports_method("textDocument/formatting") then
+                has_formatter = true
+                break
+              end
             end
           end
 
-          if has_formatter then
+          -- lsp格式化 和 保存標籤
+          if has_formatter and vim.bo.filetype == "python" then                         -- 這部份是保存標籤，而由於python是用外部工具來格式化，保存標籤的這段不適用它
             -- 保存當前所有用戶定義的標記 (a-z, A-Z)
             local marks = vim.fn.getmarklist('%')                                       -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
             for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^.", ".") do -- 大寫的用這樣來取得
@@ -208,11 +211,14 @@ function M.setup(opts)
             --]]
             -- print(vim.inspect(marks))
 
+            -- vim.cmd("FmtPython") -- 不能再這邊格式化，因為裡面也會save, 這樣會導致一直有BufWritePre
 
             vim.lsp.buf.format({
               async = false,
               timeout_ms = 3000,
             })
+            local fmt_msg = string.format("%s lsp.buf.format done", os.date("%Y-%m-%d %H:%M:%S"))
+            vim.notify(fmt_msg, vim.log.levels.INFO)
 
             -- 恢復標籤
             for _, mark in ipairs(marks) do
@@ -221,13 +227,19 @@ function M.setup(opts)
               -- end
               vim.fn.setpos(mark.mark, mark.pos)
             end
-            vim.notify(
-              string.format("%s lsp.buf.format done ", os.date("%Y-%m-%d %H:%M:%S")),
-              vim.log.levels.INFO
-            )
           else
-            -- vim.notify("No LSP formatter available for current file, skipping format", vim.log.levels.WARN)
+            vim.notify("No LSP formatter available for current file, skipping format. Turn off msg `:SetAutFmt 0`",
+              vim.log.levels.WARN)
           end
+        end
+
+        if not has_formatter then
+          -- 如果有格式化，多餘的空白，應該都會被除掉，所以這個動作只需要在沒有格式化的文件使用即可
+          -- 其實就是使用vim的取代%s/.../...
+          -- \s\+  \s+ 任意空白字符(空格, 制表符等)一個或多個
+          -- 取代為空白
+          -- e flags, 如果發生錯誤的時候不報錯
+          vim.cmd([[%s/\s\+$//e]])
         end
       end
     }
