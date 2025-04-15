@@ -341,7 +341,7 @@ which gopls
 #### python
 
 <details>
-<summary>用虛擬環境(不推薦)</summary>
+<summary>👎用虛擬環境(不推薦)</summary>
 
 ```bash
 pyenv virtualenv 3.13.0 pyright-env
@@ -379,6 +379,9 @@ pip freeze | grep pyright
 # pyright==1.1.399
 which pyright | wl-copy
 # vim.g.lsp_pyright_path = vim.fn.expand('~/.pyenv/shims/pyright') # 貼上路徑
+
+# 取得black, isort兩個格式化python用的工具
+pip install black isort
 ```
 
 #### [bash-language-server](https://github.com/bash-lsp/bash-language-server)
