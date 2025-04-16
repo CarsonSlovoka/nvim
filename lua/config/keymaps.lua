@@ -252,10 +252,17 @@ map('n', '<leader>gf',
 )
 
 local function setup_normal()
-  map('n',                       -- normal mode
+  map('n', -- normal mode
     '<leader>cwd',
-    ':let @+=expand("%:p")<CR>', -- % 表示當前的文件名, :p (轉成絕對路徑)
-    { desc = "複製文件的絕對路徑" }
+    function()
+      local abs_path = vim.fn.expand(("%:p"))
+      print("✅ Copied " .. abs_path .. " to system clipboard!")
+      return ':let @+=expand("%:p")<CR>' -- % 表示當前的文件名, :p (轉成絕對路徑)
+    end,
+    {
+      desc = "複製文件的絕對路徑",
+      expr = true,
+    }
   )
 
   map({
