@@ -879,4 +879,11 @@ end
 
 -- M.get_emoji("ok")
 
+-- :h digraphs
+-- 使用 :digraphs 可以查看所有所有常用字表清單
+-- vim.cmd("digraphs -- 0")      -- 撤銷 -- 打上原本的命令之後接一個0即可
+vim.cmd("digraphs -- 128529")           -- 😑
+vim.cmd("digraphs xd 128565")           -- 😵
+vim.cmd("digraphs sm 128512 ha 128513") -- 😀 😁
+
 return M
