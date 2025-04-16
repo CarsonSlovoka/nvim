@@ -47,11 +47,26 @@ function M.get_selected_text(concat)
   -- 兩列以上
   -- print("lines", vim.inspect(lines))
   -- print("unpack", vim.inspect(unpack(lines, 2, #lines - 1)))
+  -- ⚠ unpack如果不是在最後一個參數，它的其它結果將會被丟棄！ https://stackoverflow.com/a/32439840/9935654
+  -- print(vim.inspect({ unpack({ 1, 2, 3 }), "Test" })) -- 1, Test
+  -- print(vim.inspect({ "AAA", unpack({ 1, 2, 3 }) })) -- AAA, 1, 2, 3
+  local result_table = { l_start, unpack(lines, 2, #lines - 1) }
+  table.insert(result_table, l_end)
   if concat then
     return table.concat({ l_start, unpack(lines, 2, #lines - 1), l_end }, concat)
   else
-    return { l_start, unpack(lines, 2, #lines - 1), l_end }
+    -- return { l_start, unpack(lines, 2, #lines - 1), l_end } -- 這是錯的，中間的部份不是放在最尾會只有一項而已！
+    return result_table
   end
 end
+
+-- vim.api.nvim_create_user_command("Test123", function()
+--     print(M.get_selected_text("✅"))
+--     print(vim.inspect(M.get_selected_text()))
+--   end,
+--   {
+--     range = true,
+--   }
+-- )
 
 return M
