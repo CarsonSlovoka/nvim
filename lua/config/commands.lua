@@ -479,27 +479,35 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command("PrintGB18030",
+  vim.api.nvim_create_user_command("PrintBytes",
     -- 測試資料: U+25524 UTF-8: F0 A5 94 A4 GB18030: 0x96 0x39 0xA8 0x32
     -- https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4
     -- https://www.cns11643.gov.tw/wordView.jsp?ID=682836
-    function()
+    function(args)
+      local to_enc = args.fargs[1] -- ex gb18030
+      local from_enc = args.fargs[2] or "utf-8"
+
       local char = utils.range.get_selected_text()
       if type(char) == "table" then
         char = table.concat(char, "")
       end
 
-      -- 將字符轉換為 GB18030 編碼的字節
-      local gb18030_bytes = vim.fn.iconv(char, "utf-8", "gb18030")
-      if gb18030_bytes == "" then
-        print("Cannot convert to GB18030")
+      if #char == 0 then
+        vim.notify("選取內容為空", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 將字符轉換為 target 編碼的字節
+      local target_bytes = vim.fn.iconv(char, from_enc, to_enc)
+      if target_bytes == "" then
+        print(string.format("Cannot convert %s to %s", from_enc, to_enc))
         return
       end
 
       -- 將字節序列轉為十六進制表示
-      local hex_gb18030 = {}
-      for i = 1, #gb18030_bytes do
-        table.insert(hex_gb18030, string.format("0x%02X", string.byte(gb18030_bytes, i)))
+      local hex_target = {}
+      for i = 1, #target_bytes do
+        table.insert(hex_target, string.format("0x%02X", string.byte(target_bytes, i)))
       end
 
       local hex_utf8 = {}
@@ -510,12 +518,27 @@ function commands.setup()
 
       print("Character: " .. char,
         ", UTF-8 Bytes: " .. table.concat(hex_utf8, " "),
-        ", GB18030 Bytes: " .. table.concat(hex_gb18030, " ")
+        string.format(", %s Bytes: %s", to_enc, table.concat(hex_target, " "))
       )
     end,
     {
-      desc = "將來源為utf-8的選取內容，打印出其對應的GB18030編碼的字節",
+      desc = ":PrintBytes enc_dsc enc_src 將來源為編碼(預設:utf-8)的選取內容，打印出其指定編碼所對應的字節",
       range = true,
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        local matches = {}
+        for _, enc in ipairs(utils.encoding.get_encoding_list()) do
+          if enc:find('^' .. arg_lead:lower()) then -- 這種方法在arg_lead為空的時候也會匹配
+            table.insert(matches, enc)
+          end
+        end
+        if argc == 2 and arg_lead == "" then
+          -- 這種時候將utf-8放到一開始，讓其曉得應該是來源
+          return { "utf-8", unpack(matches) }
+        end
+        return matches
+      end
     }
   )
 
