@@ -502,6 +502,12 @@ function commands.setup()
         char = table.concat(char, "")
       end
 
+      local nr = 0
+      if from_enc == "utf-8" or from_enc == "utf8" then
+        nr = vim.fn.char2nr(char) -- Return Number value of the first char in {string}
+        char = vim.fn.nr2char(nr) -- 只抓一個字，如此就不容易混淆, 如果真需要大的片段，可以直接 :SaveAsWithEnc 的方式去另儲
+      end
+
       if #char == 0 then
         vim.notify("選取內容為空", vim.log.levels.ERROR)
         return
@@ -526,7 +532,13 @@ function commands.setup()
         table.insert(hex_utf8, string.format("%02X", byte))
       end
 
+      local unicode = ""
+      if from_enc == "utf-8" or from_enc == "utf8" then
+        unicode = string.format(", %s U+%04X", char, nr)
+      end
+
       print("Character: " .. char,
+        unicode,
         ", UTF-8 Bytes: " .. table.concat(hex_utf8, " "),
         string.format(", %s Bytes: %s", to_enc, table.concat(hex_target, " "))
       )
