@@ -38,7 +38,7 @@ function M.get_selected_text(concat)
   -- 二列
   if line2 - line1 == 1 then
     if concat then
-      return table.concat({ l_start, l_end }, "\n")
+      return table.concat({ l_start, l_end }, concat)
     else
       return { l_start, l_end, }
     end

@@ -479,6 +479,43 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("PrintGB18030", -- 測試資料: U+25524 UTF-8: F0 A5 94 A4 GB18030: 0x96 0x39 0xA8 0x32
+    function()
+      local char = utils.range.get_selected_text()
+      if type(char) == "table" then
+        char = table.concat(char, "")
+      end
+
+      -- 將字符轉換為 GB18030 編碼的字節
+      local gb18030_bytes = vim.fn.iconv(char, "utf-8", "gb18030")
+      if gb18030_bytes == "" then
+        print("Cannot convert to GB18030")
+        return
+      end
+
+      -- 將字節序列轉為十六進制表示
+      local hex_gb18030 = {}
+      for i = 1, #gb18030_bytes do
+        table.insert(hex_gb18030, string.format("0x%02X", string.byte(gb18030_bytes, i)))
+      end
+
+      local hex_utf8 = {}
+      for i = 1, #char do
+        local byte = string.byte(char, i);
+        table.insert(hex_utf8, string.format("%02X", byte))
+      end
+
+      print("Character: " .. char,
+        ", UTF-8 Bytes: " .. table.concat(hex_utf8, " "),
+        ", GB18030 Bytes: " .. table.concat(hex_gb18030, " ")
+      )
+    end,
+    {
+      desc = "將來源為utf-8的選取內容，打印出其對應的GB18030編碼的字節",
+      range = true,
+    }
+  )
+
   vim.api.nvim_create_user_command("HexView",
     function(args)
       if args.fargs[1] == "-h" then
