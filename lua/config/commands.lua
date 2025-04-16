@@ -484,6 +484,16 @@ function commands.setup()
     -- https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4
     -- https://www.cns11643.gov.tw/wordView.jsp?ID=682836
     function(args)
+      if args.fargs[1] == "-h" then
+        -- cmdUtils.showHelpAtQuickFix({
+        utils.cmd.showHelpAtQuickFix({
+          ':help encoding-values',
+          'gb18030 test: U+25524 𥔤(0x9639 0xA832) https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4',
+          'sjis (shift-jis) test: U+ff71 ｱ (b1)  http://charset.7jp.net/sjis.html',
+          'sjis (shift-jis) test: U+6a97 檗 (0x9f 0x40)'
+        })
+        return
+      end
       local to_enc = args.fargs[1] -- ex gb18030
       local from_enc = args.fargs[2] or "utf-8"
 
