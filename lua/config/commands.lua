@@ -479,7 +479,10 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command("PrintGB18030", -- 測試資料: U+25524 UTF-8: F0 A5 94 A4 GB18030: 0x96 0x39 0xA8 0x32
+  vim.api.nvim_create_user_command("PrintGB18030",
+    -- 測試資料: U+25524 UTF-8: F0 A5 94 A4 GB18030: 0x96 0x39 0xA8 0x32
+    -- https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4
+    -- https://www.cns11643.gov.tw/wordView.jsp?ID=682836
     function()
       local char = utils.range.get_selected_text()
       if type(char) == "table" then
@@ -513,6 +516,78 @@ function commands.setup()
     {
       desc = "將來源為utf-8的選取內容，打印出其對應的GB18030編碼的字節",
       range = true,
+    }
+  )
+
+
+  vim.api.nvim_create_user_command("SaveAsWithEnc",
+    -- 🧙 `:w ++enc=gb18030` 新檔案名 可以轉換後並另存檔案
+    function(args)
+      local encoding = args.fargs[1] or "utf-8"
+      local output_file_path = args.fargs[2]
+      local is_bang = args.bang and "!" or ''
+      vim.cmd(string.format('w%s ++enc=%s %s', is_bang, encoding, output_file_path))
+    end,
+    {
+      desc = "用指定的encoding來另儲新檔",
+      nargs = "+",
+      bang = true, -- 如果檔案已經存在可以用 ! 來強制儲
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+
+        if argc == 2 then
+          return {
+            vim.fn.expand("%"),                            -- 第一次放當前的檔案(相對路徑)
+            unpack(vim.fn.getcompletion(arg_lead, "file")) -- 包含檔案和目錄 -- 記得unpack一定要在最後一項
+          }
+        end
+
+        if argc == 1 then
+          local matches = {}
+          for _, enc in ipairs(utils.encoding.get_encoding_list()) do
+            if enc:find('^' .. arg_lead:lower()) then
+              table.insert(matches, enc)
+            end
+          end
+          return matches
+        end
+      end
+    }
+  )
+
+  vim.api.nvim_create_user_command("EditWithEnc",
+    -- `:e ++enc=gb18030 myFile` 可以用該編碼來檢示文件(但不等於轉換編碼)
+    function(args)
+      local encoding = args.fargs[1] or "utf-8"
+
+      local output_file_path = args.fargs[2]
+      if output_file_path == "." then           -- 視為用目前的檔案來開啟
+        output_file_path = vim.fn.expand("%:p") -- cur abs path
+      end
+      vim.cmd(string.format('e ++enc=%s %s', encoding, output_file_path))
+    end,
+    {
+      desc = "用指定的編碼來開啟文件" ..
+          "⚠ 它不等於轉換編碼. 也就是說這僅當你確定檔案的編碼時，用此方法可以得到正確的識別." ..
+          "如果要做編碼的轉換，請使用 `:SaveAsWithEnc`",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+
+        if argc == 2 then
+          return utils.complete.get_file_only(arg_lead)
+        end
+
+        if argc == 1 then
+          local matches = {}
+          for _, enc in ipairs(utils.encoding.get_encoding_list()) do
+            if enc:find('^' .. arg_lead:lower()) then
+              table.insert(matches, enc)
+            end
+          end
+          return matches
+        end
+      end
     }
   )
 
