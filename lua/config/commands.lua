@@ -629,6 +629,13 @@ function commands.setup()
   vim.api.nvim_create_user_command("SaveAsWithEnc",
     -- 🧙 `:w ++enc=gb18030` 新檔案名 可以轉換後並另存檔案
     function(args)
+      if args.fargs[1] == "-h" then
+        utils.cmd.showHelpAtQuickFix({
+          "如果當前的文件其fenc未知或者內容無法與其匹配時，會沒有辦法執行",
+          "如果是用byte(`:set fenc=`)來寫，想另儲可以直接用:w!之後用系統的cp來複製文件，或者直接用:EditWithEnc來查看也行",
+        })
+        return
+      end
       local encoding = args.fargs[1] or "utf-8"
       local output_file_path = args.fargs[2]
       local is_bang = args.bang and "!" or ''
