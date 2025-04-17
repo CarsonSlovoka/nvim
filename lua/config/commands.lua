@@ -566,9 +566,23 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("InsertBytes",
     function(args)
-      for _, str in ipairs(args.fargs) do
+      if args.fargs[1] == "-h" then
+        utils.cmd.showHelpAtQuickFix({
+          [[set fenc=]],
+          [[如果fileencoding不對，會不給儲檔, 會有錯誤E513: Write error, conversion failed (make 'fenc' empty to override), 此時可以用:set fenc= 來解決]],
+          [[ 當fenc錯誤時用 :set fenc=binary 也可以，但是需要用w!才能儲檔, 但是用xxd的時候可能還是會遇到問題，所以還是用:set fenc= 會比較好 ]],
+          [[ ⚠ 使用:set fenc= 或 binary以後，所有的文字其bytes會被轉成utf-8的bytes. 例如原本在enc=gb18030看到的𥔤(0x9639_a832) 會被改成(0xf0 0xa5 0x94 0xa4)而看到的還是unicode的形也就是𥔤，因此這時候再回到gb18030看到的內容就會不同了(因為是基於f0 a5 94 a4去換) ]],
+          "'<,'>!xxd -c 1",
+          'xxd -c 1 xxx.txt',
+          '⚠ 此指令是插入所以不能在空列中使用, 會看到錯誤的結果',
+        })
+        return
+      end
+      local para = utils.flag.parse(args.args)
+      local base = para.opts["base"] or ""
+      for _, str in ipairs(para.params) do
         local num = 0
-        if str:find("0x") then
+        if base == "16" or str:find("0x") then
           -- 將 16 進位字串轉為數字（支持 0x 格式或純數字）
           num = tonumber(str, 16)
         else
@@ -591,10 +605,19 @@ function commands.setup()
       end
     end,
     {
-      desc = "",
+      desc = "將輸入的位元組轉換為字串(utf-8)",
       nargs = "+",
-      complete = function()
-        return { "0xe4", "0xb8", "0x80" }
+      complete = function(arg_lead)
+        if arg_lead:match("^%-%-") then
+          return utils.cmd.get_complete_list(arg_lead, {
+            base = { "16", "10" },
+          })
+        end
+        return {
+          "0xe4 0xb8 0x80",
+          "0xe4 0xb8 128", -- :lua print(tonumber(0xe4))
+          "e4 b8 80 --base=16",
+        }
       end
     }
   )
