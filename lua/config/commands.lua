@@ -564,6 +564,41 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("InsertBytes",
+    function(args)
+      for _, str in ipairs(args.fargs) do
+        local num = 0
+        if str:find("0x") then
+          -- 將 16 進位字串轉為數字（支持 0x 格式或純數字）
+          num = tonumber(str, 16)
+        else
+          num = tonumber(str, 10)
+        end
+        if not num then
+          vim.notify("無效的 16 進位數值: " .. num, vim.log.levels.ERROR)
+          return
+        end
+        -- 轉為字符
+        local char = string.char(num)
+        -- 獲取當前光標位置
+        local pos = vim.api.nvim_win_get_cursor(0)
+        local row = pos[1] - 1 -- 行數 (0-based)
+        local col = pos[2]     -- 列數 (0-based)
+        -- 插入字符到當前光標位置
+        vim.api.nvim_buf_set_text(0, row, col, row, col, { char })
+        -- 移動光標到插入後的位置
+        vim.api.nvim_win_set_cursor(0, { row + 1, col + #char })
+      end
+    end,
+    {
+      desc = "",
+      nargs = "+",
+      complete = function()
+        return { "0xe4", "0xb8", "0x80" }
+      end
+    }
+  )
+
 
   vim.api.nvim_create_user_command("SaveAsWithEnc",
     -- 🧙 `:w ++enc=gb18030` 新檔案名 可以轉換後並另存檔案
