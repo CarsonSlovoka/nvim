@@ -575,6 +575,9 @@ function commands.setup()
           "'<,'>!xxd -c 1",
           'xxd -c 1 xxx.txt',
           '⚠ 此指令是插入所以不能在空列中使用, 會看到錯誤的結果',
+          ':lua print(tonumber(0xe4))',
+          ':lua print(tonumber(30, 16))',
+          ':lua print(tonumber(0011, 2))'
         })
         return
       end
