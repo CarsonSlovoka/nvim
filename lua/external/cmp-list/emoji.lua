@@ -826,11 +826,9 @@ for _, group in pairs(emoji_data.G) do
     local abbr_data = e[2]
     if type(abbr_data) == "string" then
       table.insert(M, emoji:new(word, abbr_data))
-    else
-      if type(abbr_data) == "table" then
-        for _, abbr in ipairs(abbr_data) do
-          table.insert(M, emoji:new(word, abbr))
-        end
+    elseif type(abbr_data) == "table" then
+      for _, abbr in ipairs(abbr_data) do
+        table.insert(M, emoji:new(word, abbr))
       end
     end
 
@@ -838,11 +836,9 @@ for _, group in pairs(emoji_data.G) do
       -- 每一個項目的abbr也套用該群組所有的別名
       if type(group.alias) == "string" then
         table.insert(M, emoji:new(word, group.alias))
-      else
-        if type(group.alias) == "table" then
-          for _, alias in ipairs(group.alias) do
-            table.insert(M, emoji:new(word, alias))
-          end
+      elseif type(group.alias) == "table" then
+        for _, alias in ipairs(group.alias) do
+          table.insert(M, emoji:new(word, alias))
         end
       end
     end
