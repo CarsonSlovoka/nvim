@@ -666,7 +666,7 @@ function commands.setup()
     function(args)
       local encoding = args.fargs[1] or "utf-8"
 
-      local output_file_path = args.fargs[2]
+      local output_file_path = args.fargs[2] or "."
       if output_file_path == "." then           -- 視為用目前的檔案來開啟
         output_file_path = vim.fn.expand("%:p") -- cur abs path
       end
