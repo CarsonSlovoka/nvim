@@ -9,7 +9,7 @@ function options.setup()
   -- 它如果轉到了最後一個(latin1)那麼這種情況再由latin1轉到cp950看到的就不對
   -- :e ++enc=cp950 filename.txt -- 可以用這種方式來確保一開始開啟時，就是用正確的編碼
   -- :set fileencodings? -- 這個可以查看當前的設定
-  vim.opt.fileencodings = "ucs-bom,utf-8,default,cp950,big5,gbk,binary"
+  vim.opt.fileencodings = "ucs-bom,utf-8,default,cp950,big5,gbk,binary" -- 🧙 如果是binary需要用:w!才可以保存
   -- :set bomb -- 如果想要將檔案加上bom, 可以使用 https://stackoverflow.com/a/7204424/9935654
   -- :set nobomb -- 不保存bom
 
