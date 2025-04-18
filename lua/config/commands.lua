@@ -490,13 +490,20 @@ function commands.setup()
           'https://www.cns11643.gov.tw/wordView.jsp?ID=682836',
           'https://encoding.spec.whatwg.org/gb18030.html',
           'sjis (shift-jis) test: U+ff71 ｱ (b1)  http://charset.7jp.net/sjis.html',
-          'sjis (shift-jis) test: U+6a97 檗 (0x9f 0x40)'
+          'sjis (shift-jis) test: U+6a97 檗 (0x9f 0x40)',
+          [[echo -ne '\xe4\xb8\x80' > temp.txt]],   -- 一的utf-8: e4 b8 80 -- -n表示不要寫入結尾的空行 -e 啟用反斜線轉義
+          [[echo "e4b880" | xxd -r -p > temp.txt]], -- -r reverse(表示要環原, 即16進位轉成2進位格式) -- -p (plain hexdump) 即16進位資料是連續的、不帶格式的字串，沒有地址欄、空格或 ASCII 解釋等額外資訊 -- 不能寫成-rp
+          [[xxd -c 1 temp.txt]],
         })
         return
       end
       local to_enc = args.fargs[1] -- ex gb18030
       local from_enc = args.fargs[2] or "utf-8"
 
+      -- ❗
+      -- lua用的是utf-8
+      -- neovim不管當前你的文件是什麼編碼，就算實際文件儲的是gb18030的位元組資料，在開啟後不管你的fenc是什麼，你的畫面所呈現的都是utf-8所呈現出來的字符
+      -- 即: neovim會嘗試將其轉換為utf-8來進行處理和顯示
       local char = utils.range.get_selected_text()
       if type(char) == "table" then
         char = table.concat(char, "")
@@ -532,10 +539,7 @@ function commands.setup()
         table.insert(hex_utf8, string.format("%02X", byte))
       end
 
-      local unicode = ""
-      if from_enc == "utf-8" or from_enc == "utf8" then
-        unicode = string.format(", %s U+%04X", char, nr)
-      end
+      local unicode = string.format(", %s U+%04X", char, nr) -- 因為nvim中已經會將所有內容都以utf-8來處理，所以char本身就是utf-8的內容
 
       print("Character: " .. char,
         unicode,
@@ -568,6 +572,8 @@ function commands.setup()
     function(args)
       if args.fargs[1] == "-h" then
         utils.cmd.showHelpAtQuickFix({
+          [[echo -ne '\xe4\xb8\x80' >> temp.txt]], -- 也可以用bash來寫byte進去 -- -n會接著寫，如果不加會從下一個列開始附加
+          [[echo "e4b880" | xxd -r -p >> temp.txt]],
           [[set fenc=]],
           [[如果fileencoding不對，會不給儲檔, 會有錯誤E513: Write error, conversion failed (make 'fenc' empty to override), 此時可以用:set fenc= 來解決]],
           [[ 當fenc錯誤時用 :set fenc=binary 也可以，但是需要用w!才能儲檔, 但是用xxd的時候可能還是會遇到問題，所以還是用:set fenc= 會比較好 ]],
@@ -577,7 +583,7 @@ function commands.setup()
           '⚠ 此指令是插入所以不能在空列中使用, 會看到錯誤的結果',
           ':lua print(tonumber(0xe4))',
           ':lua print(tonumber(30, 16))',
-          ':lua print(tonumber(0011, 2))'
+          ':lua print(tonumber(0011, 2))',
         })
         return
       end
@@ -608,7 +614,7 @@ function commands.setup()
       end
     end,
     {
-      desc = "將輸入的位元組轉換為字串(utf-8)",
+      desc = "插入位元組. 也可以用bash的echo -e, xxd -r -p來幫忙. 請查看 :InsertBytes -h ",
       nargs = "+",
       complete = function(arg_lead)
         if arg_lead:match("^%-%-") then
