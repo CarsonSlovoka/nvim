@@ -481,14 +481,14 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("PrintBytes",
     -- 測試資料: U+25524 UTF-8: F0 A5 94 A4 GB18030: 0x96 0x39 0xA8 0x32
-    -- https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4
-    -- https://www.cns11643.gov.tw/wordView.jsp?ID=682836
     function(args)
       if args.fargs[1] == "-h" then
         -- cmdUtils.showHelpAtQuickFix({
         utils.cmd.showHelpAtQuickFix({
           ':help encoding-values',
           'gb18030 test: U+25524 𥔤(0x9639 0xA832) https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%F0%A5%94%A4',
+          'https://www.cns11643.gov.tw/wordView.jsp?ID=682836',
+          'https://encoding.spec.whatwg.org/gb18030.html',
           'sjis (shift-jis) test: U+ff71 ｱ (b1)  http://charset.7jp.net/sjis.html',
           'sjis (shift-jis) test: U+6a97 檗 (0x9f 0x40)'
         })
