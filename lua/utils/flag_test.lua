@@ -34,5 +34,5 @@ local function Test_flag_parse()
 end
 
 t.RunTest({
-  ["Test_flag_parse"] = Test_flag_parse,
+  Test_flag_parse,
 }, arg[1])

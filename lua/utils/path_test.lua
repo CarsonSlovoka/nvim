@@ -44,5 +44,6 @@ local function Example_extract_path()
 end
 
 t.RunTest({
-  ["Example_extract_path"] = Example_extract_path,
+  Example_extract_path,
+  { fn = Example_extract_path, name = "Example_extract_path" },
 }, arg[1])

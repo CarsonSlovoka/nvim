@@ -1,38 +1,53 @@
 local M = {}
 
 --- @param allTestFunc table
---- @param funcName string
-function M.RunTest(allTestFunc, funcName)
-  -- 根據函數名查找並執行對應的函數
-  if funcName and allTestFunc[funcName] then
-    -- print("Executing function:", func_name)
-    --- @type boolean|table
-    local result = allTestFunc[funcName]()
-    if result == nil then -- 如果沒有回傳值也視為通過
-      print(string.format("✅ PASS: %s", funcName))
-    end
-    local t = type(result)
-    if t == "boolean" then
-      if result or result == nil then
-        print(string.format("✅ PASS: %s", funcName))
-      else
-        print(string.format("❌ FAIL: %s", funcName))
-      end
-      return
+--- @param inputFuncName string
+--- @example RunTest({ func1, func2 }, nil)
+--- @example RunTest({ func1, { fn = Example_xx, name="xx" }, { fn = Example_oo, name="oo" } }, "xx") -- test xx function
+function M.RunTest(allTestFunc, inputFuncName)
+  local foundFunc = false
+  for i, item in ipairs(allTestFunc) do
+    local curFunc
+    local funcName = nil
+    if type(item) == "function" then
+      curFunc = item
+    elseif item["fn"] then
+      curFunc = item["fn"]
+      funcName = item["name"]
     end
 
-    if t == "table" and result["errors"] then
-      print(string.format("❌ FAIL: %s", funcName))
-      for _, err_msg in ipairs(result["errors"]) do
-        print("    " .. err_msg)
+    if funcName == nil then
+      funcName = string.format("test %d of %d", i, #allTestFunc)
+    end
+
+    if inputFuncName == nil or
+        inputFuncName == funcName or
+        i == tonumber(inputFuncName) then
+      foundFunc = true
+
+      --- @type boolean|table
+      local result = curFunc()
+      if result == nil then -- 如果沒有回傳值也視為通過
+        print(string.format("✅ PASS: %s", funcName))
+      end
+      local t = type(result)
+      if t == "boolean" then
+        if result or result == nil then
+          print(string.format("✅ PASS: %s", funcName))
+        else
+          print(string.format("❌ FAIL: %s", funcName))
+        end
+      elseif t == "table" and result["errors"] then
+        print(string.format("❌ FAIL: %s", funcName))
+        for _, err_msg in ipairs(result["errors"]) do
+          print("    " .. err_msg)
+        end
       end
     end
-  else
-    print("Error: No such function '" .. (funcName or "") .. "'")
-    print("Available functions:")
-    for name, _ in pairs(allTestFunc) do
-      print("  - " .. name)
-    end
+  end
+
+  if not foundFunc then
+    print("Error: No such function '" .. (inputFuncName or "") .. "'")
   end
 end
 
