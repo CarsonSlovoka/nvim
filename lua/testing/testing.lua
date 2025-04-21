@@ -16,13 +16,11 @@ function M.RunTest(allTestFunc, inputFuncName)
       funcName = item["name"]
     end
 
-    if funcName == nil then
-      funcName = string.format("test %d of %d", i, #allTestFunc)
-    end
 
     if inputFuncName == nil or
         inputFuncName == funcName or
         i == tonumber(inputFuncName) then
+      funcName = string.format("%s [%d of %d]", funcName or "", i, #allTestFunc)
       foundFunc = true
 
       --- @type boolean|table
