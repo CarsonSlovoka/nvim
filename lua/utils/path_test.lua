@@ -1,11 +1,9 @@
-package.path  = package.path ..
+package.path = package.path ..
     ";../?.lua" ..                                          -- utils.array
     ";../testing/?.lua" ..                                  -- testing.lua
     ";" .. os.getenv("HOME") .. "/neovim/runtime/lua/?.lua" -- ~/neovim/runtime/lua/vim/inspect.lua
 
-local array   = require("utils.array")
-local inspect = require("vim.inspect")
-local t       = require("testing")
+local t = require("testing")
 
 local function Example_extract_path()
   local tests = {
