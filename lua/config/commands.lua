@@ -1189,46 +1189,63 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command("QFDeleteMany",
-    function()
-      local qf_list = vim.fn.getqflist()
+  for _, item in ipairs {
+    { "QFDeleteMany", vim.fn.getqflist, vim.fn.setqflist },
+    -- { "LFDeleteMany", function() -- 不可行. 會被抱怨正在使用而無法進行
+    --   return vim.fn.getloclist(0)
+    -- end,
+    --   vim.fn.setloclist, " (for location list)"
+    -- },
+  } do
+    local cmdName = item[1]
+    local getListFunc = item[2]
+    local setListFunc = item[3]
+    local descExtra = item[4] or ""
+    vim.api.nvim_create_user_command(cmdName,
+      function()
+        -- local qf_list = vim.fn.getqflist()
+        local qf_list = getListFunc()
 
-      -- 檢查是否有視覺選擇
-      local start_pos = vim.fn.getpos("'<") -- 視覺選擇的起始位置
-      local end_pos = vim.fn.getpos("'>")   -- 視覺選擇的結束位置
+        -- 檢查是否有視覺選擇
+        local start_pos = vim.fn.getpos("'<") -- 視覺選擇的起始位置
+        local end_pos = vim.fn.getpos("'>")   -- 視覺選擇的結束位置
 
-      -- 如果有有效的視覺選擇 (visual mode)
-      if start_pos[2] > 0 and end_pos[2] > 0 then
-        local start_idx = start_pos[2] - 1 -- 轉為 0-based 索引
-        local end_idx = end_pos[2] - 1     -- 轉為 0-based 索引
+        -- 如果有有效的視覺選擇 (visual mode)
+        if start_pos[2] > 0 and end_pos[2] > 0 then
+          local start_idx = start_pos[2] - 1 -- 轉為 0-based 索引
+          local end_idx = end_pos[2] - 1     -- 轉為 0-based 索引
 
-        -- 確保索引在有效範圍內
-        if next(qf_list) ~= nil and start_idx >= 0 and end_idx < #qf_list then
-          -- 從後向前移除，避免索引偏移問題
-          for i = end_idx, start_idx, -1 do
-            table.remove(qf_list, i + 1) -- table.remove 是 1-based
+          -- 確保索引在有效範圍內
+          if next(qf_list) ~= nil and start_idx >= 0 and end_idx < #qf_list then
+            -- 從後向前移除，避免索引偏移問題
+            for i = end_idx, start_idx, -1 do
+              table.remove(qf_list, i + 1) -- table.remove 是 1-based
+            end
+            setListFunc(qf_list, 'r')
+            -- vim.fn.setqflist(qf_list, 'r')
+            -- vim.fn.setloclist(qf_list, 'r')
+          else
+            vim.notify("選中的 quickfix 項目無效或列表為空", vim.log.levels.ERROR)
           end
-          vim.fn.setqflist(qf_list, 'r')
-          -- vim.fn.setloclist(qf_list, 'r')
         else
-          vim.notify("選中的 quickfix 項目無效或列表為空", vim.log.levels.ERROR)
+          -- 沒有視覺選擇時，移除當前行（原邏輯）
+          local cur_idx = vim.api.nvim_win_get_cursor(0)[1] - 1
+          if next(qf_list) ~= nil and cur_idx >= 0 and cur_idx < #qf_list then
+            table.remove(qf_list, cur_idx + 1)
+            -- vim.fn.setqflist(qf_list, 'r')
+            setListFunc(qf_list, 'r')
+          else
+            vim.notify("無效的 quickfix 項目或列表為空", vim.log.levels.ERROR)
+          end
         end
-      else
-        -- 沒有視覺選擇時，移除當前行（原邏輯）
-        local cur_idx = vim.api.nvim_win_get_cursor(0)[1] - 1
-        if next(qf_list) ~= nil and cur_idx >= 0 and cur_idx < #qf_list then
-          table.remove(qf_list, cur_idx + 1)
-          vim.fn.setqflist(qf_list, 'r')
-        else
-          vim.notify("無效的 quickfix 項目或列表為空", vim.log.levels.ERROR)
-        end
-      end
-    end,
-    {
-      desc = "刪除選中的quickfix項目（支援多選, V-LINE",
-      range = true,
-    }
-  )
+      end,
+      {
+        desc = "刪除選中的quickfix項目 (支援多選, V-LINE)" .. descExtra,
+        range = true,
+      }
+    )
+  end
+
 
   vim.api.nvim_create_user_command("QFNew", function(args)
       local title = args.fargs[1]
