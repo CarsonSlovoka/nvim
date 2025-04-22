@@ -1591,8 +1591,44 @@ local function install_nvim_dap()
   -- vim.fn.expand("~/.pyenv/shims/python3") -- 預設會自己抓
   ) -- https://github.com/mfussenegger/nvim-dap-python/blob/34282820bb713b9a5fdb120ae8dd85c2b3f49b51/README.md?plain=1#L62-L142
 
-  vim.keymap.set("n", "<F5>", dap.continue, { desc = "Start/Continue Debugging" })
-  vim.keymap.set("n", "<F17>", dap.terminate, { desc = "Stop debug (Shift+F5)" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
+  -- lua
+  -- 以下這兩個配置一定要有
+  -- configurations.lua
+  -- adapters.nlua
+  dap.configurations.lua = {
+    {
+      type = 'nlua',
+      request = 'attach',
+      name = "Attach to running Neovim instance",
+    }
+  }
+  dap.adapters.nlua = function(callback, config)
+    -- 可以直接用
+    -- lua require"osv".launch({port = 8086}) <-- 不建議用，就執行用launch()之後接run_this即可
+    -- lua require'osv'.launch() -- 如果沒有port預設會隨便生成一個
+    -- lua require'osv'.stop() -- 結束launch
+    -- lua require'osv'.run_this()
+    -- lua print(require "osv".is_running()) -- launch()之後就是true了
+    callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
+  end
+
+  vim.keymap.set("n", "<F5>", function()
+      if vim.o.filetype == "lua" and not require "osv".is_running() then
+        require 'osv'.launch()
+        require 'osv'.run_this()
+        return -- 不需要再執行dap.continue()
+      end
+      dap.continue()
+    end,
+    { desc = "Start/Continue Debugging" }
+  )
+  vim.keymap.set("n", "<F17>", function()
+    if vim.o.filetype == "lua" then
+      require 'osv'.stop()
+    end
+    dap.terminate()
+    dapui.close()                          -- lua的dap沒有自動關掉，所以補上，並且dapui.close()就算已經關閉再次執行也不會有事
+  end, { desc = "Stop debug (Shift+F5)" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
   vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step Over" })
   vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step Into" })
   vim.keymap.set("n", "<F23>", dap.step_out, { desc = "Step Out (Shift+F11)" })
