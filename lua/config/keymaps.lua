@@ -150,14 +150,14 @@ for i = 1, #strRegs do
       local col = vim.fn.col('.')           -- 當前列號
       -- local location = string.format("%s:%d:%d", filepath, line, col) -- 如果用: 在windows會被磁碟名稱影響
       local location = string.format("%s|%d|%d", filepath, line, col)
-      vim.fn.setreg(tostring(i), location)
+      vim.fn.setreg(tostring(c), location)
       vim.fn.setreg('"', location) -- 也複製到暫存器"
     end,
     {
       desc = "複製當前的位置到剪貼簿"
     }
   )
-  map('v', "<leader>by" .. i,
+  map('v', "<leader>by" .. c,
     function()
       local selected_text = utils.range.get_selected_text()
       if type(selected_text) == "table" then
@@ -169,7 +169,7 @@ for i = 1, #strRegs do
       local col = vim.fn.col('.')
       local location = string.format("%s|%d|%d", filepath, line, col)
       local full_text = location .. " | " .. text
-      vim.fn.setreg(tostring(i), full_text)
+      vim.fn.setreg(tostring(c), full_text)
       vim.fn.setreg('"', full_text)
       vim.api.nvim_input("<ESC>") -- 協助離開visaul模式
     end,
