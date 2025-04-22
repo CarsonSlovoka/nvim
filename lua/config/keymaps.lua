@@ -409,7 +409,13 @@ local function setup_visual()
 
       local mode = vim.api.nvim_get_mode().mode
       if mode == "V" and vim.bo.buftype == 'terminal' then
-        local match = string.match(cur_dir, '^.-:([~/].-)%$')
+        local pattern = ""
+        if utils.os.IsWindows then
+          pattern = '^(.-)>'         -- path>cmd
+        else
+          pattern = '^.-:([~/].-)%$' -- user:path$cmd
+        end
+        local match = string.match(cur_dir, pattern)
         if match then
           cur_dir = match
         end
