@@ -8,6 +8,8 @@ local rangeUtils = require("utils.range")
 local extmarkUtils = require("utils.extmark")
 local utils = require("utils.utils")
 
+vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- 它不是真得刪除，而是在創件新的列表，可以用:cnewer :colder 切換
+
 local commands = {}
 
 local function openCurrentDirWithFoot()
@@ -1207,6 +1209,7 @@ function commands.setup()
             table.remove(qf_list, i + 1) -- table.remove 是 1-based
           end
           vim.fn.setqflist(qf_list, 'r')
+          -- vim.fn.setloclist(qf_list, 'r')
         else
           vim.notify("選中的 quickfix 項目無效或列表為空", vim.log.levels.ERROR)
         end
