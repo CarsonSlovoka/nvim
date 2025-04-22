@@ -10,8 +10,14 @@ function M.get_selected_text(concat)
   if mode == 'v' or mode == 'V' then
     -- 以下是在keymap的清況下，'<, '>會是前一次的結果
     -- vim.api.nvim_input("<ESC>") -- 這種清況下，就算先嘗試離開，此時的getpos("'<")也還是之前的結果
-    start_pos = vim.fn.getpos("v") -- 視覺模式的起點
-    end_pos = vim.fn.getpos(".")   -- 當前光標的位置當作終點
+    start_pos = vim.fn.getpos("v") -- 視覺模式的起點. 在V模式下的col不是1，而是取決於當前的cursor其col
+    end_pos = vim.fn.getpos(".")   -- 當前光標的位置當作終點. 在V模式下的col不是1，而是取決於當前的cursor其col
+    if mode == "V" then            -- 雖然是V但是cursor在哪一欄還是有影響！
+      -- print("🧊 ", vim.inspect(start_pos), vim.inspect(end_pos))
+      start_pos[3] = 1
+      end_pos[3] = vim.fn.strlen(vim.fn.getline(end_pos[2])) -- col的位置抓該cursor所在列的最後一欄
+      -- print("🌳 ", vim.inspect(start_pos), vim.inspect(end_pos))
+    end
   else
     -- 如果是command所觸發，'<與'>都是目前的結果
     start_pos = vim.fn.getpos("'<") -- 抓取之前選取的起點

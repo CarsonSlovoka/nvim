@@ -1,6 +1,7 @@
 local keymaps = {}
 
 local rangeUtils = require("utils.range")
+local utils = require("utils.utils")
 local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
 -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
@@ -158,7 +159,7 @@ for i = 1, #strRegs do
   )
   map('v', "<leader>by" .. i,
     function()
-      local selected_text = rangeUtils.get_selected_text()
+      local selected_text = utils.range.get_selected_text()
       if type(selected_text) == "table" then
         selected_text = table.concat(selected_text, " ")
       end
@@ -401,7 +402,18 @@ local function setup_visual()
 
   map("v", "<leader>cd",
     function()
-      local cur_dir = rangeUtils.get_selected_text("")
+      local cur_dir = utils.range.get_selected_text("")
+      if type(cur_dir) == "table" then
+        cur_dir = table.concat(cur_dir, "")
+      end
+
+      local mode = vim.api.nvim_get_mode().mode
+      if mode == "V" and vim.bo.buftype == 'terminal' then
+        local match = string.match(cur_dir, '^.-:([~/].-)%$')
+        if match then
+          cur_dir = match
+        end
+      end
       vim.cmd("cd " .. cur_dir)
       print("工作目錄已切換到: " .. cur_dir)
       local ok, nvim_treeAPI = pcall(require, "nvim-tree.api")

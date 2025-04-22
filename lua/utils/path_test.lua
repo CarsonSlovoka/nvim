@@ -21,6 +21,10 @@ local function Example_extract_path()
   for i, item in ipairs(tests) do
     local path = item[1]
     local expected = item[2]
+    -- ^.-: 從字串開頭，匹配到第一個:
+    -- [~/] 匹配路徑的開頭，是~或者絕對路徑/, 相對路徑則不需要
+    -- .- 非貪婪匹配任意字符，直到下一個模式. 相當於匹配到第一個出現的下一個模式
+    -- %$ 其中的%是不要將$視為正則式
     local match = string.match(path, '^.-:([~/].-)%$')
     local actual
     if match then
@@ -44,6 +48,5 @@ local function Example_extract_path()
 end
 
 t.RunTest({
-  Example_extract_path,
   { fn = Example_extract_path, name = "Example_extract_path" },
 }, arg[1])
