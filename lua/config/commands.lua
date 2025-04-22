@@ -1090,6 +1090,44 @@ function commands.setup()
     }
   )
 
+  for _, item in ipairs {
+    { "QFInsertMany", "caddexpr" },
+    { "LFInsertMany", "laddexpr", " (for location list)" },
+  } do
+    local cmdName = item[1]
+    local qfExpr = item[2]
+    local descExtra = item[3] or ""
+    vim.api.nvim_create_user_command(cmdName,
+      function(args)
+        if args.range == 0 then
+          vim.notify('only support range', vim.log.levels.ERROR)
+          return
+        end
+        local texts = utils.range.get_selected_text()
+        if type(texts) == "string" then
+          texts = { texts }
+        end
+        for _, line in ipairs(texts) do
+          local filepath, row, col, desc = string.match(line, "(.-):(%d+):(%d+):(.+)")
+          if filepath and row and col and desc then
+            -- local cmd = "./" .. line -- 這不行，要引號包起來才不會誤判
+            local cmd = string.format(
+              [[ %s './%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]], -- col如果沒有可以省略，預設為1
+              qfExpr,
+              filepath, row, col, desc
+            )
+            vim.cmd(cmd)
+          end
+        end
+      end,
+      {
+        desc = "選取 rg --vimgrep 的結果插入到quickfix表之中" .. descExtra,
+        range = true,
+      }
+    )
+  end
+
+
   vim.api.nvim_create_user_command("Ladd",
     function(args)
       local text
