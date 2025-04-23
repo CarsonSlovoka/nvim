@@ -1809,10 +1809,13 @@ local installs = {
     fn = function()
       require("lspconfig").clangd.setup { -- 格式化不與vim.o.shiftwidth有關，而是要吃.clang-format或者額外取代
         cmd = {
-          -- https://www.reddit.com/r/neovim/comments/16qwp3d/clangd_autoindents_to_2_tabs_instead_of_4/?rdt=41934
+          -- https://manpages.ubuntu.com/manpages/noble/man1/clangd-18.1.html
           "clangd",
-          "--fallback-style=webkit", -- https://www.webkit.org/code-style-guidelines/
-          -- webkit的風格indent size: 4
+          -- 強列建議自己在專案下建立 `.clang-format` 的檔案在去設定該專案用的格式
+          -- 透過BaseOnStyle可以設定所有沒有被定義到的項目要參考所一個設定，共有LLVM, Google, WebKit, GNU, WebKit, ...
+          -- BasedOnStyle: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#basedonstyle
+          "--fallback-style=WebKit", -- https://www.webkit.org/code-style-guidelines/
+          -- IncludeBlocks -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks 可以設定include是要如何被格式化
         }
       }
     end,
