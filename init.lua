@@ -1671,6 +1671,36 @@ local function install_nvim_dap()
   dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close()
   end
+
+  vim.api.nvim_create_user_command("DapSetBreakpoint",
+    function()
+      vim.ui.input(
+        { prompt = "Condition (ex: i == 5 || i == 9 ): " },
+        function(condition)
+          dap.set_breakpoint(condition) -- 例如在for迴圈後使用 i == 5
+        end
+      )
+    end,
+    {
+      desc = "Conditional Breakpoint"
+    }
+  )
+  vim.keymap.set("n", "<leader>bc", function()
+    vim.cmd("DapSetBreakpoint")
+  end, { desc = "Conditional Breakpoint" })
+
+  vim.api.nvim_create_user_command("DapUIOpen",
+    function()
+      dapui.open()
+    end,
+    { desc = "dapui.open()" }
+  )
+  vim.api.nvim_create_user_command("DapUIClose",
+    function()
+      dapui.close()
+    end,
+    { desc = "dapui.close()" }
+  )
 end
 
 local installs = {
