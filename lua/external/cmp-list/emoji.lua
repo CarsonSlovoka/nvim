@@ -372,6 +372,26 @@ emoji_data.G.plant = {
 emoji_data.G.action = {
   alias = { "action" },
   items = {
+    { "▶️",
+      {
+        "play",
+      },
+    },
+    { "⏯️",
+      {
+        "playOrPause",
+      },
+    },
+    { "⏸️",
+      {
+        "pause",
+      },
+    },
+    { "⏹️",
+      {
+        "stop",
+      },
+    },
     { "⏳",
       {
         "hourglassNotDone",
@@ -382,6 +402,30 @@ emoji_data.G.action = {
     { "💤",
       {
         "zzz",
+      },
+    },
+    { "🚫",
+      {
+        "prohibited",
+        "noEntry",
+        "ban",
+        "disable",
+        "stop",
+      },
+    },
+    { "⛔",
+      {
+        "noEntry",
+        "ban",
+        "disable",
+        "stop",
+      },
+    },
+    { "🔚",
+      {
+        "end",
+        "exit",
+        "quit",
       },
     },
     { "↩️",
@@ -422,25 +466,73 @@ emoji_data.G.mood = {
   }
 }
 
+emoji_data.G.item = {
+  alias = "item",
+  items = {
+    { "🔹",
+      {
+        "smallBlueDiamond",
+        "itemBlueDiamond",
+        "itemDiamond",
+      },
+    },
+    { "🔷",
+      {
+        "largeBlueDiamond",
+        "itemBlueDiamond",
+        "itemDiamond",
+      },
+    },
+    { "🟩",
+      {
+        "greenSquare",
+        "itemGreenSquare",
+        "itemSquare",
+      },
+    },
+    { "🟦",
+      {
+        "blueSquare",
+        "itemBlueSquare",
+        "itemSquare",
+      },
+    },
+    { "🟥",
+      {
+        "redSquare",
+        "itemRedSquare",
+        "itemSquare",
+        "stop",
+        "terminate",
+      },
+    },
+    { "🟧",
+      {
+        "orangeSquare",
+        "itemOrangeSquare",
+        "itemSquare",
+      },
+    },
+    { "🔴",
+      {
+        "redCircle",
+        "breakpoint",
+      },
+    },
+    { "📌",
+      {
+        "pushpin",
+        "pin",
+        "breakpoint",
+      },
+    },
+  }
+}
+
 emoji_data.G._other = {
   alias = "",
   items = {
     { "⭐", "star" },
-    { "🔚",
-      {
-        "end",
-        "exit",
-        "quit",
-      },
-    },
-    { "⛔",
-      {
-        "noEntry",
-        "ban",
-        "disable",
-        "stop",
-      },
-    },
     { "❌",
       {
         "crossMark",
@@ -705,54 +797,6 @@ emoji_data.G._other = {
       {
         "B",
         "button",
-      },
-    },
-    { "🔹",
-      {
-        "smallBlueDiamond",
-        "itemBlueDiamond",
-        "itemDiamond",
-        "item",
-      },
-    },
-    { "🔷",
-      {
-        "largeBlueDiamond",
-        "itemBlueDiamond",
-        "itemDiamond",
-        "item",
-      },
-    },
-    { "🟩",
-      {
-        "greenSquare",
-        "itemGreenSquare",
-        "itemSquare",
-        "item",
-      },
-    },
-    { "🟦",
-      {
-        "blueSquare",
-        "itemBlueSquare",
-        "itemSquare",
-        "item",
-      },
-    },
-    { "🟥",
-      {
-        "redSquare",
-        "itemRedSquare",
-        "itemSquare",
-        "item",
-      },
-    },
-    { "🟧",
-      {
-        "orangeSquare",
-        "itemOrangeSquare",
-        "itemSquare",
-        "item",
       },
     },
     { "⚔️",
