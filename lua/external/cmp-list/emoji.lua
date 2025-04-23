@@ -529,6 +529,40 @@ emoji_data.G.item = {
   }
 }
 
+local number_items = {}
+for i = 0, 9 do -- sign_define 0️⃣, 1️⃣  .. 9️⃣
+  -- 其中U+FE00-U+FE0f區間為變體選擇符(Variation Selectors)
+  local emoji_number = vim.fn.nr2char(i + 48) .. string.format("️⃣") -- 從0x0030 (48) 開始，後面固定為U+FE0F U+20E3
+  table.insert(number_items, { emoji_number, tostring(i) })
+end
+emoji_data.G.number = {
+  alias = "number",
+  items = number_items
+}
+
+local alphabet_items = {}
+-- 🇦 🇧 .. 🇿
+for i = 0, 25 do
+  local lower_letter = vim.fn.nr2char(0x41 + i) -- A
+  local upper_letter = vim.fn.nr2char(0x61 + i) -- a
+  local emoji_letter = vim.fn.nr2char(0x1f1e6 + i)
+  table.insert(alphabet_items,
+    {
+      emoji_letter,
+      {
+        lower_letter,
+        upper_letter,
+        "letter" .. lower_letter,
+        "letter" .. upper_letter,
+      }
+    }
+  )
+end
+emoji_data.G.letter = {
+  alias = { "letter", "alphabet" },
+  items = alphabet_items
+}
+
 emoji_data.G._other = {
   alias = "",
   items = {
