@@ -262,7 +262,30 @@ local function install_lspconfig()
   --     }
   --   )
   --   vim.cmd("ToggleDiagnosticHover --quite")
-  vim.diagnostic.config({ virtual_lines = { current_line = true } })
+  vim.diagnostic.config({
+    virtual_lines = {
+      current_line = true
+    },
+    -- virtual_text = false,
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = "",
+        [vim.diagnostic.severity.WARN] = "",
+        [vim.diagnostic.severity.INFO] = "󰋼",
+        [vim.diagnostic.severity.HINT] = "󰌵",
+      },
+    },
+    float = {
+      border = "rounded",
+      format = function(d) -- 用熱鍵 ]d 會顯示 :h ]d
+        return ("%s (%s) [%s]"):format(d.message, d.source, d.code or d.user_data.lsp.code)
+      end,
+    },
+    underline = true,
+    jump = {
+      float = true,
+    },
+  })
 
   vim.api.nvim_create_user_command(
     "SetDiagnostics",
