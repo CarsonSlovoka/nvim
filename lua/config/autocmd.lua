@@ -87,7 +87,8 @@ function M.setup(opts)
             string.format("%s %s saved.", os.date("%Y-%m-%d %H:%M:%S"), vim.fn.expand('%')),
             vim.log.levels.INFO
           )
-          vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
+          -- vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
+          vim.api.nvim_input("i<ESC>m^") -- 直接再執行m^來加入最後使用i的位置
 
           -- elseif not vim.bo.modified then
           --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
@@ -97,6 +98,43 @@ function M.setup(opts)
       end,
     }
   )
+
+  -- https://vi.stackexchange.com/a/44191/31859
+  local begin_visual_position
+  vim.api.nvim_create_autocmd("ModeChanged", {
+    pattern = { "*:[vV\x16]*" },
+    callback = function()
+      local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
+      if buftype ~= "" then
+        return
+      end
+      -- vim.api.nvim_input("m<") -- 這樣沒用，因為還是在visual的情況，只能等到結束在設定
+      begin_visual_position = vim.api.nvim_win_get_cursor(0) -- [row, col]
+    end,
+    desc = "VisualEnter 標記開始選取的位置"
+  })
+  vim.api.nvim_create_autocmd("ModeChanged", {
+    pattern = { "[vV\x16]*:*" },
+    callback = function()
+      local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
+      print(buftype)
+      if buftype ~= "" then
+        return
+      end
+      if begin_visual_position then
+        local cur_pos = vim.api.nvim_win_get_cursor(0)
+        vim.api.nvim_win_set_cursor(0, begin_visual_position)
+        -- TODO 以下全部都失敗
+        -- vim.api.nvim_input("m<") -- < 不行但是>可以
+        -- vim.api.nvim_input("m<lt>")
+        -- vim.api.nvim_feedkeys("m<", "n", false)
+        -- vim.api.nvim_feedkeys("m<lt>", "n", false)
+        vim.api.nvim_win_set_cursor(0, cur_pos)
+      end
+      vim.api.nvim_input("m>")
+    end,
+    desc = "VisualLeave 標記結束選取的位置"
+  })
 
   create_autocmd(
     { "BufRead", "BufNewFile" },

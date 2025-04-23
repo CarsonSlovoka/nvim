@@ -28,8 +28,16 @@ local function sign_define_marks()
 
   local strRegs = '0123456789' ..
       'abcdefghijklmnopqrstuvwxyz' ..
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ..
+      '^' .. -- 前一次編輯的位置
+      '<>'   -- < 選取的開始, > 選取的結束
+
+
+  vim.fn.sign_define("MarkPin^", { text = "✍️" })
+  vim.fn.sign_define("MarkPin<", { text = "<" })
+  vim.fn.sign_define("MarkPin>", { text = ">" })
   local group = "carson_sign_mark_group" -- 前面補上我的名子，防止可能重覆的考量
+
   for i = 1, #strRegs do
     local mark = strRegs:sub(i, i)
     vim.keymap.set("n", "m" .. mark,
