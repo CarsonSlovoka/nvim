@@ -91,6 +91,27 @@ emoji_data.G.hand = {
         "deal",
       },
     },
+    { "✍️",
+      {
+        "writing",
+        "write",
+        "handwrite",
+      },
+    },
+    { "🤏",
+      {
+        "pinching",
+        "little",
+        "small",
+        "tik",
+      },
+    },
+    { "🤌",
+      {
+        "pinchedFingers",
+        "cue",
+      },
+    },
   }
 }
 
@@ -522,6 +543,13 @@ emoji_data.G.item = {
     { "📌",
       {
         "pushpin",
+        "pin",
+        "breakpoint",
+      },
+    },
+    { "📍",
+      {
+        "roundPushpin",
         "pin",
         "breakpoint",
       },
