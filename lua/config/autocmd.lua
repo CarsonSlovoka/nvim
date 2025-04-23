@@ -27,6 +27,26 @@ function M.setup(opts)
 
   -- print(vim.inspect(M))
 
+  vim.keymap.set("i", "<C-O>", function()
+      if not M.autoSave then
+        return "<C-O>"
+      end
+      -- local orgSetting = M.autoSave
+      M.autoSave = false -- 因為<C-O>會暫時離開Insert模式，就會導致觸發了InsertLeave的事件，這不是我們所期望的，因此就先關閉
+      -- print("🧊", M.autoSave)
+      vim.defer_fn(function()
+        -- M.autoSave = orgSetting -- 可行，但是多此一舉
+        M.autoSave = true
+        -- print("🔥", M.autoSave)
+      end, 50)
+      return "<C-O>"
+    end,
+    {
+      desc = "若AutoSave開啟，則暫時關閉後再開啟. 並執行預設行為: execute one command, return to Insert mode",
+      noremap = false, -- 允許遞歸映射以執行原始 <C-O> 行為
+      expr = true,
+    }
+  )
   create_autocmd(
     {
       -- "TextChanged", -- 如果用x, ce, undo, redo...也會觸發 -- 不要新增，否則redo會因為儲檔後無法復原
@@ -62,7 +82,11 @@ function M.setup(opts)
             pattern = vim.fn.expand("%") -- 當前文件路徑
           })
 
-          vim.cmd("silent write")      -- 如果文件是被外部工具改變這時候用write就會被尋問是否要載入
+          vim.cmd("silent write") -- 如果文件是被外部工具改變這時候用write就會被尋問是否要載入
+          vim.notify(
+            string.format("%s %s saved.", os.date("%Y-%m-%d %H:%M:%S"), vim.fn.expand('%')),
+            vim.log.levels.INFO
+          )
           vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
 
           -- elseif not vim.bo.modified then
