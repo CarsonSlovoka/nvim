@@ -41,6 +41,11 @@ function options.setup()
   vim.opt.wrap = false       -- 禁止長行自動換行
 
   vim.wo.cursorcolumn = true -- 光標所在的整欄也會highlight
+  vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#3a3a3a" })
+  vim.o.cursorline = true    -- 游標所在的列，整列(橫向)的會高亮
+  -- vim.wo.cursorline = true -- 僅當前窗口
+  -- vim.o.cursorlineopt = "both" -- both為預設, 如果用line, 那麼number(列號)不會突顏
+  vim.api.nvim_set_hl(0, "CursorLine", { bg = "#2f3e54" })
 
   -- vim.o.tabline = "%t" -- 用這個只會有當前的檔案名稱，不會看到其它的頁籤名稱
   vim.o.tabline = "%!v:lua.get_tabline()"
@@ -62,7 +67,7 @@ function options.setup()
     -- vim.cmd("highlight CursorColumn ctermbg=236 guibg=#3a3a3a") -- 光標所在欄顏色(預設是無)
     -- 一次設定
     vim.cmd([[
-        highlight CursorColumn ctermbg=236 guibg=#3a3a3a
+        "highlight CursorColumn ctermbg=236 guibg=#3a3a3a
         highlight StatusLine guifg=#fefefe guibg=#282a36
       ]])
     --[[

@@ -1,9 +1,5 @@
 -- :help sign_define
 
-vim.o.cursorline = true -- 游標所在的列，整列(橫向)的會高亮
--- vim.wo.cursorline = true -- 僅當前窗口
--- vim.o.cursorlineopt = "both" -- both為預設, 如果用line, 那麼number(列號)不會突顏
-
 vim.fn.sign_define("DapBreakpoint",
   {
     text = "🔴", -- 
