@@ -1,3 +1,6 @@
+vim.api.nvim_set_hl(0, "@breakpoint", { bg = "#40252b" })
+vim.api.nvim_set_hl(0, "@onbreakpoint", { bg = "#2a5091" })
+
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
   if opts then
