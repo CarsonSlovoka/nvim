@@ -349,6 +349,8 @@ function M.setup(opts)
     end,
   })
 
+  -- :h compl-autocomplete
+
   --[[ 以下是vs2010的mfc專案可能會有這樣的需求，你可以把這段放到 my-customize.lua 自己添加
   (因為不曉得是不是所有rc, rc2都是如此，為了避免有爭議，讓使用者自己在 my-customize.lua 中新增 )
   vim.api.nvim_create_autocmd(
