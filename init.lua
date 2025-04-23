@@ -25,6 +25,7 @@ if vim.fn.filereadable(vimrcPath) == 1 then
 end
 
 -- config
+require("config.sign_define")
 require("config.options").setup()
 require "config.filetype".setup {
   (
