@@ -99,23 +99,49 @@ function M.setup(opts)
     }
   )
 
+  -- vim.keymap.set({ "v", "x" } -- x包含v, V. 但沒有Ctrl-V 而v會包含，並且包含所有x涵蓋的項目
+  local enable_mark_range = true
+  for _, key in ipairs({ "c", ":" }) do
+    vim.keymap.set("v", key, function()
+        enable_mark_range = false
+        vim.defer_fn(function()
+          enable_mark_range = true
+        end, 50)
+        return key
+      end,
+      {
+        desc = "暫時停止sign m<, m>的行為，避免c的時候被多打上m<, m>",
+        noremap = false,
+        expr = true,
+      }
+    )
+  end
+
   -- https://vi.stackexchange.com/a/44191/31859
   local begin_visual_position
   vim.api.nvim_create_autocmd("ModeChanged", {
     pattern = { "*:[vV\x16]*" },
     callback = function()
+      if not enable_mark_range then
+        return
+      end
       local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
       if buftype ~= "" then
         return
       end
       -- vim.api.nvim_input("m<") -- 這樣沒用，因為還是在visual的情況，只能等到結束在設定
       begin_visual_position = vim.api.nvim_win_get_cursor(0) -- [row, col]
+      -- print("Enter", vim.v.event.old_mode, vim.v.event.new_mode) -- :h ModeChanged -- n, v -- n, V 抓不到c
+      -- print("Enter", vim.api.nvim_get_mode().mode) -- 這也抓不到c
     end,
     desc = "VisualEnter 標記開始選取的位置"
   })
   vim.api.nvim_create_autocmd("ModeChanged", {
     pattern = { "[vV\x16]*:*" },
     callback = function()
+      if not enable_mark_range then
+        return
+      end
       local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
       print(buftype)
       if buftype ~= "" then
@@ -131,6 +157,7 @@ function M.setup(opts)
         -- vim.api.nvim_feedkeys("m<lt>", "n", false)
         vim.api.nvim_win_set_cursor(0, cur_pos)
       end
+      -- print("Leave", vim.v.event.old_mode, vim.v.event.new_mode) -- v, n -- V, n
       vim.api.nvim_input("m>")
     end,
     desc = "VisualLeave 標記結束選取的位置"
