@@ -295,7 +295,7 @@ function M.setup(opts)
           end
         end
 
-        if not has_formatter then
+        if not has_formatter or vim.bo.filetype == "sh" then
           -- 如果有格式化，多餘的空白，應該都會被除掉，所以這個動作只需要在沒有格式化的文件使用即可
           -- 其實就是使用vim的取代%s/.../...
           -- \s\+  \s+ 任意空白字符(空格, 制表符等)一個或多個
