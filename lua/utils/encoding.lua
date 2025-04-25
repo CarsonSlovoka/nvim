@@ -1,6 +1,5 @@
 local M = {}
 
----
 ---@return table
 function M.get_encoding_list()
   -- 包含所有 :help encoding-values 中列出的編碼值和別名
@@ -86,5 +85,23 @@ function M.get_encoding_list()
     'gb18030',
   }
 end
+
+local json = {}
+
+--- @return table
+function json.load(filepath)
+  local file = io.open(filepath, 'r')
+  if not file then
+    print('open faild: ' .. filepath)
+    return {}
+  end
+
+  local content = file:read('*all')
+  file:close()
+
+  return vim.json.decode(content) -- 🤔 不曉得怎麼處理失敗
+end
+
+M.json = json
 
 return M
