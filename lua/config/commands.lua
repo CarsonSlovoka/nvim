@@ -1092,6 +1092,37 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("QFAppend",
+    function(args)
+      local text = ""
+      if #args.fargs > 0 then
+        text = args.fargs[1]
+      elseif args.range ~= 0 then
+        text = utils.range.get_selected_text('')
+      else
+        text = vim.fn.getline('.')
+      end
+
+      local filepath = vim.fn.expand('%')
+      local line = vim.fn.line('.')
+      local col = vim.fn.col('.')
+      local cmd = string.format(
+        [[ caddexpr './%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]],
+        filepath, line, col, text
+      )
+      vim.cmd(cmd)
+      utils.cmd.open_qflist_if_not_open()
+    end,
+    {
+      desc = "將目前的內容附加到quickfix list清單中(成為最後一筆資料)",
+      range = true,
+      nargs = "?",
+      complete = function()
+        return { string.format("%s", vim.fn.getline('.')) }
+      end
+    }
+  )
+
   for _, item in ipairs {
     { "QFInsertMany", "caddexpr" },
     { "LFInsertMany", "laddexpr", " (for location list)" },
