@@ -400,10 +400,6 @@ local function setup_visual()
   map("v", "<leader>cd",
     function()
       local cur_dir = table.concat(utils.range.get_selected_text(), "")
-      if type(cur_dir) == "table" then
-        cur_dir = table.concat(cur_dir, "")
-      end
-
       local mode = vim.api.nvim_get_mode().mode
       if mode == "V" and vim.bo.buftype == 'terminal' then
         local pattern = ""
