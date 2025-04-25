@@ -591,9 +591,62 @@ emoji_data.G.letter = {
   items = alphabet_items
 }
 
+emoji_data.G.tool = {
+  alias = "tool",
+  items = {
+    { "⚙️",
+      {
+        "gear",
+        "settings",
+      },
+    },
+    { "🛠️",
+      {
+        "hammerAndWrench",
+        "hammer",
+        "wrench",
+        "spanner",
+      },
+    },
+    { "🔧",
+      {
+        "metalWrench",
+        "spanner",
+      },
+    },
+    { "🔨",
+      {
+        "hammer",
+      },
+    },
+    { "🧰",
+      {
+        "toolbox",
+      },
+    },
+    { "🪜",
+      {
+        "ladder",
+      },
+    },
+  }
+}
+
 emoji_data.G._other = {
   alias = "",
   items = {
+    { "🧙", "mage" },
+    { "👷",
+      {
+        "worker",
+        "employee",
+      },
+    },
+    { "🕳️",
+      {
+        "hole",
+      },
+    },
     { "⭐", "star" },
     { "❌",
       {
@@ -622,6 +675,11 @@ emoji_data.G._other = {
       {
         "check",
         "ok",
+      },
+    },
+    { "⚠️", -- U+26a0 U+fe0f (variation selectors)
+      {
+        "warning",
       },
     },
     { "⚠", "warning" },
@@ -677,7 +735,6 @@ emoji_data.G._other = {
       },
     },
     { "🚀", "rocket" },
-    { "🧙", "mage" },
     { "📁", "folder" },
     { "📂", "folderOpen" },
     { "📦",
@@ -698,12 +755,6 @@ emoji_data.G._other = {
         "pageFacingUp",
         "newFile",
         "file",
-      },
-    },
-    { "⚙️",
-      {
-        "gear",
-        "settings",
       },
     },
     { "📢", "announcement" },
@@ -987,5 +1038,7 @@ end
 vim.cmd("digraphs -- 128529")           -- 😑
 vim.cmd("digraphs xd 128565")           -- 😵
 vim.cmd("digraphs sm 128512 ha 128513") -- 😀 😁
+
+vim.cmd("digraphs .. 128172")           -- 💬
 
 return M
