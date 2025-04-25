@@ -1,8 +1,11 @@
 local M = {}
 
---- @param concat string|nil  "\n", ...
---- @return string|table
-function M.get_selected_text(concat)
+-- @param concat string|nil  "\n", ...
+-- @return table|string -- 回傳多型別的情況下，lsp的靜態分析不會曉得，很容易會出現警告
+
+--- @return table 每一個元素為選取中的每一列其對應的資料
+--- @example table.concat(get_selected_text(), "") -- 如果要得到字串可以自行使用table.concat來整合
+function M.get_selected_text()
   local mode = vim.fn.mode()
 
   local start_pos
@@ -28,12 +31,12 @@ function M.get_selected_text(concat)
   local line2, col2 = end_pos[2], end_pos[3]
   local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
   if #lines == 0 then
-    return ""
+    return {}
   end
 
   -- 同列
   if line1 == line2 then
-    return string.sub(lines[1], col1, col2)
+    return { string.sub(lines[1], col1, col2) }
   end
 
   -- return table.concat(lines, '')
@@ -43,11 +46,7 @@ function M.get_selected_text(concat)
 
   -- 二列
   if line2 - line1 == 1 then
-    if concat then
-      return table.concat({ l_start, l_end }, concat)
-    else
-      return { l_start, l_end, }
-    end
+    return { l_start, l_end }
   end
 
   -- 兩列以上
@@ -58,12 +57,7 @@ function M.get_selected_text(concat)
   -- print(vim.inspect({ "AAA", unpack({ 1, 2, 3 }) })) -- AAA, 1, 2, 3
   local result_table = { l_start, unpack(lines, 2, #lines - 1) }
   table.insert(result_table, l_end)
-  if concat then
-    return table.concat({ l_start, unpack(lines, 2, #lines - 1), l_end }, concat)
-  else
-    -- return { l_start, unpack(lines, 2, #lines - 1), l_end } -- 這是錯的，中間的部份不是放在最尾會只有一項而已！
-    return result_table
-  end
+  return result_table
 end
 
 -- vim.api.nvim_create_user_command("Test123", function()

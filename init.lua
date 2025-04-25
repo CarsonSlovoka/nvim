@@ -627,6 +627,7 @@ local function install_nvim_tree()
   )
   vim.api.nvim_create_user_command("CD",
     function(args)
+      --- @type string
       local path
       if args.range == 0 then
         if #args.args > 0 then
@@ -637,10 +638,7 @@ local function install_nvim_tree()
         end
       else
         -- range
-        path = rangeUtils.get_selected_text()
-        if type(path) == "table" then
-          path = table.concat(path, "")
-        end
+        path = table.concat(utils.range.get_selected_text(), "")
       end
       -- NOTE: 在nvim-tree上做CD的路徑和當前編輯的是不同的工作路徑, 如果有需要可以在nvim-tree: gf 複製絕對路徑後使用CD切換
       vim.cmd("cd " .. path)

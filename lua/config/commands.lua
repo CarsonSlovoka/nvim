@@ -180,10 +180,8 @@ function commands.setup()
         return
       end
 
-      local cmds = rangeUtils.get_selected_text()
-      if type(cmds) == "string" then
-        cmds = { cmds }
-      end
+      --- @type table
+      local cmds = utils.range.get_selected_text()
       for _, cmd in ipairs(cmds) do
         -- vim.cmd(cmd:match("^%s*:(.*)") or cmd) -- 空白、制表符: 都忽略. (注意連:都會忽略) <-- 不需要如此，指令有開始有多個:不影響，而且如果有Tab, 空白也沒事
         vim.cmd(cmd)
@@ -200,10 +198,7 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Edit",
     function()
-      local selected_text = rangeUtils.get_selected_text()
-      if type(selected_text) == "table" then
-        selected_text = table.concat(selected_text, "")
-      end
+      local selected_text = table.concat(utils.range.get_selected_text(), "")
       if #selected_text == 0 then
         return
       end
@@ -223,12 +218,12 @@ function commands.setup()
     end,
     {
       range = true,
-      desc = "edit +123 <filepath>",
+      desc = "edit +123 <filepath> 可以對rg --vimgrep的項目直接選取後前往編輯",
     }
   )
   vim.api.nvim_create_user_command("Help",
     function()
-      local selected_text = rangeUtils.get_selected_text("")
+      local selected_text = table.concat(utils.range.get_selected_text(), "")
       if #selected_text == 0 then
         return
       end
@@ -241,7 +236,7 @@ function commands.setup()
   )
   vim.api.nvim_create_user_command("R",
     function()
-      local selected_text = rangeUtils.get_selected_text("")
+      local selected_text = table.concat(utils.range.get_selected_text(), "")
       if #selected_text == 0 then
         return
       end
@@ -506,10 +501,7 @@ function commands.setup()
       -- lua用的是utf-8
       -- neovim不管當前你的文件是什麼編碼，就算實際文件儲的是gb18030的位元組資料，在開啟後不管你的fenc是什麼，你的畫面所呈現的都是utf-8所呈現出來的字符
       -- 即: neovim會嘗試將其轉換為utf-8來進行處理和顯示
-      local char = utils.range.get_selected_text()
-      if type(char) == "table" then
-        char = table.concat(char, "")
-      end
+      local char = table.concat(utils.range.get_selected_text(), "")
 
       local nr = 0
       if from_enc == "utf-8" or from_enc == "utf8" then
@@ -1098,7 +1090,7 @@ function commands.setup()
       if #args.fargs > 0 then
         text = args.fargs[1]
       elseif args.range ~= 0 then
-        text = utils.range.get_selected_text('')
+        text = table.concat(utils.range.get_selected_text(), '')
       else
         text = vim.fn.getline('.')
       end
@@ -1136,10 +1128,9 @@ function commands.setup()
           vim.notify('only support range', vim.log.levels.ERROR)
           return
         end
+
+        --- @type table
         local texts = utils.range.get_selected_text()
-        if type(texts) == "string" then
-          texts = { texts }
-        end
         for _, line in ipairs(texts) do
           local filepath, row, col, desc = string.match(line, "(.-):(%d+):(%d+):(.+)")
           if filepath and row and col and desc then
@@ -1171,7 +1162,7 @@ function commands.setup()
           text = vim.fn.getline('.')
         end
       else
-        text = args.fargs[1] or rangeUtils.get_selected_text("")
+        text = args.fargs[1] or table.concat(utils.range.get_selected_text(), "")
       end
       local filepath = vim.fn.expand('%')
       local cmd = string.format([[ laddexpr '%s' .. ":" .. line(".") .. ":" .. '%s' ]], filepath, text)
@@ -2029,10 +2020,7 @@ function commands.setup()
         -- local mode = vim.fn.mode() -- 得到的都是n沒有辦法區分出v或V
         if col1 ~= 1 then -- 因為如果是V一定是1, 雖然v也以是1，但是一般而言比較少(而且也可以避開，從2開始v就好)
           -- v mode
-          local selected_text = rangeUtils.get_selected_text()
-          if type(selected_text) == "table" then
-            selected_text = table.concat(selected_text, "")
-          end
+          local selected_text = table.concat(utils.range.get_selected_text(), "")
           args.fargs[2] = selected_text
         end
         args.fargs[3] = line1 .. "-" .. line2
@@ -2231,7 +2219,7 @@ function commands.setup()
       extmarkUtils.set_conceal( -- 要等ModeChanged才會生效，所以之後v再換回
         random_ns_id,
         {
-          patterns = { rangeUtils.get_selected_text("") },
+          patterns = { table.concat(utils.range.get_selected_text(), "") },
           conceal = emoji
         }
       )

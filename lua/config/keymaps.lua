@@ -159,10 +159,7 @@ for i = 1, #strRegs do
   )
   map('v', "<leader>by" .. c,
     function()
-      local selected_text = utils.range.get_selected_text()
-      if type(selected_text) == "table" then
-        selected_text = table.concat(selected_text, " ")
-      end
+      local selected_text = table.concat(utils.range.get_selected_text(), " ")
       local text = selected_text
       local filepath = vim.fn.expand('%:p')
       local line = vim.fn.line('.')
@@ -402,7 +399,7 @@ local function setup_visual()
 
   map("v", "<leader>cd",
     function()
-      local cur_dir = utils.range.get_selected_text("")
+      local cur_dir = table.concat(utils.range.get_selected_text(), "")
       if type(cur_dir) == "table" then
         cur_dir = table.concat(cur_dir, "")
       end

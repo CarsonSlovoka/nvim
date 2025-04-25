@@ -1,4 +1,4 @@
-local rangeUtils = require("utils.range")
+local utils = require("utils.utils")
 
 local bookmark = {}
 bookmark.table = {} -- 書籤內容
@@ -503,10 +503,7 @@ vim.api.nvim_create_user_command("BkAdd",
       -- local range_start, range_end = args.line1, args.line2
       -- local lines = vim.api.nvim_buf_get_lines(0, range_start - 1, range_end, false)
       -- name = table.concat(lines, "\n"):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "") -- 先併成一列，移除多餘的空白
-      local selected_text = rangeUtils.get_selected_text()
-      if type(selected_text) == "table" then
-        selected_text = table.concat(selected_text, "")
-      end
+      local selected_text = table.concat(utils.range.get_selected_text(), "")
       name = selected_text:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
       if name == "" then
         vim.notify("錯誤：選取範圍為空", vim.log.levels.ERROR)
