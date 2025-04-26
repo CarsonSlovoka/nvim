@@ -33,7 +33,13 @@ setx HOME %userprofile%\AppData\Local
 
 ```shell
 # 從 %userprofile%\.gitconfig 搬移至 %userprofile%\AppData\Local\.gitconfig
-# (不建議留兩個，可能會遇到gitk卡頓的問題(雖然我最後更新git之後就沒再遇到了，但是此時的.gitconfig我指留一份))
+# (不建議留兩個，可能會遇到gitk卡頓的問題(雖然我最後更新git之後就沒再遇到了，但是此時的.gitconfig我只留一份))
+```
+
+在powershell中可以利用[$Env:](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.5#use-the-variable-syntax)來顯示某環境變數的數值
+
+```ps1
+$Env:HOME
 ```
 
 
