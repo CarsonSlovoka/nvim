@@ -42,6 +42,8 @@ require "config.filetype".setup {
 }
 require("config.keymaps").setup()
 require("config.commands").setup()
+require("config.commands_windows")
+
 require("config.autocmd").setup({
   callback = function(m)
     vim.api.nvim_create_user_command(
