@@ -1095,11 +1095,12 @@ function commands.setup()
         text = vim.fn.getline('.')
       end
 
-      local filepath = vim.fn.expand('%')
+      -- local filepath = vim.fn.expand('%') -- 預設是以相對路徑為考量
+      local filepath = vim.fn.expand('%:.') -- 明確的告知是需要用相對路徑
       local line = vim.fn.line('.')
       local col = vim.fn.col('.')
       local cmd = string.format(
-        [[ caddexpr './%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]],
+        [[ caddexpr '%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]],
         filepath, line, col, text
       )
       vim.cmd(cmd)
