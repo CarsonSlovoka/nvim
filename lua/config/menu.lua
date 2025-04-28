@@ -131,6 +131,11 @@ function M.setup(opts)
       { text = "<Enter>",        highlight = "Comment" },
       { text = " [see changes]", highlight = "StartupInfo" }
     },
+    -- {
+    --   { text = ":e " .. vim.opt.shadafile._value, highlight = "StartupMenu" }, -- vim.opt.shadafile 後面會被轉換成table
+    --   { text = "<Enter>",                         highlight = "Comment" },
+    --   { text = " [shadafile path]",               highlight = "StartupInfo" },
+    -- },
     {
       { text = ":checkhealth",        highlight = "StartupMenu" },
       { text = "<Enter>",             highlight = "Comment" },

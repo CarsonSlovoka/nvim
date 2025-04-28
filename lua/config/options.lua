@@ -5,6 +5,36 @@ local options = {}
 function options.setup()
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
 
+  -- :set history?
+  vim.opt.history = 10000 -- 10000預設
+  -- 查看某一個類別的history
+  -- 請參考 :hist-names
+  -- :history ":" -- 查看所有cmd記錄
+  -- :history "/" -- search
+  -- ...
+  --
+  -- :call histdel({history}. [, {item}])
+  -- :call histdel(":") -- cmd 刪除所有cmd記錄
+  -- :call histdel("/") -- search 刪除所有搜尋記錄
+  -- :call histdel("=") -- expr
+  -- :call histdel("@") -- input
+  -- :call histdel(">") -- debug
+  -- :call histdel("")  -- empty the current or last used history
+  --
+  -- :call histdel("cmd", '^help') -- 刪除開頭是help的項目
+  -- :call histdel(":", 'www') -- 只要cmd中有包含www就會被刪除
+
+  -- :h options.txt
+  -- 這個可以當成依據每個專案來設定自己的shadafile 👉 https://github.com/oysandvik94/dotfiles/blob/6be70e59b5545e44940982db52b06e24f5e251d9/dotfiles/.config/nvim/lua/langeoys/set.lua#L89-L96
+  -- :echo stdpath('data')
+  -- :pu =stdpath('data') -- put
+  -- /home/carson/.local/share/nvim
+  -- fd -t f shada ~ -H /
+  -- .local/state/nvim/shada/main.shada
+  -- vim.opt.shadafile = vim.fn.stdpath("data") .. "/carson_nvim.shada" -- 😢 用nvim可以解析裡面的二進位資料，不過編輯後存檔仍不行
+  -- set shada="NONE" -- https://vi.stackexchange.com/a/9571/31859 -- https://neovim.io/doc/user/options.html#'shada'
+  -- set shada='50,<1000,s100,:0,n~/nvim/shada -- https://neovim.io/doc/user/options.html#'sd'
+
   -- :lua vim.opt.fileencoding = "cp950" -- 當你先開啟文件，再用此方法去換，看到的可能還是錯的，因為開啟的時候，會由fileencodings依次去轉，直到沒有錯的，
   -- 它如果轉到了最後一個(latin1)那麼這種情況再由latin1轉到cp950看到的就不對
   -- :e ++enc=cp950 filename.txt -- 可以用這種方式來確保一開始開啟時，就是用正確的編碼
