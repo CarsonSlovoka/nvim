@@ -1355,6 +1355,17 @@ local function install_telescope()
   end, {
     desc = "git status"
   })
+
+  vim.keymap.set('n', '<leader>st',
+    function()
+      local cur_dir = vim.fn.expand("%:p:h")
+      vim.cmd("cd " .. cur_dir)
+      require("telescope.builtin").git_status()
+    end,
+    {
+      desc = "git status"
+    }
+  )
 end
 
 
