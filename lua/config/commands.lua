@@ -1135,13 +1135,20 @@ function commands.setup()
         for _, line in ipairs(texts) do
           local filepath, row, col, desc = string.match(line, "(.-):(%d+):(%d+):(.+)")
           if filepath and row and col and desc then
+            local is_abspath = filepath:match('^/') or vim.fn.fnamemodify(filepath, ':p'):match('^/')
+            if not is_abspath and not filepath:match('^~') then
+              filepath = "./" .. filepath
+            end
+
             -- local cmd = "./" .. line -- 這不行，要引號包起來才不會誤判
             local cmd = string.format(
-              [[ %s './%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]], -- col如果沒有可以省略，預設為1
+              [[ %s '%s' .. ":" .. %d .. ":" .. %d .. ":".. '%s' ]], -- col如果沒有可以省略，預設為1
               qfExpr,
               filepath, row, col, desc
             )
             vim.cmd(cmd)
+          else
+            vim.notify(string.format("'%s' ", line) .. "not match (.-):(%d+):(%d+):(.+)", vim.log.levels.WARN)
           end
         end
       end,
