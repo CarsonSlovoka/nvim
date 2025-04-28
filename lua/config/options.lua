@@ -130,6 +130,68 @@ function options.setup()
   -- 不建議windows換終端機, 還是用cmd會比較好
   -- vim.opt.shell = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
   -- vim.g.terminal_emulator='powershell'
+
+
+  -- :h quickfix-window-function
+  -- :h quickfixtextfunc
+  -- vim.opt.qftf = function(info) end -- 要改字串才行(此字串為一個function的名稱)
+  vim.o.quickfixtextfunc = "{info -> v:lua._G.qftf(info)}"
+end
+
+function _G.qftf(info)
+  -- print(vim.inspect(info))
+  local items
+  local ret = {}
+
+  -- 根據 quickfix 或 location list 獲取項目
+  if info.quickfix == 1 then
+    items = vim.fn.getqflist({ id = info.id, items = 0 }).items
+  else
+    items = vim.fn.getloclist(info.winid, { id = info.id, items = 0 }).items
+  end
+  -- print(vim.inspect(items))
+
+  -- 設定文件名長度限制
+  -- local limit = 31
+  -- local fname_fmt1 = string.format("%%-%ds", limit) -- 左對齊
+  -- local fname_fmt2 = string.format("…%%.%ds", limit - 1) -- 截斷並加…
+  -- local valid_fmt = "%s | %-3d | %-2d | %s %s"
+  -- local valid_fmt = "%s:%-3d:%-2d:%s %s"
+  local valid_fmt = "%s:%d:%d:%s %s" -- 格式：文件名 | 行號 | 列號 | 類型 | 訊息
+
+  -- 遍歷項目
+  for i = info.start_idx, info.end_idx do
+    local e = items[i]
+    local fname = ""
+    local str
+
+    if e.valid == 1 then
+      if e.bufnr > 0 then
+        fname = vim.fn.bufname(e.bufnr)
+        if fname == "" then
+          fname = "[No Name]"
+        else
+          fname = fname:gsub("^" .. vim.env.HOME, "~") -- 將家目錄替換為 ~
+        end
+
+        -- 處理文件名長度
+        -- if #fname <= limit then
+        --   fname = fname_fmt1:format(fname)
+        -- else
+        --   fname = fname_fmt2:format(fname:sub(1 - limit))
+        -- end
+      end
+      local lnum = e.lnum
+      local col = e.col
+      local qtype = e.type == "" and "" or " " .. e.type:sub(1, 1):upper() -- 錯誤類型
+      str = valid_fmt:format(fname, lnum, col, qtype, e.text)
+    else
+      str = e.text -- 無效項目直接顯示文本
+    end
+    table.insert(ret, str)
+  end
+
+  return ret
 end
 
 function _G.get_tabline() -- 給全局變數
