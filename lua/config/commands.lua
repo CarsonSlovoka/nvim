@@ -1173,7 +1173,10 @@ function commands.setup()
         text = args.fargs[1] or table.concat(utils.range.get_selected_text(), "")
       end
       local filepath = vim.fn.expand('%')
-      local cmd = string.format([[ laddexpr '%s' .. ":" .. line(".") .. ":" .. '%s' ]], filepath, text)
+      local cmd = string.format(
+        [[ laddexpr '%s' .. ":" .. line(".") .. ":" .. %d .. ":" .. '%s' ]],
+        filepath, vim.fn.col('.'), text
+      )
       vim.cmd(cmd)
     end,
     {
