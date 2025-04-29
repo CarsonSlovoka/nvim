@@ -379,6 +379,139 @@ function commands.setup()
     desc = "保存剪貼簿中的圖片，儲成webp格式"
   })
 
+  vim.api.nvim_create_user_command("Video2Gif",
+    function(args)
+      local para = utils.flag.parse(args.args)
+      local input_file = vim.fn.expand(para.params[1])
+      local width = tonumber(para.params[2]) or 320
+      local fps = tonumber(para.params[3]) or 10
+
+      local n_loop = tonumber(para.opts["loop"]) or 0
+
+      if not input_file then
+        vim.notify("Error: Input file is required!", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 檢查輸入檔案是否存在
+      if vim.fn.filereadable(input_file) == 0 then
+        vim.notify("Error: Input file '" .. input_file .. "' does not exist!", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 提取檔案名稱
+      local base_name = vim.fn.fnamemodify(input_file, ":r") -- 檔案名稱不含副檔名
+
+      local output_file_path = para.opts["o"]
+      if output_file_path == nil then
+        output_file_path = base_name .. ".gif"
+      end
+      output_file_path = vim.fn.expand(output_file_path)
+
+      if vim.fn.filereadable(output_file_path) == 1 then
+        vim.notify(string.format("Error '%s' already exists.", output_file_path), vim.log.levels.ERROR)
+        return
+      end
+
+
+      -- 定義 ffmpeg 命令
+      local palette_cmd = string.format(
+        'ffmpeg -y -i "%s" -vf fps=%d,scale=%d:-1:flags=lanczos,palettegen "%s.png"',
+        input_file,
+        fps,
+        width,
+        base_name
+      )
+
+      local gif_cmd = string.format(
+        'ffmpeg -i "%s" -i "%s.png" -filter_complex "fps=%d,scale=%d:-1:flags=lanczos[x];[x][1:v]paletteuse" -loop "%d" "%s"',
+        input_file,
+        base_name,
+        fps,
+        width,
+        n_loop,
+        output_file_path
+      )
+
+      local rm_cmd = string.format('rm "%s.png"', base_name) -- 刪除生成出來的調色盤檔案
+
+      -- 執行 ffmpeg 命令並檢查是否成功
+      local function run_cmd(cmd, success_msg, err_msg)
+        local result = os.execute(cmd)
+        if result == 0 then
+          vim.notify("✅ " .. success_msg, vim.log.levels.INFO)
+        else
+          vim.notify("❌ " .. err_msg, vim.log.levels.ERROR)
+          return false
+        end
+        return true
+      end
+
+      -- 執行轉換流程
+      if not run_cmd(palette_cmd, "Palette generated successfully", "Failed to generate palette") then
+        return
+      end
+
+      if not run_cmd(gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
+        return
+      end
+
+      -- 清理調色盤檔案
+      run_cmd(rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
+    end,
+    {
+      desc = "convert video to gif",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        if arg_lead:match("^%-%-") then
+          return utils.cmd.get_complete_list(arg_lead, {
+            loop = {
+              "0", -- 無限循環(預設)
+              "1", -- 1次
+              "5"  -- 播5次
+            },
+            o = {
+              "temp.gif"
+            }
+          })
+        end
+
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          local video_extensions = { "%.mp4$", "%.mkv$", "%.avi$", "%.mov$", "%.flv$", "%.wmv$" }
+          -- 取得所有檔案的補全清單
+          local all_files = vim.fn.getcompletion(arg_lead, "file") -- 不需要expand(arg_lead)
+          -- 過濾出影片檔案
+          local video_files = {}
+          for _, file in ipairs(all_files) do
+            for _, ext in ipairs(video_extensions) do
+              if file:match(ext) then
+                table.insert(video_files, file)
+                break
+              end
+            end
+          end
+          return video_files
+        end
+
+        if argc == 2 then -- width
+          return {
+            "320",
+            "1000"
+          }
+        end
+
+        if argc == 3 then -- fps
+          return {
+            "10",
+            "25",
+            "60",
+          }
+        end
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("AddLocalHelp",
     function(args)
       -- :help add-local-help
