@@ -343,7 +343,7 @@ function bookmark.show()
               self.state.bufnr,
               ns_id, -- 不能設為-1
               0,     -- line
-              0,     -- cik
+              0,     -- col
               {
                 end_row = #context_header,
                 -- end_col = -1, -- 不能設定為-1

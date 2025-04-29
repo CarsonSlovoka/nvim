@@ -1721,6 +1721,20 @@ end
 
 local installs = {
   {
+    name = "registers",
+    fn = function()
+      local registers = require("registers_spy")
+      vim.keymap.set('n', '<leader>r', registers.toggle,
+        {
+          desc = "Toggle registers sidebar",
+          noremap = true,
+          silent = true
+        }
+      )
+    end,
+    delay = 0
+  },
+  {
     name = "config.telescope_bookmark",
     fn = function()
       require "config.telescope_bookmark"
