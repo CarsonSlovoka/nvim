@@ -4,7 +4,6 @@ local osUtils = require("utils.os")
 local swayUtils = require("utils.sway")
 local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
-local rangeUtils = require("utils.range")
 local extmarkUtils = require("utils.extmark")
 local utils = require("utils.utils")
 
@@ -400,7 +399,7 @@ function commands.setup()
       end
 
       -- 提取檔案名稱
-      local base_name = vim.fn.fnamemodify(input_file, ":r") -- 檔案名稱不含副檔名
+      local base_name = vim.fn.fnamemodify(input_file, ":r") -- 檔案路徑不含副檔名
 
       local output_file_path = para.opts["o"]
       if output_file_path == nil then
@@ -409,10 +408,12 @@ function commands.setup()
       output_file_path = vim.fn.expand(output_file_path)
 
       if vim.fn.filereadable(output_file_path) == 1 then
-        vim.notify(string.format("Error '%s' already exists.", output_file_path), vim.log.levels.ERROR)
-        return
+        if para.opts["force"] ~= "1" then
+          vim.notify(string.format("Error '%s' already exists.", output_file_path), vim.log.levels.ERROR)
+          return
+        end
+        os.remove(output_file_path)
       end
-
 
       -- 定義 ffmpeg 命令
       local palette_cmd = string.format(
@@ -432,32 +433,19 @@ function commands.setup()
         n_loop,
         output_file_path
       )
-
-      local rm_cmd = string.format('rm "%s.png"', base_name) -- 刪除生成出來的調色盤檔案
-
-      -- 執行 ffmpeg 命令並檢查是否成功
-      local function run_cmd(cmd, success_msg, err_msg)
-        local result = os.execute(cmd)
-        if result == 0 then
-          vim.notify("✅ " .. success_msg, vim.log.levels.INFO)
-        else
-          vim.notify("❌ " .. err_msg, vim.log.levels.ERROR)
-          return false
-        end
-        return true
-      end
+      local rm_cmd = string.format('"%s.png"', base_name) -- 刪除生成出來的調色盤檔案
 
       -- 執行轉換流程
-      if not run_cmd(palette_cmd, "Palette generated successfully", "Failed to generate palette") then
+      if not utils.os.run(os.execute, palette_cmd, "Palette generated successfully", "Failed to generate palette") then
         return
       end
 
-      if not run_cmd(gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
+      if not utils.os.run(os.execute, gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
         return
       end
 
       -- 清理調色盤檔案
-      run_cmd(rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
+      utils.os.run(os.remove, rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
     end,
     {
       desc = "convert video to gif",
@@ -470,8 +458,12 @@ function commands.setup()
               "1", -- 1次
               "5"  -- 播5次
             },
-            o = {
+            o = {  -- output
               "temp.gif"
+            },
+            force = {
+              "0",
+              "1", -- 覆蓋，當輸出的檔案已存在
             }
           })
         end

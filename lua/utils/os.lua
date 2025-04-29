@@ -3,9 +3,9 @@ local M = {}
 --- @return boolean
 local function isWindows()
   if string.find(
-    string.lower(vim.loop.os_uname().sysname), -- :help os_uname
-    "windows"
-  ) then
+        string.lower(vim.loop.os_uname().sysname), -- :help os_uname
+        "windows"
+      ) then
     return true
   end
   return false
@@ -40,6 +40,22 @@ function M.GetExePathFromHome(exePath)
   end
 
   return p
+end
+
+--- @param func function(string) bool
+--- @param cmd string
+--- @param success_msg string
+--- @param err_msg string
+--- @return boolean
+function M.run(func, cmd, success_msg, err_msg)
+  local result = func(cmd) -- os.execute 成功為0, os.remove成功為nil
+  if result == 0 or result == nil then
+    vim.notify("✅ " .. success_msg, vim.log.levels.INFO)
+  else
+    vim.notify("❌ " .. err_msg, vim.log.levels.ERROR)
+    return false
+  end
+  return true
 end
 
 M.IsWindows = isWindows()
