@@ -8,7 +8,6 @@ local osUtils = require("utils.os")
 local array = require("utils.array")
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
-local rangeUtils = require("utils.range")
 local utils = require("utils.utils")
 
 local HOME = os.getenv("HOME")
