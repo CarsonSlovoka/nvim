@@ -1,5 +1,15 @@
 local M = {}
 
+local HL_REG_NUMBER = "RegisterNumber"
+local HL_REG_LETTER = "RegisterLetter"
+local HL_REG_SPECIAL = "RegisterSpecial"
+
+vim.api.nvim_set_hl(0, HL_REG_NUMBER, { bg = "#00FFFF", fg = "#000000" })
+vim.api.nvim_set_hl(0, HL_REG_LETTER, { bg = "#55FF55", fg = "#000000" })
+vim.api.nvim_set_hl(0, HL_REG_SPECIAL, { bg = "#FFFF55", fg = "#000000" })
+
+local ns_id_hl = vim.api.nvim_create_namespace('register_spy_highlight') -- Creates a new namespace or gets an existing one.
+
 -- 創建側邊視窗
 function M.setup_register_window()
   -- 創建緩衝區
@@ -24,22 +34,23 @@ function M.setup_register_window()
   -- 設置視窗為不可聚焦
   -- vim.api.nvim_win_set_option(win, 'winhl', 'Normal:NormalFloat')  Use nvim_set_option_value() instead
   -- :h winhl
+  -- :h NormalFloat
   vim.api.nvim_set_option_value('winhl', 'Normal:NormalFloat', { win = win })
   vim.api.nvim_set_option_value('wrap', false, { win = win }) -- 禁用自動換行
-  -- vim.api.nvim_win_set_config(win, { focusable = false })     -- 不可聚焦
+  -- vim.api.nvim_win_set_config(win, { focusable = false })  -- 不可聚焦. 因為很太多暫儲器，所以需要移動才能檢視
 
   return buf, win
 end
 
 -- 更新寄存器內容
 function M.update_registers(buf)
-  local registers = {
-    '"', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', -- 數字寄存器
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',      -- 字母寄存器
-    '*', '+', '-', '.', ':', '%', '/', '=', '#'            -- 特殊寄存器
-  }
+  local registers = [["0123456789]] ..
+      [[abcdefghijklmnopqrstuvwxyz]] ..
+      [[*+-.:%/=#]]
+
   local lines = {}
-  for _, reg in ipairs(registers) do
+  for i = 1, #registers do
+    local reg = registers:sub(i, i)
     local content = vim.fn.getreg(reg) or ''
     -- 限制每行長度，避免太長
     if #content > 50 then
@@ -55,28 +66,25 @@ function M.update_registers(buf)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
 
+  -- set highlight (需要等待文本設定完成，如此set_extmark才不會超出range)
   -- 清除舊的語法高亮
-  vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1)
-
-  -- 動態應用高亮
-  for i, reg in ipairs(registers) do
+  -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1)       -- 全清其實也不會怎樣，但還是只清自定義的就好
+  vim.api.nvim_buf_clear_namespace(buf, ns_id_hl, 0, -1)
+  for i = 1, #registers do
+    local reg = registers:sub(i, i)
+    -- set highlight
     local highlight_group
     if reg:match('%d') or reg == '"' then
-      highlight_group = 'RegisterNumber'
+      highlight_group = HL_REG_NUMBER
     elseif reg:match('%a') then
-      highlight_group = 'RegisterLetter'
+      highlight_group = HL_REG_LETTER
     else
-      highlight_group = 'RegisterSpecial'
+      highlight_group = HL_REG_SPECIAL
     end
     -- vim.api.nvim_buf_add_highlight(buf, -1, highlight_group, i - 1, 0, 1) -- deprecated
-    local ns_id = vim.api.nvim_create_namespace('register_spy_highlight') -- Creates a new namespace or gets an existing one.
-    vim.api.nvim_buf_set_extmark(buf, ns_id, i - 1, 0, { end_col = 1, hl_group = highlight_group })
+    -- local ns_id = vim.api.nvim_create_namespace('register_spy_highlight') -- Creates a new namespace or gets an existing one.
+    vim.api.nvim_buf_set_extmark(buf, ns_id_hl, i - 1, 0, { end_col = 1, hl_group = highlight_group })
   end
-
-  -- 設置語法高亮組
-  vim.api.nvim_set_hl(0, "RegisterNumber", { bg = "#00FFFF", fg = "#000000" })
-  vim.api.nvim_set_hl(0, "RegisterLetter", { bg = "#55FF55", fg = "#000000" })
-  vim.api.nvim_set_hl(0, "RegisterSpecial", { bg = "#FFFF55", fg = "#000000" })
 end
 
 -- 初始化並定時更新
