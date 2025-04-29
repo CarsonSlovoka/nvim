@@ -42,17 +42,31 @@ function M.GetExePathFromHome(exePath)
   return p
 end
 
---- @param func function(string) bool
 --- @param cmd string
 --- @param success_msg string
 --- @param err_msg string
 --- @return boolean
-function M.run(func, cmd, success_msg, err_msg)
-  local result = func(cmd) -- os.execute 成功為0, os.remove成功為nil
-  if result == 0 or result == nil then
+function M.execute_with_notify(cmd, success_msg, err_msg)
+  local err_code = os.execute(cmd)
+  if err_code == 0 then
     vim.notify("✅ " .. success_msg, vim.log.levels.INFO)
   else
-    vim.notify("❌ " .. err_msg, vim.log.levels.ERROR)
+    vim.notify(string.format("❌ %s [err_code: %d] ", err_msg, err_code), vim.log.levels.ERROR)
+    return false
+  end
+  return true
+end
+
+--- @param cmd string
+--- @param success_msg string
+--- @param err_msg string
+--- @return boolean
+function M.remove_with_notify(cmd, success_msg, err_msg)
+  local r1, err_desc = os.remove(cmd)
+  if r1 ~= nil then
+    vim.notify("✅ " .. success_msg, vim.log.levels.INFO)
+  else
+    vim.notify(string.format("❌ %s [%s] ", err_msg, err_desc), vim.log.levels.ERROR)
     return false
   end
   return true

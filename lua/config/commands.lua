@@ -433,19 +433,19 @@ function commands.setup()
         n_loop,
         output_file_path
       )
-      local rm_cmd = string.format('"%s.png"', base_name) -- 刪除生成出來的調色盤檔案
+      local rm_cmd = string.format('%s.png', base_name) -- 刪除生成出來的調色盤檔案
 
       -- 執行轉換流程
-      if not utils.os.run(os.execute, palette_cmd, "Palette generated successfully", "Failed to generate palette") then
+      if not utils.os.execute_with_notify(palette_cmd, "Palette generated successfully", "Failed to generate palette") then
         return
       end
 
-      if not utils.os.run(os.execute, gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
+      if not utils.os.execute_with_notify(gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
         return
       end
 
       -- 清理調色盤檔案
-      utils.os.run(os.remove, rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
+      utils.os.remove_with_notify(rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
     end,
     {
       desc = "convert video to gif",
