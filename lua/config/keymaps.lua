@@ -427,9 +427,10 @@ local function setup_visual()
       expr = true,
     })
 
-  map('v', '<leader>r', 'y:%s/<C-R>"//gc<Left><Left><Left>',
-    { desc = "取代 如果是特定範圍可以改成 :66,100s/old/new/gc (觸發後請直接打上要取代的文字就會看到有command出來了" }
-  )
+  -- 用處不大，移除，避免鍵位衝突
+  -- map('v', '<leader>r', 'y:%s/<C-R>"//gc<Left><Left><Left>',
+  --   { desc = "取代 如果是特定範圍可以改成 :66,100s/old/new/gc (觸發後請直接打上要取代的文字就會看到有command出來了" }
+  -- )
 end
 
 local function setup_insert()
