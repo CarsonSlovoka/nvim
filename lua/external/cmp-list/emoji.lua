@@ -557,6 +557,56 @@ emoji_data.G.item = {
   }
 }
 
+
+emoji_data.G.computer = {
+  alias = "computer",
+  items = {
+    { "🖳",
+      {
+        "desktopComputer",
+      },
+    },
+    { "🖥️",
+      {
+        "desktopComputer",
+        "computer",
+        "screen",
+      },
+    },
+    { "🖥",
+      {
+        "desktopComputer",
+        "disk",
+      },
+    },
+    { "⌨️",
+      {
+        "keyboard",
+        "typing",
+      },
+    },
+    { "🖱️",
+      {
+        "computerMouse",
+        "mouse",
+      },
+    },
+    { "🕹️",
+      {
+        "joystick",
+        "controller",
+      },
+    },
+    { "🖴",
+      {
+        "hardDisk",
+        "disk",
+        "drive",
+      },
+    },
+  }
+}
+
 local number_items = {}
 for i = 0, 9 do -- sign_define 0️⃣, 1️⃣  .. 9️⃣
   -- 其中U+FE00-U+FE0f區間為變體選擇符(Variation Selectors)
