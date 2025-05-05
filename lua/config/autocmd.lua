@@ -1,6 +1,7 @@
 local M = {
   autoSave = true,
   autoReformat = true,
+  autoMarkRange = true,
   callback = function(module) end
 }
 local create_autocmd = vim.api.nvim_create_autocmd
@@ -129,10 +130,13 @@ function M.setup(opts)
       if buftype ~= "" then
         return
       end
-      -- vim.api.nvim_input("m<") -- 這樣沒用，因為還是在visual的情況，只能等到結束在設定
-      begin_visual_position = vim.api.nvim_win_get_cursor(0) -- [row, col]
-      -- print("Enter", vim.v.event.old_mode, vim.v.event.new_mode) -- :h ModeChanged -- n, v -- n, V 抓不到c
-      -- print("Enter", vim.api.nvim_get_mode().mode) -- 這也抓不到c
+
+      if M.autoMarkRange then
+        -- vim.api.nvim_input("m<") -- 這樣沒用，因為還是在visual的情況，只能等到結束在設定
+        begin_visual_position = vim.api.nvim_win_get_cursor(0) -- [row, col]
+        -- print("Enter", vim.v.event.old_mode, vim.v.event.new_mode) -- :h ModeChanged -- n, v -- n, V 抓不到c
+        -- print("Enter", vim.api.nvim_get_mode().mode) -- 這也抓不到c
+      end
     end,
     desc = "VisualEnter 標記開始選取的位置"
   })
@@ -143,11 +147,10 @@ function M.setup(opts)
         return
       end
       local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
-      print(buftype)
       if buftype ~= "" then
         return
       end
-      if begin_visual_position then
+      if M.autoMarkRange and begin_visual_position then
         local cur_pos = vim.api.nvim_win_get_cursor(0)
         vim.api.nvim_win_set_cursor(0, begin_visual_position)
         -- TODO 以下全部都失敗
@@ -157,8 +160,10 @@ function M.setup(opts)
         -- vim.api.nvim_feedkeys("m<lt>", "n", false)
         vim.api.nvim_win_set_cursor(0, cur_pos)
       end
-      -- print("Leave", vim.v.event.old_mode, vim.v.event.new_mode) -- v, n -- V, n
-      vim.api.nvim_input("m>")
+      if M.autoMarkRange then
+        -- print("Leave", vim.v.event.old_mode, vim.v.event.new_mode) -- v, n -- V, n
+        vim.api.nvim_input("m>")
+      end
     end,
     desc = "VisualLeave 標記結束選取的位置"
   })

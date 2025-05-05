@@ -108,7 +108,9 @@ map('v', '<C-L>', function()
     -- vim.cmd('normal! ' .. write_mode)
 
 
+    require("config.autocmd").autoMarkRange = false -- 避免觸發mark標記，導致input或多了m>
     local link = vim.fn.input("Enter the link: ")
+    require("config.autocmd").autoMarkRange = true
     if link == nil or link == "" then
       vim.notify("No link entered", vim.log.levels.ERROR)
       return
