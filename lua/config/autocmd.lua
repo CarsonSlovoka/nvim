@@ -89,7 +89,7 @@ function M.setup(opts)
             vim.log.levels.INFO
           )
           -- vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
-          vim.api.nvim_input("i<ESC>m^") -- 直接再執行m^來加入最後使用i的位置
+          vim.api.nvim_input("i<ESC>m^") -- 直接再執行m^來加入最後使用i的位置 -- ⚠️ 其它的command如果跑出來i可能是此導致
 
           -- elseif not vim.bo.modified then
           --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)

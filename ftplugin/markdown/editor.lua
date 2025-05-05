@@ -46,6 +46,10 @@ map('v', '<leader>~', 'c~~<C-r>"~~<ESC>', { desc = "刪除線 strokethrough" })
 -- map('n', '<Leader>c', 'I```<CR>```<C-o>O', { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" })
 map('n', '<Leader><leader>`',
   function()
+    local autoSaveEnable = require("config.autocmd").autoSave
+    if autoSaveEnable then -- 這種情況下，它會自動用mi來記錄標籤，所以先暫停不保存標籤
+      require("config.autocmd").autoSave = false
+    end
     local name = vim.fn.input("codeblock name: ")
     if name == "" then
       -- 如果用戶未輸入名稱，插入空的代碼塊
@@ -65,6 +69,10 @@ map('n', '<Leader><leader>`',
     -- 將游標移動到代碼塊的中間，方便用戶輸入代碼
     vim.api.nvim_command("normal! kkI")
     vim.cmd("startinsert")
+
+    if autoSaveEnable then -- 復原
+      require("config.autocmd").autoSave = true
+    end
   end,
   { desc = "codeblock 插入代碼塊, 可以先打上區塊代碼的名稱" }
 )
