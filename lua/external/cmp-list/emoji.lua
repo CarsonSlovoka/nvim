@@ -235,6 +235,13 @@ emoji_data.G.face = {
         "happy",
       },
     },
+    { "🤭",
+      {
+        "handOverMouth",
+        "shySmile",
+        "smile",
+      },
+    },
     { "😵",
       {
         "faceWithCrossedOutEyes",
@@ -290,6 +297,12 @@ emoji_data.G.face = {
     { "😑",
       {
         "expressionlessFace",
+      },
+    },
+    { "🤫",
+      {
+        "shushingFace",
+        "muted",
       },
     },
   }
@@ -641,6 +654,62 @@ emoji_data.G.letter = {
   items = alphabet_items
 }
 
+
+emoji_data.G.voice = {
+  alias = { "voice", "volume" },
+  items = {
+    { "📢",
+      {
+        "announcement",
+        "loudSpeaker",
+      },
+    },
+    { "🔇",
+      {
+        "muted",
+      },
+    },
+    { "🔈",
+      {
+        "speakerLowVolume",
+      },
+    },
+    { "🔉",
+      {
+        "speakerMediumVolume",
+      },
+    },
+    { "🔊",
+      {
+        "speakerHighVolume",
+      },
+    },
+    {
+      "👄",
+      {
+        "month",
+      }
+    },
+    { "🎧",
+      {
+        "headphone",
+      },
+    },
+    { "🗣️",
+      {
+        "speakingHead",
+      },
+    },
+    { "💬",
+      {
+        "speechBallon",
+        "speech",
+        "saySomething",
+      },
+    },
+  }
+}
+
 emoji_data.G.tool = {
   alias = "tool",
   items = {
@@ -805,14 +874,6 @@ emoji_data.G._other = {
         "pageFacingUp",
         "newFile",
         "file",
-      },
-    },
-    { "📢", "announcement" },
-    { "💬",
-      {
-        "speechBallon",
-        "speech",
-        "saySomething",
       },
     },
     { "👀",
