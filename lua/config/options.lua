@@ -157,6 +157,7 @@ function _G.qftf(info)
   -- local fname_fmt2 = string.format("…%%.%ds", limit - 1) -- 截斷並加…
   -- local valid_fmt = "%s | %-3d | %-2d | %s %s"
   -- local valid_fmt = "%s:%-3d:%-2d:%s %s"
+  -- local valid_fmt = "%s:%s %s" -- 也可以不要顯示行，列號 -- 也可新增qf.vim去藏列行號 https://vi.stackexchange.com/a/18359/31859
   local valid_fmt = "%s:%d:%d:%s %s" -- 格式：文件名 | 行號 | 列號 | 類型 | 訊息
 
   -- 遍歷項目
@@ -184,6 +185,7 @@ function _G.qftf(info)
       local lnum = e.lnum
       local col = e.col
       local qtype = e.type == "" and "" or " " .. e.type:sub(1, 1):upper() -- 錯誤類型
+      -- str = valid_fmt:format(fname, qtype, e.text) -- 不顯示行，列號
       str = valid_fmt:format(fname, lnum, col, qtype, e.text)
     else
       str = e.text -- 無效項目直接顯示文本
