@@ -5,7 +5,7 @@ local options = {}
 --- custom_global_options 自定義全域變數
 local function custom_global_options()
   -- vim.g.qffiletype = nil  -- 初值設定為nil有一個壞處，在使用 :let g: 的時候使用tab不會出來，設定成""就可以讓tab有它的選單出來
-  vim.g.qffiletype = ""
+  vim.g.qffiletype = "" -- 實際用途: https://github.com/CarsonSlovoka/nvim/blob/896395082cbf5a/after/syntax/qf.lua#L17-L26
   -- let g:qffiletype="cpp"
 end
 
