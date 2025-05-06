@@ -119,8 +119,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │       │
 │   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0...  5582fbd)
 │   │
-│   ├── motion/start/                -- ✅ 移動相關
-│   │          ├── hop.nvim          -- ⚠  使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818) -- 我後來選擇用vim預設的motion即可，你可以參考 :help motion.txt 把你面的東西看完，會發現預設的動作其實也不慢！
+│   ├── motion/start/                -- ✅ 移動相關 2b68ddc
+│   │          ├── leap.nvim         -- ✅ 用兩鍵的方式來移動，預設觸發鍵為s (2b68ddc 2025-04-21)
+│   │          ├── hop.nvim          -- 🚮 使用模糊搜尋來快速移動. 熱鍵f, F, t, T (v2.7.2... efe5818) -- 我後來選擇用vim預設的motion即可，你可以參考 :help motion.txt 把你面的東西看完，會發現預設的動作其實也不慢！
 │   │          └── precognition.nvim -- ⚠ 可以幫助您學習vi,它會提示可以如何移動  (v1.1.0... 531971e) -- 這個可能是一個過度期會用到的東西，等你熟了以後應該是不再需要了，所以我已經移除，你可以選擇自己再加回
 │   │
 │   ├── icon/start/                  -- ✅ 圖標類
@@ -569,6 +570,9 @@ ls -l /usr/lib/node_modules/vscode-langservers-extracted/bin/
 # vscode-markdown-language-server
 ```
 
+
+## motion
+
 ```bash
 mkdir -pv ~/.config/nvim/pack/motion/start/
 ```
@@ -582,12 +586,20 @@ git clone https://github.com/tris203/precognition.nvim.git ~/.config/nvim/pack/m
 > 插件特色: https://www.youtube.com/watch?v=7hQZhHve4HI
 
 
-### [hop.nvim](https://github.com/smoka7/hop.nvim)
+### 🚮 ~~[hop.nvim](https://github.com/smoka7/hop.nvim)~~ 建議使用leap.nvim
 
 
 ```bash
 git clone https://github.com/smoka7/hop.nvim.git ~/.config/nvim/pack/motion/start/hop.nvim
 ```
+
+### [leap.nvim](https://github.com/ggandor/leap.nvim.git)
+
+
+```sh
+git clone https://github.com/ggandor/leap.nvim.git ~/.config/nvim/pack/motion/start/leap.nvim
+```
+
 
 ## git
 
