@@ -10,10 +10,13 @@ function M.set_conceal(id, config)
 
     -- 清除之前的 extmark
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-
     if vim.fn.mode() ~= "n" then
       return -- 不設定任何的conceal，而因為前面已經clear_namespace，所以之前如果已經有加的項目也會被解開
     end
+
+    vim.opt_local.conceallevel = 2 -- 0 正常顯示 3 完全隱藏
+    -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
+    -- vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for lnum, line in ipairs(lines) do
@@ -48,9 +51,6 @@ function M.set_conceal(id, config)
         start_col = e
       end
     end
-
-    vim.opt_local.conceallevel = 2    -- 完全隱藏
-    vim.opt_local.concealcursor = "n" -- cursor在n的時候會用conceal的項目來隱藏，但是如果要在整個insert下解開，靠這個還是不夠
   end
 
   vim.api.nvim_create_autocmd(
@@ -77,10 +77,12 @@ function M.set_conceal_with_replacements(id, config)
 
 
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-
     if vim.fn.mode() ~= "n" then
       return
     end
+
+    vim.opt_local.conceallevel = 2
+    -- vim.opt_local.concealcursor = ""
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for lnum, line in ipairs(lines) do
@@ -119,9 +121,6 @@ function M.set_conceal_with_replacements(id, config)
         start_col = e
       end
     end
-
-    vim.opt_local.conceallevel = 2
-    vim.opt_local.concealcursor = "n"
   end
 
   vim.api.nvim_create_autocmd(
