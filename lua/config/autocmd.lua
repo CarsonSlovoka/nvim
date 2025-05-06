@@ -9,6 +9,7 @@ local groupName = {
   editorconfig = "carson.editorconfig",
   highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
+  conceal = "carson.conceal",
 }
 for key, name in pairs(groupName) do
   if name == groupName.editorconfig then
@@ -442,6 +443,19 @@ function M.setup(opts)
       -- end
     end,
   })
+
+
+  -- vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  --   group = groupName.conceal,
+  --   callback = function()
+  --     -- vim.cmd([[ syntax match MyGroup "\~/" conceal cchar=🏠 containedin=ALL]])
+  --     -- vim.cmd([[ syntax match MyGroup "ok" conceal cchar=🆗 containedin=ALL]])
+  --     -- vim.cmd([[ syntax match MyGroup "\[x\]" conceal cchar=✅ containedin=ALL]])
+  --     -- vim.cmd([[ syntax match MyGroup "\cTODO" conceal cchar=📝 containedin=ALL]]) -- \c無效，只有大小有匹配
+  --     vim.cmd([[ syntax match MyGroup /\cTODO/ conceal cchar=📝 containedin=ALL]])
+  --   end,
+  -- })
+
 
   -- :h compl-autocomplete
 
