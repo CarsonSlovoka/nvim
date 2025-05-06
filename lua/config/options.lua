@@ -7,7 +7,14 @@ local function custom_global_options()
   -- vim.g.qffiletype = nil  -- 初值設定為nil有一個壞處，在使用 :let g: 的時候使用tab不會出來，設定成""就可以讓tab有它的選單出來
   vim.g.qffiletype = "" -- 實際用途: https://github.com/CarsonSlovoka/nvim/blob/896395082cbf5a/after/syntax/qf.lua#L17-L26
   -- let g:qffiletype="cpp"
+  -- :lua print(vim.g:qffiletype) -- 查看
 end
+
+-- nvim中其它的變數
+-- g: global
+-- t: tab     書架 一個tab可以有許多buffer
+-- b: buffer  書      :e 或者 :Telescope buffers 的跳轉都是再換buffer
+-- w: window  第幾頁. :split 等相關都可以從該buffer之中再分離出window
 
 function options.setup()
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
