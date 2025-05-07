@@ -355,6 +355,11 @@ end
 
 
 local function install_leap()
+  local ok, _ = pcall(require, "leap")
+  if not ok then
+    vim.notify("Failed to load leap", vim.log.levels.ERROR)
+    return
+  end
   require('leap').set_default_mappings()
 end
 
