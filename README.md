@@ -139,6 +139,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   ├── edit/start/                  -- ✅ 與編輯相關
 │   │         └── cmp                -- ✅ 自動完成 (主要依靠`<C-X>`)
 │   │
+│   ├── sdk/start/
+│   │         └── flutter-tools.nvim     -- ✅ 主要用的語言是dart, 而flutter是一個框架, flutter-tools.nvim能提供其lsp與dap相關設定 (v1.14.0... 8fa438f)
+│   │
 │   ├── other/start/                     -- ✅ 未分類
 │   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v8.1.1... a020c88)
 │   │         ├── lualine.nvim           -- ✅ statusbar (1ba4000)
@@ -756,6 +759,18 @@ mkdir -pv ~/.config/nvim/pack/theme/start/
 
 ```sh
 git clone https://github.com/projekt0n/github-nvim-theme.git ~/.config/nvim/pack/theme/start/github-nvim-theme
+```
+
+## sdk
+
+```sh
+mkdir -pv ~/.config/nvim/pack/sdk/start/
+```
+
+### [flutter-tools.nvim](https://github.com/nvim-flutter/flutter-tools.nvim)
+
+```
+git clone https://github.com/nvim-flutter/flutter-tools.nvim ~/.config/nvim/pack/sdk/start/flutter-tools.nvim
 ```
 
 

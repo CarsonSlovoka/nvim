@@ -72,3 +72,6 @@
 [submodule "debug/one-small-step-for-vimkind"]
     path = pack/debug/start/one-small-step-for-vimkind
     url = https://github.com/jbyuki/one-small-step-for-vimkind.git
+[submodule "debug/flutter-tools.nvim"]
+    path = pack/sdk/start/flutter-tools.nvim
+    url = https://github.com/nvim-flutter/flutter-tools.nvim
