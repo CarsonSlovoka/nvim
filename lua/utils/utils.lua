@@ -6,5 +6,6 @@ return {
   flag = require "utils.flag",
   os = require "utils.os",
   range = require "utils.range",
+  sway = require "utils.sway",
   time = require "utils.time",
 }

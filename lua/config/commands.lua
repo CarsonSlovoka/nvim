@@ -1,7 +1,6 @@
 local path = require("utils.path")
 local cmdUtils = require("utils.cmd")
 local osUtils = require("utils.os")
-local swayUtils = require("utils.sway")
 local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
 local extmarkUtils = require("utils.extmark")
@@ -1652,7 +1651,7 @@ function commands.setup()
         local name = item[1]
         local pid = item[2]
 
-        local result = swayUtils.set_window_opacity(pid, opacity)
+        local result = utils.sway.set_window_opacity(pid, opacity)
         if result == 0 then
           vim.notify(string.format("已將 %q PID %s 的透明度設為 %.2f", name, pid, opacity), vim.log.levels.INFO)
         else
@@ -1681,10 +1680,10 @@ function commands.setup()
 
         if argc == 2 then
           -- 此參數為PID, name的結合
-          local nodes = swayUtils.get_tree()
+          local nodes = utils.sway.get_tree()
           if #argLead > 0 then
             nodes = vim.tbl_filter(function(node)
-              return string.find((node.name .. node.pid), argLead)
+              return string.find((node.name .. node.pid), argLead) ~= nil
             end, nodes)
           end
           local cmp = {}
@@ -2152,7 +2151,7 @@ function commands.setup()
         local start_pos = vim.fn.getpos("'<")
         local end_pos = vim.fn.getpos("'>")
         local line1, col1 = start_pos[2], start_pos[3] -- 1 開始 ~ 2147483647
-        local line2, col2 = end_pos[2], end_pos[3]
+        local line2, _ = end_pos[2], end_pos[3]
         -- local mode = vim.fn.mode() -- 得到的都是n沒有辦法區分出v或V
         if col1 ~= 1 then -- 因為如果是V一定是1, 雖然v也以是1，但是一般而言比較少(而且也可以避開，從2開始v就好)
           -- v mode
