@@ -45,7 +45,7 @@ function M.get_tree()
   return windows
 end
 
---- @return number? 0: ok, otherwise error
+--- @return number|boolean|nil
 function M.set_window_opacity(pid, opacity)
   -- 驗證透明度範圍
   opacity = tonumber(opacity)
@@ -56,7 +56,7 @@ function M.set_window_opacity(pid, opacity)
 
   -- 執行 swaymsg 命令
   local cmd = string.format('swaymsg "[pid=%s]" opacity %f', pid, opacity)
-  return os.execute(cmd)
+  return os.execute(cmd) -- suc, exitcode, code
 end
 
 return M
