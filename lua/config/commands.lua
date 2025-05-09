@@ -1706,6 +1706,7 @@ function commands.setup()
   )
 
   vim.api.nvim_create_user_command("SwayFocus",
+    -- 📝 以pid，firefox的窗口都是相同的pid，所以跳轉可能不如預期
     function(args)
       local para = utils.flag.parse(args.args)
       local pid = para.opts["pid"]
@@ -1724,7 +1725,6 @@ function commands.setup()
         -- sway似乎沒有name或title的方式，只然透過name去找pid
         -- name = string.sub(name, 2, #name - 1) -- 去除開頭與結尾的"或'
         name = string.gsub(name, "　", " ")
-        print(name)
         local nodes = utils.sway.get_tree()
         for _, node in ipairs(nodes) do
           if node.name == name then
