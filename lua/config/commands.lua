@@ -1705,6 +1705,57 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("SwayFocus",
+    function(args)
+      local para = utils.flag.parse(args.args)
+      local pid = para.opts["pid"]
+      if pid then
+        os.execute(string.format("swaymsg [pid=%s] focus", pid))
+        return
+      end
+
+      local name = para.opts["name"]
+      if name then
+        -- name = string.sub(name, 2, #name - 1) -- 去除開頭與結尾的"或'
+        name = string.gsub(name, "　", " ")
+        print(name)
+        local nodes = utils.sway.get_tree()
+        for _, node in ipairs(nodes) do
+          if node.name == name then
+            os.execute(string.format("swaymsg [pid=%s] focus", node.pid))
+            return
+          end
+        end
+        return
+      end
+    end,
+    {
+      desc = "swaymsg [pid=1234] focus",
+      nargs = 1,
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc > 1 then
+          return {}
+        end
+
+        local cmp_pid = {}
+        local cmp_name = {}
+
+        local nodes = utils.sway.get_tree()
+        for _, node in ipairs(nodes) do
+          table.insert(cmp_pid, tostring(node.pid))
+          local name, _ = string.gsub(node.name, " ", "　") -- string, count
+          table.insert(cmp_name, name)
+        end
+
+        return utils.cmd.get_complete_list(arg_lead, {
+          pid = cmp_pid,
+          name = cmp_name,
+        })
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("NotifySend",
     function(args)
       if args.fargs[1] == "-h" then
