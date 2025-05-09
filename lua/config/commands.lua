@@ -1709,13 +1709,19 @@ function commands.setup()
     function(args)
       local para = utils.flag.parse(args.args)
       local pid = para.opts["pid"]
-      if pid then
+      print(vim.inspect(para))
+      if pid then -- 有pid時則優先
         os.execute(string.format("swaymsg [pid=%s] focus", pid))
         return
       end
 
-      local name = para.opts["name"]
+      if #para.params == 0 then
+        return
+      end
+
+      local name = para.params[1]
       if name then
+        -- sway似乎沒有name或title的方式，只然透過name去找pid
         -- name = string.sub(name, 2, #name - 1) -- 去除開頭與結尾的"或'
         name = string.gsub(name, "　", " ")
         print(name)
@@ -1730,7 +1736,7 @@ function commands.setup()
       end
     end,
     {
-      desc = "swaymsg [pid=1234] focus",
+      desc = "swaymsg [pid=1234] focus 透過pid或name聚焦到指定的窗口",
       nargs = 1,
       complete = function(arg_lead, cmd_line)
         local argc = #(vim.split(cmd_line, "%s+")) - 1
@@ -1748,10 +1754,12 @@ function commands.setup()
           table.insert(cmp_name, name)
         end
 
-        return utils.cmd.get_complete_list(arg_lead, {
-          pid = cmp_pid,
-          name = cmp_name,
-        })
+        if arg_lead:match("^%-%-") then
+          return utils.cmd.get_complete_list(arg_lead, {
+            pid = cmp_pid,
+          })
+        end
+        return cmp_name -- 預設使用名稱(比較容易識別)
       end
     }
   )
