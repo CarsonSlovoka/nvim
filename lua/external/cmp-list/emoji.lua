@@ -17,6 +17,12 @@ local emoji_data = {
 emoji_data.G.hand = {
   alias = "hand",
   items = {
+    { "👋",
+      {
+        "gestures",
+        "hi",
+      },
+    },
     { "👍",
       {
         "thumbsUp",
@@ -110,6 +116,12 @@ emoji_data.G.hand = {
       {
         "pinchedFingers",
         "cue",
+      },
+    },
+    { "🙌",
+      {
+        "raisingHands",
+        "ya",
       },
     },
   }
@@ -751,6 +763,95 @@ emoji_data.G.tool = {
   }
 }
 
+emoji_data.G.game = {
+  alias = "game",
+  items = {
+    { "☠️",
+      {
+        "skullAndCrossbones",
+        "bones",
+        "gameOver",
+        "die",
+        "dead",
+      },
+    },
+    {
+      "🎲",
+      {
+        "gameDie",
+        "die",
+        "one",
+      }
+    },
+    {
+      "🏆",
+      {
+        "Trophy",
+        "1st",
+        "rank",
+      }
+    },
+    {
+      "🏅",
+      {
+        "sportsMedal",
+        "medal",
+        "1st",
+      }
+    },
+    {
+      "🎖️",
+      {
+        "militaryMedal",
+        "medal",
+      }
+    },
+    { "⚔️",
+      {
+        "crossedSwords",
+        "swords",
+      },
+    },
+    { "💯",
+      {
+        "hundredPoints",
+        "100points",
+      },
+    },
+    { "🎉",
+      {
+        "ya",
+        "party",
+      },
+    },
+    { "🎊",
+      {
+        "confettiBall",
+        "party",
+        "ya",
+        "ball",
+      },
+    },
+    { "🎇",
+      {
+        "sparkler",
+        "ya"
+      },
+    },
+    { "✨",
+      {
+        "sparkles",
+        "features",
+      },
+    },
+    { "🎈",
+      {
+        "balloon",
+        "redBalloon",
+      },
+    },
+  }
+}
 emoji_data.G._other = {
   alias = "",
   items = {
@@ -802,20 +903,7 @@ emoji_data.G._other = {
       },
     },
     { "⚠", "warning" },
-    { "🎉", "ya" },
-    { "🎇",
-      {
-        "sparkler",
-        "ya"
-      },
-    },
     { "❗", "exclamation" },
-    { "💯",
-      {
-        "hundredPoints",
-        "100points",
-      },
-    },
     { "💥",
       {
         "collision",
@@ -912,12 +1000,6 @@ emoji_data.G._other = {
     { "🔥", "fire" },
     { "🔑", "key" },
     { "🔒", "locked" },
-    { "✨",
-      {
-        "sparkles",
-        "features",
-      },
-    },
     { "⚡",
       {
         "fast",
@@ -1023,21 +1105,6 @@ emoji_data.G._other = {
         "button",
       },
     },
-    { "⚔️",
-      {
-        "crossedSwords",
-        "swords",
-      },
-    },
-    { "☠️",
-      {
-        "skullAndCrossbones",
-        "bones",
-        "gameOver",
-        "die",
-        "dead",
-      },
-    },
     { "♦️",
       {
         "diamondSuit",
@@ -1074,14 +1141,6 @@ emoji_data.G._other = {
       {
         "joker",
         "card",
-      }
-    },
-    {
-      "🎲",
-      {
-        "gameDie",
-        "die",
-        "one",
       }
     },
   }
