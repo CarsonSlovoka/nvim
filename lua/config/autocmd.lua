@@ -464,6 +464,19 @@ function M.setup(opts)
     end,
   })
 
+  vim.g.cmplistauto = 0 -- :help completefunc
+  vim.api.nvim_create_autocmd('InsertCharPre', {
+    callback = function()
+      if vim.g.cmplistauto == 1 then -- ⚠️ 啟用會受到triggerCharacters影響，所以可以先設定為 vim.g.lspcmp = 0
+        local line = vim.api.nvim_get_current_line()
+        local col = vim.api.nvim_win_get_cursor(0)[2]
+        local prev_char = col > 1 and line:sub(col - 1, col - 1) or ''
+        if prev_char:match('[0-9a-zA-Z]') then
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-x><C-u>', true, false, true), 'n', true)
+        end
+      end
+    end,
+  })
 
   -- vim.api.nvim_create_autocmd({ "BufEnter" }, {
   --   group = groupName.conceal,
