@@ -418,6 +418,9 @@ function M.setup(opts)
     }
   )
 
+  vim.g.lspcmp = 1
+  ---@type table
+  local default_trigger_charact_map = {} -- 記錄每一個檔案的預設 triggerCharacters
   create_autocmd('LspAttach', {
     -- https://neovim.io/doc/user/lsp.html
     desc = "auto-completion. 在`.`的時候會自動觸發補全 Note: Use CTRL-Y to select an item.",
@@ -429,9 +432,21 @@ function M.setup(opts)
       -- end
       -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
       if client:supports_method('textDocument/completion') then
+        -- 每一個文件載入的時候，都會觸發一次，如果這個文件已經觸發了將不會再觸發，不過可以使用 :e 來重載
         -- Optional: trigger autocompletion on EVERY keypress. May be slow!
-        -- local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
-        -- client.server_capabilities.completionProvider.triggerCharacters = chars
+        -- print("before " .. vim.inspect(client.server_capabilities.completionProvider.triggerCharacters)) -- go的預設是.  lua的預設是\t, \n, . ,... 會比較多
+        local filetype = vim.api.nvim_get_option_value("filetype", { buf = args.buf })
+        if default_trigger_charact_map[filetype] == nil then
+          default_trigger_charact_map[filetype] = client.server_capabilities.completionProvider.triggerCharacters
+        end
+        if vim.g.lspcmp == 1 then
+          local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
+          client.server_capabilities.completionProvider.triggerCharacters = chars
+          -- print("after " .. vim.inspect(client.server_capabilities.completionProvider.triggerCharacters))
+        else
+          client.server_capabilities.completionProvider.triggerCharacters = default_trigger_charact_map[filetype]
+          -- print("default " .. vim.inspect(client.server_capabilities.completionProvider.triggerCharacters))
+        end
         vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
       end
       -- -- Auto-format ("lint") on save.
