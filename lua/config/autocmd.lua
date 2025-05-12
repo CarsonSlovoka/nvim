@@ -104,6 +104,7 @@ function M.setup(opts)
   -- vim.keymap.set({ "v", "x" } -- x包含v, V. 但沒有Ctrl-V 而v會包含，並且包含所有x涵蓋的項目
   local enable_mark_range = true
   for _, key in ipairs({ "c", ":",
+    "/",
     "C", -- ["x]C Delete from the cursor position to the end of the line
     "I", -- 區塊選取時會用到
     "R"  -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
