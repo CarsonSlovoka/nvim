@@ -1705,6 +1705,28 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("SetOpacity",
+    function(args)
+      os.execute(string.format([[sway for_window [app_id=".*"] opacity %s]], args.fargs[1]))
+    end,
+    {
+      desc = "設定Sway中所有app_id的透明度(舊有的視窗不影響，只會影響新開的視窗)",
+      nargs = 1,
+      complete = function(_, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          return {
+            "0.85",
+            "0.90",
+            "0.95",
+            "1.00",
+            "0.8",
+          }
+        end
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("SwayFocus",
     -- 📝 以pid，firefox的窗口都是相同的pid，所以跳轉可能不如預期
     function(args)
