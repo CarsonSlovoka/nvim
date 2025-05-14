@@ -1566,7 +1566,7 @@ local function install_nvim_dap()
         name = "Debug Package (Build Flags & Arguments)",
         request = "launch",
         program = "${fileDirname}",
-        args = require("dap-go").get_arguments,         -- -tags=xxx
+        args = require("dap-go").get_arguments,         -- -tags=xxx -- -tags=foo,bar
         buildFlags = require("dap-go").get_build_flags, -- -workDir=img/2025
       },
     },
@@ -1831,6 +1831,27 @@ local installs = {
     name = "lspconfig gopls",
     fn = function()
       -- :lua require("lspconfig").gopls.setup { settings = { gopls = { buildFlags = { "-tags=xxx" } } } } -- 👈 這招可行. (可再搭配 :e 來刷新)
+      vim.api.nvim_create_user_command("GoplsSetBuildFlags",
+        function(args)
+          -- local buildFlags = args.fargs
+          local buildFlags = table.concat(args.fargs, ",") -- https://stackoverflow.com/a/64318502/9935654
+          -- print(vim.inspect(buildFlags))
+          require("lspconfig").gopls.setup { settings = { gopls = { buildFlags = { "-tags=" .. buildFlags } } } }
+        end,
+        {
+          desc = "set build tags. 使查看變數定義能依據tags來跳轉",
+          nargs = "?",
+          complete = function(_, cmd_line)
+            local argc = #(vim.split(cmd_line, "%s+")) - 1
+            if argc == 1 then
+              -- return { "-tags=default" }
+              return { "default" }
+            end
+            return { "other" .. argc - 1 }
+          end,
+        }
+      )
+
       require("lspconfig").gopls.setup {
         settings = {
           gopls = {
