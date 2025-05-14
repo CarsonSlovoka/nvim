@@ -1553,12 +1553,21 @@ local function install_nvim_dap()
     -- represents a dap configuration. For more details do:
     -- :help dap-configuration
     dap_configurations = {
+      -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/lua/dap-go.lua#L103-L165
       {
         -- Must be "go" or it will be ignored by the plugin
         type = "go",
         name = "Attach remote",
         mode = "remote",
         request = "attach",
+      },
+      {
+        type = "go",
+        name = "Debug Package (Build Flags & Arguments)",
+        request = "launch",
+        program = "${fileDirname}",
+        args = require("dap-go").get_arguments,         -- -tags=xxx
+        buildFlags = require("dap-go").get_build_flags, -- -workDir=img/2025
       },
     },
     -- delve configurations
@@ -1576,7 +1585,9 @@ local function install_nvim_dap()
       -- assigned dynamically.
       port = "${port}",
       -- additional args to pass to dlv
-      args = {},
+      args = {
+        -- "-workDir", "img/2503", -- ❌ 這不是flag.Parse的那些參數，不是放這邊
+      },
       -- the build flags that are passed to delve.
       -- defaults to empty string, but can be used to provide flags
       -- such as "-tags=unit" to make sure the test suite is
@@ -1584,7 +1595,9 @@ local function install_nvim_dap()
       -- passing build flags using args is ineffective, as those are
       -- ignored by delve in dap mode.
       -- avaliable ui interactive function to prompt for arguments get_arguments
-      build_flags = {},
+      build_flags = {
+        -- "-tags=xxx", -- 建置時候的tag, 即go run -tags=xxx -- 建議在 dap_configurations 中設定避免寫死，即: require("dap-go").get_arguments
+      },
       -- whether the dlv process to be created detached or not. there is
       -- an issue on delve versions < 1.24.0 for Windows where this needs to be
       -- set to false, otherwise the dlv server creation will fail.
@@ -1817,7 +1830,18 @@ local installs = {
   {
     name = "lspconfig gopls",
     fn = function()
-      require("lspconfig").gopls.setup {}
+      -- :lua require("lspconfig").gopls.setup { settings = { gopls = { buildFlags = { "-tags=xxx" } } } } -- 👈 這招可行. (可再搭配 :e 來刷新)
+      require("lspconfig").gopls.setup {
+        settings = {
+          gopls = {
+            -- :lua print(vim.inspect(vim.lsp.get_active_clients()))
+            -- 已知在go專案新增.gopls.{lua, json, yml}這些都無效
+            buildFlags = {
+              -- "-tags=xxx"
+            } -- 這影響編輯時候對變數有定義是抓取哪一個檔案為主
+          }
+        }
+      }
     end,
     delay = 5,
   },
