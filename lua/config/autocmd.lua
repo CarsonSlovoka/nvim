@@ -218,13 +218,14 @@ function M.setup(opts)
     }
   )
 
-  -- 自定義命名空間（用於高亮）
+  -- 自定義命名空間（用於高亮
+  vim.g.highlight_spy = "bg" -- fg, all, #00ff00
   local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
   create_autocmd({
     "BufEnter", "TextChanged", "TextChangedI",
     -- "InsertLeave",
   }, {
-    desc = '將文字 #RRGGBB 給予顏色. 例如: #ff0000  #00ff00 #0000ff',
+    desc = '將文字 #RRGGBB 給予顏色. 例如: #ff0000  #00ff00 #0000ff. :let g:highlight_spy="" :e', -- 當調整完後可以用:e來刷新
     pattern = "*",
     group = groupName.highlightHexColor,
     callback = function()
@@ -245,7 +246,16 @@ function M.setup(opts)
 
           -- 動態創建高亮組，背景色設為該顏色
           local hl_group = 'Color_' .. color:sub(2) -- 去掉 # 作為高亮組名
-          vim.api.nvim_set_hl(0, hl_group, { bg = color })
+          if vim.g.highlight_spy == "bg" then
+            vim.api.nvim_set_hl(0, hl_group, { bg = color })
+          elseif vim.g.highlight_spy == "fg" then
+            vim.api.nvim_set_hl(0, hl_group, { fg = color })
+          elseif vim.g.highlight_spy == "all" then
+            vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = color })
+          elseif vim.g.highlight_spy:match("#%x%x%x%x%x%x") then -- 將其視為fg的顏色
+            vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = vim.g.highlight_spy })
+          end
+
 
           -- 應用高亮到緩衝區
           -- vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col) -- DEPRECATED IN 0.11 https://neovim.io/doc/user/deprecated.html
