@@ -503,6 +503,111 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("Video2Png",
+    function(args)
+      local para = utils.flag.parse(args.args)
+      local input_file = vim.fn.expand(para.params[1])
+      local fps = tonumber(para.params[2]) or -1
+
+      local output = para.opts["o"] or "frame_%04d.png"
+      local quality = tonumber(para.opts["q"]) or "1"
+
+      if not input_file then
+        vim.notify("Error: Input file is required!", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 檢查輸入檔案是否存在
+      if vim.fn.filereadable(input_file) == 0 then
+        vim.notify("Error: Input file '" .. input_file .. "' does not exist!", vim.log.levels.ERROR)
+        return
+      end
+
+      -- "ffmpeg -i input.mp4 -vf fps=2 frame_%04d.png"  每秒2幀
+      -- "ffmpeg -i input.mp4 frame_%04d.png" 保存每一幀
+      local cmd = {
+        "ffmpeg -i " .. input_file
+      }
+      if fps ~= -1 then
+        table.insert(cmd, string.format("-vf fps=%s", tonumber(fps)))
+      end
+
+      local ext = string.lower(vim.fn.fnamemodify(output, ":e"))
+      if ext == "jpg" then
+        -- 決定jpg出來的品質
+        table.insert(cmd, "-q:v " .. quality)
+      end
+
+      table.insert(cmd, output)
+
+      local cmd_str = table.concat(cmd, " ")
+      print(cmd_str)
+
+      utils.os.execute_with_notify(cmd_str, "generated successfully", "Failed to generate")
+    end,
+    {
+      desc = "save each frame of video",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        if arg_lead:match("^%-%-") then
+          local output = {
+            "frame_%04d.png",
+            "frame_%04d.jpg",
+            "~/Downloads/frame_%04d.jpg",
+          }
+          if arg_lead:match("^%-%-o=") then
+            -- 抓目前目錄
+            for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do -- 從--=開始算
+              table.insert(output, dir .. "frame_%04d.png")
+            end
+          end
+
+          return utils.cmd.get_complete_list(arg_lead, {
+            o = output,
+            q = {
+              -- 1~31之間
+              "1",  -- 幾乎無損, 檔案最大
+              "5",  -- 視覺效果仍很好
+              "10", -- 品質明顯下降
+              "31", -- 最低品質
+            }
+          })
+        end
+
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          local video_extensions = { "%.gif$", "%.mp4$", "%.mkv$", "%.avi$", "%.mov$", "%.flv$", "%.wmv$" }
+          local all_files = vim.fn.getcompletion(arg_lead, "file") -- 不需要expand(arg_lead)
+          local video_files = {}
+          for _, file in ipairs(all_files) do
+            for _, ext in ipairs(video_extensions) do
+              if file:match(ext) or
+                  vim.fn.fnamemodify(file, ":e") == "" -- 目錄
+              then
+                table.insert(video_files, file)
+                break
+              end
+            end
+          end
+          return video_files
+        end
+
+        if argc == 2 then -- fps
+          return {
+            "1",
+            "5",
+            "0.1",
+            "0.5",
+            "-1", -- 這是我自己定的，只是用來代表抓取每一幀
+            "10",
+            "25",
+            "60",
+          }
+        end
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("AddLocalHelp",
     function(args)
       -- :help add-local-help

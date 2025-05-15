@@ -1,5 +1,6 @@
 local M = {}
 
+--- @return table
 function M.getDirOnly(argLead)
   local all_file = vim.fn.getcompletion(argLead, "file") -- 包含檔案和目錄
   local directories = {}
