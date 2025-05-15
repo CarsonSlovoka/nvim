@@ -526,7 +526,8 @@ function commands.setup()
       -- "ffmpeg -i input.mp4 -vf fps=2 frame_%04d.png"  每秒2幀
       -- "ffmpeg -i input.mp4 frame_%04d.png" 保存每一幀
       local cmd = {
-        "ffmpeg -i " .. input_file
+        -- "ffmpeg -i " .. input_file -- 在檔名有 - 的時候會有問題
+        string.format("ffmpeg -i %q", input_file)
       }
       if fps ~= -1 then
         table.insert(cmd, string.format("-vf fps=%s", tonumber(fps)))
@@ -582,14 +583,15 @@ function commands.setup()
           for _, file in ipairs(all_files) do
             for _, ext in ipairs(video_extensions) do
               if file:match(ext) or
-                  vim.fn.fnamemodify(file, ":e") == "" -- 目錄
+                  vim.fn.isdirectory(file) == 1 -- 目錄 (要是真實存在的目錄才會是1) -- :lua print(vim.fn.isdirectory("~/test")) -- 不吃~
+              -- vim.fn.fnamemodify(file, ":e") == "" -- 目錄，這也行，但是比較不是那麼好
               then
                 table.insert(video_files, file)
                 break
               end
             end
           end
-          return video_files
+          return utils.table.sort_files_first(video_files)
         end
 
         if argc == 2 then -- fps
