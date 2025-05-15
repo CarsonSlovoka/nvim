@@ -2324,12 +2324,24 @@ function commands.setup()
 
       -- 檢查高亮組是否存在
       if vim.fn.hlexists(hl_group) == 0 then
-        if hl_group:match('#%x%x%x%x%x%x') then
-          local fg_color = hl_group
-          hl_group = "TMP_" .. string.sub(hl_group, 2) -- nvim_set_hl的group不能用#112233的方式(Invalid character in group name)
+        -- if hl_group:match('#%x%x%x%x%x%x') -- 可行，但是只有一種顏色
+        -- local fg, bg = hl_group:match("(#%x%x%x%x%x%x)_(#%x%x%x%x%x%x)") -- 只有都存在才有效
+        local colors = {}
+        for color in hl_group:gmatch("#%x%x%x%x%x%x") do
+          table.insert(colors, color)
+        end
+
+        if #colors > 0 then
+          local fg = colors[1]
+          local bg = colors[2] or nil
+          -- print(fg, bg)
           local win_id = vim.api.nvim_get_current_win()
           local ns_id = vim.api.nvim_create_namespace("Highlight_" .. win_id)
-          vim.api.nvim_set_hl(ns_id, hl_group, { fg = fg_color })
+          hl_group = string.format("Highlight_%d_%s_%s", win_id,
+            string.sub(fg, 2), -- nvim_set_hl的group不能用#112233的方式(Invalid character in group name)
+            string.sub(bg or "", 2)
+          )
+          vim.api.nvim_set_hl(ns_id, hl_group, { fg = fg, bg = bg })
           vim.api.nvim_win_set_hl_ns(win_id, ns_id)
         else
           vim.notify('Highlight group "' .. hl_group .. '" does not exist', vim.log.levels.WARN)
