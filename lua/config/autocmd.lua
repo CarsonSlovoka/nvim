@@ -9,6 +9,7 @@ local groupName = {
   editorconfig = "carson.editorconfig",
   highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
+  filetype = "filetype",
   conceal = "carson.conceal",
 }
 for key, name in pairs(groupName) do
@@ -205,6 +206,18 @@ function M.setup(opts)
     }
   )
 
+  create_autocmd(
+    { "BufRead", "BufNewFile" },
+    {
+      desc = ":set filetype=javascript",
+      group = groupName.filetype,
+      pattern = "*.gs",
+      callback = function()
+        vim.bo.filetype = "javascript"
+      end
+    }
+  )
+
   -- 自定義命名空間（用於高亮）
   local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
   create_autocmd({
@@ -365,10 +378,10 @@ function M.setup(opts)
     }
   )
   create_autocmd(
-    "FileType",
+    "FileType", -- 不是檔案的附檔名，要用 :set filetype 查看才是準的
     {
       group = groupName.editorconfig,
-      pattern = { "md", "yml", "yaml", "json", "json5", "js", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
+      pattern = { "md", "yml", "yaml", "json", "json5", "js", "javascript", "gs", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
       callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2

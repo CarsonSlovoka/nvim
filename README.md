@@ -59,6 +59,11 @@ wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.z
 unzip FiraCode.zip -d ~/.fonts
 rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
+
+
+# (可選) 為了javascript的lsp
+sudo npm install -g typescript-language-server typescript
+typescript-language-server -V
 ```
 
 windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
