@@ -2324,8 +2324,17 @@ function commands.setup()
 
       -- 檢查高亮組是否存在
       if vim.fn.hlexists(hl_group) == 0 then
-        vim.notify('Highlight group "' .. hl_group .. '" does not exist', vim.log.levels.WARN)
-        return
+        if hl_group:match('#%x%x%x%x%x%x') then
+          local fg_color = hl_group
+          hl_group = "TMP_" .. string.sub(hl_group, 2) -- nvim_set_hl的group不能用#112233的方式(Invalid character in group name)
+          local win_id = vim.api.nvim_get_current_win()
+          local ns_id = vim.api.nvim_create_namespace("Highlight_" .. win_id)
+          vim.api.nvim_set_hl(ns_id, hl_group, { fg = fg_color })
+          vim.api.nvim_win_set_hl_ns(win_id, ns_id)
+        else
+          vim.notify('Highlight group "' .. hl_group .. '" does not exist', vim.log.levels.WARN)
+          return
+        end
       end
 
       -- 獲取當前光標行號和緩衝區最大行數
