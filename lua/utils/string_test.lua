@@ -32,14 +32,13 @@ local function Example_string_match_2()
   print(table.concat(matches, ", "))
 
   local m = string.match(str, "(.*)_(.*)_(.*)")
-  local matches2 = { m } -- 如果是分開來再，就會有辦法解出來完整的內容
+  local matches2 = { m } -- 如果是分開來，就沒辦法解出完整的內容
   print(inspect(matches2))
 
   -- Output:
-  -- 3
+  -- count: 3
   -- ABC, DEF, GHI
   -- { "ABC" }
-  -- ABC DEF GHI
 end
 
 local function Example_string_gmatch()
