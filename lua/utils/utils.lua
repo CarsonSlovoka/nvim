@@ -7,5 +7,6 @@ return {
   os = require "utils.os",
   range = require "utils.range",
   sway = require "utils.sway",
+  table = require "utils.table",
   time = require "utils.time",
 }
