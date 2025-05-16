@@ -474,21 +474,18 @@ function commands.setup()
 
         local argc = #(vim.split(cmd_line, "%s+")) - 1
         if argc == 1 then
-          local video_extensions = { "%.mp4$", "%.mkv$", "%.avi$", "%.mov$", "%.flv$", "%.wmv$" }
           -- 取得所有檔案的補全清單
           local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
           -- 過濾出影片檔案
           local cmp_files = {}
+          local regex_video = vim.regex([[\c\.\(mp4\|mkv\|avi\|mov\|flv\|wmv\)$]])
           for _, file in ipairs(all_files) do
             -- 如果是目錄還是推送，而如果是檔案就要匹配相同的附檔名
             if vim.loop.fs_stat(file).type == "directory" then
               table.insert(cmp_files, file)
             else
-              for _, ext in ipairs(video_extensions) do
-                if file:match(ext) then
-                  table.insert(cmp_files, file)
-                  break
-                end
+              if regex_video:match_str(file) then
+                table.insert(cmp_files, file)
               end
             end
           end
