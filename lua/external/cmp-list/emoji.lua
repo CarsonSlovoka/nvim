@@ -240,6 +240,13 @@ emoji_data.G.face = {
     { "😊", "smilingWithSmilingEyes" },
     { "😊", "smilingFacewithHalo" },
     { "😇", "pleadingFace" },
+    { "😄",
+      {
+        "grinningFaceWithSmilingEyes",
+        "laughing",
+        "happy",
+      },
+    },
     { "🤣",
       {
         "rollingOnTheFloorLaughing",
@@ -315,6 +322,35 @@ emoji_data.G.face = {
       {
         "shushingFace",
         "muted",
+      },
+    },
+    { "😍",
+      {
+        "smilingFaceWithHeartEyes",
+        "heart",
+        "love",
+        "wow",
+      },
+    },
+    { "🥰",
+      {
+        "smilingFaceWithHearts",
+        "heart",
+        "love",
+      },
+    },
+    { "🤩",
+      {
+        "starStruck",
+        "wow",
+      },
+    },
+    { "🤗",
+      {
+        "smilingFaceWithOpenHands",
+        "smile",
+        "happy",
+        "huggingFace",
       },
     },
   }
