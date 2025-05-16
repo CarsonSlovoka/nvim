@@ -377,7 +377,7 @@ function commands.setup()
     desc = "保存剪貼簿中的圖片，儲成webp格式"
   })
 
-  vim.api.nvim_create_user_command("Video2Gif",
+  vim.api.nvim_create_user_command("Video2Gif", -- 🤔 目前已知道似乎nvim執行一次之後，下一次再跑一次檔案會出來，但是內容會有問題，重啟nvim後再跑一次會正常
     function(args)
       local para = utils.flag.parse(args.args)
       local input_file = vim.fn.expand(para.params[1])
@@ -451,15 +451,20 @@ function commands.setup()
       nargs = "+",
       complete = function(arg_lead, cmd_line)
         if arg_lead:match("^%-%-") then
+          local output = { "temp.gif" }
+          if arg_lead:match("^%-%-o=") then
+            arg_lead = "--o=" .. vim.fn.expand(string.sub(arg_lead, 5))                 -- 5為--o=
+            for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do -- 從--o=開始算
+              table.insert(output, dir .. "output.gif")
+            end
+          end
           return utils.cmd.get_complete_list(arg_lead, {
             loop = {
               "0", -- 無限循環(預設)
               "1", -- 1次
               "5"  -- 播5次
             },
-            o = {  -- output
-              "temp.gif"
-            },
+            o = output,
             force = {
               "0",
               "1", -- 覆蓋，當輸出的檔案已存在
@@ -473,16 +478,22 @@ function commands.setup()
           -- 取得所有檔案的補全清單
           local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
           -- 過濾出影片檔案
-          local video_files = {}
+          local cmp_files = {}
           for _, file in ipairs(all_files) do
-            for _, ext in ipairs(video_extensions) do
-              if file:match(ext) then
-                table.insert(video_files, file)
-                break
+            -- 如果是目錄還是推送，而如果是檔案就要匹配相同的附檔名
+            if vim.loop.fs_stat(file).type == "directory" then
+              table.insert(cmp_files, file)
+            else
+              for _, ext in ipairs(video_extensions) do
+                if file:match(ext) then
+                  table.insert(cmp_files, file)
+                  break
+                end
               end
             end
           end
-          return video_files
+
+          return utils.table.sort_files_first(cmp_files)
         end
 
         if argc == 2 then -- width
@@ -559,7 +570,7 @@ function commands.setup()
           if arg_lead:match("^%-%-o=") then
             -- 抓目前目錄
             arg_lead = "--o=" .. vim.fn.expand(string.sub(arg_lead, 5))
-            for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do -- 從--=開始算
+            for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do -- 從--o=開始算
               table.insert(output, dir .. "frame_%04d.png")
             end
           end
