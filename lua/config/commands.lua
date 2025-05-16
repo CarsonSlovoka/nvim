@@ -435,15 +435,18 @@ function commands.setup()
       local rm_cmd = string.format('%s.png', base_name) -- 刪除生成出來的調色盤檔案
 
       -- 執行轉換流程
+      vim.fn.setqflist({ { text = palette_cmd, }, }, 'a') -- 將過程寫入到 qflist 方便失敗的時候，可以直接用終端機來貼上指令
       if not utils.os.execute_with_notify(palette_cmd, "Palette generated successfully", "Failed to generate palette") then
         return
       end
 
+      vim.fn.setqflist({ { text = gif_cmd, }, }, 'a')
       if not utils.os.execute_with_notify(gif_cmd, "GIF generated successfully: " .. output_file_path, "Failed to generate GIF") then
         return
       end
 
       -- 清理調色盤檔案
+      vim.fn.setqflist({ { text = rm_cmd, }, }, 'a')
       utils.os.remove_with_notify(rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
     end,
     {
