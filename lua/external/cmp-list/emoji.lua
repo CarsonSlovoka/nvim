@@ -1247,4 +1247,13 @@ vim.cmd("digraphs sm 128512 ha 128513") -- 😀 😁
 
 vim.cmd("digraphs .. 128172")           -- 💬
 
+vim.cmd("digraphs Ok 9989")             -- ✅ -- OK ✓
+vim.cmd("digraphs xx 10060")            -- ❌ -- XX ✗
+
+vim.cmd("digraphs hh 128072")           -- 👈 -- 原本的是 ─
+vim.cmd("digraphs jj 128071")           -- 👇
+vim.cmd("digraphs kk 128070")           -- 👆 -- 原本的是 ĸ
+vim.cmd("digraphs ll 128073")           -- 👉
+
+
 return M
