@@ -471,7 +471,7 @@ function commands.setup()
         if argc == 1 then
           local video_extensions = { "%.mp4$", "%.mkv$", "%.avi$", "%.mov$", "%.flv$", "%.wmv$" }
           -- 取得所有檔案的補全清單
-          local all_files = vim.fn.getcompletion(arg_lead, "file") -- 不需要expand(arg_lead)
+          local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
           -- 過濾出影片檔案
           local video_files = {}
           for _, file in ipairs(all_files) do
@@ -558,12 +558,13 @@ function commands.setup()
           }
           if arg_lead:match("^%-%-o=") then
             -- 抓目前目錄
+            arg_lead = "--o=" .. vim.fn.expand(string.sub(arg_lead, 5))
             for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do -- 從--=開始算
               table.insert(output, dir .. "frame_%04d.png")
             end
           end
 
-          return utils.cmd.get_complete_list(arg_lead, {
+          return utils.cmd.get_complete_list(arg_lead, { -- 如果路徑用arg_lead展開，這邊也要跟著才可以匹配到
             o = output,
             q = {
               -- 1~31之間
@@ -578,7 +579,7 @@ function commands.setup()
         local argc = #(vim.split(cmd_line, "%s+")) - 1
         if argc == 1 then
           local video_extensions = { "%.gif$", "%.mp4$", "%.mkv$", "%.avi$", "%.mov$", "%.flv$", "%.wmv$" }
-          local all_files = vim.fn.getcompletion(arg_lead, "file") -- 不需要expand(arg_lead)
+          local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
           local video_files = {}
           for _, file in ipairs(all_files) do
             for _, ext in ipairs(video_extensions) do
