@@ -653,6 +653,117 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("FfmpegGenGif",
+    function(args)
+      local para = utils.flag.parse(args.args)
+      local input_file = vim.fn.expand(para.params[1])
+
+      -- check input_file
+      if not input_file then
+        vim.notify("Error: Input file is required!", vim.log.levels.ERROR)
+        return
+      end
+      if vim.fn.filereadable(input_file) == 0 then
+        vim.notify("Error: Input file '" .. input_file .. "' does not exist!", vim.log.levels.ERROR)
+        return
+      end
+      -- :lua print(os.date("%Y%m%d_%H%M%S")) -- YYYYMMDD_HHMMSS
+      local output_file_path = para.opts["o"] or os.date("%Y%m%d_%H%M%S") .. ".gif"
+
+
+      if vim.fn.fnamemodify(output_file_path, ":e") ~= "gif" then
+        output_file_path = output_file_path .. ".gif"
+      end
+      if vim.fn.filereadable(output_file_path) == 1 then
+        local choice = vim.fn.confirm(
+          "File " .. output_file_path .. " already exists. Overwrite?",
+          "&Yes\n&No",
+          2 -- default, select opt 2 == No
+        )
+        if choice ~= 1 then
+          vim.notify("cancelled", vim.log.levels.INFO)
+          return
+        end
+        os.remove(output_file_path)
+      end
+
+      -- local r = tonumber(para.opts["r"]) or nil -- 預設的太快
+      local r = tonumber(para.opts["r"]) or 2
+      local width = tonumber(para.opts["width"]) or -1
+      local height = tonumber(para.opts["height"]) or -1
+      local loop = tonumber(para.opts["loop"]) or 0
+      print(vim.inspect(para.opts))
+
+      local cmd = {
+        "ffmpeg -f concat -safe 0"
+      }
+      if r then
+        table.insert(cmd, string.format("-r %f", r))
+      end
+
+      table.insert(cmd, "-i " .. input_file)
+      table.insert(cmd, string.format('-vf "scale=%d:%d"', width, height))
+      table.insert(cmd, string.format("-loop %d", loop))
+      table.insert(cmd, output_file_path)
+
+      local cmd_str = table.concat(cmd, " ")
+      print(cmd_str)
+      vim.fn.setloclist(0, { { text = cmd_str }, }, 'a')
+
+      if not utils.os.execute_with_notify(cmd_str, "generated successfully", "Failed to generate") then
+        return
+      end
+    end,
+    {
+      desc = "generate gif with ffmpeg",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        if arg_lead:match("^%-%-") then
+          local output = {
+            "output.git",
+            "~/Downloads/output.gif",
+          }
+          if arg_lead:match("^%-%-o=") then
+            arg_lead = "--o=" .. vim.fn.expand(string.sub(arg_lead, 5))
+            for _, dir in ipairs(utils.complete.getDirOnly(string.sub(arg_lead, 5))) do
+              table.insert(output, dir .. "output.gif")
+            end
+          end
+
+          return utils.cmd.get_complete_list(arg_lead, {
+            o = output,
+            r = {
+              "1.33", -- ≈ 0.75s/frame
+              "2",    -- 0.5s/frame
+              "4",
+              "10",
+              "20", -- 0.05s/frame
+            },
+            width = {
+              "-1",
+              "320",
+            },
+            height = {
+              "-1",
+              "600"
+            },
+            loop = {
+              "0", -- 無限循環(預設)
+              "1", -- 1次
+              "5"  -- 播5次
+            },
+          })
+        end
+
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+          return utils.table.sort_files_first(all_files)
+        end
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("AddLocalHelp",
     function(args)
       -- :help add-local-help
@@ -1996,6 +2107,7 @@ function commands.setup()
         if argc == 3 then
           local now = os.time()
           return {
+            -- https://www.lua.org/pil/22.1.html
             os.date("%H:%M"), -- HH:MM
             -- os.date("%H:%M_%m/%d/%Y　"), -- HH:MM_mm/dd/YYYY
             os.date("%H:%M_%m/%d/%Y　(%A)(today)"), -- HH:MM_mm/dd/YYYY -- %A是星期幾
