@@ -24,3 +24,11 @@ for _, hl in ipairs {
   vim.api.nvim_set_hl(0, '@markup.raw.markdown_inline', { fg = hl.fg, bg = hl.bg, bold = hl.bold })
   vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInline', { fg = hl.fg, bg = hl.bg, bold = hl.bold })
 end
+
+-- codeblock
+vim.api.nvim_set_hl(0, 'RenderMarkdownCode', { bg = "#292a2d" })
+
+-- heading
+vim.api.nvim_set_hl(0, 'RenderMarkdownH1Bg', { fg = "#ffffff", bg = "#08b416" })
+vim.api.nvim_set_hl(0, 'RenderMarkdownH2Bg', { fg = "#000000", bg = "#b49b1f", })
+vim.api.nvim_set_hl(0, 'RenderMarkdownH3Bg', { bg = "#2f9cb4", })
