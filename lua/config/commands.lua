@@ -654,6 +654,14 @@ function commands.setup()
   )
 
   vim.api.nvim_create_user_command("FfmpegGenGif",
+    -- -vf為簡單濾鏡
+    -- ffmpeg -f concat -safe 0 -r 2 -i input.txt -vf "scale=-1:-1" -loop 0 output.gif
+    --
+    -- -lavfi為複雜濾鏡
+    -- flag=lanczos 是高品質縮放演算法 圖片尺寸較小或不需要高品質縮放，可以考慮使用更快的 flags=bilinear
+    -- 🤔 ffmpeg -f concat -safe 0 -r 2 -i input.txt                -vf    "scale=-1:-1:flags=lanczos,palettegen" palette.png
+    -- 🤔 ffmpeg -f concat -safe 0 -r 2 -i input.txt                -vf    "scale=-1:-1"                                        -loop 0 output.gif
+    -- 🤔 ffmpeg -f concat -safe 0      -i input.txt -i palette.png -lavfi "scale=-1:-1:flags=lanczos [x]; [x][1:v] paletteuse" -loop 0 output.gif
     function(args)
       local para = utils.flag.parse(args.args)
       local input_file = vim.fn.expand(para.params[1])
@@ -692,7 +700,24 @@ function commands.setup()
       local width = tonumber(para.opts["width"]) or -1
       local height = tonumber(para.opts["height"]) or -1
       local loop = tonumber(para.opts["loop"]) or 0
-      print(vim.inspect(para.opts))
+      -- local paletteuse = para.opts["paletteuse"] == 1 -- 錯誤，一定都是字串
+      local paletteuse = para.opts["paletteuse"] == "1"
+
+      local platte_file_path = "palette" .. os.date("%Y%m%d_%H%M%S") .. ".png"
+
+      if paletteuse then
+        local palette_cmd_str = string.format(
+        -- 'ffmpeg -f concat -safe 0 -r %f -i %s -vf "scale=-1:-1:flags=lanczos,palettegen" %s',
+          'ffmpeg -f concat -safe 0 -i %s -vf "scale=-1:-1:flags=lanczos,palettegen" %s',
+          -- r,
+          input_file,
+          platte_file_path
+        )
+        vim.fn.setloclist(0, { { text = palette_cmd_str }, }, 'a')
+        if not utils.os.execute_with_notify(palette_cmd_str, "generated palette successfully", "Failed to generate palette") then
+          return
+        end
+      end
 
       local cmd = {
         "ffmpeg -f concat -safe 0"
@@ -702,7 +727,13 @@ function commands.setup()
       end
 
       table.insert(cmd, "-i " .. input_file)
-      table.insert(cmd, string.format('-vf "scale=%d:%d"', width, height))
+
+      if paletteuse then
+        table.insert(cmd, "-i " .. platte_file_path) -- -i palette.png
+        table.insert(cmd, string.format('-lavfi "scale=%d:%d:flags=lanczos [x]; [x][1:v] paletteuse"', width, height))
+      else
+        table.insert(cmd, string.format('-vf "scale=%d:%d"', width, height))
+      end
       table.insert(cmd, string.format("-loop %d", loop))
       table.insert(cmd, output_file_path)
 
@@ -710,8 +741,10 @@ function commands.setup()
       print(cmd_str)
       vim.fn.setloclist(0, { { text = cmd_str }, }, 'a')
 
-      if not utils.os.execute_with_notify(cmd_str, "generated successfully", "Failed to generate") then
-        return
+      utils.os.execute_with_notify(cmd_str, "generated successfully", "Failed to generate")
+
+      if paletteuse then
+        os.remove(platte_file_path)
       end
     end,
     {
@@ -752,6 +785,10 @@ function commands.setup()
               "1", -- 1次
               "5"  -- 播5次
             },
+            paletteuse = {
+              "1", -- TODO 目前使用它，生成的gif會不完整
+              "0",
+            }
           })
         end
 
