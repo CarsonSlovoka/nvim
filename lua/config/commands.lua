@@ -246,6 +246,37 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("InspectRange",
+    -- 內建的:Inspect只能夠看當前的位置
+    -- 如果有的樣式在選中與非選中的時候是不同的，此時會需要非選中也能觀看的方法，就可以利用此指令
+    function(args)
+      if args.range == 0 then
+        return vim.cmd("Inspect")
+      end
+      -- args.range = 1 表示 :3InspectRange
+      -- args.range = 2 表示 :3,11InspectRange
+
+      -- vim.show_pos({bufnr}, {row: 0-based}, {col: 0-based}, {filter})
+      -- :lua print(vim.show_pos(0, 0)) -- 不好！ 如果省略了col會用當前cursor的位置，就連row的列號都不是指定的
+      -- :lua print(vim.show_pos(0, 查看的列號+1, 0)) -- 👍
+
+      if args.range == 1 then
+        return vim.show_pos(0, args.line1 - 1, 0)
+      end
+
+      if args.range == 2 then
+        for line = args.line1, args.line2 do
+          vim.show_pos(0, line - 1, 0)
+        end
+        return
+      end
+    end,
+    {
+      desc = "Inspect, vim.show_pos({bufnr}, {row: 0-based}, {col: 0-based}, {filter})",
+      range = true,
+    }
+  )
+
   vim.api.nvim_create_user_command("SavePNG",
     function(args)
       local outputPath = ""
