@@ -44,6 +44,18 @@ local function show_toc_window()
     return
   end
 
+  local cur_line = vim.api.nvim_win_get_cursor(0)[1]
+
+  -- 找到當前光標所在或最近的標題索引
+  local selected_idx = 1
+  for i, item in ipairs(toc) do
+    if item.line <= cur_line then
+      selected_idx = i
+    else
+      break
+    end
+  end
+
   local buf = vim.api.nvim_create_buf(false, true)
   local opts = {
     relative = "editor",
@@ -59,18 +71,22 @@ local function show_toc_window()
   local lines = {}
   for _, item in ipairs(toc) do
     table.insert(lines,
-      string.rep(" ", (item.level - 1) * 2) ..
-        "- " .. item.title ..
-        " (line " .. item.line .. ")"
-    )
+      string.format("%s - %s (line %s)",
+        string.rep(" ", (item.level - 1) * 2),
+        item.title,
+        item.line
+      ))
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+  -- 將光標移動到當前標題對應的 TOC 項目
+  vim.api.nvim_win_set_cursor(win, { selected_idx, 0 })
 
   -- 綁定選擇功能
   vim.keymap.set("n", "<CR>", function()
     local current_line = vim.api.nvim_win_get_cursor(0)[1]
     if toc[current_line] then
-      vim.api.nvim_win_close(win, true) -- 關閉窗口
+      vim.api.nvim_win_close(win, true)                             -- 關閉窗口
       vim.api.nvim_win_set_cursor(0, { toc[current_line].line, 0 }) -- 跳轉
     end
   end, { noremap = true, silent = true, buffer = buf })
