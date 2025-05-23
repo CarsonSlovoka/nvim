@@ -37,9 +37,19 @@ function M.show_toc_with_telescope()
     return
   end
 
-
   -- 取得當前文件的內容
   local markdown_buffer = vim.api.nvim_get_current_buf()
+
+  -- 找到當前光標所在或最近的標題索引
+  local cur_line = vim.api.nvim_win_get_cursor(0)[1]
+  local selected_idx = 1
+  for i, item in ipairs(toc) do
+    if item.line <= cur_line then
+      selected_idx = i
+    else
+      break
+    end
+  end
 
   local entries = {}
   for _, item in ipairs(toc) do
@@ -65,6 +75,8 @@ function M.show_toc_with_telescope()
     },
 
     sorter = require('telescope.config').values.generic_sorter({}),
+
+    default_selection_index = selected_idx, -- 透過這個可以設定預設選中的項目，預設為1 (如果是0不會選任何項)
 
     previewer = previewers.new_buffer_previewer({
       define_preview = function(self, entry, _)
@@ -128,10 +140,9 @@ function M.show_toc_with_telescope()
 
       return true
     end
-  })                          :find()
+  }):find()
 end
 
 vim.keymap.set("n", "<leader>wt", M.show_toc_with_telescope, { noremap = true, silent = true })
 
 -- return M
-
