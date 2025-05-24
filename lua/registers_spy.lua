@@ -46,16 +46,18 @@ end
 function M.update_registers(buf)
   local registers = [["0123456789]] ..
       [[abcdefghijklmnopqrstuvwxyz]] ..
-      [[*+-.:%/=#]]
+      [["*+-.:/=%#]] -- help :registers
+  -- "_ 是黑泂暫存器，例如: "_d 預設而言d的操作會保存在""和"_中，此時用"_來操作不會影響到其它暫存器的內容
+  -- 因此"_是一個不可讀到任何東西的暫存器，顯示它沒有意義
 
   local lines = {}
   for i = 1, #registers do
     local reg = registers:sub(i, i)
     local content = vim.fn.getreg(reg) or ''
-    -- 限制每行長度，避免太長
-    if #content > 50 then
-      content = string.sub(content, 1, 47) .. '...'
-    end
+    -- 限制每行長度，避免太長 (太長也無所謂)
+    -- if #content > 50 then
+    --   content = string.sub(content, 1, 47) .. '...'
+    -- end
     -- 替換換行符，確保單行顯示
     content = content:gsub('\n', '\\n')
     table.insert(lines, reg .. ': ' .. content)
@@ -89,6 +91,7 @@ end
 
 -- 初始化並定時更新
 function M.init()
+  local create_time = os.date("%Y%m%d_%H%M%S")
   local buf, win = M.setup_register_window()
   M.update_registers(buf)
 
