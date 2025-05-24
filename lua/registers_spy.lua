@@ -1,4 +1,9 @@
-local M = {}
+local M = {
+  win = nil,
+  buf = nil,
+  width = 30,       -- 側邊視窗寬度
+  _focus_width = 30 -- 切換到該win時的畫面寬度
+}
 
 local HL_REG_NUMBER = "RegisterNumber"
 local HL_REG_LETTER = "RegisterLetter"
@@ -10,6 +15,31 @@ vim.api.nvim_set_hl(0, HL_REG_SPECIAL, { bg = "#FFFF55", fg = "#000000" })
 
 local ns_id_hl = vim.api.nvim_create_namespace('register_spy_highlight') -- Creates a new namespace or gets an existing one.
 
+
+local group = vim.api.nvim_create_augroup("registers_spy", { clear = false }) -- 不需要clear, 如果真得有重覆，就和該group一樣即可
+vim.api.nvim_create_autocmd('WinEnter', {
+  desc = "讓registers_spy的視窗寬度變大",
+  callback = function(_)
+    if M.win and vim.api.nvim_buf_is_valid(M.buf) and vim.api.nvim_get_current_win() == M.win then
+      vim.api.nvim_win_set_width(M.win, M._focus_width)
+    end
+  end,
+  group = group,
+  -- once = true,
+})
+
+
+vim.api.nvim_create_autocmd('WinLeave', {
+  desc = "讓registers_spy的視窗恢復正常大小",
+  callback = function(_)
+    if M.win and vim.api.nvim_buf_is_valid(M.buf) then
+      print(M.width)
+      vim.api.nvim_win_set_width(M.win, M.width)
+    end
+  end,
+  group = group,
+})
+
 -- 創建側邊視窗
 function M.setup_register_window()
   -- 創建緩衝區
@@ -19,16 +49,17 @@ function M.setup_register_window()
   vim.api.nvim_set_option_value('filetype', 'registers', { buf = buf }) -- 自定義 filetype
 
   -- 設置視窗選項
-  local width = 30 -- 側邊視窗寬度
   local height = vim.api.nvim_get_option_value('lines', { scope = "global" }) - 2
   local win = vim.api.nvim_open_win(buf, false, {
     relative = 'editor',
-    width = width,
+    width = M.width,
     height = height,
-    col = vim.api.nvim_get_option_value('columns', { scope = "global" }) - width - 1, -- 靠右側
+    col = vim.api.nvim_get_option_value('columns', { scope = "global" }) - M.width - 1, -- 靠右側
     row = 1,
     style = 'minimal',
     border = 'single',
+    title = "registers_spy",
+    title_pos = "center",
   })
 
   -- 設置視窗為不可聚焦
@@ -132,7 +163,9 @@ function M.toggle()
     vim.api.nvim_win_close(M.win, true)
     M.win = nil
     M.buf = nil
+    M._focus_width = M.width
   else
+    M._focus_width = vim.api.nvim_win_get_width(0) -- 以建立此視窗前的該win寬度為主
     M.buf, M.win = M.init()
   end
 end
