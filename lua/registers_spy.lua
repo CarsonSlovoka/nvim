@@ -1,8 +1,9 @@
 local M = {
   win = nil,
   buf = nil,
-  width = 30,       -- 側邊視窗寬度
-  _focus_width = 30 -- 切換到該win時的畫面寬度
+  width = 30,        -- 側邊視窗寬度
+  _focus_width = 30, -- 切換到該win時的畫面寬度
+  target = "all",
 }
 
 local HL_REG_NUMBER = "RegisterNumber"
@@ -33,12 +34,12 @@ vim.api.nvim_create_autocmd('WinLeave', {
   desc = "讓registers_spy的視窗恢復正常大小",
   callback = function(_)
     if M.win and vim.api.nvim_buf_is_valid(M.buf) then
-      print(M.width)
       vim.api.nvim_win_set_width(M.win, M.width)
     end
   end,
   group = group,
 })
+
 
 -- 創建側邊視窗
 function M.setup_register_window()
@@ -75,11 +76,20 @@ end
 
 -- 更新寄存器內容
 function M.update_registers(buf)
-  local registers = [["0123456789]] ..
-      [[abcdefghijklmnopqrstuvwxyz]] ..
-      [["*+-.:/=%#]] -- help :registers
-  -- "_ 是黑泂暫存器，例如: "_d 預設而言d的操作會保存在""和"_中，此時用"_來操作不會影響到其它暫存器的內容
-  -- 因此"_是一個不可讀到任何東西的暫存器，顯示它沒有意義
+  if vim.api.nvim_get_current_win() == M.win and vim.w.target ~= nil then -- vim.m 會隨著切換的window不同而變動，所以還要有一個變數和其綁定
+    -- 為了讓首次更改不需要再切回來即可作用
+    M.target = vim.w.target
+  end
+  local registers = ""
+  if M.target ~= "all" then
+    registers = M.target
+  else
+    registers = [["0123456789]] ..
+        [[abcdefghijklmnopqrstuvwxyz]] ..
+        [["*+-.:/=%#]] -- help :registers
+    -- "_ 是黑泂暫存器，例如: "_d 預設而言d的操作會保存在""和"_中，此時用"_來操作不會影響到其它暫存器的內容
+    -- 因此"_是一個不可讀到任何東西的暫存器，顯示它沒有意義
+  end
 
   local lines = {}
   for i = 1, #registers do
@@ -124,6 +134,13 @@ end
 function M.init()
   local create_time = os.date("%Y%m%d_%H%M%S")
   local buf, win = M.setup_register_window()
+
+  -- vim.api.nvim_set_option_value("target", M.target, { scope = "local", win = M.win, buf = M.bu }) 沒效，這不同等於vim.w.target
+  local cur_win = vim.api.nvim_get_current_win()
+  vim.api.nvim_set_current_win(win) -- 為了要設定vim.w.target
+  vim.w.target = "all"              -- 都有設定vim.w且非nil的時候, :let w:target 會有它的補全提示
+  vim.api.nvim_set_current_win(cur_win)
+
   M.update_registers(buf)
 
   -- 定時器，每秒更新一次
