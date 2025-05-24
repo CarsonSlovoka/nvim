@@ -111,14 +111,17 @@ function M.init()
     )
   )
 
-  -- 當離開 Neovim 時關閉視窗
-  vim.api.nvim_create_autocmd('VimLeave', {
-    callback = function()
-      if vim.api.nvim_buf_is_valid(buf) then
-        vim.api.nvim_buf_delete(buf, { force = true })
-      end
-    end,
-  })
+  -- 不太需要在退出nvim時再動作(反正都要關了)，而且有呼叫vim.api.nvim_win_close時，就有處理了，它就會讓nvim_buf_is_valid變為false
+  -- 且如果寫在這邊，每次init則都會增加一個VimLeave的事件
+  -- vim.api.nvim_create_autocmd('VimLeave', { -- 整個退出neovim
+  --   callback = function()
+  --     -- print(create_time)
+  --     -- vim.fn.confirm("debug", "&Yes\n&No", 2)
+  --     if vim.api.nvim_buf_is_valid(buf) then
+  --       vim.api.nvim_buf_delete(buf, { force = true })
+  --     end
+  --   end,
+  -- })
 
   return buf, win
 end
