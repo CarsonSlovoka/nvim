@@ -1787,6 +1787,23 @@ local installs = {
           silent = true
         }
       )
+      vim.api.nvim_create_user_command(
+        "RegSpy",
+        function(args)
+          registers.registers = args.fargs[1]
+        end,
+        {
+          nargs = 1,
+          complete = function()
+            return {
+              registers.DEFAULT_REGISTER,
+              '"abcdefg123',
+              '"*+-.:/=%#'
+            }
+          end,
+          desc = "registers spy"
+        }
+      )
     end,
     delay = 0
   },
