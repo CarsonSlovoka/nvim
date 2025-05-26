@@ -2,6 +2,7 @@ local M = {
   win = nil,
   buf = nil,
   height = 5,
+  border = "rounded" -- :help winborder
 }
 
 M.DEFAULT_REGISTER = [["0123456789]] ..
@@ -27,16 +28,20 @@ function M.setup_register_window()
   local win_pos = vim.api.nvim_win_get_position(vim.api.nvim_get_current_win())
   local row = win_pos[1] -- 當前窗口的起始行
   local col = win_pos[2] -- 當前窗口的起始列
+  row = row + height - M.height
+  if M.border and M.border ~= "none" and M.border ~= "" then
+    row = row - 2 -- 最下方的2列一個是lua line的狀態，另一個是-- INSERT -- 模式的觀看
+  end
   local win = vim.api.nvim_open_win(buf, false, {
     relative = 'editor',
     width = width,
     height = M.height,
     -- col, row 是指從什麼地方開始畫
     col = col,
-    row = row + height - M.height,
+    row = row,               -- 如果border不為none時應該要考量最下方的2列: lua line status; MODE: -- INSERT --
     style = 'minimal',
-    border = 'single',
-    title = "registers_spy",
+    border = M.border,       -- :help winborder
+    title = "registers_spy", -- 僅在有border時才會出來
     title_pos = "center",
   })
 
