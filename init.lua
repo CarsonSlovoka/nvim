@@ -314,6 +314,14 @@ local function install_lspconfig()
     }
   )
 
+  vim.keymap.set("n", "gbh", function()
+      vim.lsp.buf.hover()
+    end,
+    {
+      desc = "💪 vim.lsp.buf.hover() 查看定義與使用方法 (可用<C-W><C-W>跳到出來的窗口)"
+    }
+  )
+
   vim.api.nvim_create_user_command(
     "LspBufDocSymbol",
     function(args)
