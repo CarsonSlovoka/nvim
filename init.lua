@@ -1655,7 +1655,6 @@ local function install_nvim_dap()
     "<F17>"   -- Num Lock: off
   }) do
     vim.keymap.set("n", key, function()
-      print(key)
       if vim.o.filetype == "lua" then
         require 'osv'.stop()
       end
