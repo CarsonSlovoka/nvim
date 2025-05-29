@@ -1649,16 +1649,28 @@ local function install_nvim_dap()
     end,
     { desc = "Start/Continue Debugging" }
   )
-  vim.keymap.set("n", "<F17>", function()
-    if vim.o.filetype == "lua" then
-      require 'osv'.stop()
-    end
-    dap.terminate()
-    dapui.close()                          -- lua的dap沒有自動關掉，所以補上，並且dapui.close()就算已經關閉再次執行也不會有事
-  end, { desc = "Stop debug (Shift+F5)" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
+  for _, key in ipairs({
+    -- 在Num Lock啟用與否會影響到熱鍵的判讀
+    "<S-F5>", -- Num Lock: on
+    "<F17>"   -- Num Lock: off
+  }) do
+    vim.keymap.set("n", key, function()
+      print(key)
+      if vim.o.filetype == "lua" then
+        require 'osv'.stop()
+      end
+      dap.terminate()
+      dapui.close()               -- lua的dap沒有自動關掉，所以補上，並且dapui.close()就算已經關閉再次執行也不會有事
+    end, { desc = "Stop debug" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
+  end
   vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step Over" })
   vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step Into" })
-  vim.keymap.set("n", "<F23>", dap.step_out, { desc = "Step Out (Shift+F11)" })
+  for _, key in ipairs({
+    "<S-F11>", -- Num Lock: on
+    "<F23>"    -- Num Lock: off
+  }) do
+    vim.keymap.set("n", key, dap.step_out, { desc = "Step Out" })
+  end
   vim.keymap.set("n",
     "<F9>",
     dap.toggle_breakpoint,
