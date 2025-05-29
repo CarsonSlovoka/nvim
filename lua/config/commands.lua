@@ -296,12 +296,13 @@ function commands.setup()
 
       -- 使用 ws-paste 來保存
       local cmd = 'wl-paste --type image/png > "' .. outputPath .. '"'
+      vim.fn.setloclist(0, { { text = cmd }, }, 'a')
       local result = os.execute(cmd)
 
       if result == 0 then
         print("圖片保存成功: " .. outputPath)
       else
-        print("圖片保存失敗")
+        print("圖片保存失敗, see location list :lopen")
       end
     end,
     {
