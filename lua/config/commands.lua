@@ -696,8 +696,7 @@ function commands.setup()
         os.remove(output_file_path)
       end
 
-      -- local r = tonumber(para.opts["r"]) or nil -- 預設的太快
-      local r = tonumber(para.opts["r"]) or 2
+      local r = tonumber(para.opts["r"]) or nil -- 預設的太快, 如果input.txt裡面有duration那麼就不應該有-r的選項
       local width = tonumber(para.opts["width"]) or -1
       local height = tonumber(para.opts["height"]) or -1
       local loop = tonumber(para.opts["loop"]) or 0
@@ -740,7 +739,10 @@ function commands.setup()
 
       local cmd_str = table.concat(cmd, " ")
       print(cmd_str)
-      vim.fn.setloclist(0, { { text = cmd_str }, }, 'a')
+      vim.fn.setloclist(0, {
+        { text = "input.txt example: " .. "https://superuser.com/a/1902822/1093221" },
+        { text = cmd_str },
+      }, 'a')
 
       utils.os.execute_with_notify(cmd_str, "generated successfully", "Failed to generate")
 
@@ -754,7 +756,7 @@ function commands.setup()
       complete = function(arg_lead, cmd_line)
         if arg_lead:match("^%-%-") then
           local output = {
-            "output.git",
+            "output.gif",
             "~/Downloads/output.gif",
           }
           if arg_lead:match("^%-%-o=") then
@@ -796,7 +798,14 @@ function commands.setup()
         local argc = #(vim.split(cmd_line, "%s+")) - 1
         if argc == 1 then
           local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
-          return utils.table.sort_files_first(all_files)
+          return {
+            "input.txt", -- 提示輸入的檔案通常而言是txt
+            unpack(
+              vim.tbl_filter(function(name) return name:match("%.txt$") end,
+                utils.table.sort_files_first(all_files) -- 其實是其它的類型也無仿，只要內容相符仍可執行
+              )
+            )
+          }
         end
       end
     }
