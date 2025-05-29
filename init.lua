@@ -313,6 +313,74 @@ local function install_lspconfig()
       desc = "set diagnostic"
     }
   )
+
+  vim.api.nvim_create_user_command(
+    "LspBufDocSymbol",
+    function(args)
+      -- :lua vim.lsp.buf.document_symbol() -- 👈 可以如此，預設會直接寫到location list去
+      vim.lsp.buf.document_symbol({
+        on_list = function(result)
+          local target_kind = args.fargs[1] or "Function"
+          -- print(vim.inspect(result))
+          local symbols = result.items or {}
+          local list = {}
+
+          local cur_line = vim.fn.line(".")
+          local select_idx = 0
+          for i, symbol in ipairs(symbols) do -- i從1開始
+            if symbol.kind == target_kind then
+              if symbol.lnum <= cur_line then
+                select_idx = i
+              end
+              table.insert(list, {
+                filename = vim.api.nvim_buf_get_name(0),
+                lnum = symbol.lnum,
+                col = symbol.col,
+                text = symbol.text,
+              })
+            end
+          end
+
+          -- vim.fn.setqflist(list, 'r')
+          vim.fn.setloclist(0, list, 'r')
+          vim.cmd('lopen')
+          if select_idx > 0 then         -- 不能是 :cc 0 只能是正整數
+            -- vim.cmd('cc ' .. select_idx) -- 可以不用copen也來cc
+            vim.cmd('ll ' .. select_idx) -- location list用ll qflist用cc
+          end
+        end
+      })
+    end,
+    {
+      desc = 'for item in vim.lsp.buf.document_symbol.items if item.kind == "Function"',
+      nargs = "?",
+      complete = function()
+        -- local kind_table = {}
+        vim.lsp.buf.document_symbol({
+          on_list = function(result) -- 這個不會傳到外層，獨立的一個session，變數不共用
+            local kind_table = {}
+            for _, symbol in ipairs(result.items) do
+              if kind_table[symbol.kind] == nil then
+                kind_table[symbol.kind] = true
+              end
+            end
+            local kinds = {}
+            for kind, _ in pairs(kind_table) do
+              table.insert(kinds, kind)
+            end
+
+            vim.w.cur_lsp_buf_document_symbol = table.concat(kinds, ",") -- 會有延遲到補全，但總比都沒有好
+          end
+        })
+        local cmp = {}
+
+        if vim.w.cur_lsp_buf_document_symbol then
+          cmp = vim.split(vim.w.cur_lsp_buf_document_symbol, ",")
+        end
+        return cmp
+      end
+    }
+  )
 end
 
 
@@ -1889,7 +1957,9 @@ local installs = {
               -- "-tags=xxx"
             } -- 這影響編輯時候對變數有定義是抓取哪一個檔案為主
           }
-        }
+        },
+        -- on_attach = function(client, bunfr)
+        -- end
       }
     end,
     delay = 5,
