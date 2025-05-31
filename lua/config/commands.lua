@@ -654,6 +654,64 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("Download",
+    function(args)
+      local downloadLink = args.fargs[1]
+      if not downloadLink:match("^http[s]?://") then
+        vim.notify("invalid url format", vim.log.levels.ERROR)
+        return
+      end
+      local outputPath = args.fargs[2] or vim.fn.expand("%:p:h")
+      -- if vim.loop.fs_stat(outputPath).type == "directory" then -- 如果fs_stat得到nil則無法用nil.type會錯誤
+      if vim.fn.fnamemodify(outputPath, ":e") == "" then
+        -- 避免只給dir而沒有檔名
+        outputPath = path.join(outputPath, os.date("%Y-%m-%d_%H-%M-%S"))
+      end
+      local outputDir = vim.fn.fnamemodify(outputPath, ":h")
+      if vim.fn.isdirectory(outputDir) == 0 then
+        local choice = vim.fn.confirm(
+          string.format("directory: %q not exits. create?", vim.fn.fnamemodify(outputDir, ":p")),
+          "&Yes\n&No",
+          2
+        )
+        if choice ~= 1 then
+          vim.notify("cancelled", vim.log.levels.INFO)
+          return
+        end
+        vim.fn.mkdir(outputDir, "p")
+      end
+      local cmd = string.format("wget %s -O %s", downloadLink, outputPath)
+      vim.fn.setloclist(0, { { text = cmd } }, 'a')
+      print(cmd)
+
+      utils.os.execute_with_notify(cmd,
+        "Download ok: " .. vim.fn.fnamemodify(outputPath, ":p"), -- 下載檔案的絕對路徑
+        "Download failed: " .. downloadLink
+      )
+    end,
+    {
+      desc = "download file",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          return { "https://" }
+        elseif argc == 2 then
+          local output = {}
+
+          if #arg_lead == 0 then
+            table.insert(output, "output.type")
+          end
+          for _, dir in ipairs(utils.complete.getDirOnly(vim.fn.expand(arg_lead))) do
+            table.insert(output, dir)
+          end
+          return output
+        end
+      end
+    }
+  )
+
+
   vim.api.nvim_create_user_command("FfmpegGenGif",
     -- -vf為簡單濾鏡
     -- ffmpeg -f concat -safe 0 -r 2 -i input.txt -vf "scale=-1:-1" -loop 0 output.gif
