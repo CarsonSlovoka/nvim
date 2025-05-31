@@ -1608,7 +1608,7 @@ local function install_cmp_list()
     }
 
   )
-  -- vim.cmd("SetCmpListEnablePreivewWindow 0")
+  -- vim.cmd("SetCmpListEnablePreviewWindow 0")
 end
 
 local function install_nvim_dap()
