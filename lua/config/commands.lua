@@ -6,6 +6,7 @@ local arrayUtils = require("utils.array")
 local extmarkUtils = require("utils.extmark")
 local utils = require("utils.utils")
 
+-- https://github.com/neovim/neovim/tree/a167800/runtime/pack/dist/opt
 vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- 它不是真得刪除，而是在創件新的列表，可以用:cnewer :colder 切換
 
 local commands = {}
