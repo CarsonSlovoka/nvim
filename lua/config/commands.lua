@@ -2887,26 +2887,50 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Let",
     function(args)
+      if args.fargs[1] == "-h" then
+        vim.fn.setloclist(0, {
+          { text = "Let aa" },
+          { text = "Let aa +" },
+          { text = "5Let aa" },
+          { text = "+5Let aa" },
+          { text = "-5Let aa" },
+          { text = "5,8Let aa" },
+          { text = "+0,+2Let aa" },
+          -- { text = "-0,-3Let aa" }, -- 會被提示是否要swap
+          { text = "-3,-0Let aa" },
+        }, 'a')
+        vim.cmd("lopen 8")
+        return
+      end
       local varName = args.fargs[1]
+      local op = args.fargs[2] or ""
       if args.range == 0 then
-        return vim.cmd(string.format('let %s=[getline(".")]', varName))
+        return vim.cmd(string.format('let %s%s=[getline(".")]', varName, op))
       end
       if args.range == 1 then
-        return vim.cmd(string.format('let %s=[getline(%d)]', varName, args.line1))
+        return vim.cmd(string.format('let %s%s=[getline(%d)]', varName, op, args.line1))
       end
       if args.range == 2 then
-        return vim.cmd(string.format('let %s=getline(%d, %d)', varName, args.line1, args.line2))
+        return vim.cmd(string.format('let %s%s=getline(%d, %d)', varName, op, args.line1, args.line2))
       end
     end,
     {
       desc = 'let myVar=[getline(".")] 📝 使用 echo myVar[0] 可查看變數',
-      nargs = 1,
+      nargs = "+",
       range = true,
-      complete = function()
-        return {
-          "myVar",
-          "aa"
-        }
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          return {
+            "myVar",
+            "aa"
+          }
+        end
+        if argc == 2 then
+          return {
+            "+", -- append
+          }
+        end
       end
     }
   )
