@@ -2884,6 +2884,32 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command("Let",
+    function(args)
+      local varName = args.fargs[1]
+      if args.range == 0 then
+        return vim.cmd(string.format('let %s=[getline(".")]', varName))
+      end
+      if args.range == 1 then
+        return vim.cmd(string.format('let %s=[getline(%d)]', varName, args.line1))
+      end
+      if args.range == 2 then
+        return vim.cmd(string.format('let %s=getline(%d, %d)', varName, args.line1, args.line2))
+      end
+    end,
+    {
+      desc = 'let myVar=[getline(".")] 📝 使用 echo myVar[0] 可查看變數',
+      nargs = 1,
+      range = true,
+      complete = function()
+        return {
+          "myVar",
+          "aa"
+        }
+      end
+    }
+  )
 end
 
 return commands
