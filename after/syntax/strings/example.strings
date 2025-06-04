@@ -1,0 +1,51 @@
+"DI_Key" = "Value1";
+"DI_CtrlText" = "標題\n內文\nABCDE";
+
+// Number
+"DI_Number" = "三 * 三 = 3 * 3";
+"PI" = "pi -eq 3.1415916";
+"Ex" = "1e+5 1e-3 1e";
+"Ex2" = "ab123 123ab 456";
+"DI_SPECIAL" = "%@ %@   %@ %@";
+
+// comment todo lang
+
+// comment FIXME ...
+
+/*
+    Comment1
+    ...
+    CommentN
+*/
+
+"invalid no equal"  a  "";
+
+"" = "end should be ；"
+
+"" = "key為空" ;
+" a" = "key需為\S組成. 正確的來說是: [^0-9 \t]\+";
+"12ab中文" = "key開頭不能是數字";
+"中文" = "ok";
+"	ss" = "key不能包含\t";
+"aa	bb" = "key不能包含\t";
+
+0x12333555 dd 0x45 dd
+    0xbb ss
+3.1340
+
+     /*
+ todo: xxx
+
+FIXME: ooo
+
+*/
+
+aa
+ foo
+
+BB todo ...
+ID FIXME XXX
+
+3.1415916
+5+e3
+

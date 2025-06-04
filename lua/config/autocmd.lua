@@ -206,17 +206,18 @@ function M.setup(opts)
     }
   )
 
-  create_autocmd(
-    { "BufRead", "BufNewFile" },
-    {
-      desc = ":set filetype=javascript",
-      group = groupName.filetype,
-      pattern = "*.gs",
-      callback = function()
-        vim.bo.filetype = "javascript"
-      end
-    }
-  )
+  -- 以下的autocmd可以用: vim.filetype.add({ extension = { gs = "javascript", } }) 就可行了
+  -- create_autocmd(
+  --   { "BufRead", "BufNewFile" },
+  --   {
+  --     desc = ":set filetype=javascript",
+  --     group = groupName.filetype,
+  --     pattern = "*.gs",
+  --     callback = function()
+  --       vim.bo.filetype = "javascript"
+  --     end
+  --   }
+  -- )
 
   -- 自定義命名空間（用於高亮
   vim.g.highlight_spy = "bg" -- fg, all, #00ff00
