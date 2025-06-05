@@ -1611,6 +1611,7 @@ local function install_cmp_list()
   -- vim.cmd("SetCmpListEnablePreviewWindow 0")
 end
 
+
 local function install_nvim_dap()
   -- :helptags ALL
   local ok, dap = pcall(require, "dap")
@@ -1619,7 +1620,36 @@ local function install_nvim_dap()
     return
   end
   local dapui = require "dapui" -- https://github.com/rcarriga/nvim-dap-ui
-  dapui.setup()
+  dapui.setup({
+    layouts = {
+      -- scopes, breakpoints, stacks, watches, repl, console 共有這些可以設定: https://github.com/rcarriga/nvim-dap-ui/blob/73a26abf4941aa27da59820fd6b028ebcdbcf932/lua/dapui/init.lua#L90-L96
+      -- 而每一個元素可以是這幾種的組合而成
+      {
+        elements = {
+          -- { id = "scopes", size = 0.5 }, -- 調整 Scopes 的大小
+          "scopes",
+          -- "breakpoints",
+          -- "stacks",
+          "watches",
+        },
+        size = 5, -- 檢視的列(沒用到那麼多還是會佔那樣的空間)
+        position = "bottom",
+      },
+      -- {
+      --   elements = { "repl", "console" },
+      --   size = 0.25,
+      --   position = "bottom",
+      -- },
+    },
+  }) --
+  vim.api.nvim_create_user_command("DapUIRepl",
+    function()
+      dapui.float_element("watches", { enter = true })
+    end,
+    {
+      desc = "Open DAP repl"
+    }
+  )
 
   -- debug adapter
   ---- go
