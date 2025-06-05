@@ -1639,6 +1639,13 @@ local function install_nvim_dap()
       },
       {
         type = "go",
+        name = "Debug Package (Arguments)",
+        request = "launch",
+        program = "${fileDirname}",
+        args = require("dap-go").get_arguments, -- -workDir=img/2025
+      },
+      {
+        type = "go",
         name = "Debug Package (Build Flags & Arguments)",
         request = "launch",
         program = "${fileDirname}",
