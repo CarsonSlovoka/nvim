@@ -1648,6 +1648,28 @@ local function install_dapui()
     end,
     { desc = "dapui.close()" }
   )
+
+  for _, e in ipairs({
+    "scopes",
+    "breakpoints",
+    "stacks",
+    "watches",
+    "repl",
+    "console"
+  }) do
+    vim.api.nvim_create_user_command("DapUI" .. e,
+      function()
+        dapui.float_element(e, {
+          width = math.ceil(vim.api.nvim_win_get_width(0) * 3 / 4),
+          height = math.ceil(vim.api.nvim_win_get_height(0) / 2),
+          enter = true
+        })
+      end,
+      {
+        desc = "Open DAP " .. e .. "若要永久固定可以將其放到tab上"
+      }
+    )
+  end
 end
 
 
