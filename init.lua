@@ -1612,13 +1612,7 @@ local function install_cmp_list()
 end
 
 
-local function install_nvim_dap()
-  -- :helptags ALL
-  local ok, dap = pcall(require, "dap")
-  if not ok then
-    vim.notify("Failed to load dap", vim.log.levels.ERROR)
-    return
-  end
+local function install_dapui()
   local dapui = require "dapui" -- https://github.com/rcarriga/nvim-dap-ui
   dapui.setup({
     layouts = {
@@ -1641,15 +1635,31 @@ local function install_nvim_dap()
       --   position = "bottom",
       -- },
     },
-  }) --
-  vim.api.nvim_create_user_command("DapUIRepl",
+  })
+  vim.api.nvim_create_user_command("DapUIOpen",
     function()
-      dapui.float_element("watches", { enter = true })
+      dapui.open()
     end,
-    {
-      desc = "Open DAP repl"
-    }
+    { desc = "dapui.open()" }
   )
+  vim.api.nvim_create_user_command("DapUIClose",
+    function()
+      dapui.close()
+    end,
+    { desc = "dapui.close()" }
+  )
+end
+
+
+local function install_nvim_dap()
+  -- :helptags ALL
+  local ok, dap = pcall(require, "dap")
+  if not ok then
+    vim.notify("Failed to load dap", vim.log.levels.ERROR)
+    return
+  end
+
+  install_dapui()
 
   -- debug adapter
   ---- go
@@ -1772,7 +1782,7 @@ local function install_nvim_dap()
         require 'osv'.stop()
       end
       dap.terminate()
-      dapui.close()               -- lua的dap沒有自動關掉，所以補上，並且dapui.close()就算已經關閉再次執行也不會有事
+      require("dapui").close()    -- lua的dap沒有自動關掉，所以補上，並且dapui.close()就算已經關閉再次執行也不會有事
     end, { desc = "Stop debug" }) -- insert模式下用C-V之後可以按下想要的熱鍵，就會出現正確的對應
   end
   vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step Over" })
@@ -1791,13 +1801,13 @@ local function install_nvim_dap()
   vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Open Debug REPL" })
 
   dap.listeners.after.event_initialized["dapui_config"] = function()
-    dapui.open()
+    require("dapui").open()
   end
   dap.listeners.before.event_terminated["dapui_config"] = function()
-    dapui.close()
+    require("dapui").close()
   end
   dap.listeners.before.event_exited["dapui_config"] = function()
-    dapui.close()
+    require("dapui").close()
   end
 
   vim.api.nvim_create_user_command("DapSetBreakpoint",
@@ -1816,19 +1826,6 @@ local function install_nvim_dap()
   vim.keymap.set("n", "<leader>bc", function()
     vim.cmd("DapSetBreakpoint")
   end, { desc = "Conditional Breakpoint" })
-
-  vim.api.nvim_create_user_command("DapUIOpen",
-    function()
-      dapui.open()
-    end,
-    { desc = "dapui.open()" }
-  )
-  vim.api.nvim_create_user_command("DapUIClose",
-    function()
-      dapui.close()
-    end,
-    { desc = "dapui.close()" }
-  )
 end
 
 --- 只要將flutter-tools放到pack下就可以了，它的flutter-tools/lsp/init.lua在開啟dart相關專案就會自動啟動
