@@ -1650,6 +1650,7 @@ local function install_dapui()
   )
 
   for _, e in ipairs({
+    -- :DapU*stac*s 再搭配Tab來選
     "scopes",
     "breakpoints",
     "stacks",
@@ -1670,6 +1671,31 @@ local function install_dapui()
       }
     )
   end
+
+  vim.api.nvim_create_user_command("DapUI",
+    function(args)
+      local elem = args.fargs[1]
+      vim.cmd("e DAP " ..
+        elem:sub(1, 1):upper() .. -- 首字母大小
+        elem:sub(2)
+      )
+    end,
+    {
+      desc = ":e DAP {Breakpoints, Scopes, Stacks, Watches, Repl}",
+      nargs = 1,
+      complete = function(arg_lead)
+        return vim.tbl_filter(function(name)
+          return name:match(arg_lead)
+        end, {
+          "scopes",
+          "breakpoints",
+          "stacks",
+          "watches",
+          "repl",
+        })
+      end
+    }
+  )
 end
 
 
