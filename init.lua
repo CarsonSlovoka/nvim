@@ -2152,6 +2152,32 @@ local installs = {
     end,
     delay = 5,
   },
+  {
+    name = "lspconfig sqls",
+    fn = function()
+      local lspconfig = require('lspconfig')
+      -- go install github.com/sqls-server/sqls@latest
+      lspconfig.sqls.setup {
+        on_attach = function(client, bufnr)
+          -- https://github.com/nanotee/sqls.nvim/blob/d1bc5421ef3e8edc5101e37edbb7de6639207a09/README.md?plain=1#L35-L40
+          require('sqls').on_attach(client, bufnr)
+        end,
+        settings = {
+          sqls = {
+            -- https://github.com/sqls-server/sqls/blob/efe7f66d16e9479e242d3876c2a4a878ee190568/README.md?plain=1#L184-L202
+            connections = {
+              {
+                driver = 'sqlite3',
+                -- sqlite3 ~/database.db
+                dataSourceName = vim.fn.expand('~/database.sqlite3'),
+              },
+            },
+          },
+        },
+      }
+    end,
+    delay = 5,
+  },
 
   -- { name = "precognition",    fn = install_precognition,    delay = 0 },
   -- { name = "hop",             fn = install_hop,             delay = 0 },

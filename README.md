@@ -64,6 +64,13 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 # (可選) 為了javascript的lsp
 sudo npm install -g typescript-language-server typescript
 typescript-language-server -V
+
+# (可選) 安裝sqls
+# https://github.com/sqls-server/sqls
+sdgo install github.com/sqls-server/sqls@latest
+dsqls --version
+# dsqls version Version:0.2.28, Revision:HEAD
+
 ```
 
 windows的font family切換可以參考[windows.md](docs/windows.md#Fonts)
@@ -162,6 +169,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── nvim-dap-python               -- ✅ debug adapter: python ( 3428282 )
 │   │         ├── one-small-step-for-vimkind    -- ✅ debug adapter: lua ( 330049a )
 │   │         └── nvim-dap-go                   -- ✅ debug adapter: go ( 8763ced )
+│   │
+│   ├── sql/start/                   -- ✅ sql相關
+│   │         └── sqls.nvim          -- ( d1bc542 )
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
@@ -879,6 +889,21 @@ git clone https://github.com/mfussenegger/nvim-dap-python.git ~/.config/nvim/pac
 ```sh
 git clone https://github.com/jbyuki/one-small-step-for-vimkind.git ~/.config/nvim/pack/debug/start/one-small-step-for-vimkind
 ```
+
+## sql
+
+
+```sh
+mkdir -pv ~/.config/nvim/pack/sql/start/
+```
+
+
+### sqls
+
+```
+git clone https://github.com/nanotee/sqls.nvim.git ~/.config/nvim/pack/sql/start/sqls.nvim
+```
+
 
 # [neovide](https://github.com/neovide/neovide)
 
