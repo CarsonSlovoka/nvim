@@ -294,10 +294,10 @@ function M.setup(opts)
       callback = function()
         local has_formatter = M.autoReformat
             and vim.bo.filetype == "python" -- 如果是python用外部工具來格式化
-            and not vim.bo.filetype == "sql"
+            and vim.bo.filetype ~= "sql"
 
         -- sql 如果用它的lsp 會遇到錯誤: SQLComplete:The dbext plugin must be loaded for dynamic SQL completion 因此就不使用
-        if M.autoReformat and not vim.bo.filetype == "sql" then
+        if M.autoReformat and vim.bo.filetype ~= "sql" then
           -- 檢查是否有LSP客戶端附加到當前的緩衝區
           local clients = vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() })
           if not has_formatter then
