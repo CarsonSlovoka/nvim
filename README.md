@@ -67,8 +67,8 @@ typescript-language-server -V
 
 # (可選) 安裝sqls
 # https://github.com/sqls-server/sqls
-sdgo install github.com/sqls-server/sqls@latest
-dsqls --version
+go install github.com/sqls-server/sqls@latest
+sqls --version
 # dsqls version Version:0.2.28, Revision:HEAD
 
 ```
