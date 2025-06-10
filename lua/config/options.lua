@@ -112,6 +112,21 @@ function options.setup()
     }
   })
 
+  -- :help spell
+  -- 當有spell建議時，可以使用 z= 去挑可能項
+  -- vim.opt.spelllang = "en_us"
+  -- vim.opt.spelllang = "en_us,zh" -- 可以設定多個語言
+  -- vim.opt.spell = true
+  vim.opt.spelloptions = "camel" -- 駝峰式的名稱HelloWorld就會會有警告
+  -- :setlocal spelloptions=     -- 使用預設
+  --
+  -- 也可以用:set做全域的調整
+  -- :setlocal spell spelllang=en_us      -- 也可以透過這樣來設定
+  -- :setlocal spell spelllang=           -- 雖然有設定spell但是沒有spelllang就相當於看不到效果
+  -- :lua vim.opt.spell = false           -- 也可以將整個spell都關閉
+  -- :setlocal spelloptions=noplainbuffer -- 這個也可以做到類似關閉的效果
+  -- :let spelllang=en_us
+
   -- 檢查是否有支援真彩色
   local supports_truecolor = vim.fn.getenv("COLORTERM") == "truecolor"
   if supports_truecolor then
