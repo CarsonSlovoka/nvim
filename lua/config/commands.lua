@@ -1257,6 +1257,9 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("GitDiff",
     function(args)
+      -- vim.fn.system 可以得到命令的返回值(stdout), os.execute只有數字(退出碼)
+      -- vim.fn.system 非阻塞; os.execute 阻塞(需等待完成)
+      -- vim.fn.system 不影響終端畫面; os.execute 可能清屏或顯示命令輸出！
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
       if vim.v.shell_error ~= 0 then
         vim.notify("Not in a Git repository", vim.log.levels.ERROR)
