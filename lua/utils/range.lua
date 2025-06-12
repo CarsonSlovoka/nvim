@@ -3,6 +3,7 @@ local M = {}
 -- @param concat string|nil  "\n", ...
 -- @return table|string -- 回傳多型別的情況下，lsp的靜態分析不會曉得，很容易會出現警告
 
+--- @note 如果是 :5,8Cmd, 5Cmd 等這種的指令不適用於此函數
 --- @return table 每一個元素為選取中的每一列其對應的資料
 --- @example table.concat(get_selected_text(), "") -- 如果要得到字串可以自行使用table.concat來整合
 function M.get_selected_text()

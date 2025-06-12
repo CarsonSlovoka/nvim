@@ -2906,6 +2906,9 @@ function commands.setup()
 
       local varName = args.fargs[1]
       local op = args.fargs[2] or ""
+      if op == "_" then
+        op = ""
+      end
       if args.range == 0 then
         return vim.cmd(string.format('let %s%s=[getline(".")]', varName, op))
       end
@@ -2913,7 +2916,11 @@ function commands.setup()
         return vim.cmd(string.format('let %s%s=[getline(%d)]', varName, op, args.line1))
       end
       if args.range == 2 then -- :'<,'>Let  或 :5,8Let
-        -- return vim.cmd(string.format('let %s%s=getline(%d, %d)', varName, op, args.line1, args.line2))
+        if args.line1 ~= args.line2 and args.fargs[3] ~= 'v' then
+          return vim.cmd(string.format('let %s%s=getline(%d, %d)', varName, op, args.line1, args.line2))
+        end
+
+        -- 以下其實也可以做跨列，只是如此就會讓:5,8Let這種的方式失敗
         local lines = utils.range.get_selected_text()
         local linesWithQuotes = {}
         for _, line in ipairs(lines) do
@@ -2937,6 +2944,12 @@ function commands.setup()
         if argc == 2 then
           return {
             "+", -- append
+            "_", -- default
+          }
+        end
+        if argc == 3 then
+          return {
+            "v",
           }
         end
       end
