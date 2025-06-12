@@ -2615,7 +2615,7 @@ function commands.setup()
       local max_lines = vim.fn.line('$')
 
 
-      if args.range ~= 0 then -- 似乎只有0與2(range)
+      if args.range ~= 0 then -- 0 一般, 1: 30:MyCommand, 2 '<,'>MyCommand 或 2,5MyCommand
         -- local start_pos = vim.fn.getpos("v") -- 視覺模式的起點
         -- local end_pos = vim.fn.getpos(".")   -- 當前光標的位置當作終點, 這不行會與v同一行
         local start_pos = vim.fn.getpos("'<")
@@ -2902,16 +2902,24 @@ function commands.setup()
         vim.cmd("lopen 8")
         return
       end
+      -- print(vim.inspect(vim.fn.mode())) -- 都是n
+
       local varName = args.fargs[1]
       local op = args.fargs[2] or ""
       if args.range == 0 then
         return vim.cmd(string.format('let %s%s=[getline(".")]', varName, op))
       end
-      if args.range == 1 then
+      if args.range == 1 then -- :5Let
         return vim.cmd(string.format('let %s%s=[getline(%d)]', varName, op, args.line1))
       end
-      if args.range == 2 then
-        return vim.cmd(string.format('let %s%s=getline(%d, %d)', varName, op, args.line1, args.line2))
+      if args.range == 2 then -- :'<,'>Let  或 :5,8Let
+        -- return vim.cmd(string.format('let %s%s=getline(%d, %d)', varName, op, args.line1, args.line2))
+        local lines = utils.range.get_selected_text()
+        local linesWithQuotes = {}
+        for _, line in ipairs(lines) do
+          table.insert(linesWithQuotes, string.format("%q", line))
+        end
+        return vim.cmd(string.format('let %s%s=[%s]', varName, op, table.concat(linesWithQuotes, ",")))
       end
     end,
     {
