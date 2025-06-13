@@ -103,12 +103,30 @@ local function install_nvimTreesitter()
   if not status_ok then
     return
   end
-  m.setup { -- pack/syntax/start/nvim-treesitter/lua/configs.lua
-    ensure_installed = {
+
+  ---@type table
+  local parser_list = require("nvim-treesitter.parsers").get_parser_configs()
+  -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L60-L83
+  parser_list.strings = {                                           -- :TSInstall strings -- 如果反悔可以用 :TSUninstall strings 來解除
+    install_info = {
+      url = "https://github.com/CarsonSlovoka/tree-sitter-strings", -- 建議用絕對路徑
+      files = { "src/parser.c" },
+    },
+    filetype = "strings", -- Neovim filetype
+    maintainers = { "@Carson" },
+  }
+
+  vim.treesitter.language.add('strings',
+    { path = vim.fn.expand("~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so") }
+  )
+
+  m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
+    ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
       "bash",
       "lua",
       "go",
-      "markdown", "markdown_inline"
+      "markdown", "markdown_inline",
+      -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
     },
     sync_install = false,
     auto_install = false,
