@@ -232,6 +232,7 @@ function M.setup(opts)
       },
       callback = function()
         -- 確保執行檔存在
+        -- otparser.exe: https://github.com/CarsonSlovoka/otparser.nvim/blob/28c84b9320725582290a56d7c4af06c998d5495a/main.go#L59-L79
         if vim.fn.executable("otparser") == 0 then
           return
         end
@@ -240,8 +241,8 @@ function M.setup(opts)
         ---@type table
         local r = vim.system({ "otparser", vim.fn.expand("%:p") }):wait()
         -- print(vim.inspect(r))
-        if #r.stderr > 0 then
-          vim.notify("❌ otparser " .. r.stderr, vim.log.levels.WARN)
+        if r.code ~= 0 then -- 用回傳的code來當是否有錯的基準
+          vim.notify(string.format("❌ otparser error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
           return
         end
         vim.api.nvim_command("enew")
