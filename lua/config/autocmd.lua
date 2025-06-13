@@ -10,6 +10,7 @@ local groupName = {
   highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
   filetype = "filetype",
+  binaryViwer = "binaryViwer",
   conceal = "carson.conceal",
 }
 for key, name in pairs(groupName) do
@@ -218,6 +219,49 @@ function M.setup(opts)
   --     end
   --   }
   -- )
+
+  -- vim.api.nvim_clear_autocmds({ pattern = "*.otf" }) -- 這也阻止不了，要從vim.g.zipPlugin_ext直接改 -- otf也包含在內 https://github.com/neovim/neovim/blob/90b682891dd554f06805b9536ad7228b0319f23b/runtime/plugin/zipPlugin.vim#L33-L52
+  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" },
+    {
+      group = groupName.binaryViwer,
+      desc = "opentype file viwer",
+      pattern = {
+        -- 當pattern都無法觸發，可以先用 :Telescope autocommands 觀察受何者影響
+        "*.ttf",
+        "*.otf", -- 🧙 如果其它的autocmd有用到，要清除它，不然會被影響無法觸發
+      },
+      callback = function()
+        -- 確保執行檔存在
+        if vim.fn.executable("otparser") == 0 then
+          return
+        end
+
+        -- local output = vim.fn.system("otparser " .. vim.fn.shellescape(vim.fn.expand("%:p")) ) -- 也行，但是建議用vim.system更明確
+        ---@type table
+        local r = vim.system({ "otparser", vim.fn.expand("%:p") }):wait()
+        -- print(vim.inspect(r))
+        if #r.stderr > 0 then
+          vim.notify("❌ otparser " .. r.stderr, vim.log.levels.WARN)
+          return
+        end
+        vim.api.nvim_command("enew")
+        local buf = vim.api.nvim_get_current_buf()
+        vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 設定為nofile就已經是不能編輯，但這只是代表可以編輯但是無法保存當前的檔案，但是可以用:w ~/other.txt 的方式來另儲
+        -- vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf }) -- 不在buffer中記錄
+        -- vim.fn.expand("%:e") ~= 'ttf'
+        local filename = vim.fn.expand("%:t") -- :echo expand("%:t")
+        vim.api.nvim_buf_set_name(buf, filename)
+
+        vim.bo.filetype = "opentype"
+
+        -- vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(r.stdout, "\n")) -- 是可以直接寫在原本的地方，但是如果對原始的二進位有興趣，直接取代就不太好，所以另外開一個buffer寫
+        -- vim.api.nvim_buf_set_lines(0, 0, -1, false, { "hello", "world" })
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
+
+        -- vim.api.nvim_set_option_value("modifiable", false, { buf = buf }) -- readonly, 會直接連Insert都無法使用. 記得要放在nvim_buf_set_lines之後
+      end
+    }
+  )
 
   -- 自定義命名空間（用於高亮
   vim.g.highlight_spy = "bg" -- fg, all, #00ff00
