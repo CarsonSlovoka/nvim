@@ -1,4 +1,5 @@
-vim.api.nvim_create_user_command("FmtJSON",
+-- vim.api.nvim_create_user_command("FmtJSON",
+vim.api.nvim_buf_create_user_command(vim.api.nvim_get_current_buf(), "FmtJSON",
   function()
     -- `:%`  表示對整個文件操作
     --  `!` 表示執行外部命令

@@ -1,6 +1,7 @@
 local utils = require("utils.utils")
-
-vim.api.nvim_create_user_command("FmtPython",
+local buf = vim.api.nvim_get_current_buf()
+-- vim.api.nvim_create_user_command("FmtPython", -- 這樣的指令創建後會一直都在，切換到非python的檔案也是會有此命令
+vim.api.nvim_buf_create_user_command(buf, "FmtPython", -- 使用nvim_buf_create_user_command可以讓此cmd只在這個buf生效
   function(args)
     local para = utils.flag.parse(args.args)
     local reload = para.opts["reload"] or "1"
