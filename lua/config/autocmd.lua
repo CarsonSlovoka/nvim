@@ -109,7 +109,8 @@ function M.setup(opts)
     "/",
     "C", -- ["x]C Delete from the cursor position to the end of the line
     "I", -- 區塊選取時會用到
-    "R"  -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
+    "A", -- 區塊選取時會用到
+    "R", -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
   }) do
     vim.keymap.set("v", key, function()
         enable_mark_range = false
