@@ -8,6 +8,8 @@ local M = {
   range = 0,         -- 當前的mode, n, v, V
   parent_win = nil,  -- 呼叫 <leader>: 時的win
   win = nil,         -- 創建cmd_center的win
+
+  height = 5         -- 用於保存視窗高度用, 使下次創建時可以延用之前的設定
 }
 
 
@@ -62,7 +64,7 @@ vim.keymap.set({ "n", "v" }, "<leader>:",
       relative = 'win',
       width = math.floor(width / 2),
       -- height = math.floor(height / 2),
-      height = 5,
+      height = M.height,
       row = math.floor(height / 4),
       col = math.floor(width / 4),
       border = "rounded",
@@ -93,6 +95,7 @@ vim.api.nvim_create_autocmd("WinLeave",
     buffer = buf,
     callback = function()
       vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 如果不改成nofile, 當buffer有修改時會出現: no write since last change
+      M.height = vim.api.nvim_win_get_height(M.win)
     end,
   }
 )
