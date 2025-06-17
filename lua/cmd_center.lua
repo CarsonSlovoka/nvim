@@ -1,9 +1,15 @@
 --- cmd_center.lua 讓輸入的cmd可以正畫面的中間
 
 --- TODO 指令補全也可以補全其參數
---- TODO 按 ↑ 可以代出上一個指令
 
-local M = {}
+local M = {
+  history = {},      -- 存儲命令歷史
+  history_index = 0, -- 當前歷史索引
+  range = 0,         -- 當前的mode, n, v, V
+  parent_win = nil,  -- 呼叫 <leader>: 時的win
+  win = nil,         -- 創建cmd_center的win
+}
+
 
 local buf = vim.api.nvim_create_buf(false, true)    -- 創建不可列出, 也不可編輯的buf
 vim.api.nvim_set_option_value("buftype", "prompt", { buf = buf })
@@ -18,6 +24,12 @@ vim.fn.prompt_setcallback(buf,
     if M.range == 2 then
       input = "'<,'>" .. input
     end
+
+    if input and input ~= "" then
+      table.insert(M.history, input)   -- 將輸入添加到歷史記錄
+      M.history_index = #M.history + 1 -- 重置索引
+    end
+
     -- vim.cmd(input) -- 這個得不到輸出的結果
     vim.api.nvim_set_current_win(M.parent_win) -- 在進入的該視窗執行指令，不然像 :pu=xx 它輸出的地方會不如預期
     local result = vim.api.nvim_exec2(input, { output = true })
@@ -42,7 +54,6 @@ vim.keymap.set({ "n", "v" }, "<leader>:",
       vim.fn.prompt_setprompt(buf, "'<,'>")
     else
       M.range = 0
-      vim.fn.prompt_setprompt(buf, "'<,'>")
       vim.fn.prompt_setprompt(buf, ':')
     end
     local height = vim.api.nvim_win_get_height(0)
@@ -115,3 +126,32 @@ vim.api.nvim_buf_set_keymap(buf, "i", "<Tab>", [[<C-x><C-o>]],
   { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(buf, "i", "<S-Tab>", [[<C-x><C-o>]],
   { noremap = true, silent = true })
+
+
+-- 歷史記錄導航
+vim.api.nvim_buf_set_keymap(buf, "i", "<Up>", "<cmd>lua require('cmd_center').prev_history()<CR>",
+  { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(buf, "i", "<Down>", "<cmd>lua require('cmd_center').next_history()<CR>",
+  { noremap = true, silent = true })
+
+-- 歷史記錄導航函數
+M.prev_history = function()
+  if M.history_index > 1 then
+    M.history_index = M.history_index - 1
+    vim.api.nvim_set_current_line(":" .. (M.history[M.history_index] or "")) -- 注意！ 前綴要對應prompt_setprompt所設定的內容，不然會直接送出
+  elseif M.history_index == 1 then
+    vim.api.nvim_set_current_line(":")
+  end
+end
+
+M.next_history = function()
+  if M.history_index < #M.history then
+    M.history_index = M.history_index + 1
+    vim.api.nvim_set_current_line(":" .. M.history[M.history_index])
+  elseif M.history_index == #M.history then
+    vim.api.nvim_set_current_line(":")
+    M.history_index = M.history_index + 1
+  end
+end
+
+return M
