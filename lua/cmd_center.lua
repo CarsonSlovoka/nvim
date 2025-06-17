@@ -31,6 +31,9 @@ vim.fn.prompt_setcallback(buf,
 -- vim.api.nvim_win_hide(win)
 -- vim.api.nvim_buf_delete(buf, { force = true })
 
+local ns_id_hl = vim.api.nvim_create_namespace('cmd-center_highlight') -- Creates a new namespace or gets an existing one.
+vim.api.nvim_set_hl(ns_id_hl, "FloatBorder", { fg = "#ff00ff" })       -- :help FloatBorder
+
 vim.keymap.set({ "n", "v" }, "<leader><leader>:",
   function()
     local mode = vim.api.nvim_get_mode().mode
@@ -52,12 +55,16 @@ vim.keymap.set({ "n", "v" }, "<leader><leader>:",
       row = math.floor(height / 4),
       col = math.floor(width / 4),
       border = "rounded",
+      -- border = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
+      -- border = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
+      -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
       title = "Command", -- 僅在有border時才會出來
       title_pos = "center",
     }
     vim.api.nvim_set_option_value("buftype", "prompt", { buf = buf }) -- prompt最後一列輸入後會觸發prompt_setcallback
     M.parent_win = vim.api.nvim_get_current_win()
     M.win = vim.api.nvim_open_win(buf, true, win_config)              -- 如果執行nvim_open_win時已經vim.api.nvim_win_hide(win)，那麼會被報錯
+    vim.api.nvim_win_set_hl_ns(M.win, ns_id_hl)
     vim.cmd("startinsert")
   end,
   {
