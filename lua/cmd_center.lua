@@ -34,7 +34,7 @@ vim.fn.prompt_setcallback(buf,
 local ns_id_hl = vim.api.nvim_create_namespace('cmd-center_highlight') -- Creates a new namespace or gets an existing one.
 vim.api.nvim_set_hl(ns_id_hl, "FloatBorder", { fg = "#ff00ff" })       -- :help FloatBorder
 
-vim.keymap.set({ "n", "v" }, "<leader><leader>:",
+vim.keymap.set({ "n", "v" }, "<leader>:",
   function()
     local mode = vim.api.nvim_get_mode().mode
     if mode == "v" or mode == "V" then
