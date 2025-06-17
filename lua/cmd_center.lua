@@ -109,3 +109,9 @@ _G._cmd_center_complete = function(findstart, base)
     return matches
   end
 end
+-- 設置按鍵映射
+-- vim.api.nvim_buf_set_keymap(buf, "i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<C-x>\<C-o>"]], 👈 無效
+vim.api.nvim_buf_set_keymap(buf, "i", "<Tab>", [[<C-x><C-o>]],
+  { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(buf, "i", "<S-Tab>", [[<C-x><C-o>]],
+  { noremap = true, silent = true })
