@@ -53,6 +53,7 @@ function M.setup_register_window()
   vim.api.nvim_set_hl(ns_id_hl, "HL_NUMBER", { bg = "#00FFFF", fg = "#000000" })
   vim.api.nvim_set_hl(ns_id_hl, "HL_LETTER", { bg = "#55FF55", fg = "#000000" })
   vim.api.nvim_set_hl(ns_id_hl, "HL_SPECIAL", { bg = "#FFFF55", fg = "#000000" })
+  vim.api.nvim_set_hl(ns_id_hl, "FloatBorder", { fg = "#ff00ff" }) -- :help FloatBorder
   vim.fn.matchadd("HL_NUMBER", [[^\d]], 10, -1, { window = win })
   vim.fn.matchadd("HL_LETTER", '^[a-z]', 10, -1, { window = win })
   vim.fn.matchadd("HL_SPECIAL", '^["*+-.:/=%#]', 10, -1, { window = win })
