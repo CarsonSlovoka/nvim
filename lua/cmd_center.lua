@@ -9,7 +9,9 @@ local M = {
   parent_win = nil,  -- 呼叫 <leader>: 時的win
   win = nil,         -- 創建cmd_center的win
 
-  height = 5         -- 用於保存視窗高度用, 使下次創建時可以延用之前的設定
+  height = 5,        -- 用於保存視窗高度用, 使下次創建時可以延用之前的設定
+
+  prompt = ":",      -- 記錄最後一次使用的prompt
 }
 
 
@@ -20,7 +22,7 @@ vim.api.nvim_buf_set_name(buf, 'plugin:cmd-center') -- 命名緩衝區
 -- local win = vim.api.nvim_open_win(buf, true, win_config)
 -- win_config["win"] = win
 
-vim.fn.prompt_setprompt(buf, ':') -- 這如果都是固定的可以只設定一次，之後每次都會是如此
+vim.fn.prompt_setprompt(buf, M.prompt) -- 這如果都是固定的可以只設定一次，之後每次都會是如此
 vim.fn.prompt_setcallback(buf,
   function(input)
     if M.range == 2 then
@@ -56,11 +58,12 @@ vim.keymap.set({ "n", "v" }, "<leader>:",
     local mode = vim.api.nvim_get_mode().mode
     if mode == "v" or mode == "V" then
       M.range = 2
-      vim.fn.prompt_setprompt(buf, "'<,'>")
+      M.prompt = "'<,'>"
     else
       M.range = 0
-      vim.fn.prompt_setprompt(buf, ':')
+      M.prompt = ":"
     end
+    vim.fn.prompt_setprompt(buf, M.prompt)
     local height = vim.api.nvim_win_get_height(0)
     local width = vim.api.nvim_win_get_width(0)
     local win_config = { -- 是可以寫在外層，但是希望是抓當前的視窗大小來決定
@@ -112,7 +115,9 @@ _G._cmd_center_complete = function(findstart, base)
     local line = vim.api.nvim_get_current_line()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local start = col
-    while start > 0 and string.sub(line, start, start) ~= ":" do
+    while start > 0
+      and string.sub(line, start, start) ~= ":"
+      and string.sub(line, start, start) ~= ">" do
       start = start - 1
     end
     return start
@@ -145,18 +150,18 @@ vim.api.nvim_buf_set_keymap(buf, "i", "<Down>", "<cmd>lua require('cmd_center').
 M.prev_history = function()
   if M.history_index > 1 then
     M.history_index = M.history_index - 1
-    vim.api.nvim_set_current_line(":" .. (M.history[M.history_index] or "")) -- 注意！ 前綴要對應prompt_setprompt所設定的內容，不然會直接送出
+    vim.api.nvim_set_current_line(M.prompt .. (M.history[M.history_index] or "")) -- 注意！ 前綴要對應prompt_setprompt所設定的內容，不然會直接送出
   elseif M.history_index == 1 then
-    vim.api.nvim_set_current_line(":")
+    vim.api.nvim_set_current_line(M.prompt)
   end
 end
 
 M.next_history = function()
   if M.history_index < #M.history then
     M.history_index = M.history_index + 1
-    vim.api.nvim_set_current_line(":" .. M.history[M.history_index])
+    vim.api.nvim_set_current_line(M.prompt .. M.history[M.history_index])
   elseif M.history_index == #M.history then
-    vim.api.nvim_set_current_line(":")
+    vim.api.nvim_set_current_line(M.prompt)
     M.history_index = M.history_index + 1
   end
 end
