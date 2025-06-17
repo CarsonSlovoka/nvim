@@ -328,6 +328,15 @@ local function setup_normal()
   map('n', "<A-k>", "<C-w>k", { desc = "往上切換視窗" })
   map('n', "<A-l>", "<C-w>l", { desc = "往右切換視窗" })
 
+
+  -- :help wincmd
+  -- map('n', "<M-H>", function() vim.cmd("wincmd H") end, { desc = "move window to left" })
+  map('n', "<M-H>", "<C-W>H", { desc = "[←] Move the current window to be at the very left" }) -- 同步 :wincmd H
+  map('n', "<M-J>", "<C-W>J", { desc = "[↓] Move the current window to be at the very bottom" })
+  map('n', "<M-K>", "<C-W>K", { desc = "[↑] Move the current window to be at the very top" })
+  map('n', "<M-L>", "<C-W>L", { desc = "[→] Move the current window to be at the very right" })
+
+
   for open, close in pairs({
     ["("] = ")",
     ["["] = "]",
