@@ -1,6 +1,6 @@
 --- cmd_center.lua 讓輸入的cmd可以正畫面的中間
 
---- TODO 如果是command可以有補全等提示
+--- TODO 指令補全也可以補全其參數
 --- TODO 按 ↑ 可以代出上一個指令
 
 local M = {}
@@ -85,3 +85,27 @@ vim.api.nvim_create_autocmd("WinLeave",
     end,
   }
 )
+
+-- 設置命令補全
+vim.api.nvim_set_option_value("omnifunc", "v:lua._cmd_center_complete", { buf = buf })     -- <C-X><C-O>
+vim.api.nvim_set_option_value("completefunc", "v:lua._cmd_center_complete", { buf = buf }) -- <C-X><C-U>
+_G._cmd_center_complete = function(findstart, base)
+  if findstart == 1 then
+    local line = vim.api.nvim_get_current_line()
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local start = col
+    while start > 0 and string.sub(line, start, start) ~= ":" do
+      start = start - 1
+    end
+    return start
+  else
+    local commands = vim.api.nvim_get_commands({})
+    local matches = {}
+    for cmd, _ in pairs(commands) do
+      if vim.startswith(cmd, base) then
+        table.insert(matches, cmd)
+      end
+    end
+    return matches
+  end
+end
