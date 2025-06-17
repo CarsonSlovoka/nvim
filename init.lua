@@ -1995,6 +1995,13 @@ local installs = {
     delay = 0
   },
   {
+    name = "cmd_center",
+    fn = function()
+      require("cmd_center")
+    end,
+    delay = 0
+  },
+  {
     name = "config.telescope_bookmark",
     fn = function()
       require "config.telescope_bookmark"
