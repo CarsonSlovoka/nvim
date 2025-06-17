@@ -37,7 +37,10 @@ vim.fn.prompt_setcallback(buf,
     local result = vim.api.nvim_exec2(input, { output = true })
     print(result.output)
     -- vim.cmd("mes")
-    vim.api.nvim_win_close(M.win, true)
+
+    -- vim.api.nvim_win_close(M.win, true) -- 不關閉
+    vim.api.nvim_set_current_win(M.win) -- 再跳轉回去，使能繼續輸入指令
+
     -- vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 如果是手動q掉視窗, 是不會觸發到 prompt_setcallback 所以最好是用autocmd來確保
   end
 )
@@ -88,7 +91,8 @@ vim.keymap.set({ "n", "v" }, "<leader>:",
 
 local group = vim.api.nvim_create_augroup("cmd-center", {})
 -- vim.api.nvim_create_autocmd("InsertLeave", 用WinLeave比InsertLeave好，不然如果想要往上用visual複製之前的訊息，此時的buftype如果被改成nofile, 就失去prompt的作用了
-vim.api.nvim_create_autocmd("WinLeave",
+-- vim.api.nvim_create_autocmd("WinLeave", -- 當focus到其它的視窗也會觸發
+vim.api.nvim_create_autocmd("WinClosed",
   {
     desc = "set buftype = nofile",
     group = group,
