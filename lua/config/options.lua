@@ -109,6 +109,8 @@ function options.setup()
     extension = {
       gs = "javascript",
       strings = "strings",
+      gotmpl = "gotmpl",
+      gohtml = "gotmpl",
     }
   })
 

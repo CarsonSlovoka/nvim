@@ -126,9 +126,13 @@ local function install_nvimTreesitter()
 
   m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
+      -- :TSModuleInfo 也可以找有哪些內容能裝
       "bash",
       "lua",
+
       "go",
+      "gotmpl", -- https://github.com/ngalaiko/tree-sitter-go-template -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L896-L902
+
       "markdown", "markdown_inline",
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
     },
