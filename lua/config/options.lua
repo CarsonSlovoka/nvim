@@ -98,11 +98,11 @@ function options.setup()
   -- :1200,1600fold 這種方式也可以摺行 foldmethod為manual可用
   -- map: zc, zo 可以摺或展開
   -- vim.opt.foldmethod = "manual" -- 此為預設. 手動設定. 如果你在程式碼中可以自己用set改成indent或者其它的項目
-  vim.opt.foldmethod = "indent" -- expr, syntax -- :set foldmethod=indent
-  -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+  vim.opt.foldmethod = "indent"                   -- expr, syntax -- :set foldmethod=indent
+  vim.opt.foldexpr = "nvim_treesitter#foldexpr()" -- 當foldmethod為expr的時候，此屬性就會有作用
   -- vim.opt.foldenable = false
-  vim.opt.foldcolumn = "auto" -- 0-9也可以，如果有fold的清況下可以看到旁邊+-的摺顯示
-  vim.opt.foldlevel = 2       -- 💡 這個很有用！表示從第幾層後就可以摺疊，如果是0就是全部摺疊, 可以隨時用:set foldlevel?來觀察目前設定的數值
+  vim.opt.foldcolumn = "auto"                     -- 0-9也可以，如果有fold的清況下可以看到旁邊+-的摺顯示
+  vim.opt.foldlevel = 2                           -- 💡 這個很有用！表示從第幾層後就可以摺疊，如果是0就是全部摺疊, 可以隨時用:set foldlevel?來觀察目前設定的數值
 
   -- filetype.add 可以等同用autocmd: https://github.com/CarsonSlovoka/nvim/blob/9f43fb676491df176ed4551a50e77e3ea704261e/lua/config/autocmd.lua#L209-L219
   vim.filetype.add({ -- :help vim.filetype

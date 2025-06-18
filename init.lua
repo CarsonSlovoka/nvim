@@ -144,6 +144,11 @@ local function install_nvimTreesitter()
       enable = true,
       additional_vim_regex_highlighting = false,
     },
+    fold = {
+      -- vim.opt.foldmethod = "expr"
+      -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+      enable = true,
+    }
 
     -- incremental_selection = {
     --   enable = true,
