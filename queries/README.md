@@ -10,3 +10,32 @@ queries/xxx/highlights.scm
 
 例如[strings/highlights.scm](strings/highlights.scm)
 
+# checkhealth
+
+```
+Parser/Features         H L F I J
+  - bash                ✓ ✓ ✓ . ✓
+  - c                   ✓ ✓ ✓ ✓ ✓
+  - go                  ✓ ✓ ✓ ✓ ✓
+  - gotmpl              ✓ ✓ ✓ . ✓
+  - javascript          ✓ ✓ ✓ ✓ ✓
+  - lua                 ✓ ✓ ✓ ✓ ✓
+  - markdown            ✓ . ✓ ✓ ✓
+  - markdown_inline     ✓ . . . ✓
+  - query               ✓ ✓ ✓ ✓ ✓
+  - strings             ✓ ✓ ✓ ✓ ✓
+  - vim                 ✓ ✓ ✓ . ✓
+  - vimdoc              ✓ . . . ✓
+
+  Legend: H[ighlight], L[ocals], F[olds], I[ndents], In[j]ections
+         +) multiple parsers found, only one will be used
+         x) errors found in the query, try to run :TSUpdate {lang} ~
+```
+
+- H: [highlights.scm](strings/highlights.scm)
+- L: [locals.scm](strings/locals.scm)
+- F: [folds.scm](strings/folds.scm)
+- I: [indents.scm](strings/indents.scm)
+- In: [injections.scm](strings/injections.scm)
+
+只要有相對應的scm檔案，該項目就會被打勾`✓`
