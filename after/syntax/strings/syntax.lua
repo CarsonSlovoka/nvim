@@ -1,5 +1,14 @@
+-- 🧙 如果有用nvim-treesitter裝相關的語法，預設它的突顯會在此ftplugin之上
+
+-- --- @type table
+-- local treesitter_list = require("nvim-treesitter.parsers").get_parser_configs()
+-- :lua print(require("nvim-treesitter.parsers").get_parser_configs().strings)
+
 -- 避免重複定義
-if vim.b.current_syntax then
+-- 如果已經有用treesitter裝相關的語法也不再執行此腳本
+if vim.b.current_syntax
+-- or treesitter_list.strings ~= nil -- 就個不準，如果有設定，只是用 :TSUninstall strings 去解除，那麼雖然沒裝了，但是設定檔還是在
+then
   return
 end
 
