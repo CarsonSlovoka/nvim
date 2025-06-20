@@ -1867,6 +1867,23 @@ local function install_nvim_dap()
       -- pythonPath = function() return 'python3' end
     },
     {
+      type = "python",
+      request = 'launch',
+      name = "(linux) env:fontforge python3 <file> <args>",
+      program = "${file}",
+      args = require("dap-go").get_arguments,
+      env = {
+        -- find /usr/local -name "fontforge*.so"
+        -- /usr/local/lib/python3.13/site-packages/fontforge.so
+        PYTHONPATH = '/usr/local/lib/python3.13/site-packages/' -- 將fontforge.so的目錄提供給PYTHONPATH即可
+
+        -- 給以下的沒用
+        -- fd -t f fontforge /
+        -- /usr/lib/python3/dist-packages/fontforge.cpython-312-x86_64-linux-gnu.so
+        -- PYTHONPATH = '/usr/lib/python3/dist-packages/'
+      }
+    },
+    {
       type = "notepad", -- references an entry in dap.adapters --同時也是該 filetype 才會觸發
       request = 'launch',
       name = "[FOR TEST ONLY] noepad",
