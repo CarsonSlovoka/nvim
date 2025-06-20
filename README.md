@@ -852,7 +852,7 @@ mkdir -pv ~/.config/nvim/pack/debug/start/
 ```sh
 go install github.com/go-delve/delve/cmd/dlv@latest
 dlv version
-# Version: 1.24.1
+# Version: 1.25.0
 # Build: $Id: 7c2184d58d69f0717b8620fdebc56d34174f9945
 ```
 

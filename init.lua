@@ -1739,6 +1739,10 @@ local function install_nvim_dap()
 
   -- debug adapter
   ---- go
+  --- 當突然沒辦法debug的時候，請嘗試更新dlv
+  --- go install github.com/go-delve/delve/cmd/dlv@latest
+  --- dlv version
+  --- 1.25.0
   require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/README.md?plain=1#L46-L100
     -- Additional dap configurations can be added.
     -- dap_configurations accepts a list of tables where each entry
