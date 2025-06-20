@@ -18,9 +18,6 @@ local runtimepath = vim.api.nvim_get_option_value("runtimepath", {})
 vim.opt.runtimepath = runtimepath .. ",~/.vim,~/.vim/after"
 vim.opt.packpath = vim.opt.runtimepath:get()
 
--- python
-vim.g.python3_host_prog = vim.fn.expand("~/.pyenv/versions/neovim3/bin/python")
-
 -- vim
 local vimrcPath = HOME .. "/.vimrc"
 if vim.fn.filereadable(vimrcPath) == 1 then
@@ -1815,13 +1812,66 @@ local function install_nvim_dap()
       verbose = false,
     },
   }
+
+  -- python
+  if osUtils.IsWindows then
+    -- pyenv 安裝: https://github.com/CarsonSlovoka/nvim/blob/8db59ef4c3a8b36ac6cb8675978c6c464a5fc345/docs/windows.md?plain=1#L170-L207
+    -- pyenv versions
+    -- pyenv install 3.13.1 -- 安裝
+    -- pyenv global 3.13.1 -- 切換
+    -- 此時目錄: pyenv-win/shims/ 中的python 就是指3.13.1 如果切換不同的就會是不同的python版本
+    vim.g.python3_host_prog = vim.fn.resolve(os.getenv("userprofile") .. "/.pyenv/pyenv-win/shims/python")
+
+    -- 如果有問題可以用 :checkhealth 來確認
+    -- Python 3 provider (optional) ~
+    -- pyenv: Path: %userprofile%\.pyenv\pyenv-win\bin\pyenv.BAT
+    -- pyenv: Root: %userprofile%\.pyenv\pyenv-win\
+    -- Using: g:python3_host_prog = "%userprofile%/.pyenv/pyenv-win/shims/python"
+    -- Executable: %userprofile%\.pyenv\pyenv-win\shims\python.BAT
+    -- 👇 以下這三個是要有pip install neovim時才會出現
+    -- Python version: 3.13.1
+    -- pynvim version: 0.5.2
+    -- OK Latest pynvim is installed.
+
+    -- pyenv shell 3.13.1
+    -- pip install neovim 💡這個很重要！
+    -- 測試: python -c "import neovim; print(neovim.__file__)"
+    -- %AppData%\Python\Python313\site-packages\neovim\__init__.py
+  else
+    vim.g.python3_host_prog = vim.fn.expand("~/.pyenv/versions/neovim3/bin/python")
+  end
+
+  -- 實際上dap-python的setup也是有設定dap.adapters.python與dap.configurations.python: https://github.com/mfussenegger/nvim-dap-python/blob/261ce649d05bc455a29f9636dc03f8cdaa7e0e2c/lua/dap-python.lua#L218-L274
   require('dap-python').setup(
   -- "/usr/bin/python3" -- 如果要debug fontforge之類的要再切換, 但是/usr/bin/pip3也要安裝，但是ubuntu上這是鎖版本的
   -- vim.fn.expand("~/.pyenv/shims/python3") -- 預設會自己抓
   ) -- https://github.com/mfussenegger/nvim-dap-python/blob/34282820bb713b9a5fdb120ae8dd85c2b3f49b51/README.md?plain=1#L62-L142
 
+  -- 如果都倚靠day-python在windows上可能還是會遇到: command `python3` of adapter `python` exited with 9009. Run :DapShowLog to open logs
+  -- 所以還是要自己設定
+  dap.adapters.python = {
+    type = 'executable',
+    command = 'python',                -- 確保系統能抓到這個執行檔
+    args = { '-m', 'debugpy.adapter' } -- pip install debugpy
+  }
+
+  -- dap.configurations.<filetype>
+
+  -- dap.configurations.python = {} -- 如果想要保留原始的配置，可以用table.insert往後增加
+  for _, config in ipairs({
+    {
+      type = "python",
+      request = 'launch',
+      name = "python3 <file>",
+      program = "${file}",
+      -- pythonPath = function() return 'python3' end
+    },
+  }) do
+    table.insert(dap.configurations.python, config)
+  end
+
   -- lua
-  -- 以下這兩個配置一定要有
+  -- 以下這兩個配置一定要有: 👈 實際上不管是哪一個，都一定要有以下這兩個，如果沒有看到就是該plugin幫忙設定好了而已
   -- configurations.lua
   -- adapters.nlua
   dap.configurations.lua = {
