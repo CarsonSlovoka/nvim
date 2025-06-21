@@ -84,7 +84,7 @@ function M.init()
 
   M.update_registers(buf)
 
-  local timer = vim.loop.new_timer()
+  local timer = vim.uv.new_timer()
   local start_after_ms = 1000
   local repeat_per_ms = 1000
   timer:start(start_after_ms, repeat_per_ms, vim.schedule_wrap(

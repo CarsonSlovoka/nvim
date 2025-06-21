@@ -7,7 +7,7 @@ function M.getDirOnly(arg_lead)
   local all_file = vim.fn.getcompletion(arg_lead, "file") -- 包含檔案和目錄
   local directories = {}
   for _, result in ipairs(all_file) do
-    if vim.loop.fs_stat(result) and vim.loop.fs_stat(result).type == "directory" then
+    if vim.uv.fs_stat(result) and vim.uv.fs_stat(result).type == "directory" then
       table.insert(directories, result)
     end
   end
@@ -20,7 +20,7 @@ function M.get_file_only(arg_lead)
   local all_file = vim.fn.getcompletion(arg_lead, "file")
   local files = {}
   for _, result in ipairs(all_file) do
-    if vim.loop.fs_stat(result) and vim.loop.fs_stat(result).type == "file" then
+    if vim.uv.fs_stat(result) and vim.uv.fs_stat(result).type == "file" then
       table.insert(files, result)
     end
   end

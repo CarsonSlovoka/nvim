@@ -1,7 +1,7 @@
 local bookmark = {}
 
 bookmark.table = {
-  { name = "HOME", path = "$HOME" },
+  { name = "HOME",   path = "$HOME" },
   { name = "Config", path = "~/.config/nvim/init.lua" },
 }
 
@@ -26,8 +26,7 @@ load_external_bookmarks(external_file_path)
 
 -- 打開書籤的函數
 local function open_bookmark(path)
-
-  local stat = vim.loop.fs_stat(path) -- 檢查路徑狀態
+  local stat = vim.uv.fs_stat(path) -- 檢查路徑狀態
 
   if stat and stat.type == "directory" then
     -- 如果 path 是一個目錄
@@ -75,13 +74,13 @@ function bookmark.show()
 
   -- 動態計算窗口寬度
   local width = max_name_length + max_path_length + 8 -- 包括數字索引+" | " 分隔符的額外固定部分
-  local height = #bookmark.table + 2 -- 上下各留 1 行
+  local height = #bookmark.table + 2                  -- 上下各留 1 行
 
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
-    width = math.min(width, vim.o.columns - 10), -- 限制寬度不超過屏幕寬度 - 10
-    height = math.min(height, vim.o.lines - 4), -- 限制高度不超過屏幕高度 - 4
-    row = math.floor((vim.o.lines - height) / 2), -- 垂直居中
+    width = math.min(width, vim.o.columns - 10),   -- 限制寬度不超過屏幕寬度 - 10
+    height = math.min(height, vim.o.lines - 4),    -- 限制高度不超過屏幕高度 - 4
+    row = math.floor((vim.o.lines - height) / 2),  -- 垂直居中
     col = math.floor((vim.o.columns - width) / 2), -- 水平居中
     style = "minimal",
     border = "rounded",
@@ -102,13 +101,13 @@ function bookmark.show()
     -- 每個書籤綁定一個快捷鍵（數字選擇）
     vim.api.nvim_buf_set_keymap(buf, "n",
       tostring(i), -- 熱鍵為number
-      "", -- 沒有實作，用callback來代替
+      "",          -- 沒有實作，用callback來代替
       {
         noremap = true,
         silent = true,
         callback = function()
           vim.api.nvim_win_close(win, true) -- 關閉浮動窗口
-          open_bookmark(bk.path) -- 打開選擇的書籤
+          open_bookmark(bk.path)            -- 打開選擇的書籤
         end,
       }
     )

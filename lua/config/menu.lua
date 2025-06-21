@@ -39,7 +39,7 @@ local function startup_time(start_time)
   if start_time == 0 then
     return "<na>"
   end
-  local end_time = vim.loop.hrtime()
+  local end_time = vim.uv.hrtime()
   local time_ms = (end_time - start_time) / 1e6 -- 轉為毫秒
   return tostring(time_ms)
 end

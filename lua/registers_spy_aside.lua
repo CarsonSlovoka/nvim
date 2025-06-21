@@ -144,7 +144,7 @@ function M.init()
   M.update_registers(buf)
 
   -- 定時器，每秒更新一次
-  local timer = vim.loop.new_timer()
+  local timer = vim.uv.new_timer()
   timer:start(
     1000,              -- 啟動延遲 timeout
     1000,              -- 重複間隔 repeat

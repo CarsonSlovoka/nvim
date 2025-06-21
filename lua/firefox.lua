@@ -51,7 +51,7 @@ function M.setup(opt)
       -- end
       -- vim.fn.system("firefox " .. args.fargs[1]) -- 用這個比較好，不會有多餘的輸出干擾 -- 不過會鎖住，要等待網頁關閉
 
-      vim.loop.spawn("firefox", { args = { args.fargs[1] } })
+      vim.uv.spawn("firefox", { args = { args.fargs[1] } })
     end,
     {
       desc = "打開firefox指定的書籤頁",

@@ -28,7 +28,7 @@ function exec.ExecuteSelection()
 
   -- 非同步執行命令，無輸出到文本
   local curDir = vim.fn.expand("%:p:h")
-  vim.loop.spawn("sh", {
+  vim.uv.spawn("sh", {
     args = { "-c", command },
     cwd = curDir -- (optional) 設定工作目錄
   }, function(code, signal)

@@ -15,7 +15,7 @@ local function openCurrentDirWithFoot()
   local current_file_path = vim.fn.expand("%:p:h") -- 獲取當前文件所在的目錄
   if current_file_path ~= "" then
     -- 調用 'foot' 來執行
-    vim.loop.spawn("foot", {
+    vim.uv.spawn("foot", {
       args = { "--working-directory", current_file_path } -- 使用 foot 的 `--working-directory` 選項
     }, function(code, signal)
       if code ~= 0 then
@@ -144,7 +144,7 @@ function commands.setup()
       end
 
       filepath = vim.fn.expand(filepath) -- 處理自輸入可能用~的清況
-      local exists = vim.loop.fs_stat(filepath)
+      local exists = vim.uv.fs_stat(filepath)
       if not exists then
         vim.notify("invalid work dir: " .. filepath, vim.log.levels.ERROR)
         return
@@ -517,7 +517,7 @@ function commands.setup()
           local regex_video = vim.regex([[\c\.\(mp4\|mkv\|avi\|mov\|flv\|wmv\)$]])
           for _, file in ipairs(all_files) do
             -- 如果是目錄還是推送，而如果是檔案就要匹配相同的附檔名
-            if vim.loop.fs_stat(file).type == "directory" then
+            if vim.uv.fs_stat(file).type == "directory" then
               table.insert(cmp_files, file)
             else
               if regex_video:match_str(file) then
@@ -663,7 +663,7 @@ function commands.setup()
         return
       end
       local outputPath = args.fargs[2] or vim.fn.expand("%:p:h")
-      -- if vim.loop.fs_stat(outputPath).type == "directory" then -- 如果fs_stat得到nil則無法用nil.type會錯誤
+      -- if vim.uv.fs_stat(outputPath).type == "directory" then -- 如果fs_stat得到nil則無法用nil.type會錯誤
       if vim.fn.fnamemodify(outputPath, ":e") == "" then
         -- 避免只給dir而沒有檔名
         outputPath = path.join(outputPath, os.date("%Y-%m-%d_%H-%M-%S"))
@@ -2299,7 +2299,7 @@ function commands.setup()
   --     local output_dir = args.args
   --
   --     -- 確保輸出目錄存在
-  --     local output_dir_stat = vim.loop.fs_stat(output_dir)
+  --     local output_dir_stat = vim.uv.fs_stat(output_dir)
   --     if output_dir_stat and output_dir_stat.type ~= "directory" then
   --       vim.notify("輸出的目錄不存在: " .. output_dir, vim.log.levels.ERROR)
   --       return
@@ -2382,7 +2382,7 @@ function commands.setup()
       local output_filename = args.fargs[2] or "recording.mp4"
 
       -- 確保輸出目錄存在
-      local output_dir_stat = vim.loop.fs_stat(output_dir)
+      local output_dir_stat = vim.uv.fs_stat(output_dir)
       if output_dir_stat and output_dir_stat.type ~= "directory" then
         vim.notify("輸出的目錄不存在: " .. output_dir, vim.log.levels.ERROR)
         return
@@ -2397,8 +2397,8 @@ function commands.setup()
       -- local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
       local output_mp4_path = output_dir .. "/" .. output_filename
 
-      local mkv_exists = vim.loop.fs_stat(output_mkv_path)
-      local mp4_exists = vim.loop.fs_stat(output_mp4_path)
+      local mkv_exists = vim.uv.fs_stat(output_mkv_path)
+      local mp4_exists = vim.uv.fs_stat(output_mp4_path)
 
       -- Check if MP4 file already exists
       if mkv_exists or mp4_exists then

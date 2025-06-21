@@ -3,7 +3,7 @@ local M = {}
 --- @return boolean
 local function isWindows()
   if string.find(
-        string.lower(vim.loop.os_uname().sysname), -- :help os_uname
+        string.lower(vim.uv.os_uname().sysname), -- :help os_uname
         "windows"
       ) then
     return true
@@ -22,7 +22,7 @@ function M.GetPathFromHome(path)
     os.getenv("userprofile"),
   }) do
     local fullPath = homePath .. path
-    if vim.loop.fs_stat(fullPath) ~= nil then
+    if vim.uv.fs_stat(fullPath) ~= nil then
       return fullPath
     end
   end

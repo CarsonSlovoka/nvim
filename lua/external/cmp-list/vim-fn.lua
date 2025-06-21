@@ -23,7 +23,7 @@ local M = {
     abbr = "vim.file.isDirectory"
   },
   {
-    word = "if vim.loop.fs_stat(filepath) ~= nil then end",
+    word = "if vim.uv.fs_stat(filepath) ~= nil then end",
     kind = "file",
     info = "~= nil = exists",
     abbr = "vim.file.isExists"
