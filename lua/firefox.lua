@@ -49,7 +49,9 @@ function M.setup(opt)
       -- else
       --   os.execute(string.format("firefox %s > /dev/null 2>&1", args.fargs[1]))
       -- end
-      vim.fn.system("firefox " .. args.fargs[1]) -- 用這個比較好，不會有多餘的輸出干擾
+      -- vim.fn.system("firefox " .. args.fargs[1]) -- 用這個比較好，不會有多餘的輸出干擾 -- 不過會鎖住，要等待網頁關閉
+
+      vim.loop.spawn("firefox", { args = { args.fargs[1] } })
     end,
     {
       desc = "打開firefox指定的書籤頁",
