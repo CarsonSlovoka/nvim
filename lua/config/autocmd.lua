@@ -239,14 +239,15 @@ function M.setup(opts)
         end
 
         local fontPath = vim.fn.expand("%:p")
+        local filename = vim.fn.expand("%:t") -- :echo expand("%:t")
 
         vim.api.nvim_command("enew")
         local buf = vim.api.nvim_get_current_buf()
         vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 設定為nofile就已經是不能編輯，但這只是代表可以編輯但是無法保存當前的檔案，但是可以用:w ~/other.txt 的方式來另儲
         -- vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf }) -- 不在buffer中記錄
         -- vim.fn.expand("%:e") ~= 'ttf'
-        local filename = vim.fn.expand("%:t") -- :echo expand("%:t")
-        vim.api.nvim_buf_set_name(buf, filename)
+        vim.api.nvim_buf_set_name(buf, filename) -- 如果name是No Name時，使用vimgrep會遇到錯誤: E499: Empty file name for '%' or '#', only works with ":p:h" 因此為了能使vimgrep還是能有一個檔案的參照，需要設定其名稱
+        -- note: 使用nofile時再使用nvim_buf_set_name仍然有效，它會限制此檔案不能被保存
 
         vim.bo.filetype = "opentype"
 
