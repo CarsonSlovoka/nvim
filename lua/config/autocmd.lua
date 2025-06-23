@@ -238,14 +238,8 @@ function M.setup(opts)
           return
         end
 
-        -- local output = vim.fn.system("otparser " .. vim.fn.shellescape(vim.fn.expand("%:p")) ) -- 也行，但是建議用vim.system更明確
-        ---@type table
-        local r = vim.system({ "otparser", vim.fn.expand("%:p") }):wait()
-        -- print(vim.inspect(r))
-        if r.code ~= 0 then -- 用回傳的code來當是否有錯的基準
-          vim.notify(string.format("❌ otparser error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
-          return
-        end
+        local fontPath = vim.fn.expand("%:p")
+
         vim.api.nvim_command("enew")
         local buf = vim.api.nvim_get_current_buf()
         vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 設定為nofile就已經是不能編輯，但這只是代表可以編輯但是無法保存當前的檔案，但是可以用:w ~/other.txt 的方式來另儲
@@ -256,8 +250,15 @@ function M.setup(opts)
 
         vim.bo.filetype = "opentype"
 
-        -- vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(r.stdout, "\n")) -- 是可以直接寫在原本的地方，但是如果對原始的二進位有興趣，直接取代就不太好，所以另外開一個buffer寫
-        -- vim.api.nvim_buf_set_lines(0, 0, -1, false, { "hello", "world" })
+        -- local output = vim.fn.system("otparser " .. vim.fn.shellescape(curFile)) -- 也行，但是建議用vim.system更明確
+        --- @type table
+        local r = vim.system({ "otparser", fontPath }):wait() -- 可行，但是一次讀入對記憶體的要求較高，在windows上可能會遇到記憶體上的問題
+        if r.code ~= 0 then                                   -- 用回傳的code來當是否有錯的基準
+          vim.notify(string.format("❌ otparser error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
+          return
+        end
+        -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(r.stdout, "\n")) -- 是可以直接寫在原本的地方，但是如果對原始的二進位有興趣，直接取代就不太好，所以另外開一個buffer寫
+        -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, { "hello", "world" })
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
 
         -- vim.api.nvim_set_option_value("modifiable", false, { buf = buf }) -- readonly, 會直接連Insert都無法使用. 記得要放在nvim_buf_set_lines之後
