@@ -1,3 +1,5 @@
+local utils = require("utils.utils")
+
 local M = {
   autoSave = true,
   autoReformat = true,
@@ -239,17 +241,28 @@ function M.setup(opts)
         end
 
         local fontPath = vim.fn.expand("%:p")
-        local filename = vim.fn.expand("%:t") -- :echo expand("%:t")
+        local fontname = "♻️" .. vim.fn.expand("%:t") -- 為了盡量避免與當前的buf同名，前面加上♻️ (如果要完全避免誤判，要額外記錄buffer id)
+        -- :echo expand("%:t") -- xxx.lua
+        -- :echo expand("%:e") -- lua
 
-        vim.api.nvim_command("enew")
-        local buf = vim.api.nvim_get_current_buf()
-        vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 設定為nofile就已經是不能編輯，但這只是代表可以編輯但是無法保存當前的檔案，但是可以用:w ~/other.txt 的方式來另儲
-        -- vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf }) -- 不在buffer中記錄
-        -- vim.fn.expand("%:e") ~= 'ttf'
-        vim.api.nvim_buf_set_name(buf, filename) -- 如果name是No Name時，使用vimgrep會遇到錯誤: E499: Empty file name for '%' or '#', only works with ":p:h" 因此為了能使vimgrep還是能有一個檔案的參照，需要設定其名稱
-        -- note: 使用nofile時再使用nvim_buf_set_name仍然有效，它會限制此檔案不能被保存
+        local exists, buf = utils.api.get_buf(vim.fn.getcwd() .. "/" .. fontname)
+        if not exists then
+          -- vim.api.nvim_command("vsplit enew")
+          vim.api.nvim_command("enew")
+          buf = vim.api.nvim_get_current_buf()
+          vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf }) -- 設定為nofile就已經是不能編輯，但這只是代表可以編輯但是無法保存當前的檔案，但是可以用:w ~/other.txt 的方式來另儲
+          -- vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf }) -- 不在buffer中記錄
 
-        vim.bo.filetype = "opentype"
+          -- vim.api.nvim_buf_set_name(buf, bufName) -- 注意！要給檔名就好
+          vim.api.nvim_buf_set_name(buf, fontname) -- 如果name是No Name時，使用vimgrep會遇到錯誤: E499: Empty file name for '%' or '#', only works with ":p:h" 因此為了能使vimgrep還是能有一個檔案的參照，需要設定其名稱
+          -- note: 使用nofile時再使用nvim_buf_set_name仍然有效，它會限制此檔案不能被保存
+          -- note: nvim_buf_set_name 的文件名稱，是在當前的工作目錄下建立此名稱
+          -- note: 如果buffer已經存在，會得到錯誤: Vim:E95: Buffer with this name already exists
+
+          vim.bo.filetype = "opentype"
+        elseif buf then
+          vim.api.nvim_set_current_buf(buf)
+        end
 
         -- local output = vim.fn.system("otparser " .. vim.fn.shellescape(curFile)) -- 也行，但是建議用vim.system更明確
         --- @type table
@@ -258,11 +271,14 @@ function M.setup(opts)
           vim.notify(string.format("❌ otparser error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
           return
         end
-        -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(r.stdout, "\n")) -- 是可以直接寫在原本的地方，但是如果對原始的二進位有興趣，直接取代就不太好，所以另外開一個buffer寫
-        -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, { "hello", "world" })
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
 
-        -- vim.api.nvim_set_option_value("modifiable", false, { buf = buf }) -- readonly, 會直接連Insert都無法使用. 記得要放在nvim_buf_set_lines之後
+        if buf then
+          -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(r.stdout, "\n")) -- 是可以直接寫在原本的地方，但是如果對原始的二進位有興趣，直接取代就不太好，所以另外開一個buffer寫
+          -- -- vim.api.nvim_buf_set_lines(0, 0, -1, false, { "hello", "world" })
+          vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
+
+          -- vim.api.nvim_set_option_value("modifiable", false, { buf = buf }) -- readonly, 會直接連Insert都無法使用. 記得要放在nvim_buf_set_lines之後
+        end
       end
     }
   )
