@@ -2958,6 +2958,42 @@ function commands.setup()
       end
     }
   )
+  vim.api.nvim_create_user_command("Mes",
+    function(args)
+      if args.fargs[1] == "-h" then
+        vim.fn.setloclist(0, {
+          { text = ":Mes 放置所有mes的內容" },
+          { text = "1:Mes  放置最後一筆mes的記錄" },
+          { text = "1:Mes aa  將最後一筆mes的記錄，保存在自定義的變數aa之中，可以使用:pu=aa 放置結果" },
+          { text = ":mes clear 清空所有mes內容" },
+        }, 'a')
+        vim.cmd("lopen 5")
+        return
+      end
+      local count = ""
+      if args.count > 0 then -- 如果沒有給count, 是為-1
+        count = tostring(args.count)
+      end
+      if #args.fargs == 0 then
+        vim.cmd('redir @"')
+        vim.cmd(count .. "mes")
+        vim.cmd("redir END")
+        vim.cmd('pu=@"')
+        return
+      end
+
+      local varName = args.fargs[1]
+      vim.cmd("redir => " .. varName)
+      vim.cmd(count .. "mes")
+      vim.cmd("redir END")
+      -- vim.notify(":pu=" .. varName, vim.log.levels.INFO)
+    end,
+    {
+      desc = '可以直接輸出:mes的內容或者將其保存在變數之中',
+      nargs = "?",
+      range = true, -- :{count}Mes 一個數字可以當成列號，也可以當成count
+    }
+  )
 end
 
 return commands
