@@ -2994,6 +2994,34 @@ function commands.setup()
       range = true, -- :{count}Mes 一個數字可以當成列號，也可以當成count
     }
   )
+  vim.api.nvim_create_user_command("GoSelect",
+    function(args)
+      if args.fargs[1] == "-h" then
+        vim.fn.setloclist(0, {
+          { text = ":{count}GoSelect n" },
+          { text = "Tag | Offset | Length" },
+          { text = "head | 436 | 54" },
+          { text = "54:GoSelect 437    📝 offset從436開始，所以下一個開始讀的是437，往後取54byte" },
+        }, 'a')
+        vim.cmd("lopen 4")
+        return
+      end
+      local startByte = args.fargs[1]
+      local count = args.count
+      if count < 0 then
+        count = 1
+      end
+      -- normal! 加上! 表示略過 key mapping
+      -- v 表示visaul
+      -- l 往右移動
+      vim.cmd(string.format("go %d | normal! v%dl", startByte, count))
+    end,
+    {
+      desc = '從第n byte開始選取count個',
+      nargs = 1,
+      range = true, -- :{count}Mes 一個數字可以當成列號，也可以當成count
+    }
+  )
 end
 
 return commands
