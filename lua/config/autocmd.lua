@@ -279,6 +279,39 @@ function M.setup(opts)
 
           -- vim.api.nvim_set_option_value("modifiable", false, { buf = buf }) -- readonly, 會直接連Insert都無法使用. 記得要放在nvim_buf_set_lines之後
         end
+
+        if vim.fn.executable("xxd") == 0 then
+          return
+        end
+
+        -- 再建立一個新的buf來放xxd的結果
+        -- vim.cmd("vnew")
+        vim.cmd("vnew ++bin") -- 要補上++bin才可以讓%!xxd -r時得到原始的內容
+        vim.cmd("wincmd L")   -- 放到最右邊
+
+        -- { text = "Tag | Offset | Length" },
+        -- { text = "head | 436 | 54" },
+        -- lua print(string.format("%x", 436)) -- 起始從00開始
+        -- lua print(string.format("%x", 436+54-1)) -- 不包含最後一個
+        buf = vim.api.nvim_get_current_buf()
+        local helps = {
+          ':lua print(string.format("%x", 436))',
+          ':/000001b4/,/000001e9/yank',
+          "'<,'>Highlight YellowBold *",
+          ' ', -- 這個用來放xxd的內容
+        }
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, helps)
+        local ns_id = vim.api.nvim_create_namespace("hightlight_comment")
+        vim.hl.range(buf, ns_id, "Comment", { 0, 0 }, { #helps, -1 }) -- ns_id不可以用0，一定要建立
+        vim.cmd("normal! G")
+        local cmd = "r !xxd -c 1 " .. fontPath
+        vim.cmd(cmd)
+        vim.fn.setloclist(0, {
+          { text = cmd },
+          { text = "r !xxd -c 16 " .. fontPath },
+        }, 'a')
+        vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+        -- vim.cmd("%!xxd -r")
       end
     }
   )
