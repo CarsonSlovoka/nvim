@@ -1,4 +1,5 @@
 return {
+  api = require "utils.api",
   array = require "utils.array",
   cmd = require "utils.cmd",
   complete = require "utils.complete",
