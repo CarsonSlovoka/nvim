@@ -2016,6 +2016,8 @@ local function install_nvim_dap()
     { desc = "Toggle Breakpoint" }
   )
   vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Open Debug REPL" })
+  vim.keymap.set("n", "<C-S-j>", dap.down, { desc = "[dap] moving down the call stack" }) -- :lua require("dap").down()
+  vim.keymap.set("n", "<C-S-k>", dap.up, { desc = "[dap] moving up the call stack" })
 
   dap.listeners.after.event_initialized["dapui_config"] = function()
     require("dapui").open()
