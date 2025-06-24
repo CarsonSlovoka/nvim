@@ -298,20 +298,28 @@ function M.setup(opts)
           ':lua print(string.format("%x", 436))',
           ':/000001b4/,/000001e9/yank',
           "'<,'>Highlight YellowBold *",
+          ":lopen 5",
+          "%!xxd -r",
+          "54GoSelect 437",
           ' ', -- 這個用來放xxd的內容
         }
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, helps)
         local ns_id = vim.api.nvim_create_namespace("hightlight_comment")
         vim.hl.range(buf, ns_id, "Comment", { 0, 0 }, { #helps, -1 }) -- ns_id不可以用0，一定要建立
         vim.cmd("normal! G")
-        local cmd = "r !xxd -c 1 " .. fontPath
-        vim.cmd(cmd)
+
+        -- vim.cmd("r !xxd -c 1 " .. fontPath) -- 這個會有:mes的訊息，如果不想要，可以用vim.fn.systemlist來代替
+        local output = vim.fn.systemlist("xxd -c 1 " .. fontPath)
+        local row = vim.api.nvim_win_get_cursor(0)[1]
+        vim.api.nvim_buf_set_lines(0, row, row, false, output)
+
         vim.fn.setloclist(0, {
-          { text = cmd },
+          { text = "r !xxd -c 1 " .. fontPath },
           { text = "r !xxd -c 16 " .. fontPath },
+          { text = "%!xxd -r" },
         }, 'a')
+
         vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-        -- vim.cmd("%!xxd -r")
       end
     }
   )
