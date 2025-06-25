@@ -66,6 +66,17 @@ function M.setup(opts)
         if not M.autoSave then
           return
         end
+        local filename = vim.fn.expand("%:t")
+        if filename == "" then
+          -- 表示當前的檔案可能是No Name，也就是臨時建出來尚未決定名稱的檔案
+          return
+        end
+
+        if vim.api.nvim_get_option_value("modifiable", { buf = 0 }) then
+          -- 唯讀檔也不動作
+          return
+        end
+
         -- 獲取當前緩衝區的 buftype
         -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
         -- local buftype = vim.api.nvim_buf_get_option(0, "buftype"  )
