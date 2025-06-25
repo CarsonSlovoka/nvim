@@ -106,7 +106,7 @@ function options.setup()
 
   -- filetype.add 可以等同用autocmd: https://github.com/CarsonSlovoka/nvim/blob/9f43fb676491df176ed4551a50e77e3ea704261e/lua/config/autocmd.lua#L209-L219
   vim.filetype.add({ -- :help vim.filetype
-    extension = {
+    extension = {    -- 這個是指，如果檔案的附檔名為key, 就將它的filetype設定為value
       gs = "javascript",
       strings = "strings",
       gotmpl = "gotmpl",

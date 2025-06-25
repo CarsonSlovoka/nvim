@@ -121,6 +121,26 @@ local function install_nvimTreesitter()
   --   -- { path = vim.fn.expand("~/tree-sitter-strings/strings.so") }
   -- )
 
+  -- 以下沒用
+  -- if "test" then
+  --   -- 💡💡 如果只是要讓一個新的項目，沿用某一種已經設計好的filetype, 只需要在 after/syntax/ 之中新增相對應的項目即可，例如: after/syntax/ttx/syntax.lua
+  --
+  --   -- 新增一個ttx的解析，其本質與xml是相同的，只是讓filetype可以真正的被設定成ttx也能有效果(不想要用xml來表示)
+  --   parser_list.ttx = { -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L2678-L2685
+  --     install_info = {
+  --       url = "https://github.com/tree-sitter-grammars/tree-sitter-xml",
+  --       files = { "src/parser.c", "src/scanner.c" },
+  --       location = "xml",
+  --     },
+  --     filetype = "ttx", -- 加了也沒用
+  --     maintainers = { "@ObserverOfTime" },
+  --   }
+  --
+  --   require("nvim-treesitter.parsers")
+  --   vim.treesitter.language.register("xml", "ttx") -- lang, filetype
+  -- end
+
+
   m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
       -- :TSModuleInfo 也可以找有哪些內容能裝
@@ -129,6 +149,8 @@ local function install_nvimTreesitter()
 
       "go",
       "gotmpl", -- https://github.com/ngalaiko/tree-sitter-go-template -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L896-L902
+
+      -- "ttx",
 
       "markdown", "markdown_inline",
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
@@ -2005,7 +2027,7 @@ font._saveXML(writer)
           return
         end
         local buf = vim.api.nvim_get_current_buf()
-        vim.api.nvim_set_option_value("filetype", "xml", { buf = buf })
+        vim.api.nvim_set_option_value("filetype", "ttx", { buf = buf })
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
         return ""
       end
