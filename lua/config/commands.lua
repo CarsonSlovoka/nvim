@@ -3109,6 +3109,7 @@ function commands.setup()
           "abc",
           "5",
           "3.5",
+          "0xb7",
         }
       end
     }
