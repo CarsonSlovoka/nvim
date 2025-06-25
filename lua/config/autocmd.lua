@@ -289,13 +289,17 @@ function M.setup(opts)
         vim.cmd("vnew ++bin") -- 要補上++bin才可以讓%!xxd -r時得到原始的內容
         vim.cmd("wincmd L")   -- 放到最右邊
 
-        -- { text = "Tag | Offset | Length" },
         -- { text = "head | 436 | 54" },
         -- lua print(string.format("%x", 436)) -- 起始從00開始
         -- lua print(string.format("%x", 436+54-1)) -- 不包含最後一個
         buf = vim.api.nvim_get_current_buf()
         local helps = {
+          'Tag  | Offset | Length',
+          'head | 436    | 54',
+          '436+',
+          'V53+',
           ':lua print(string.format("%x", 436))',
+          ':lua print(string.format("%x", 436+53))',
           ':/000001b4/,/000001e9/yank',
           "'<,'>Highlight YellowBold *",
           ":lopen 5",
