@@ -317,7 +317,9 @@ function M.setup(opts)
         local row = vim.api.nvim_win_get_cursor(0)[1]
         vim.api.nvim_buf_set_lines(0, row, row, false, output)
 
-        vim.fn.setloclist(0, {
+        -- vim.fn.setloclist(0, {
+        vim.fn.setqflist({ -- 這有可能在其它的buffer也需要參考，所以用qflist會比較好點
+          { text = "vnew ++bin" },
           { text = "r !xxd -c 1 " .. fontPath },
           { text = "r !xxd -c 16 " .. fontPath },
           { text = "%!xxd -r" },
