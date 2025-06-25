@@ -412,7 +412,7 @@ function commands.setup()
         --         ['75'] = '中等質量 - 平衡檔案大小和畫質',
         --         ['90'] = '高質量 - 接近原始畫質',
         --       }
-        --       return item .. '% - ' .. qualityMap[item]
+        --       return qualityMap[item] and item .. '% - ' .. qualityMap[item] or item
         --     end
         --   }, function(choice) -- choice為真實選擇內容
         --     if choice then
