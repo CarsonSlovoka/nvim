@@ -177,6 +177,8 @@ function M.setup(opts)
         -- vim.api.nvim_input("m>") -- 這可能會照成誤輸入到m>的情況發生，要額外去寫這些判斷很麻煩
 
         -- 已知bug, 如果是下反白到上時的位置是顛倒的
+
+        -- https://github.com/CarsonSlovoka/nvim/blob/ea6d7d9c684410ec75ec594de874491e46f26796/lua/config/sign_define.lua#L36-L45
         local sd = require("config.sign_define")
         local sign_id = vim.api.nvim_create_namespace(sd.group .. "_>")
         local line = vim.api.nvim_win_get_cursor(0)[1]
