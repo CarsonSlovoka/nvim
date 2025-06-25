@@ -122,6 +122,27 @@ local function create_user_command_jumps_to_qf_list()
   )
 end
 
+--- 二進位轉換函數
+--- @param num string|number
+--- @return string|nil
+--- @return string|nil error
+local function to_binary(num)
+  if not tonumber(num) then
+    return nil, "Invalid number: " .. tostring(num)
+  end
+  num = math.floor(tonumber(num) or 0)
+  if num == 0 then
+    return "0", nil
+  end
+  local bin = ""
+  while num > 0 do
+    bin = (num % 2) .. bin
+    num = math.floor(num / 2)
+  end
+  -- return bin == "" and "0" or bin -- 等同 bin == "" ? "0" : bin
+  return bin, nil
+end
+
 function commands.setup()
   -- 'foot', -- Invalid command name (must start with uppercase): 'foot'
   vim.api.nvim_create_user_command("Foot",
@@ -3027,13 +3048,45 @@ function commands.setup()
     function(args)
       local fmt = args.fargs[1]
       local values = vim.list_slice(args.fargs, 2)
-      -- print(string.format(fmt, unpack(values))) -- 可行，但是如果有錯，是用系統的錯誤
-      local ok, result = pcall(string.format, fmt, unpack(values))
+
+      -- 以下處理%b的情況
+      local new_fmt = fmt
+      local new_values = {}
+      local value_index = 1
+      for i = 1, #fmt do -- i: [s, e] 有包含尾
+        if fmt:sub(i, i) == "%" and i + 1 <= #fmt then
+          local specifier = fmt:sub(i + 1, i + 1)
+          if specifier == "b" then
+            -- 處理 %b
+            if value_index > #values then
+              vim.notify("Format error: not enough arguments for %b", vim.log.levels.WARN)
+              return
+            end
+            local bin, err = to_binary(values[value_index])
+            if not bin then
+              vim.notify(string.format("to_binary error: %s value: %s", err, values[value_index]),
+                vim.log.levels.WARN)
+              return
+            end
+            table.insert(new_values, bin)
+            -- 將 %b 替換為 %s，因為二進位結果是字符串
+            new_fmt = new_fmt:sub(1, i - 1) .. "%s" .. new_fmt:sub(i + 2)
+          else
+            -- 其他格式化動詞直接保留
+            table.insert(new_values, values[value_index])
+          end
+          value_index = value_index + 1
+        end
+      end
+
+      -- local ok, result = pcall(string.format, fmt, unpack(values))
+      local ok, result = pcall(string.format, new_fmt, unpack(new_values))
+      -- print(string.format(new_fmt, unpack(new_values))) -- 可行，但是如果有錯，是用系統的錯誤
       if ok then
         print(result)
       else
-        vim.notify(string.format("Format error: %s | fmt: %s %s", result,
-            fmt, table.concat(values, " ")),
+        vim.notify(string.format("Format error: %s | fmt: %s %s [確認format如果有個是否有短少\\]", result,
+            new_fmt, table.concat(new_values, " ")),
           vim.log.levels.WARN)
       end
     end,
@@ -3048,6 +3101,7 @@ function commands.setup()
             "%d",
             "%s",
             "%s\\ %0.2f", -- %s\ %d -- 如果想要用空白可以善用 \ 如此之後的內容也會視為是同一個參數
+            "%f\\ %b",    -- lua的string.format沒有支持%b，要自己寫
           }
         end
 
