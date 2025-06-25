@@ -72,7 +72,15 @@ function M.setup(opts)
           return
         end
 
-        if vim.api.nvim_get_option_value("modifiable", { buf = 0 }) then
+        if not vim.api.nvim_get_option_value("modifiable", { buf = 0 }) then -- 這是能不能編輯，至於是不是readonly不能用這個判斷，有可能是可以編輯，但是為readonly(不能儲)
+          -- 不可編輯 (但是否唯讀然未知)
+          return
+        end
+
+        -- :lua print(vim.bo[vim.api.nvim_get_current_buf()].readonly)
+        -- local bufnr = vim.api.nvim_get_current_buf()
+        -- if vim.bo[bufnr].readonly then -- vim.bo.readonly 如果只需要判斷當前的buf，則如此即可
+        if vim.bo.readonly then
           -- 唯讀檔也不動作
           return
         end
