@@ -3022,6 +3022,43 @@ function commands.setup()
       range = true, -- :{count}Mes 一個數字可以當成列號，也可以當成count
     }
   )
+
+  vim.api.nvim_create_user_command("Printf",
+    function(args)
+      local fmt = args.fargs[1]
+      local values = vim.list_slice(args.fargs, 2)
+      -- print(string.format(fmt, unpack(values))) -- 可行，但是如果有錯，是用系統的錯誤
+      local ok, result = pcall(string.format, fmt, unpack(values))
+      if ok then
+        print(result)
+      else
+        vim.notify(string.format("Format error: %s | fmt: %s %s", result,
+            fmt, table.concat(values, " ")),
+          vim.log.levels.WARN)
+      end
+    end,
+    {
+      desc = 'Printf %s\\ %d abc 123',
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          return {
+            "%x",
+            "%d",
+            "%s",
+            "%s\\ %0.2f", -- %s\ %d -- 如果想要用空白可以善用 \ 如此之後的內容也會視為是同一個參數
+          }
+        end
+
+        return {
+          "abc",
+          "5",
+          "3.5",
+        }
+      end
+    }
+  )
 end
 
 return commands
