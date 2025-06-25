@@ -60,10 +60,16 @@ local function sign_define_marks()
       {
         desc = "mark " .. mark .. "(新增sign_define於列號旁)",
         expr = true,
-        -- noremap = true, -- 預設為true, 不會再觸發其它已定義的熱鍵
       }
     )
   end
+
+  -- 如果要比較remap的差異可以用以下範例
+  -- vim.keymap.set("n", "<leader>a", ":echo 'A'<CR>", { remap = false }) -- 不觸發 echo B
+  -- vim.keymap.set("n", "<leader>a", ":echo 'A'<CR>") -- 預設remap為false
+  -- vim.keymap.set("n", "<leader>a", ":echo 'A'<CR>", { remap = true }) -- 觸發 echo B
+  -- vim.keymap.set("n", "<leader>a", ":echo 'A'<CR>", { noremap = true }) -- ⚠️ 不要使用noremap，不管是設定false或者true, 實際上都是remap=false
+  -- vim.keymap.set("n", ":echo 'A'<CR>", ":echo 'B'<CR>")
 end
 
 vim.fn.sign_define("DapBreakpoint",
