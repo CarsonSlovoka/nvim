@@ -1,6 +1,8 @@
 -- :help sign_define
 -- `:sign list` Lists all defined signs and their attributes.
 
+local M = {}
+M.group = "carson_sign_mark_group" -- 前面補上我的名子，防止可能重覆的考量
 
 local function sign_define_marks()
   -- vim.fn.sign_define("MarkPin1", { text = "0️⃣", }) -- 0️⃣ 這是由三個unicode碼點所主成: U+0030 U+FE0F U+20E3
@@ -36,22 +38,21 @@ local function sign_define_marks()
   vim.fn.sign_define("MarkPin^", { text = "✍️" })
   vim.fn.sign_define("MarkPin<", { text = "<" })
   vim.fn.sign_define("MarkPin>", { text = ">" })
-  local group = "carson_sign_mark_group" -- 前面補上我的名子，防止可能重覆的考量
 
   for i = 1, #strRegs do
     local mark = strRegs:sub(i, i)
     vim.keymap.set("n", "m" .. mark,
       function()
-        local sign_id = vim.api.nvim_create_namespace(group .. "_" .. mark) -- 如果不存在會創鍵，如果已經存在就會得到該id
+        local sign_id = vim.api.nvim_create_namespace(M.group .. "_" .. mark) -- 如果不存在會創鍵，如果已經存在就會得到該id
 
         -- 獲取當前列號
         local line = vim.api.nvim_win_get_cursor(0)[1]
 
         -- 清除該 mark 的舊 sign
-        vim.fn.sign_unplace(group, { buffer = vim.fn.bufnr(), id = sign_id })
+        vim.fn.sign_unplace(M.group, { buffer = vim.fn.bufnr(), id = sign_id })
 
         -- 放置新 sign
-        vim.fn.sign_place(sign_id, group, "MarkPin" .. mark, vim.fn.bufnr(), { lnum = line }) -- priority = 10
+        vim.fn.sign_place(sign_id, M.group, "MarkPin" .. mark, vim.fn.bufnr(), { lnum = line }) -- priority = 10
 
         -- 返回原始 mark 命令
         return "m" .. mark
@@ -59,7 +60,7 @@ local function sign_define_marks()
       {
         desc = "mark " .. mark .. "(新增sign_define於列號旁)",
         expr = true,
-        noremap = false,
+        -- noremap = true, -- 預設為true, 不會再觸發其它已定義的熱鍵
       }
     )
   end
@@ -86,3 +87,5 @@ vim.fn.sign_define("DapBreakpointRejected", { text = "🚫", texthl = "Comment",
 vim.fn.sign_define("DapStopped", { text = "👉", texthl = "String", linehl = "@onbreakpoint", numhl = "Bold" })
 
 sign_define_marks()
+
+return M

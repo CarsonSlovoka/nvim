@@ -106,37 +106,37 @@ function M.setup(opts)
   )
 
   -- vim.keymap.set({ "v", "x" } -- x包含v, V. 但沒有Ctrl-V 而v會包含，並且包含所有x涵蓋的項目
-  local enable_mark_range = true
-  for _, key in ipairs({ "c", ":",
-    "/",
-    "C", -- ["x]C Delete from the cursor position to the end of the line
-    "I", -- 區塊選取時會用到
-    "A", -- 區塊選取時會用到
-    "R", -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
-  }) do
-    vim.keymap.set("v", key, function()
-        enable_mark_range = false
-        vim.defer_fn(function()
-          enable_mark_range = true
-        end, 50)
-        return key
-      end,
-      {
-        desc = "暫時停止sign m<, m>的行為，避免c的時候被多打上m<, m>",
-        noremap = false,
-        expr = true,
-      }
-    )
-  end
+  -- local enable_mark_range = true
+  -- for _, key in ipairs({ "c", ":",
+  --   "/",
+  --   "C", -- ["x]C Delete from the cursor position to the end of the line
+  --   "I", -- 區塊選取時會用到
+  --   "A", -- 區塊選取時會用到
+  --   "R", -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
+  -- }) do
+  --   vim.keymap.set("v", key, function()
+  --       enable_mark_range = false
+  --       vim.defer_fn(function()
+  --         enable_mark_range = true
+  --       end, 50)
+  --       return key
+  --     end,
+  --     {
+  --       desc = "暫時停止sign m<, m>的行為，避免c的時候被多打上m<, m>",
+  --       noremap = false,
+  --       expr = true,
+  --     }
+  --   )
+  -- end
 
   -- https://vi.stackexchange.com/a/44191/31859
   local begin_visual_position
   vim.api.nvim_create_autocmd("ModeChanged", {
     pattern = { "*:[vV\x16]*" },
     callback = function()
-      if not enable_mark_range then
-        return
-      end
+      -- if not enable_mark_range then
+      --   return
+      -- end
       local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
       if buftype ~= "" then
         return
@@ -154,9 +154,9 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("ModeChanged", {
     pattern = { "[vV\x16]*:*" },
     callback = function()
-      if not enable_mark_range then
-        return
-      end
+      -- if not enable_mark_range then
+      --   return
+      -- end
       local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
       if buftype ~= "" then
         return
@@ -173,7 +173,15 @@ function M.setup(opts)
       end
       if M.autoMarkRange then
         -- print("Leave", vim.v.event.old_mode, vim.v.event.new_mode) -- v, n -- V, n
-        vim.api.nvim_input("m>")
+        -- vim.cmd("normal! m>") -- 用這個變成不會觸發到自定義的keymap
+        -- vim.api.nvim_input("m>") -- 這可能會照成誤輸入到m>的情況發生，要額外去寫這些判斷很麻煩
+
+        -- 已知bug, 如果是下反白到上時的位置是顛倒的
+        local sd = require("config.sign_define")
+        local sign_id = vim.api.nvim_create_namespace(sd.group .. "_>")
+        local line = vim.api.nvim_win_get_cursor(0)[1]
+        vim.fn.sign_unplace(sd.group, { buffer = vim.fn.bufnr(), id = sign_id })
+        vim.fn.sign_place(sign_id, sd.group, "MarkPin>", vim.fn.bufnr(), { lnum = line })
       end
     end,
     desc = "VisualLeave 標記結束選取的位置"
