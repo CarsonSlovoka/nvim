@@ -244,6 +244,8 @@ function M.setup(opts)
         "*.otf", -- 🧙 如果其它的autocmd有用到，要清除它，不然會被影響無法觸發
       },
       callback = function()
+        vim.bo.filetype = "opentype" -- 也將原本的ttf, otf的filetype做更改
+
         -- 確保執行檔存在
         -- otparser.exe: https://github.com/CarsonSlovoka/otparser.nvim/blob/28c84b9320725582290a56d7c4af06c998d5495a/main.go#L59-L79
         if vim.fn.executable("otparser") == 0 then
@@ -276,8 +278,8 @@ function M.setup(opts)
 
         -- local output = vim.fn.system("otparser " .. vim.fn.shellescape(curFile)) -- 也行，但是建議用vim.system更明確
         --- @type table
-        local r = vim.system({ "otparser", fontPath }):wait() -- 可行，但是一次讀入對記憶體的要求較高，在windows上可能會遇到記憶體上的問題
-        if r.code ~= 0 then                                   -- 用回傳的code來當是否有錯的基準
+        local r = vim.system({ "otparser", fontPath }):wait()
+        if r.code ~= 0 then -- 用回傳的code來當是否有錯的基準
           vim.notify(string.format("❌ otparser error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
           return
         end
