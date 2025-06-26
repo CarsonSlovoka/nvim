@@ -1,12 +1,12 @@
-require("dap").adapters.ttx = {
-  type = 'executable',
-  command = "echo",   -- 找一個不重要的指令, 為了通過require("dap")而已 -- 這個工具在 Linux / macOS / Windows shell 都有
-}
+-- require("dap").adapters.custome = {
+--   type = 'executable',
+--   command = "echo", -- 找一個不重要的指令, 為了通過require("dap")而已 -- 這個工具在 Linux / macOS / Windows shell 都有
+-- }
 
 require("dap").configurations.opentype = {
   {
     name = "convert to fontTools:ttx format",
-    type = "ttx",
+    type = "custom",
     request = "launch",
 
     program = function()
@@ -14,7 +14,7 @@ require("dap").configurations.opentype = {
         return
       end
 
-      local fontpath = vim.fn.expand("%:p")   -- 獲取當前檔案的完整路徑
+      local fontpath = vim.fn.expand("%:p") -- 獲取當前檔案的完整路徑
 
       -- 因為已經是確定filetype是自定的opentype所以就不做附檔名的判斷了
       -- local ext = vim.fn.expand("%:e"):lower() -- 獲取副檔名（小寫）

@@ -111,6 +111,8 @@ function options.setup()
       strings = "strings",
       gotmpl = "gotmpl",
       gohtml = "gotmpl",
+
+      ttx = "ttx",
     }
   })
 
