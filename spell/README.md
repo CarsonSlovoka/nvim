@@ -30,5 +30,6 @@
 :set runtimepath -- 查看
 :mkspell ~/myProject/spell/qoo ~/myProject/spell/qoo.wordlist
 set spell spelllang=qoo
+-- set spell spelllang=zh,en -- 💡 spelllang 也可以設定多個
 ```
 
