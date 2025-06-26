@@ -558,7 +558,10 @@ function M.setup(opts)
     "FileType", -- 不是檔案的附檔名，要用 :set filetype 查看才是準的
     {
       group = groupName.editorconfig,
-      pattern = { "md", "yml", "yaml", "json", "json5", "js", "javascript", "gs", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
+      pattern = {
+        "md", "yml", "yaml", "json", "json5",
+        "js", "javascript", "xml", "ttx",
+        "gs", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
       callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2
