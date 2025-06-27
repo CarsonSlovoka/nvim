@@ -264,12 +264,6 @@ function M.setup(opts)
       },
       callback = function()
         vim.bo.filetype = "opentype" -- 也將原本的ttf, otf的filetype做更改
-
-        -- 確保執行檔存在
-        -- otparser.exe: https://github.com/CarsonSlovoka/otparser.nvim/blob/28c84b9320725582290a56d7c4af06c998d5495a/main.go#L59-L79
-        if vim.fn.executable("otparser") == 0 then
-          return
-        end
       end
     }
   )
