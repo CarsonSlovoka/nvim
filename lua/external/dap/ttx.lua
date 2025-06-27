@@ -8,6 +8,14 @@ require("dap").configurations.ttx = {
       if vim.fn.executable("ttx") == 0 then
         return
       end
+
+      if vim.bo.readonly then
+        -- 代表當前的buffer可能經過修改而且是**還沒有儲檔**
+        -- 如果以這種狀態去做，看的還是之前的未修改前的檔案內容，出來的就會不如遇期
+        vim.notify("當前的狀態為readonly, 請考慮另儲新檔( :w xxx.ttx | e xxx.ttx )後再次執行")
+        return
+      end
+
       local ttxPath = vim.fn.expand("%:p")
       local outputPath = vim.fn.input("output filepath: ")
       -- if outputPath == "" then
@@ -19,6 +27,7 @@ require("dap").configurations.ttx = {
         cmd = { "ttx", ttxPath, "-o", outputPath }
       else
         cmd = { "ttx", ttxPath } -- 預設輸出的檔名與ttx的名稱相同，附檔名則會依據內容自動調整
+        -- 如果檔案名稱已經存儲, ttx會自動加上流水號
       end
       local r = vim.system(cmd):wait()
       if r.code ~= 0 then
