@@ -289,6 +289,16 @@ local function program_ots_perf()
   )
 end
 
+local function program_ots_batch_run()
+  local org_tab = vim.api.nvim_get_current_tabpage()
+  program_ots_sanitize()
+  vim.api.nvim_set_current_tabpage(org_tab)
+  program_ots_idempotent()
+  vim.api.nvim_set_current_tabpage(org_tab)
+  program_ots_validator()
+  vim.api.nvim_set_current_tabpage(org_tab)
+end
+
 require("dap").configurations.opentype = {
   {
     name = "otparser",
@@ -332,5 +342,11 @@ require("dap").configurations.opentype = {
     type = "custom",
     request = "launch",
     program = program_ots_perf,
+  },
+  {
+    name = "ots batch run: {sanitize, idempotent, validator}",
+    type = "custom",
+    request = "launch",
+    program = program_ots_batch_run,
   },
 }
