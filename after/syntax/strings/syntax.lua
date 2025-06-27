@@ -103,7 +103,7 @@ vim.api.nvim_set_hl(0, 'stringsLine', {
   fg = "#aaaaaa",
   -- bg = "#112233"
 })
-vim.api.nvim_set_hl(0, 'stringsErrorLine', { bg = "#ff0000" })
+vim.api.nvim_set_hl(0, 'stringsErrorLine', { bg = "#ff0000", strikethrough = true })
 
 
 vim.api.nvim_set_hl(0, 'stringsTodo', { fg = "#33ff00" })
