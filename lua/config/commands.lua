@@ -156,44 +156,43 @@ function commands.setup()
       local para = utils.flag.parse(args.args)
       local direction = para.opts["direction"] or "sp"
 
+      -- local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 }) -- 這個對No Name也是一樣為空白, 用這判斷不準
 
       -- 獲取當前文件
       local filepath = para.params[1] or vim.fn.expand('%:p') -- 當前文件的完整路徑
-      if filepath == '' then
-        print("No file in the current buffer!")               -- 提示用戶當前緩存沒文件
-        return
-      end
 
-      filepath = vim.fn.expand(filepath) -- 處理自輸入可能用~的清況
-      local exists = vim.uv.fs_stat(filepath)
-      if not exists then
-        vim.notify("invalid work dir: " .. filepath, vim.log.levels.ERROR)
-        return
-      end
-
-      local cwd
-      if vim.fn.isdirectory(filepath) == 1 then
-        cwd = filepath                           -- 如果是目錄，直接設為 cwd
-      else
-        cwd = vim.fn.fnamemodify(filepath, ":h") -- 獲取檔案的目錄作為 cwd
-      end
       local cmds = {}
       if args.range ~= 0 then
         cmds = utils.range.get_selected_text()
       end
-      -- if args.range ~= 0 then
-      --   vim.cmd('normal! y') -- 沒用
-      -- end
-      vim.cmd(string.format('cd %s | %s | terminal', cwd, direction))
-      -- if args.range ~= 0 then
-      --   vim.cmd(':pu=@"')
-      -- end
-      vim.cmd('startinsert') -- 自動切換到 Insert 模式
-      if args.range ~= 0 then
-        for _, line in ipairs(cmds) do
-          -- vim.api.nvim_input(line .. "<ESC>")
-          vim.api.nvim_input(line .. "<CR>")
+
+      while 1 do
+        if filepath == '' then
+          vim.cmd("split | term")
+          break
         end
+
+        filepath = vim.fn.expand(filepath) -- 處理自輸入可能用~的清況
+        local exists = vim.uv.fs_stat(filepath)
+        if not exists then
+          vim.notify("invalid work dir: " .. filepath, vim.log.levels.ERROR)
+          return
+        end
+
+        local cwd
+        if vim.fn.isdirectory(filepath) == 1 then
+          cwd = filepath                           -- 如果是目錄，直接設為 cwd
+        else
+          cwd = vim.fn.fnamemodify(filepath, ":h") -- 獲取檔案的目錄作為 cwd
+        end
+        vim.cmd(string.format('cd %s | %s | terminal', cwd, direction))
+        break
+      end
+
+      vim.cmd('startinsert') -- 自動切換到 Insert 模式
+      for _, line in ipairs(cmds) do
+        -- vim.api.nvim_input(line .. "<ESC>")
+        vim.api.nvim_input(line .. "<CR>")
       end
     end,
     {
