@@ -70,7 +70,7 @@ vim.cmd([[
 
 -- 如果沒有用oneline，那麼end的;可能會批配到其它的列的; 就會導致這些列的範圍都會被當成stringsLine
 vim.cmd([[
-  syn region stringsLine display oneline start=/"[^0-9 \t]\+"\s*=\s*".*"/ end=/;/ contains=stringsKey,stringsEqual,stringsValue
+  syn region stringsLine display oneline start=/"[^0-9 \t]\+.*"\s*=\s*".*"/ end=/;/ contains=stringsKey,stringsEqual,stringsValue
 ]])
 -- vim.cmd([[
 --   syn match stringsComment contained display '[="]\+'
