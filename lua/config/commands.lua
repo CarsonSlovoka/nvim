@@ -177,11 +177,28 @@ function commands.setup()
       else
         cwd = vim.fn.fnamemodify(filepath, ":h") -- 獲取檔案的目錄作為 cwd
       end
+      local cmds = {}
+      if args.range ~= 0 then
+        cmds = utils.range.get_selected_text()
+      end
+      -- if args.range ~= 0 then
+      --   vim.cmd('normal! y') -- 沒用
+      -- end
       vim.cmd(string.format('cd %s | %s | terminal', cwd, direction))
+      -- if args.range ~= 0 then
+      --   vim.cmd(':pu=@"')
+      -- end
       vim.cmd('startinsert') -- 自動切換到 Insert 模式
+      if args.range ~= 0 then
+        for _, line in ipairs(cmds) do
+          -- vim.api.nvim_input(line .. "<ESC>")
+          vim.api.nvim_input(line .. "<CR>")
+        end
+      end
     end,
     {
       nargs = "*",
+      range = true,
       complete = function(arg_lead)
         if arg_lead:match("^%-%-") then
           return utils.cmd.get_complete_list(arg_lead, {
