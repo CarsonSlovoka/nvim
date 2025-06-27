@@ -32,5 +32,10 @@ require("dap").configurations.ttx = {
       end
       return ""
     end
-  }
+  },
+  { -- 加入這個項目只是為了不要只有一個項目(當只有一個項目時，就會直接執行該項目，所以會看不到標題)
+    name = "todo",
+    type = "custom",
+    request = "launch",
+  },
 }
