@@ -52,7 +52,8 @@ local function show_run_result(exe_name, param, ok_lines, opts)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 
   for _, cmd in ipairs(opts.cmds) do
-    -- vim.cmd([[call matchadd('@label', '\v^\w*:')]]) -- 這樣的壞處是它是全域都有效的，不能指定buffer, 不過可以透過 :call clearmatches() 來全部清除
+    -- vim.cmd([[call matchadd('@label', '\v^\w*:')]]) -- 預設的作用域是當前的window, 不過可以透過 :call clearmatches() 來全部清除
+    -- vim.cmd([[call matchadd('@label', '\v\w*:', 10, -1, {'window': 1013})]]) -- 可以透過這種方式指定成其它的window
     vim.cmd(cmd)
   end
   vim.cmd(string.format([[call matchadd('MiniIconsOrange', '%s')]], exe_name))
