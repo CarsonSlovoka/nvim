@@ -3130,6 +3130,21 @@ function commands.setup()
       end
     }
   )
+  vim.api.nvim_create_user_command("NewTmp",
+    function(args)
+      -- buftype=nofile 可以寫入但不能儲檔
+      local bufname = args.fargs[1] or nil
+      -- vim.cmd(":enew | setlocal bufhidden=wipe buftype=nofile nobuflisted noswapfile")
+      vim.cmd(":enew | setlocal buftype=nofile noswapfile")
+      if bufname then
+        vim.cmd("file " .. bufname)
+      end
+    end,
+    {
+      desc = ":enew | setlocal buftype=nofile noswapfile",
+      nargs = "?",
+    }
+  )
 end
 
 return commands
