@@ -57,6 +57,7 @@ local function show_run_result(exe_name, param, ok_lines, opts)
     vim.cmd(cmd)
   end
   vim.cmd(string.format([[call matchadd('MiniIconsOrange', '%s')]], exe_name))
+  vim.cmd("file " .. exe_name) -- 設定為有意義的名稱，不要使用No Name
 end
 
 local function program_otparser()
