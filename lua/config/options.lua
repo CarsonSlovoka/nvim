@@ -14,7 +14,13 @@ end
 -- g: global
 -- t: tab     書架 一個tab可以有許多buffer
 -- b: buffer  書      :e 或者 :Telescope buffers 的跳轉都是再換buffer
--- w: window  第幾頁. :split 等相關都可以從該buffer之中再分離出window
+--    :lua print(vim.api.nvim_get_current_buf())
+--    💡用 :ls 其實就能看到bufferID了
+-- w: window  第幾頁. :split 等相關都可以從該buffer之中再分離出window, 拆分出來的是不同windowID
+--   🧙 不同的buffer是可能對應到相同的windowsID, 例如用 :e 去開啟編輯其它文件，也是相同的winID
+--   以下兩個方法都可以查詢windowID
+--   :echo win_getid()
+--   :lua print(vim.api.nvim_get_current_win())
 
 function options.setup()
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
