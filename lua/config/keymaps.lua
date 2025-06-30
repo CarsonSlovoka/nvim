@@ -26,6 +26,21 @@ map("n", "<leader><leader>t",
   function() vim.cmd("cd %:h | sp | term") end,
   { desc = "cd %:h | sp | term" } -- 類似於:Term
 )
+map("n", "<leader>git",
+  function()
+    if vim.fn.executable("lazygit") == 0 then
+      vim.notify("lazygit not found. go install github.com/jesseduffield/lazygit@latest", vim.log.levels.WARN)
+      return
+    end
+    -- vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term lazygit") -- 可行，但是lazygit退出後也不能繼續使用terminal, 並且這樣的方式不是insert是在normal
+
+    vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term")
+    vim.cmd("startinsert")
+    vim.api.nvim_input("echo 'git branch --unset-upstream'<CR>") -- 新增一些可能會用到的提示
+    vim.api.nvim_input("lazygit<CR>")
+  end,
+  { desc = "cd %:h | tabnew | setlocal buftype=nofile | term lazygit" }
+)
 
 map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
