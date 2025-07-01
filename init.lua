@@ -154,6 +154,8 @@ local function install_nvimTreesitter()
 
       "markdown", "markdown_inline",
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
+
+      "dart",
     },
     sync_install = false,
     auto_install = false,
