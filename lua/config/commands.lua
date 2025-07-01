@@ -2782,7 +2782,10 @@ function commands.setup()
               return hl:lower():find(arg_lead:lower(), 1, true) == 1
             end, hl_groups)
           end
-          return hl_groups
+          return {
+            "#ff0000_#ffff00",
+            unpack(hl_groups),
+          }
         end
 
         if argc == 2 then
