@@ -1864,6 +1864,20 @@ local function install_flutter_tools()
   }
 end
 
+local function install_ccc()
+  -- -- vim.opt.termguicolors = true
+
+  local ccc = require("ccc")
+  -- local mapping = ccc.mapping
+
+  ccc.setup({
+    highlighter = {
+      auto_enable = true,
+      lsp = true,
+    },
+  })
+end
+
 local installs = {
   {
     name = "registers",
@@ -2120,12 +2134,13 @@ local installs = {
     end,
     delay = 5
   },
-  { name = "lualine",        fn = install_lualine,        delay = 0 },
+  { name = "lualine",           fn = install_lualine,        delay = 0 },
   -- { name = "atq",            fn = install_atq,            delay = 0 }, -- 可以用command: NotifySend 即可
-  { name = "renderMarkdown", fn = install_renderMarkdown, delay = 0 },
-  { name = "cmp_list",       fn = install_cmp_list,       delay = 0 },
-  { name = "nvim_dap",       fn = install_nvim_dap,       delay = 5 },
-  { name = "flutter_tools",  fn = install_flutter_tools,  delay = 5 },
+  { name = "renderMarkdown",    fn = install_renderMarkdown, delay = 0 },
+  { name = "cmp_list",          fn = install_cmp_list,       delay = 0 },
+  { name = "nvim_dap",          fn = install_nvim_dap,       delay = 5 },
+  { name = "flutter_tools",     fn = install_flutter_tools,  delay = 5 },
+  { name = "create color code", fn = install_ccc,            delay = 0 },
   {
     name = "global-func",
     fn = function()

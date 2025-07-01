@@ -79,3 +79,7 @@
 [submodule "sql/sqls.nvim"]
     path = pack/sql/start/sqls.nvim
     url = https://github.com/nanotee/sqls.nvim.git
+
+[submodule "tools/ccc.nvim"]
+    path = pack/tools/start/ccc.nvim
+    url = https://github.com/uga-rosa/ccc.nvim.git

@@ -170,6 +170,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── one-small-step-for-vimkind    -- ✅ debug adapter: lua ( 330049a )
 │   │         └── nvim-dap-go                   -- ✅ debug adapter: go ( 8763ced )
 │   │
+│   ├── tools/start/
+│   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
+│   │
 │   ├── sql/start/                   -- ✅ sql相關
 │   │         └── sqls.nvim          -- ( d1bc542 )
 │   │
@@ -904,6 +907,32 @@ mkdir -pv ~/.config/nvim/pack/sql/start/
 git clone https://github.com/nanotee/sqls.nvim.git ~/.config/nvim/pack/sql/start/sqls.nvim
 ```
 
+
+## tools
+
+```sh
+mkdir -pv ~/.config/nvim/pack/tools/start/
+```
+
+### [ccc.nvim](https://github.com/uga-rosa/ccc.nvim)
+
+```
+git clone https://github.com/uga-rosa/ccc.nvim.git ~/.config/nvim/pack/tools/start/ccc.nvim
+```
+
+- `:CccConvert` 在選取的色彩文字上使用, 可以做轉換
+
+    ```
+    #ff00ff
+    ```
+
+- `:CccPick`
+    - i 切換不同的色彩模式
+    - h,j,k,l移動
+    - a 新增alpha通道
+    - 0, 1, ... 9: 設定該數值所佔的比率
+    - → 該數值加1
+    - ← 減1
 
 # [neovide](https://github.com/neovide/neovide)
 
