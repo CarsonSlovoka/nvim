@@ -456,9 +456,21 @@ function M.setup(opts)
     {
       group = groupName.editorconfig,
       pattern = {
-        "md", "yml", "yaml", "json", "json5",
-        "js", "javascript", "xml", "ttx",
-        "gs", "mjs", "ts", "mts", "css", "html", "gohtml", "gotmpl", "toml", "scss", "sass", "xml", "lua", "vue", "sh" },
+        "md",
+        "yml", "yaml",
+        "json", "json5",
+        "toml",
+        "xml", "ttx",
+        "gs",
+        "gohtml", "gotmpl",
+        "html",
+        "js", "javascript", "mjs", "ts", "mts",
+        "css", "scss", "sass",
+        "lua",
+        "vue",
+        "sh",
+        "dart",
+      },
       callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2
