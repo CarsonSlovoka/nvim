@@ -926,13 +926,13 @@ git clone https://github.com/uga-rosa/ccc.nvim.git ~/.config/nvim/pack/tools/sta
     #ff00ff
     ```
 
-- `:CccPick`
+- `:CccPick` 如果在使用此command的文字上符合色彩的定義(rgb, #ffffff, hsl)則預設會用該色彩去呈現
     - i 切換不同的色彩模式
-    - h,j,k,l移動
+    - j, k 往下, 往上移動
+    - l 該數值加1
+    - h 減1
     - a 新增alpha通道
     - 0, 1, ... 9: 設定該數值所佔的比率
-    - → 該數值加1
-    - ← 減1
 
 # [neovide](https://github.com/neovide/neovide)
 
