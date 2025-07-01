@@ -268,70 +268,80 @@ function M.setup(opts)
     }
   )
 
-  -- 自定義命名空間（用於高亮
-  vim.g.highlight_spy = "bg" -- fg, all, #00ff00
-  local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
-  create_autocmd({
-    "BufEnter", "TextChanged", "TextChangedI",
-    -- "InsertLeave",
-  }, {
-    desc = '將文字 #RRGGBB 給予顏色. 例如: #ff0000  #00ff00 #0000ff. :let g:highlight_spy="" :e', -- 當調整完後可以用:e來刷新
-    pattern = "*",
-    group = groupName.highlightHexColor,
-    callback = function()
-      local buf = vim.api.nvim_get_current_buf()
-      local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  if not pcall(require, "ccc") then
+    -- ccc 插件已經有類似的功能就不再重覆 (而且它連前景色也會考慮，也就是會自動搭配合適的前景色)
 
-      -- 清空之前的高亮（避免重複）
-      -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1) -- 這會清除所有，可能會勿清
-      vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1) -- 清理還是需要的，不然刪除後再打上其它內容還是會有突顯
+    -- 如果想要前景，背景搭配一起看可以考慮使用以下方法
+    -- :lua vim.api.nvim_set_hl(0, "@Qoo123", { fg = "#ff00ff", bg = "#00ff00" })
+    -- :call matchadd('@Qoo123', 'TEST_COLOR')
+    -- 也可以用 :'<,'>Highlight #ff00ff_#00ff00
 
-      -- 遍歷每一行
-      for lnum, line in ipairs(lines) do
-        -- 匹配 #RRGGBB
-        for color in line:gmatch('#%x%x%x%x%x%x') do
-          -- 找到顏色代碼的起始和結束位置
-          local start_col = line:find(color, 1, true) - 1
-          local end_col = start_col + #color
+    -- 自定義命名空間（用於高亮
+    vim.g.highlight_spy = "bg" -- fg, all, #00ff00
+    local ns_highlight_hex_or_rgb = vim.api.nvim_create_namespace('carson_color_highlights')
+    create_autocmd({
+      "BufEnter", "TextChanged", "TextChangedI",
+      -- "InsertLeave",
+    }, {
+      desc = '將文字 #RRGGBB 給予顏色. 例如: #ff0000  #00ff00 #0000ff. :let g:highlight_spy="" :e', -- 當調整完後可以用:e來刷新
+      pattern = "*",
+      group = groupName.highlightHexColor,
+      callback = function()
+        local buf = vim.api.nvim_get_current_buf()
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 
-          -- 動態創建高亮組，背景色設為該顏色
-          local hl_group = 'Color_' .. color:sub(2) -- 去掉 # 作為高亮組名
-          if vim.g.highlight_spy == "bg" then
-            vim.api.nvim_set_hl(0, hl_group, { bg = color })
-          elseif vim.g.highlight_spy == "fg" then
-            vim.api.nvim_set_hl(0, hl_group, { fg = color })
-          elseif vim.g.highlight_spy == "all" then
-            vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = color })
-          elseif vim.g.highlight_spy:match("#%x%x%x%x%x%x") then -- 將其視為fg的顏色
-            vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = vim.g.highlight_spy })
+        -- 清空之前的高亮（避免重複）
+        -- vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1) -- 這會清除所有，可能會勿清
+        vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1) -- 清理還是需要的，不然刪除後再打上其它內容還是會有突顯
+
+        -- 遍歷每一行
+        for lnum, line in ipairs(lines) do
+          -- 匹配 #RRGGBB
+          for color in line:gmatch('#%x%x%x%x%x%x') do
+            -- 找到顏色代碼的起始和結束位置
+            local start_col = line:find(color, 1, true) - 1
+            local end_col = start_col + #color
+
+            -- 動態創建高亮組，背景色設為該顏色
+            local hl_group = 'Color_' .. color:sub(2) -- 去掉 # 作為高亮組名
+            if vim.g.highlight_spy == "bg" then
+              vim.api.nvim_set_hl(0, hl_group, { bg = color })
+            elseif vim.g.highlight_spy == "fg" then
+              vim.api.nvim_set_hl(0, hl_group, { fg = color })
+            elseif vim.g.highlight_spy == "all" then
+              vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = color })
+            elseif vim.g.highlight_spy:match("#%x%x%x%x%x%x") then -- 將其視為fg的顏色
+              vim.api.nvim_set_hl(0, hl_group, { bg = color, fg = vim.g.highlight_spy })
+            end
+
+
+            -- 應用高亮到緩衝區
+            -- vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col) -- DEPRECATED IN 0.11 https://neovim.io/doc/user/deprecated.html
+            vim.api.nvim_buf_set_extmark(buf, ns_highlight_hex_or_rgb, lnum - 1, start_col,
+              {
+                end_col = end_col,
+                hl_group = hl_group,
+              }
+            )
           end
-
-
-          -- 應用高亮到緩衝區
-          -- vim.api.nvim_buf_add_highlight(buf, ns_highlight_hex_or_rgb, hl_group, lnum - 1, start_col, end_col) -- DEPRECATED IN 0.11 https://neovim.io/doc/user/deprecated.html
-          vim.api.nvim_buf_set_extmark(buf, ns_highlight_hex_or_rgb, lnum - 1, start_col,
-            {
-              end_col = end_col,
-              hl_group = hl_group,
-            }
-          )
         end
-      end
-    end,
-  })
+      end,
+    })
 
-  --[[ 我是覺得不必要清除，就算在insert下顯示也不是什麼壞事
-  -- 進入插入模式時只清除 color_highlights 命名空間的高亮
-  vim.api.nvim_create_autocmd("InsertEnter", {
-    desc = '插入模式下取消hex的顏色突顯',
-    pattern = "*",
-    group = groupName.highlightHexColor,
-    callback = function()
-      local buf = vim.api.nvim_get_current_buf()
-      vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1)
-    end,
-  })
-  --]]
+    --[[ 我是覺得不必要清除，就算在insert下顯示也不是什麼壞事
+    -- 進入插入模式時只清除 color_highlights 命名空間的高亮
+      vim.api.nvim_create_autocmd("InsertEnter", {
+        desc = '插入模式下取消hex的顏色突顯',
+        pattern = "*",
+        group = groupName.highlightHexColor,
+        callback = function()
+          local buf = vim.api.nvim_get_current_buf()
+          vim.api.nvim_buf_clear_namespace(buf, ns_highlight_hex_or_rgb, 0, -1)
+        end,
+      })
+    --]]
+  end
+
 
 
   -- trim_trailing_whitespace
