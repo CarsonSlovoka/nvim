@@ -509,6 +509,29 @@ function M.setup(opts)
     }
   )
 
+  create_autocmd(
+    {
+      -- 如果不曉得是哪一個可以先用 "BufRead", "BufNewFile" 來觀察
+      -- BufReadPost   -- 讀完了, 用這個也不對
+      "Syntax"
+    },
+    {
+      group = groupName.conceal,
+      -- pattern = { -- 用在FileType事件有用，其它的用e去篩選
+      --   "json", "jsonc"
+      -- },
+      callback = function(e)
+        -- print(vim.inspect(e))
+        local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
+        if ext ~= "json" and ext ~= "jsonc" then
+          return
+        end
+        vim.cmd([[syntax match jsonEndCommon /,$/ conceal]]) -- 將結尾的,隱藏
+      end,
+      desc = "conceal ,$ for filetype={json, jsonc}"
+    }
+  )
+
   create_autocmd("TermOpen",
     {
       callback = function()
