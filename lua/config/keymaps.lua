@@ -37,9 +37,9 @@ map("n", "<leader>git",
     vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term")
     vim.cmd("startinsert")
     vim.api.nvim_input("echo 'git branch --unset-upstream'<CR>") -- 新增一些可能會用到的提示
-    vim.api.nvim_input("lazygit<CR>")
+    vim.api.nvim_input("lazygit --screen-mode half<CR>")
   end,
-  { desc = "cd %:h | tabnew | setlocal buftype=nofile | term lazygit" }
+  { desc = "cd %:h | tabnew | setlocal buftype=nofile | term lazygit -sm half" }
 )
 
 map("n", "<leader>ql", function()
