@@ -141,6 +141,9 @@ local function install_nvimTreesitter()
   -- end
 
 
+  -- 💡 如果只是要syntax的突顯，預設nvim就已經有很多種格式，不再需要特別安裝: https://github.com/neovim/neovim/tree/af6b3d6/runtime/syntax
+  -- 💡 如果是markdown的codeblock要有突顯，才需要考慮 nvim-treesitter.parsers 安裝, 因為它會有多定義出來的highlight
+  -- 💡 已存在的第三方parser參考: https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L69-L2764
   m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
       -- :TSModuleInfo 也可以找有哪些內容能裝
@@ -151,6 +154,11 @@ local function install_nvimTreesitter()
       "gotmpl", -- https://github.com/ngalaiko/tree-sitter-go-template -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L896-L902
 
       -- "ttx",
+
+      -- vscode-json-language-server 就有json, jsonc的lsp, 不過沒有json5的lsp
+      "json",  -- 為了md上的codeblock突顯
+      "jsonc", -- 高亮可以 https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L1212-L1220
+      -- "json5", -- 覺得它的高亮不好，並且也沒有lsp的支持 -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L1204-L1210
 
       "markdown", "markdown_inline",
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
