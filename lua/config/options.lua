@@ -194,6 +194,22 @@ function options.setup()
   -- vim.opt.qftf = function(info) end -- 要改字串才行(此字串為一個function的名稱)
   vim.o.quickfixtextfunc = "{info -> v:lua._G.qftf(info)}"
 
+
+  -- conceal 分兩種
+  -- 1. 隱藏: syntax match MyName /regex/ conceal 這種方式是藏起來
+  -- 2. 替代: 例如使用 vim.api.nvim_buf_set_extmark 之中的可選項使用conceal = conceal_char 此時用該char(只能是1個char)取代指定的區域
+
+  -- conceallevel
+  -- 0 能真的看到原始文件內容. 也就是所有conceal的項目都無效, 包含 nvim_buf_set_extmark 的取代都無效
+  -- 1 隱藏, 替代皆有效, 隱藏的內容其位置: 保留
+  -- 2 隱藏, 替代皆有效, 隱藏的內容其位置: 不保留
+  -- 3 隱藏, 替代皆無效, 隱藏的內容其位置: 不保留. 即: 完全隱藏 (對syn-cchar的對像也隱藏, 即: nvim_buf_set_extmark 的內容無效)
+  vim.opt_local.conceallevel = 2
+  -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
+  vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
+
+
+
   custom_global_options()
 end
 

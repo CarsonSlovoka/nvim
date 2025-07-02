@@ -14,9 +14,7 @@ function M.set_conceal(id, config)
       return -- 不設定任何的conceal，而因為前面已經clear_namespace，所以之前如果已經有加的項目也會被解開
     end
 
-    vim.opt_local.conceallevel = 2 -- 0 正常顯示 3 完全隱藏
-    -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
-    -- vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
+    -- vim.opt_local.conceallevel = 2 -- 不要在這邊改變，因為這種屬於一次性的調整，不需要每次都調，所以讓使用者自行決定
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for lnum, line in ipairs(lines) do
@@ -80,9 +78,6 @@ function M.set_conceal_with_replacements(id, config)
     if vim.fn.mode() ~= "n" then
       return
     end
-
-    vim.opt_local.conceallevel = 2
-    -- vim.opt_local.concealcursor = ""
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for lnum, line in ipairs(lines) do
