@@ -1,3 +1,9 @@
+-- 用的是 vim.api.nvim_set_hl(0, ...) 當ns_id為0指的是global的設定，因此只需要做一次，不需要每次開啟此filetype文件都動作
+
+if vim.g.ftplugin_markdown_highlight_init_done then
+  return
+end
+
 -- 以下兩個沒用
 -- :echo synIDattr(synID(line("."), col("."), 1), "name")
 -- :lua print(vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1))
@@ -32,3 +38,5 @@ vim.api.nvim_set_hl(0, 'RenderMarkdownCode', { bg = "#292a2d" })
 vim.api.nvim_set_hl(0, 'RenderMarkdownH1Bg', { fg = "#ffffff", bg = "#08b416" })
 vim.api.nvim_set_hl(0, 'RenderMarkdownH2Bg', { fg = "#000000", bg = "#b49b1f", })
 vim.api.nvim_set_hl(0, 'RenderMarkdownH3Bg', { bg = "#2f9cb4", })
+
+vim.g.ftplugin_markdown_highlight_init_done = true

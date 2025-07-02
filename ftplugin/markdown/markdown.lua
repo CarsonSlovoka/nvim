@@ -1,6 +1,11 @@
+if vim.b.ftplugin_markdown_markdown_init then
+  return
+end
+
 local ok, _ = pcall(require, "telescope")
 if ok then
   -- 使用telescop代替
+  vim.b.ftplugin_markdown_markdown_init = true
   return
 end
 
@@ -98,3 +103,5 @@ end
 
 -- 熱鍵綁定
 vim.keymap.set("n", "<leader>wt", show_toc_window, { noremap = true, silent = true })
+
+vim.b.ftplugin_markdown_markdown_init = true

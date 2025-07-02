@@ -1,4 +1,10 @@
+if vim.b.ftplugin_markdown_telescope_markdown_init then
+  return
+end
+
 local M = {}
+
+-- print(os.date("%Y%m%d_%H%M%S"))
 
 M.config = {
   preview_number_lines = 10
@@ -143,6 +149,6 @@ function M.show_toc_with_telescope()
   }):find()
 end
 
-vim.keymap.set("n", "<leader>wt", M.show_toc_with_telescope, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>wt", M.show_toc_with_telescope, { noremap = true, silent = true, buffer = 0 })
 
--- return M
+vim.b.ftplugin_markdown_telescope_markdown_init = true

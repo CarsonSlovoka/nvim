@@ -1,9 +1,4 @@
---[[ 加了會無法觸發熱鍵
-if vim.b.did_ftplugin_markdown then
-    return
-end
-vim.b.did_ftplugin_markdown = true
---]]
+-- 由於keympa.buffer 設定為當前，所以每次buffer有更新都需要重新觸發，不然熱鍵會失效
 
 -- 快捷鍵映射
 -- local opts = { buffer = false } -- buffer預設為true，表示對所有項目都能生效
@@ -182,7 +177,7 @@ local function create_markdown_link()
 end
 
 -- Register the command
-vim.api.nvim_create_user_command('L', function()
+vim.api.nvim_buf_create_user_command(0, 'L', function()
   create_markdown_link()
 end, {
   desc = "(這個指令會有問題，如果頭或尾的unicode碼點換成utf8超過1byte會有問題) insert link. Usage :'<,'>L",
