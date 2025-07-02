@@ -3,6 +3,7 @@ local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
+local previewers = require "telescope.previewers"
 
 local M = {}
 
@@ -30,6 +31,14 @@ end
 ---@param callback function
 function M.get_file(opts, callback)
   opts = opts or {}
+  -- 確保預覽器啟用
+  opts.previewer = previewers.vim_buffer_cat.new(opts) -- 新增預覽視窗
+  -- opts.layout_config = {
+  --   width = 0.9,
+  --   height = 0.9,
+  --   preview_width = 0.5,     -- 預覽視窗佔一半寬度
+  --   prompt_position = "top", -- 提示列在頂部
+  -- }
   pickers.new(opts, {
     prompt_title = opts.title or "All Files in CWD",
     finder = finders.new_table {
