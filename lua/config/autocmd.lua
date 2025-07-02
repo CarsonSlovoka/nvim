@@ -458,7 +458,7 @@ function M.setup(opts)
       pattern = {
         "md",
         "yml", "yaml",
-        "json", "json5",
+        "json", "json5", "jsonc",
         "toml",
         "xml", "ttx",
         "gs",
@@ -622,6 +622,13 @@ function M.setup(opts)
   })
   --]]
 
+  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    pattern = "manifest.json",
+    callback = function()
+      -- vim.bo.filetype = "json5"
+      vim.bo.filetype = "jsonc"
+    end,
+  })
 
   if opts.callback then
     opts.callback(M)
