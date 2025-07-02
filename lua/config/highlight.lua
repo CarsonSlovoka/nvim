@@ -4,6 +4,7 @@ vim.api.nvim_set_hl(0, "@onbreakpoint", { bg = "#2a5091" })
 -- 當使用Inspect來查看json5Key它會顯示link to @Tag 這是因為@label也是link to @Tag
 -- 即 :Inspect 會顯示 link to 的原型
 vim.api.nvim_set_hl(0, "json5Key", { link = "@label" }) -- 用filetype=jsonc其實就用不太到這個
+vim.api.nvim_set_hl(0, "@property.jsonc", { link = "@tag" })
 
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }

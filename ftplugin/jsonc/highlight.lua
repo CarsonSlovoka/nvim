@@ -1,0 +1,5 @@
+-- 以下有效，而且可以做到只對該window，但是如此在markdown的code-block又會沒用，所以乾脆統一寫在global
+-- local win_id = vim.api.nvim_get_current_win()
+-- local ns_id = vim.api.nvim_create_namespace("jsonc_highlight_" .. win_id)
+-- vim.api.nvim_set_hl(ns_id, "@property.jsonc", { link = "@tag" })
+-- vim.api.nvim_win_set_hl_ns(win_id, ns_id)
