@@ -205,26 +205,35 @@ for i = 1, #strRegs do
   )
 end
 
-map('n', '<leader>gf',
+map({ 'n', 'v' }, '<leader>gf',
   function()
-    -- 記住當前光標位置
-    local original_pos = vim.api.nvim_win_get_cursor(0)
+    local mode = vim.fn.mode()
 
-    -- 移動到單詞開頭 (B) 和單詞結尾 (E)，提取範圍內的文字
-    local start_col = vim.fn.col('.')
-    if tonumber(start_col) ~= 1 then -- 如果是1，就不需要再使用B，這樣反而會跑到上一列去
-      vim.cmd("normal! B")           -- 移動到單詞開頭
-      start_col = vim.fn.col('.')
+    local selected_text = ""
+    if mode == "n" then
+      -- 記住當前光標位置
+      local original_pos = vim.api.nvim_win_get_cursor(0)
+
+      -- 移動到單詞開頭 (B) 和單詞結尾 (E)，提取範圍內的文字
+      local start_col = vim.fn.col('.')
+      if tonumber(start_col) ~= 1 then -- 如果是1，就不需要再使用B，這樣反而會跑到上一列去
+        vim.cmd("normal! B")           -- 移動到單詞開頭
+        start_col = vim.fn.col('.')
+      end
+      vim.cmd("normal! E") -- 移動到單詞結尾
+      local end_col = vim.fn.col('.')
+
+      -- 取得完單詞頭尾後就可以恢復原始光標位置
+      vim.api.nvim_win_set_cursor(0, original_pos)
+
+      local line = vim.api.nvim_get_current_line()
+      selected_text = line:sub(start_col, end_col)
+      -- selected_text = selected_text:gsub("[:|]+$", "") -- ../home/app.h:137: -- 避免有:或者|在最後面而產生干擾,  不過 home/app.h:137中文, 這種情況還是會有問題
+    else
+      -- 如果是用lazygit自定義輸出格式，也可以用選取的方式來跳轉到指定的地方
+      -- print("mode is v or V")
+      selected_text = utils.range.get_selected_text()[1]
     end
-    vim.cmd("normal! E") -- 移動到單詞結尾
-    local end_col = vim.fn.col('.')
-
-    -- 取得完單詞頭尾後就可以恢復原始光標位置
-    vim.api.nvim_win_set_cursor(0, original_pos)
-
-    local line = vim.api.nvim_get_current_line()
-    local selected_text = line:sub(start_col, end_col)
-    -- selected_text = selected_text:gsub("[:|]+$", "") -- ../home/app.h:137: -- 避免有:或者|在最後面而產生干擾,  不過 home/app.h:137中文, 這種情況還是會有問題
 
     -- local path, lnum, col = line:match("([^:]+):(%d+):(%d+)")
     -- local path, lnum, col = selected_text:match("([^|]+)[|:](%d+)[|:](%d+)") -- 讓|, :都可以當成分隔符，但是我想讓col可以不是必需的，所以用更複雜的方式寫
@@ -267,14 +276,14 @@ map('n', '<leader>gf',
         vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col or 1) - 1 })
       end
     else
-      vim.notify(string.format("無效的書籤格式:%s\npath:%s\nlnum:%s\n:%s",
+      vim.notify(string.format("無效的書籤格式或路徑不存在: %s\npath: %s\nlnum: %s\ncol: %s",
           selected_text, path, lnum, col),
         vim.log.levels.ERROR
       )
     end
   end,
   {
-    desc = "rg --vimgrep時可以做跳轉 或 適用於<leader>byN的產物"
+    desc = "rg --vimgrep時可以做跳轉 或 適用於<leader>byN的產物",
   }
 )
 
