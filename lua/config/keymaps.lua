@@ -34,7 +34,16 @@ map("n", "<leader>git",
     end
     -- vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term lazygit") -- 可行，但是lazygit退出後也不能繼續使用terminal, 並且這樣的方式不是insert是在normal
 
-    vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term")
+    vim.cmd("cd %:h") -- 先切換到當前該檔案的目錄
+
+    -- 找出它的git根目錄
+    local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+    if vim.v.shell_error ~= 0 then
+      vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+      return
+    end
+
+    vim.cmd(string.format("cd %s | tabnew | setlocal buftype=nofile | term", git_root))
     vim.cmd("startinsert")
     vim.api.nvim_input("echo 'git branch --unset-upstream'<CR>") -- 新增一些可能會用到的提示
     vim.api.nvim_input("lazygit --screen-mode half<CR>")
