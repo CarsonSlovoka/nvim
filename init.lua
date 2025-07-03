@@ -2185,4 +2185,3 @@ vim.defer_fn(function() -- 因為裡面要計算出，啟動nvim的時間，所�
 end, 0)
 
 pcall(require, "my-customize") -- 如果有一些自定義的設定，可以自己新增一個my-customize.lua來覆寫
--- require("external.telescope.picker_test")

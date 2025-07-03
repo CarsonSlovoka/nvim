@@ -55,6 +55,24 @@ for _, config in ipairs({
   {
     type = "python",
     request = 'launch',
+    name = "python3 <file from telescope>",
+    program = function() -- 可以回傳的型別: string, thread
+      -- return "${file}"         -- 保留字, 取當前檔案路徑
+      -- return "/home/xxx/my.py" -- 絕對路徑
+      return coroutine.create(function(dap_run_co)
+        local picker = require("external.telescope.picker")
+        picker.get_file(
+          { title = "python <file>: select input file:" },
+          function(select_item)
+            coroutine.resume(dap_run_co, select_item)
+          end
+        )
+      end)
+    end,
+  },
+  {
+    type = "python",
+    request = 'launch',
     name = "(linux) env:fontforge python3 <file> <args>",
     program = "${file}",
     args = require("dap-go").get_arguments,

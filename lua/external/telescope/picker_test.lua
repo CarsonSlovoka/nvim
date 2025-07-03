@@ -3,7 +3,7 @@ vim.api.nvim_create_user_command(
   function()
     local picker = require("external.telescope.picker")
     picker.get_file({ title = "Test" }, function(select_item)
-      print("aa ", select_item)
+      print("📄: ", select_item)
     end)
   end,
   { desc = "Test" }

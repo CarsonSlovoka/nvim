@@ -49,14 +49,13 @@ function M.get_file(opts, callback)
       actions.select_default:replace(function()
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
-        -- if selection then
-        --   print("Selected file: " .. selection[1])
-        -- end
-        callback(selection[1])
+        callback(selection and selection[1] or nil)
       end)
       return true
     end,
   }):find()
+
+  return true
 end
 
 return M
