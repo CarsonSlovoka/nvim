@@ -121,6 +121,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 ├── pack/                            -- 🔹 git rev-parse --short HEAD | wl-copy 🔹 git branch -v
 │   ├── syntax/start/
 │   │          ├── nvim-treesitter/             -- ✅ 語法高亮 (v0.9.3... 096babe)
+│   │          ├── nvim-treesitter-context      -- ✅ 頂端凍結函數名 (v1.0.0... 59f318a)
 │   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47)
 │   │
 │   ├── lsp/start/                   -- ✅ language server protocol
@@ -263,6 +264,12 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 ```yaml
 # 更新
 :TSUpdate
+```
+
+### [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context)
+
+```bash
+git clone https://github.com/nvim-treesitter/nvim-treesitter-context.git ~/.config/nvim/pack/syntax/start/nvim-treesitter-context
 ```
 
 

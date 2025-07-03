@@ -240,6 +240,28 @@ local function install_nvimTreesitter()
 end
 
 
+local function install_nvimTreesitterContext()
+  local status_ok, m = pcall(require, "treesitter-context")
+  if not status_ok then
+    return
+  end
+  m.setup {
+    enable = true,            -- Enable this plugin (Can be enabled/disabled later via commands): TSContext: enable, disable, toggle
+    multiwindow = false,      -- Enable multiwindow support.
+    max_lines = 0,            -- How many lines the window should span. Values <= 0 mean no limit.
+    min_window_height = 0,    -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+    line_numbers = true,
+    multiline_threshold = 20, -- Maximum number of lines to show for a single context
+    trim_scope = 'outer',     -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+    mode = 'cursor',          -- Line used to calculate context. Choices: 'cursor', 'topline'
+    -- Separator between context and content. Should be a single character string, like '-'.
+    -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+    separator = nil,
+    zindex = 20,     -- The Z-index of the context window
+    on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+  }
+end
+
 local function install_lspconfig()
   -- ⭐ 如果你的neovim是透過source來生成，那麼所有內建的lua都會被放到 /usr/share/nvim/runtime/lua 目錄下，例如:
   --        ~/neovim/runtime/lua/vim/lsp.lua  # 假設你的neovim是clone到家目錄下，那麼此lsp.lua由source建立完成之後，就會被放到以下的目錄
@@ -1941,9 +1963,10 @@ local installs = {
     end,
     delay = 0
   },
-  { name = "nvimTreesitter", fn = install_nvimTreesitter, delay = 0 },
+  { name = "nvimTreesitter",     fn = install_nvimTreesitter,        delay = 0 },
+  { name = "treesitter-context", fn = install_nvimTreesitterContext, delay = 0 },
 
-  { name = "lspconfig",      fn = install_lspconfig,      delay = 0 },
+  { name = "lspconfig",          fn = install_lspconfig,             delay = 0 },
   {
     name = "lspconfig pyright",
     fn = function()
