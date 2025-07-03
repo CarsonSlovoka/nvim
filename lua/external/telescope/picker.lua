@@ -57,6 +57,9 @@ function M.get_file(opts, callback)
       local lines = vim.fn.readfile(path, "", 100) -- 限制讀取前 100 行
       lines = sanitize_lines(lines)                -- 清理行內容, 避免某些二進位文件會有問題(該line有new line會讓nvim_buf_set_lines錯誤)
       vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+
+      local filetype = vim.filetype.match({ filename = path }) or "text"
+      vim.api.nvim_set_option_value('filetype', filetype, { buf = self.state.bufnr })
     end,
   })
 
