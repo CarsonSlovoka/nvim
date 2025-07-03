@@ -62,7 +62,12 @@ for _, config in ipairs({
       return coroutine.create(function(dap_run_co)
         local picker = require("external.telescope.picker")
         picker.get_file(
-          { title = "python <file>: select input file:" },
+          {
+            title = "python <file>: select input file:",
+            exts = {
+              "py"
+            }
+          },
           function(select_item)
             coroutine.resume(dap_run_co, select_item)
           end

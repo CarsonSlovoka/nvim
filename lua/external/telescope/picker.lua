@@ -7,7 +7,15 @@ local previewers = require "telescope.previewers"
 
 local M = {}
 
-local function get_all_files()
+
+---@param exts table|nil
+local function get_all_files(exts)
+  local allow_extensions = {}
+  if exts then
+    for _, ext in ipairs(exts) do
+      allow_extensions[ext] = true
+    end
+  end
   local files = {}                            -- 裡面的元素可以是單純字串或者table都可以，
   local cwd = vim.fn.getcwd():gsub("\\", "/") -- 標準化為正斜線
   local function scandir(directory)
@@ -18,11 +26,14 @@ local function get_all_files()
       if not name then break end
       local path = (directory .. "/" .. name):gsub("\\", "/") -- 標準化路徑
       if type == "file" then
-        local relative_path = path:sub(#cwd + 2)
-        table.insert(files, {
-          display = relative_path, -- 要顯示在清單中的內容
-          abspath = path,
-        })
+        local ext = string.lower(vim.fn.fnamemodify(path, ":e"))
+        if exts == nil or allow_extensions[ext] then
+          local relative_path = path:sub(#cwd + 2)
+          table.insert(files, {
+            display = relative_path, -- 要顯示在清單中的內容
+            abspath = path,
+          })
+        end
       elseif type == "directory" then
         scandir(path)
       end
@@ -72,7 +83,7 @@ function M.get_file(opts, callback)
   pickers.new(opts, {
     prompt_title = opts.title or "All Files in CWD",
     finder = finders.new_table {
-      results = get_all_files(),
+      results = get_all_files(opts.exts),
       entry_maker = function(entry) -- 在results的每一個元素非字串，而是table時，要新增這個
         return {
           value = entry,
