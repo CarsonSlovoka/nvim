@@ -3148,6 +3148,61 @@ function commands.setup()
       nargs = "?",
     }
   )
+
+  vim.api.nvim_create_user_command("Glow",
+    -- https://github.com/charmbracelet/glamour
+    function(args)
+      if vim.fn.executable("glow") == 0 then
+        vim.fn.setloclist(0, {
+          { text = "go install github.com/charmbracelet/glow@latest" },
+        }, 'a')
+        vim.notify("exe: glow not found. \n go install github.com/charmbracelet/glow@latest", vim.log.levels.WARN)
+        return
+      end
+
+      local mdfile = args.fargs[1]
+      local style = args.fargs[2] or "dracula"
+      local basename = vim.fn.fnamemodify(mdfile, ":r") -- 不含附檔名
+      local filename = "glow:" .. basename .. ":s:" .. style
+
+      vim.cmd("tabnew | setlocal buftype=nofile | term")
+      vim.cmd("file " .. filename)
+      vim.cmd("startinsert")
+      vim.api.nvim_input(string.format("glow %s -s %s<CR>", mdfile, style))
+    end,
+    {
+      desc = "render markdown. :tabnew | term | glow my.md -s dracula",
+      nargs = "+",
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+          return vim.tbl_filter(function(filepath)
+              return filepath:match("%.md$") or
+                  vim.fn.isdirectory(filepath) == 1 -- 目錄 (使得子目錄md也可以) <Ctrl-Y> 選擇後可以再tab
+            end,
+            utils.table.sort_files_first(all_files)
+          )
+        end
+
+        if argc == 2 then
+          -- https://github.com/charmbracelet/glamour/tree/c9af045/styles
+          return vim.tbl_filter(function(style)
+            return string.find(style, arg_lead:lower(), 1, true) ~= nil -- 1 開始索引, plain不使用正則式
+          end, {
+            "ascii",
+            "dark",
+            "dracula",
+            "light",
+            "dark",
+            "notty",
+            "pink",
+            "tokyo-night",
+          })
+        end
+      end
+    }
+  )
 end
 
 return commands
