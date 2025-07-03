@@ -14,6 +14,7 @@ local groupName = {
   filetype = "filetype",
   binaryViwer = "binaryViwer",
   conceal = "carson.conceal",
+  largeFile = "carson.largeFile",
 }
 for key, name in pairs(groupName) do
   if name == groupName.editorconfig then
@@ -650,6 +651,50 @@ function M.setup(opts)
     callback = function()
       -- vim.bo.filetype = "json5"
       vim.bo.filetype = "jsonc"
+    end,
+  })
+
+
+  vim.api.nvim_create_autocmd("BufReadPre", {
+    desc = "set foldmethod=manual 讀取大檔案不卡頓",
+    group = groupName.largeFile,
+    pattern = "*",
+    callback = function(args)
+      local file = args.file
+      local stat = vim.uv.fs_stat(file)
+      local max_filesize = 3 * 1024 * 1024 -- 3MB
+
+      if stat and stat.size > max_filesize then
+        vim.opt_local.foldmethod = "manual" -- 這個很關鍵！ 如果一開始是indent等到載入後再改成manual就來不急了，所以要在Read之前就要設定
+
+        -- 剩下的真的有需要可以手動執行
+        -- vim.cmd("syntax off")
+        -- vim.cmd("filetype off")
+
+        -- vim.opt_local.swapfile = false
+        -- vim.opt_local.undofile = false
+        -- vim.opt_local.bufhidden = "unload"
+
+        -- if vim.treesitter then
+        --   vim.cmd("TSBufDisable highlight")
+        -- end
+
+        vim.fn.setloclist(0, {
+          { text = ":syntax off" },
+          { text = ":set filetype=" },
+          { text = ":filetype off" },
+          { text = ":filetype plugin off" },
+          { text = ":TSBufDisable highlight" },
+          { text = ":TSBufEnable highlight" },
+        }, 'a')
+
+        vim.notify(
+          string.format(
+            "%0.3f MB > 3MB 已停用部分功能（大檔案模式）see more :lopen",
+            stat.size / (1024 * 1024)
+          ),
+          vim.log.levels.WARN)
+      end
     end,
   })
 
