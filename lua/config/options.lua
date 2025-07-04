@@ -206,7 +206,7 @@ function options.setup()
   -- 1 隱藏, 替代皆有效, 隱藏的內容其位置: 保留
   -- 2 隱藏, 替代皆有效, 隱藏的內容其位置: 不保留
   -- 3 隱藏, 替代皆無效, 隱藏的內容其位置: 不保留. 即: 完全隱藏 (對syn-cchar的對像也隱藏, 即: nvim_buf_set_extmark 的內容無效)
-  vim.opt_local.conceallevel = 2
+  -- vim.opt_local.conceallevel = 2 -- 不特別調整，避免影響到 RenderMarkdown toggle 後的設定
   -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
   vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
 

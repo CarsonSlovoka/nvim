@@ -1626,6 +1626,23 @@ local function install_renderMarkdown()
     return
   end
   m.setup({})
+
+  -- vim.api.nvim_create_user_command("RenderMarkdownToggle",
+  --   function()
+  --     local state = require('render-markdown.state')
+  --     local enabled = state.enabled
+  --     require('render-markdown').toggle()
+  --     if enabled then -- 如果當下啟用，表示要關閉它，此時要調整conceallevel設定為0讓它都能看到
+  --       vim.cmd("set conceallevel=0")
+  --       vim.opt_local.conceallevel = 0
+  --
+  --       -- else -- 另一種狀態表示要啟用, 那麼render-markdown會自動將conceallevel改為3
+  --     end
+  --   end,
+  --   {
+  --     desc = "RenderMarkdown disable/enable"
+  --   }
+  -- )
 end
 
 local function install_cmp_list()
