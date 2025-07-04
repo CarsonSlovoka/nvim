@@ -433,16 +433,25 @@ function M.setup(opts)
     }
   )
 
+  local predefined_extensions = {
+    -- 以下內容定義在vim.filetype.add({...})之中
+    birdfont = true
+  }
+
   create_autocmd(
     "FileType",
     {
       group = groupName.editorconfig,
       pattern = "*", -- :set ft?
 
-      callback = function()
+      callback = function(e)
         if not vim.bo.readonly and vim.o.fileformat ~= "unix" then
           print(string.format("set fileformat from `%s` to `unix`", vim.o.fileformat)) -- 提示使用者有被自動轉換，使其如果不滿意還可以自己再轉回去
           vim.o.fileformat = "unix"
+        end
+        local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
+        if predefined_extensions[ext] then
+          return
         end
         vim.opt_local.expandtab = true -- 使用空白代替Tab :set et?  -- :set expandtab -- :set et
         vim.opt_local.tabstop = 4      -- Tab鍵等於4個空白

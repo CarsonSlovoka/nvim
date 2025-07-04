@@ -127,7 +127,13 @@ function options.setup()
 
       ttx = "ttx",
 
-      tape = "elixir" -- https://github.com/charmbracelet/vhs/blob/517bcda0fa/.gitattributes#L5
+      tape = "elixir", -- https://github.com/charmbracelet/vhs/blob/517bcda0fa/.gitattributes#L5
+
+      birdfont = function()
+        vim.opt_local.expandtab = false
+        -- return ""    -- 錯誤，可以傳nil或者不傳讓它自動判斷
+        return "xml" -- filetype -- 也可以直接指定
+      end,
     }
   })
 
