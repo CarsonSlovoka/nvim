@@ -888,6 +888,61 @@ emoji_data.G.game = {
     },
   }
 }
+
+emoji_data.G.digraphs = {
+  -- 在 :digraphs 就有的內容，只是將常用的整合在這
+  alias = "digraphs",
+  items = {
+    { "〆",
+      {
+        ";_", -- 第一個項目為digraphs建好的內容
+        "halfCheck",
+      }
+    },
+    { "℃",
+      {
+        "oC",
+      }
+    },
+    { "♫",
+      {
+        "M2",
+        "music",
+      }
+    },
+    { "★",
+      {
+        "*2",
+        "star",
+      }
+    },
+    { "☆",
+      {
+        "*1",
+        "star",
+      }
+    },
+    { "✓",
+      {
+        "OK",
+        "check",
+      }
+    },
+    { "✗",
+      {
+        "XX",
+        "error",
+      }
+    },
+    { "☻",
+      {
+        "0U",
+        "smile",
+      }
+    },
+  }
+}
+
 emoji_data.G._other = {
   alias = "",
   items = {
