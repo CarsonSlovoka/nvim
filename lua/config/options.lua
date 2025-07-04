@@ -208,10 +208,14 @@ function options.setup()
   -- 2. 替代: 例如使用 vim.api.nvim_buf_set_extmark 之中的可選項使用conceal = conceal_char 此時用該char(只能是1個char)取代指定的區域
 
   -- conceallevel
-  -- 0 能真的看到原始文件內容. 也就是所有conceal的項目都無效, 包含 nvim_buf_set_extmark 的取代都無效
-  -- 1 隱藏, 替代皆有效, 隱藏的內容其位置: 保留
-  -- 2 隱藏, 替代皆有效, 隱藏的內容其位置: 不保留
-  -- 3 隱藏, 替代皆無效, 隱藏的內容其位置: 不保留. 即: 完全隱藏 (對syn-cchar的對像也隱藏, 即: nvim_buf_set_extmark 的內容無效)
+  -- ⚠️ 如果發現設定了之後, 結果不如預期，有可能是受到autocmd的影響。例如在md上請用 :RenderMarkdown disable
+  -- ⚠️ conceal 也會受到已定義的syntax影響: 例如: `syntax match FloatToInt /\.\d\+/ conceal` 在xml就會無效
+  --    - 可以先用 :syntax off 來將當前的syntax都清除後(注意！它是清除，所以之後還是要再做自己要的synatx)，再用syntax match設定一次自己要的內容
+  -- 0 隱藏X   替代X  =====>  能真的看到原始文件內容. 也就是所有conceal的項目都無效, 包含 nvim_buf_set_extmark 的取代都無效
+  -- 1 隱藏V   替代V  隱藏的位置: V保留
+  -- 2 隱藏V   替代V  隱藏的位置: X不保留
+  -- 3 隱藏V   替代〆 隱藏的位置: X不保留. ===> 即: 完全隱藏 (對syn-cchar的對像也隱藏, 即: nvim_buf_set_extmark 的內容無效)
+  --               〆(有替代，但是所有的替代都變成了空字串(隱藏))
   -- vim.opt_local.conceallevel = 2 -- 不特別調整，避免影響到 RenderMarkdown toggle 後的設定
   -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
   vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
