@@ -126,6 +126,8 @@ function options.setup()
       gohtml = "gotmpl",
 
       ttx = "ttx",
+
+      tape = "elixir" -- https://github.com/charmbracelet/vhs/blob/517bcda0fa/.gitattributes#L5
     }
   })
 

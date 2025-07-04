@@ -164,6 +164,8 @@ local function install_nvimTreesitter()
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
 
       "dart",
+
+      "elixir" -- 可用在vhs的demo.tap上: https://github.com/charmbracelet/vhs/blob/517bcda0faf416728bcf6b7fe489eb0e2469d9b5/README.md?plain=1#L719-L737
     },
     sync_install = false,
     auto_install = false,
