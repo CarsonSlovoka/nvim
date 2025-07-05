@@ -340,10 +340,22 @@ local function setup_normal()
   map('t', "<C-R>", function()
       -- vim.fn.getchar() -- 等待用戶輸入
       -- vim.fn.nr2char -- 轉換為字符
-      return (                                      -- 要將 expr 設定為true才會有用
-        "<C-\\><C-N>" ..                            -- 退回到一般模式
-        "\"" .. vim.fn.nr2char(vim.fn.getchar()) .. -- 使用暫存器
-        "pi"                                        -- 貼上 並且 再切換成insert的模式
+
+      local key = vim.fn.nr2char(vim.fn.getchar())
+      if key == '=' then
+        local expression = vim.fn.input("=")
+        return (
+          "<C-\\><C-N>" ..
+          -- "<C-R>=" .. expression .. "<CR>" .. -- 沒用
+          ":pu=" .. expression .. "<CR>" ..
+          "i" -- insert
+        )
+      end
+
+      return (           -- 要將 expr 設定為true才會有用
+        "<C-\\><C-N>" .. -- 退回到一般模式
+        "\"" .. key ..   -- 使用暫存器, 例如: "a
+        "pi"             -- 貼上 並且 再切換成insert的模式
       )
     end,
     {
