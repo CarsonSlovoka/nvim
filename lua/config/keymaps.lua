@@ -362,6 +362,19 @@ local function setup_normal()
       desc = "可以使用<C-R>來使用暫儲器的內容",
     }
   )
+  map('t', "<C-K>", function()
+      -- https://stackoverflow.com/a/79691125/9935654
+      local ch1 = vim.fn.nr2char(tonumber(vim.fn.getchar()) or 0)
+      local ch2 = vim.fn.nr2char(tonumber(vim.fn.getchar()) or 0)
+      return "<C-\\><C-N>" ..
+          string.format(":pu=digraph_get('%s%s')<CR>", ch1, ch2) ..
+          "i"
+    end,
+    {
+      expr = true,
+      desc = "insert digraphs",
+    }
+  )
   map('n', "Q", ":q<CR>", {})
 
   -- <C-w>c -- 關閉當前窗口
