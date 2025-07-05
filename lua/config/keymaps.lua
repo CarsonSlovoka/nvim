@@ -1,6 +1,5 @@
 local keymaps = {}
 
-local rangeUtils = require("utils.range")
 local utils = require("utils.utils")
 local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
@@ -53,7 +52,7 @@ map("n", "<leader>git",
 
 map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
-  local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
+  -- local cur_title = vim.fn.getqflist({ id = 0, title = 1 }).title
 
   -- 這要遍歷才可以
   -- local cur_idx -- 用來儲存當前 qflist 的絕對索引
