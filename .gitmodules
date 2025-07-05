@@ -2,58 +2,58 @@
 # git submodule sync
 
 [submodule "nvim-treesitter"]
-	path = pack/syntax/start/nvim-treesitter
-	url = https://github.com/nvim-treesitter/nvim-treesitter.git
+    path = pack/syntax/start/nvim-treesitter
+    url = https://github.com/nvim-treesitter/nvim-treesitter.git
 [submodule "nvim-treesitter-textobjects"]
-	path = pack/syntax/start/nvim-treesitter-textobjects
-	url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
+    path = pack/syntax/start/nvim-treesitter-textobjects
+    url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
 [submodule "nvim-lspconfig"]
-	path = pack/lsp/start/nvim-lspconfig
-	url = https://github.com/neovim/nvim-lspconfig.git
+    path = pack/lsp/start/nvim-lspconfig
+    url = https://github.com/neovim/nvim-lspconfig.git
 [submodule "precognition.nvim"]
-	path = pack/motion/start/precognition.nvim
-	url = https://github.com/tris203/precognition.nvim.git
+    path = pack/motion/start/precognition.nvim
+    url = https://github.com/tris203/precognition.nvim.git
 [submodule "leap.nvim"]
-	path = pack/motion/start/leap.nvim
-	url = https://github.com/ggandor/leap.nvim.git
+    path = pack/motion/start/leap.nvim
+    url = https://github.com/ggandor/leap.nvim.git
 [submodule "gitsigns"]
-	path = pack/git/start/gitsigns.nvim
-	url = https://github.com/lewis6991/gitsigns.nvim.git
+    path = pack/git/start/gitsigns.nvim
+    url = https://github.com/lewis6991/gitsigns.nvim.git
 [submodule "nvim-tree.lua"]
-	path = pack/tree/start/nvim-tree.lua
-	url = https://github.com/nvim-tree/nvim-tree.lua.git
+    path = pack/tree/start/nvim-tree.lua
+    url = https://github.com/nvim-tree/nvim-tree.lua.git
 [submodule "nvim-web-devicons"]
-	path = pack/icon/start/nvim-web-devicons
-	url = https://github.com/nvim-tree/nvim-web-devicons.git
+    path = pack/icon/start/nvim-web-devicons
+    url = https://github.com/nvim-tree/nvim-web-devicons.git
 
 [submodule "plenary.nvim"]
-	path = pack/utils/start/plenary.nvim
-	url = https://github.com/nvim-lua/plenary.nvim.git
+    path = pack/utils/start/plenary.nvim
+    url = https://github.com/nvim-lua/plenary.nvim.git
 [submodule "telescope.nvim"]
-	path = pack/search/start/telescope.nvim
-	url = https://github.com/nvim-telescope/telescope.nvim.git
+    path = pack/search/start/telescope.nvim
+    url = https://github.com/nvim-telescope/telescope.nvim.git
 
 [submodule "github-nvim-theme"]
-	path = pack/theme/start/github-nvim-theme
-	url = https://github.com/projekt0n/github-nvim-theme.git
+    path = pack/theme/start/github-nvim-theme
+    url = https://github.com/projekt0n/github-nvim-theme.git
 
 # other
 [submodule "indent-blankline.nvim"]
-	path = pack/other/start/indent-blankline.nvim
-	url = https://github.com/lukas-reineke/indent-blankline.nvim.git
+    path = pack/other/start/indent-blankline.nvim
+    url = https://github.com/lukas-reineke/indent-blankline.nvim.git
 [submodule "lualine.nvim"]
-	path = pack/other/start/lualine.nvim
-	url = https://github.com/nvim-lualine/lualine.nvim.git
+    path = pack/other/start/lualine.nvim
+    url = https://github.com/nvim-lualine/lualine.nvim.git
 [submodule "render-markdown.nvim"]
-	path = pack/other/start/render-markdown.nvim
-	url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
+    path = pack/other/start/render-markdown.nvim
+    url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
 
 [submodule "atq.nvim"]
-	path = pack/schedule/start/atq.nvim
-	url = https://github.com/CarsonSlovoka/atq.nvim.git
+    path = pack/schedule/start/atq.nvim
+    url = https://github.com/CarsonSlovoka/atq.nvim.git
 [submodule "cmp.nvim"]
-	path = pack/edit/start/cmp.nvim
-	url = https://github.com/CarsonSlovoka/cmp.nvim.git
+    path = pack/edit/start/cmp.nvim
+    url = https://github.com/CarsonSlovoka/cmp.nvim.git
 [submodule "debug/nvim-nio"]
     path = pack/debug/start/nvim-nio
     url = https://github.com/nvim-neotest/nvim-nio.git
