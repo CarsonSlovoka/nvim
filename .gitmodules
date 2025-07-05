@@ -7,6 +7,9 @@
 [submodule "nvim-treesitter-textobjects"]
     path = pack/syntax/start/nvim-treesitter-textobjects
     url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
+[submodule "nvim-treesitter-context"]
+    path = pack/syntax/start/nvim-treesitter-context
+    url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
 [submodule "nvim-lspconfig"]
     path = pack/lsp/start/nvim-lspconfig
     url = https://github.com/neovim/nvim-lspconfig.git
