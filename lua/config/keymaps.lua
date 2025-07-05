@@ -341,7 +341,7 @@ local function setup_normal()
       -- vim.fn.getchar() -- 等待用戶輸入
       -- vim.fn.nr2char -- 轉換為字符
 
-      local key = vim.fn.nr2char(vim.fn.getchar())
+      local key = vim.fn.nr2char(tonumber(vim.fn.getchar()) or 0)
       if key == '=' then
         local expression = vim.fn.input("=")
         return (
