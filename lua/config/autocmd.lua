@@ -11,6 +11,7 @@ local groupName = {
   editorconfig = "carson.editorconfig",
   highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
+  highlight = "carson.highlight",
   filetype = "filetype",
   binaryViwer = "binaryViwer",
   conceal = "carson.conceal",
@@ -706,6 +707,18 @@ function M.setup(opts)
       end
     end,
   })
+
+  vim.api.nvim_create_autocmd('TextYankPost', {
+    group = groupName.highlight,
+    callback = function()
+      vim.highlight.on_yank({
+        higroup = 'IncSearch',
+        timeout = 700,
+      })
+    end,
+    desc = 'Highlight yanked text',
+  })
+
 
   if opts.callback then
     opts.callback(M)
