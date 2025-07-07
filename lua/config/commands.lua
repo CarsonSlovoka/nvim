@@ -3206,7 +3206,7 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Spf",
     -- https://github.com/yorukot/superfile
-    function(args)
+    function()
       if vim.fn.executable("spf") == 0 then
         vim.fn.setloclist(0, {
           { text = "https://github.com/yorukot/superfile/blob/ac240dbaf5878901c9f71dfdbbe41ede949be545/README.md?plain=1#L95-L135" },
@@ -3225,6 +3225,63 @@ function commands.setup()
     {
       desc = "tabnew | setlocal buftype=nofile | term spf",
       nargs = 0,
+    }
+  )
+
+  vim.api.nvim_create_user_command("Viu",
+    function(args)
+      if vim.fn.executable("viu") == 0 then
+        vim.fn.setloclist(0, {
+          { text = "https://github.com/atanunq/viu" },
+          { text = "cargo install viu" },
+        }, 'a')
+        vim.notify("exe: viu not found. cargo install viu", vim.log.levels.WARN)
+        vim.cmd("lopen 3")
+        return
+      end
+
+      local filepath = vim.fn.expand(args.fargs[1])
+      local filename = vim.fs.basename(vim.fn.fnamemodify(filepath, ":p:r"))
+      -- vim.cmd("tabnew | setlocal buftype=nofile | term viu") -- 方便離開terminal重新用不同的size再次運行
+      vim.cmd("tabnew | setlocal buftype=nofile | term")
+      vim.cmd("file viu:" .. filename)
+
+      vim.cmd("startinsert")
+      vim.api.nvim_input(string.format("viu %s<CR>", filepath))
+      if vim.fn.executable("ls") ~= 0 then
+        vim.api.nvim_input(
+        -- 這樣與分開寫的結果是一樣的
+        -- string.format("ls -lh %q\n" ..
+        --   "file %q\n" ..
+        --   "<CR>",
+        --   vim.fn.trim(filepath, " ", 2),
+        --   vim.fn.trim(filepath, " ", 2)
+          string.format("ls -lh %q &&" ..
+            "file %q" ..
+            "<CR>",
+            vim.fn.trim(filepath, " ", 2), -- trimRight space
+            vim.fn.trim(filepath, " ", 2)
+          )
+        )
+      end
+    end,
+    {
+      desc = "Terminal image viewer. tabnew | setlocal buftype=nofile | term viu <imgfile>",
+      nargs = 1,
+      complete = function(arg_lead, cmd_line)
+        local argc = #(vim.split(cmd_line, "%s+")) - 1
+        if argc == 1 then
+          local accept_ext = vim.regex([[\c\.\(gif\|png\|jpeg\|jpg\|webp\)$]])
+          local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+          return vim.tbl_filter(
+            function(filepath)
+              return (accept_ext:match_str(filepath) or 0) > 0 or
+                  vim.fn.isdirectory(filepath) == 1
+            end,
+            utils.table.sort_files_first(all_files)
+          )
+        end
+      end
     }
   )
 end
