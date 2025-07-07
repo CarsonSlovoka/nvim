@@ -910,10 +910,21 @@ mkdir -pv ~/.config/nvim/pack/sql/start/
 
 ### sqls
 
-```
+```sh
 git clone https://github.com/nanotee/sqls.nvim.git ~/.config/nvim/pack/sql/start/sqls.nvim
 ```
 
+#### [command](https://github.com/nanotee/sqls.nvim/blob/d1bc5421ef3e8edc5101e37edbb7de6639207a09/doc/sqls-nvim.txt#L14-L87)
+
+```vim
+SqlsSwitchConnection " 切換連線
+SqlsExecuteQuery " 執行sql文件或者只執行選取的內容
+SqlsExecuteQueryVertical " 同Query只是輸出的樣式不同
+SqlsShowTables " 顯示當前連線中的所有tables
+" ...
+
+SqlsInsertConnecions " 此為我新增的命令, 新增連線
+```
 
 ## tools
 
