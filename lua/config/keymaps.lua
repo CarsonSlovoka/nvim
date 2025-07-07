@@ -42,7 +42,10 @@ map("n", "<leader>git",
       return
     end
 
+    local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r")) -- :r對vim.fn.expand能有效，而對vim.fn.fnamemodify就還需要basename的幫忙
+
     vim.cmd(string.format("cd %s | tabnew | setlocal buftype=nofile | term", git_root))
+    vim.cmd("file git:" .. git_dirname)
     vim.cmd("startinsert")
     vim.api.nvim_input("echo 'git branch --unset-upstream'<CR>") -- 新增一些可能會用到的提示
     vim.api.nvim_input("lazygit --screen-mode half<CR>")
