@@ -165,7 +165,9 @@ local function install_nvimTreesitter()
 
       "dart",
 
-      "elixir" -- 可用在vhs的demo.tap上: https://github.com/charmbracelet/vhs/blob/517bcda0faf416728bcf6b7fe489eb0e2469d9b5/README.md?plain=1#L719-L737
+      "elixir", -- 可用在vhs的demo.tap上: https://github.com/charmbracelet/vhs/blob/517bcda0faf416728bcf6b7fe489eb0e2469d9b5/README.md?plain=1#L719-L737
+
+      "sql",    -- 獲得比較好的highlight
     },
     sync_install = false,
     auto_install = false,

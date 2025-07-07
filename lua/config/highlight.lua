@@ -6,6 +6,9 @@ vim.api.nvim_set_hl(0, "@onbreakpoint", { bg = "#2a5091" })
 vim.api.nvim_set_hl(0, "json5Key", { link = "@label" }) -- 用filetype=jsonc其實就用不太到這個
 vim.api.nvim_set_hl(0, "@property.jsonc", { link = "@tag" })
 
+vim.api.nvim_set_hl(0, "sqlkeyword", { link = "Statement" })
+vim.api.nvim_set_hl(0, "@operator.sql", { link = "sqlOperator" })
+
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
   if opts then
