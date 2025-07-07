@@ -3203,6 +3203,30 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command("Spf",
+    -- https://github.com/yorukot/superfile
+    function(args)
+      if vim.fn.executable("glow") == 0 then
+        vim.fn.setloclist(0, {
+          { text = "https://github.com/yorukot/superfile/blob/ac240dbaf5878901c9f71dfdbbe41ede949be545/README.md?plain=1#L95-L135" },
+        }, 'a')
+        vim.notify("exe: spf not found.", vim.log.levels.WARN)
+        vim.cmd("lopen 2")
+        return
+      end
+
+      local dirname = vim.fn.expand("%:p:h:t")
+      vim.cmd("cd %:p:h | tabnew | setlocal buftype=nofile | term spf")
+      vim.cmd("file spf:" .. dirname)
+
+      vim.cmd("startinsert")
+    end,
+    {
+      desc = "tabnew | setlocal buftype=nofile | term spf",
+      nargs = 0,
+    }
+  )
 end
 
 return commands
