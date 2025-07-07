@@ -3207,7 +3207,7 @@ function commands.setup()
   vim.api.nvim_create_user_command("Spf",
     -- https://github.com/yorukot/superfile
     function(args)
-      if vim.fn.executable("glow") == 0 then
+      if vim.fn.executable("spf") == 0 then
         vim.fn.setloclist(0, {
           { text = "https://github.com/yorukot/superfile/blob/ac240dbaf5878901c9f71dfdbbe41ede949be545/README.md?plain=1#L95-L135" },
         }, 'a')
