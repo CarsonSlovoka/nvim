@@ -516,7 +516,7 @@ function commands.setup()
       end
 
       -- 清理調色盤檔案
-      vim.fn.setqflist({ { text = rm_cmd, }, }, 'a')
+      vim.fn.setqflist({ { text = "rm " .. rm_cmd, }, }, 'a')
       utils.os.remove_with_notify(rm_cmd, "Cleaned up palette file", "Failed to remove palette file")
     end,
     {
