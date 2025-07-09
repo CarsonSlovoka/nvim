@@ -86,3 +86,6 @@
 [submodule "tools/ccc.nvim"]
     path = pack/tools/start/ccc.nvim
     url = https://github.com/uga-rosa/ccc.nvim.git
+[submodule "tools/pantran.nvim"]
+    path = pack/tools/start/pantran.nvim
+    url = https://github.com/potamides/pantran.nvim.git
