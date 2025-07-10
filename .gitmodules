@@ -89,3 +89,6 @@
 [submodule "tools/pantran.nvim"]
     path = pack/tools/start/pantran.nvim
     url = https://github.com/potamides/pantran.nvim.git
+[submodule "tools/image.nvim"]
+    path = pack/tools/start/image.nvim
+    url = https://github.com/3rd/image.nvim.git

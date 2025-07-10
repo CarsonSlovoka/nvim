@@ -172,6 +172,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── nvim-dap-go                   -- ✅ debug adapter: go ( 8763ced )
 │   │
 │   ├── tools/start/
+│   │         ├── image.nvim                    -- ✅ 使用kitty終端機，能在markdown文件直接看到圖片 ( v1.4.0 4c51d620 )
 │   │         ├── pantran.nvim                  -- ✅ 翻譯工具, engine: google, deepl, ... ( b87c3ae4 )
 │   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
 │   │
@@ -931,6 +932,12 @@ SqlsInsertConnecions " 此為我新增的命令, 新增連線
 
 ```sh
 mkdir -pv ~/.config/nvim/pack/tools/start/
+```
+
+### [image.nvim](https://github.com/3rd/image.nvim)
+
+```sh
+git clone https://github.com/3rd/image.nvim.git ~/.config/nvim/pack/tools/start/image.nvim
 ```
 
 ### [pantran.nvim](https://github.com/potamides/pantran.nvim)

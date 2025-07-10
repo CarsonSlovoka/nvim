@@ -2023,6 +2023,65 @@ local function install_pantran()
   )
 end
 
+local function install_image()
+  -- 如果是在 kitty 終端機啟動，就會有這個環境變數
+  if os.getenv("KITTY_PID") == nil then
+    return
+  end
+  -- print("Running in Kitty terminal")
+
+  local ok, _ = pcall(require, "image")
+  if not ok then
+    vim.notify("Failed to load image", vim.log.levels.WARN)
+    return
+  end
+
+  -- 啟動kitty後，如果查看markdown沒有看到圖片
+  -- 1. 關閉nvim後，啟動kitty先嘗試看看圖片是否能正常顯示: `kitty +kitten icat https://sw.kovidgoyal.net/kitty/_static/kitty.svg`
+  -- 2. 如果有看到，那麼可以再該markdown文件用 :e 重新載入頁面應該就會出現
+  require("image").setup({
+    backend = "kitty",
+    -- processor 的magick_cli, magick_rock 不是指執行檔，而是image.nvim裡面的子lua腳本
+    -- 如果用的是magick_cli只需要convert, identify兩個執行檔即可: https://github.com/3rd/image.nvim/blob/4c51d6202628b3b51e368152c053c3fb5c5f76f2/lua/image/processors/magick_cli.lua#L3-L10
+    -- convert, identify 都在裝完 imagemagick 就會取得
+    processor = "magick_cli", -- or "magick_rock"
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = false,
+        download_remote_images = true,
+        only_render_image_at_cursor = false,
+        only_render_image_at_cursor_mode = "popup",
+        floating_windows = false,              -- if true, images will be rendered in floating markdown windows
+        filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+      },
+      neorg = {
+        enabled = true,
+        filetypes = { "norg" },
+      },
+      typst = {
+        enabled = true,
+        filetypes = { "typst" },
+      },
+      html = {
+        enabled = false,
+      },
+      css = {
+        enabled = false,
+      },
+    },
+    max_width = nil,
+    max_height = nil,
+    max_width_window_percentage = nil,
+    max_height_window_percentage = 50,
+    window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
+    window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+    editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
+    tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+    hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+  })
+end
+
 local installs = {
   {
     name = "registers",
@@ -2345,6 +2404,7 @@ local installs = {
   { name = "flutter_tools",     fn = install_flutter_tools,  delay = 5 },
   { name = "create color code", fn = install_ccc,            delay = 0 },
   { name = "pantran.nvim",      fn = install_pantran,        delay = 5 },
+  { name = "image.nvim",        fn = install_image,          delay = 5 },
   {
     name = "global-func",
     fn = function()
