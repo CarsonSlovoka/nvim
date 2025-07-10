@@ -3248,7 +3248,7 @@ function commands.setup()
         return
       end
 
-      local filepath = vim.fn.expand(args.fargs[1])
+      local filepath = vim.fn.expand(args.fargs[1]) -- expand 可以將 % 當成當前的檔案路徑
       local filename = vim.fs.basename(vim.fn.fnamemodify(filepath, ":p:r"))
       -- vim.cmd("tabnew | setlocal buftype=nofile | term viu") -- 方便離開terminal重新用不同的size再次運行
       vim.cmd("tabnew | setlocal buftype=nofile | term")
@@ -3272,6 +3272,13 @@ function commands.setup()
           )
         )
       end
+      -- 提示也可以使用icat來查看，但是不能直接在terminal進行
+      -- Error: Terminal does not support reporting screen sizes in pixels, use a terminal such as kitty, WezTerm, Konsole, etc. that does.
+      -- vim.cmd("tabnew | setlocal buftype=nofile | term kitty +kitten icat " .. filepath)
+      -- vim.fn.setloclist(0, { -- ⚠️ 不能用這個因為在terminal而且是nofile沒有loclist可用
+      vim.fn.setqflist({
+        { text = "kitty +kitten icat " .. filepath },
+      }, 'a')
     end,
     {
       desc = "Terminal image viewer. tabnew | setlocal buftype=nofile | term viu <imgfile>",
