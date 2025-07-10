@@ -3230,6 +3230,14 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("Viu",
     function(args)
+      if args.fargs[1] == "-h" then
+        vim.fn.setloclist(0, {
+          { text = ":Viu % 用當前的文件來執行" },
+        }, 'a')
+        vim.cmd("lopen 2")
+        return
+      end
+
       if vim.fn.executable("viu") == 0 then
         vim.fn.setloclist(0, {
           { text = "https://github.com/atanunq/viu" },
