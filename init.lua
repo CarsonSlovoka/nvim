@@ -2080,6 +2080,22 @@ local function install_image()
     tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
     hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
   })
+
+
+  vim.api.nvim_create_user_command("ImageToggle",
+    function()
+      if require("image").is_enabled() then
+        require("image").disable()
+      else
+        require("image").enable()
+      end
+      vim.notify("image.nvim is_enabled: " .. tostring(require("image").is_enabled()), vim.log.levels.INFO)
+    end,
+    {
+      nargs = 0,
+      desc = "image.nvim toggle"
+    }
+  )
 end
 
 local installs = {
