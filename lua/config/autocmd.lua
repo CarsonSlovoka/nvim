@@ -657,6 +657,8 @@ function M.setup(opts)
   --]]
 
   vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    desc = "set filetype=jsonc",
+    group = groupName.filetype,
     pattern = "manifest.json",
     callback = function()
       -- vim.bo.filetype = "json5"
