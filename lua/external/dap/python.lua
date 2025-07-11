@@ -55,6 +55,13 @@ for _, config in ipairs({
   {
     type = "python",
     request = 'launch',
+    name = "debug (justMyCode=false) python3 <file>",
+    program = "${file}",
+    justMyCode = false, -- 如此step_into才可以進入第三方的原始碼中
+  },
+  {
+    type = "python",
+    request = 'launch',
     name = "python3 <file from telescope>",
     program = function() -- 可以回傳的型別: string, thread
       -- return "${file}"         -- 保留字, 取當前檔案路徑
@@ -90,7 +97,8 @@ for _, config in ipairs({
       -- fd -t f fontforge /
       -- /usr/lib/python3/dist-packages/fontforge.cpython-312-x86_64-linux-gnu.so
       -- PYTHONPATH = '/usr/lib/python3/dist-packages/'
-    }
+    },
+    -- justMyCode = false, -- 加了這個也沒辦法進入fontforge的py之中，因該是因為它是與C混編的關係
   },
   {
     type = "notepad", -- references an entry in dap.adapters --同時也是該 filetype 才會觸發
