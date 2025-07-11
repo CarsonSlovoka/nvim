@@ -153,6 +153,8 @@ local function install_nvimTreesitter()
       "go",
       "gotmpl", -- https://github.com/ngalaiko/tree-sitter-go-template -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L896-L902
 
+      "python", -- 為了在markdown突顯
+
       -- "ttx",
 
       -- vscode-json-language-server 就有json, jsonc的lsp, 不過沒有json5的lsp
