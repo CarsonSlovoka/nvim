@@ -666,6 +666,16 @@ function M.setup(opts)
     end,
   })
 
+  -- vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  --   desc = "set filetype=requirements",
+  --   group = groupName.filetype,
+  --   pattern = "requirements.txt", -- 預設就會有。如果沒有，可能是檔名沒有匹配(少了s之類的)
+  --   callback = function()
+  --     -- https://github.com/neovim/neovim/blob/4f3aa7bafb75b/runtime/syntax/requirements.vim#L1-L67
+  --     vim.bo.filetype = "requirements"
+  --   end,
+  -- })
+  --
 
   vim.api.nvim_create_autocmd("BufReadPre", {
     desc = "set foldmethod=manual 讀取大檔案不卡頓",
