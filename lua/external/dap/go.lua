@@ -4,7 +4,7 @@
 --- go install github.com/go-delve/delve/cmd/dlv@latest
 --- dlv version
 --- 1.25.0
-require('dap-go').setup {   -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/README.md?plain=1#L46-L100
+require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/README.md?plain=1#L46-L100
   -- Additional dap configurations can be added.
   -- dap_configurations accepts a list of tables where each entry
   -- represents a dap configuration. For more details do:
@@ -23,15 +23,40 @@ require('dap-go').setup {   -- https://github.com/leoluz/nvim-dap-go/blob/8763ce
       name = "Debug Package (Arguments)",
       request = "launch",
       program = "${fileDirname}",
-      args = require("dap-go").get_arguments,   -- -workDir=img/2025
+      args = require("dap-go").get_arguments, -- -workDir=img/2025
     },
     {
       type = "go",
       name = "Debug Package (Build Flags & Arguments)",
       request = "launch",
       program = "${fileDirname}",
-      args = require("dap-go").get_arguments,           -- -tags=xxx -- -tags=foo,bar
-      buildFlags = require("dap-go").get_build_flags,   -- -workDir=img/2025
+      args = require("dap-go").get_arguments,         -- -tags=xxx -- -tags=foo,bar
+      buildFlags = require("dap-go").get_build_flags, -- -workDir=img/2025
+    },
+    {
+      type = "go",
+      name = "Debug test (go.mod & arguments)",
+      request = "launch",
+      mode = "test",
+      program = "./${relativeFileDirname}",
+      -- args 可以用來設定指定要執行的test就可以不用全部都執從: -test.run=^TestXXx  -- -test.run=Test_myXXX
+      -- args = require("dap-go").get_arguments, -- 可行，但是提示詞只有Args
+      args = function()
+        require("dap-go")
+        return coroutine.create(
+          function(dap_run_co)
+            local args = {}
+            vim.ui.input(
+            -- { prompt = "Args (-run=^Test_xx  -run=Test_abc  -run=Test_sql*): " }, -- 這不行
+              { prompt = "Args (-test.run=^Test_xx  -test.run=Test_abc  -test.run=Test_sql*): " },
+              function(input)
+                args = vim.split(input or "", " ")
+                coroutine.resume(dap_run_co, args)
+              end
+            )
+          end
+        )
+      end,
     },
   },
   -- delve configurations
