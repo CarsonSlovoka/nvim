@@ -1,3 +1,25 @@
+local function get_test_arguments()
+  return coroutine.create(
+    function(dap_run_co)
+      local args = {}
+      vim.ui.input(
+      -- { prompt = "Args (-run=^Test_xx  -run=Test_abc  -run=Test_sql*): " }, -- 這不行
+        { prompt = "Args (-test.run=^Test_xx  -test.run=Test_abc  -test.run=Test_sql*): " },
+        function(input)
+          args = vim.split(input or "", " ")
+          coroutine.resume(dap_run_co, args)
+        end
+      )
+    end
+  )
+end
+
+local function get_build_flags()
+  print("-tags=xxx -tags=foo,bar")
+  return require("dap-go").get_arguments()
+end
+
+
 -- debug adapter
 ---- go
 --- 當突然沒辦法debug的時候，請嘗試更新dlv
@@ -30,8 +52,8 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       name = "Debug Package (Build Flags & Arguments)",
       request = "launch",
       program = "${fileDirname}",
-      args = require("dap-go").get_arguments,         -- -tags=xxx -- -tags=foo,bar
-      buildFlags = require("dap-go").get_build_flags, -- -workDir=img/2025
+      args = require("dap-go").get_arguments,         -- -workDir=img/2025
+      buildFlags = require("dap-go").get_build_flags, -- -tags=xxx -- -tags=foo,bar
     },
     {
       type = "go",
@@ -41,22 +63,16 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       program = "./${relativeFileDirname}",
       -- args 可以用來設定指定要執行的test就可以不用全部都執從: -test.run=^TestXXx  -- -test.run=Test_myXXX
       -- args = require("dap-go").get_arguments, -- 可行，但是提示詞只有Args
-      args = function()
-        require("dap-go")
-        return coroutine.create(
-          function(dap_run_co)
-            local args = {}
-            vim.ui.input(
-            -- { prompt = "Args (-run=^Test_xx  -run=Test_abc  -run=Test_sql*): " }, -- 這不行
-              { prompt = "Args (-test.run=^Test_xx  -test.run=Test_abc  -test.run=Test_sql*): " },
-              function(input)
-                args = vim.split(input or "", " ")
-                coroutine.resume(dap_run_co, args)
-              end
-            )
-          end
-        )
-      end,
+      args = get_test_arguments,
+    },
+    {
+      type = "go",
+      name = "Debug test (go.mod & arguments & tags)",
+      request = "launch",
+      mode = "test",
+      program = "./${relativeFileDirname}",
+      args = get_test_arguments,
+      buildFlags = get_build_flags,
     },
   },
   -- delve configurations
