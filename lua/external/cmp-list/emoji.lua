@@ -1313,4 +1313,10 @@ vim.cmd("digraphs ll 128073")           -- 👉
 vim.cmd("digraphs rt 128640")           -- 🚀
 vim.cmd("digraphs sg 128170")           -- 💪
 
+
+-- 近似於
+vim.cmd("digraphs ~~ 8776") -- ≈
+vim.cmd("digraphs := 8786") -- ≒
+
+
 return M
