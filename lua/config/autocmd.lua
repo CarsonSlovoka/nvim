@@ -270,6 +270,80 @@ function M.setup(opts)
     }
   )
 
+  vim.api.nvim_create_autocmd({ "BufRead" },
+    {
+      group = groupName.binaryViwer,
+      desc = "show file info",
+      pattern = {
+        "*.png",
+        "*.webp", "*.webm",
+        "*.jpeg", "*.jpg",
+        "*.mp4", "*.mp3",
+      },
+      callback = function()
+        if vim.fn.executable("file") == 0 or vim.fn.executable("ls") == 0 then
+          return
+        end
+
+        local abspath = vim.fn.expand("%:p")
+        local filename = "♻️" .. vim.fn.expand("%:t") -- 為了盡量避免與當前的buf同名，前面加上♻️
+
+        -- 🟧 建一個buf
+        local org_bug_id = vim.api.nvim_get_current_buf()
+        vim.cmd("enew")              -- 開一個新的buffer
+        vim.cmd("bw " .. org_bug_id) -- 不要當前的這一個檔案, w 會連<C-O>, <C-I>都沒辦法再跳轉過來 (就其實可以討論，但目前先不要留它)
+
+        vim.api.nvim_set_option_value("buftype", "nofile", { buf = 0 })
+        vim.api.nvim_buf_set_name(0, filename)
+
+        -- 🟧 一開始放上一些自定義的內容
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+          "filepath: " .. abspath,
+          "",
+        })
+
+        local ns_id = vim.api.nvim_create_namespace("hightlight_comment")
+        vim.cmd("normal! G") -- 移到底部，讓 nvim_win_get_cursor 的位置是所想要的
+
+        -- 🟧 接著放上一些提示可以使用的指令 並且用 Comment來突顯
+        local row = vim.api.nvim_win_get_cursor(0)[1]
+        local helps = {
+          -- 注意xxd 的option要放在前面，而且-c與-C是不同的
+          string.format(":r! xxd -c 16 %s", abspath), -- 如果要看二進位的資料，提示使用者可以用xxd來查看
+          "",
+        }
+        -- vim.api.nvim_buf_set_lines(0, row, -1, false, helps) -- 由於最後故意給了一個""當成空行，不想要這個空行也變成Comment
+        vim.api.nvim_buf_set_lines(0, row, row + #helps - 1, false, helps) -- 經確的算出Comment的位子
+        vim.hl.range(0, ns_id, "Comment", { row, 0 }, { #helps, -1 })
+
+
+        vim.cmd("normal! G")
+        row = vim.api.nvim_win_get_cursor(0)[1]
+
+        -- 🟧 最後放上執行檔輸出的結果
+        -- local r = vim.system({ "file", abspath }):wait() -- 可行，但是沒有辦法用pipe line, 所以要透過sh -c來
+        local r = vim.system({ "sh", "-c",
+          -- 先 ls -lh 再用echo ''讓其輸出多一列空行, 最後執行file
+          string.format("ls -lh %s && echo '' && file %s | tr ',' '\n'", abspath, abspath),
+        }):wait()
+        if r.code ~= 0 then
+          vim.notify(string.format("❌ run `file` error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
+          return
+        end
+        vim.api.nvim_buf_set_lines(0, row, row, false, vim.split(r.stdout, "\n"))
+
+
+        vim.cmd([[
+          " 開頭是 xxx:
+          syntax match @label /^\w*:/
+
+          " 2710x1234
+          syntax match @type /\d\+x\d\+/
+        ]])
+      end
+    }
+  )
+
   if not pcall(require, "ccc") then
     -- ccc 插件已經有類似的功能就不再重覆 (而且它連前景色也會考慮，也就是會自動搭配合適的前景色)
 
