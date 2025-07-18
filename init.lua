@@ -1945,6 +1945,7 @@ local function install_pantran()
   -- :'<,'>Pantran engine=google mode=hover target=ja
   -- :'<,'>Pantran engine=google mode=hover target=zh-CN
   -- :'<,'>Pantran engine=google mode=hover target=zh-TW
+  -- :'<,'>Pantran mode=replace source=zh-TW target=en -- 將中文轉成英文, 並直接取代
 
   -- deepl: languages supported: https://developers.deepl.com/docs/getting-started/supported-languages
   -- :'<,'>Pantran engine=deepl mode=hover target=zh
