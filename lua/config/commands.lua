@@ -3301,20 +3301,74 @@ function commands.setup()
   )
 end
 
-local d = require("discord.download")
 vim.api.nvim_create_user_command("DownloadDiscordAttachments", function(args)
-  local output_dir = args.fargs[1]
-  local channel_id = args.fargs[2] or os.getenv("CHANNEL_ID")
-  local message_id = args.fargs[3]
+    -- local output_dir = args.fargs[1]
+    -- local channel_id = args.fargs[2] or os.getenv("CHANNEL_ID")
+    -- local message_id = args.fargs[3]
 
-  d.download_attachments(output_dir, channel_id, { message_id })
-end, {
-  nargs = "*",
-  desc = "Download Discord attachments to specified directory",
-  complete = function()
+    local config = {}
+    for _, arg in ipairs(args.fargs) do
+      local key, value = arg:match('^(.-)=(.*)$')
+      if key then
+        config[key] = value
+      end
+    end
+    local output_dir = config["output_dir"]
+    local channel_id = config["channel_id"] or os.getenv("CHANNEL_ID") or ""
+    local message_id = config["message_id"]
 
-  end
-})
+    require("discord.download").download_attachments(output_dir, channel_id, { message_id })
+  end,
+  {
+    desc = "Download Discord attachments to specified directory (need token)",
+    nargs = "+",
+    complete = function(arg_lead, cmd_line)
+      local comps = {}
+
+      local argc = #(vim.split(cmd_line, '%s+')) - 1
+
+      -- 分割 arg_lead，檢查是否有等號
+      -- arg_lead = "output="
+      local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+      if not prefix then
+        suffix = arg_lead
+        prefix = ''
+      end
+      -- print("prefix:", prefix)
+      -- print("suffix:", suffix)
+
+
+      local need_add_prefix = true
+      if argc == 0 or not arg_lead:match('=') then
+        comps = { 'output_dir=', 'channel_id=', 'message_id=' }
+        need_add_prefix = false
+        -- elseif arg_lead:match('^output_dir=$') then
+      elseif prefix == "output_dir" then
+        comps = {
+          ".", -- 也提示可以直接放在當前的目錄
+          unpack(completion.getDirOnly(suffix))
+        }
+      elseif prefix == "channel_id" then
+        comps = { '118456055842734083' }
+      elseif prefix == "message_id" then
+        comps = { '1374023144347533414' }
+      end
+
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+
+      -- 過濾補全結果，只返回以當前輸入開頭的選項
+      return vim.tbl_filter(
+        function(item)
+          return vim.startswith(item, suffix)
+        end,
+        comps
+      )
+    end
+  })
 
 
 return commands
