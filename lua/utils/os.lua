@@ -72,6 +72,24 @@ function M.remove_with_notify(cmd, success_msg, err_msg)
   return true
 end
 
+--- 檢查或提示建立輸出目錄
+---@return boolean? suc
+function M.check_output_dir(dir_path)
+  if vim.fn.isdirectory(dir_path) == 1 then
+    return true
+  end
+
+  local input = vim.fn.input(string.format("Directory %s does not exist, do you want to create it? (y/n):", dir_path))
+  if input:lower() == "y" or input:lower() == "yes" then
+    vim.fn.mkdir(dir_path, "p")
+    print(string.format("✅ Directory %s has been successfully established!", dir_path))
+    return true
+  else
+    print("Cancel directory")
+    return false
+  end
+end
+
 M.IsWindows = isWindows()
 
 return M

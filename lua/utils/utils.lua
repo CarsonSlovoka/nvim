@@ -5,6 +5,7 @@ return {
   complete = require "utils.complete",
   encoding = require "utils.encoding",
   flag = require "utils.flag",
+  http = require "utils.http",
   os = require "utils.os",
   range = require "utils.range",
   sway = require "utils.sway",

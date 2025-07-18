@@ -3301,4 +3301,20 @@ function commands.setup()
   )
 end
 
+local d = require("discord.download")
+vim.api.nvim_create_user_command("DownloadDiscordAttachments", function(args)
+  local output_dir = args.fargs[1]
+  local channel_id = args.fargs[2] or os.getenv("CHANNEL_ID")
+  local message_id = args.fargs[3]
+
+  d.download_attachments(output_dir, channel_id, { message_id })
+end, {
+  nargs = "*",
+  desc = "Download Discord attachments to specified directory",
+  complete = function()
+
+  end
+})
+
+
 return commands
