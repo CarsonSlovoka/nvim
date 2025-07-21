@@ -1941,16 +1941,18 @@ local function install_pantran()
   end
 
   -- :'<,'>Pantran mode=hover target=zh -- target是要看engine來決定
-  -- google:
+  -- google: (缺點是如果是一些程式語言的語法，它可以也會一併翻，或者將 ", [ 變成全形，deepl的狀況會比較少)
   -- :'<,'>Pantran engine=google mode=hover target=ja
   -- :'<,'>Pantran engine=google mode=hover target=zh-CN
   -- :'<,'>Pantran engine=google mode=hover target=zh-TW
   -- :'<,'>Pantran mode=replace source=zh-TW target=en -- 將中文轉成英文, 並直接取代
 
   -- deepl: languages supported: https://developers.deepl.com/docs/getting-started/supported-languages
+  -- 注意！supported-languages有區分 source 和 target
   -- :'<,'>Pantran engine=deepl mode=hover target=zh
   -- :'<,'>Pantran engine=deepl mode=hover target=zh-HANS  (簡體中文)
   -- :'<,'>Pantran engine=deepl mode=hover target=zh-HANT  (繁體中文)
+  -- :'<,'>Pantran mode=replace source=ZH target=JA engine=deepl  -- source只有ZH, 無特別再區分ZH-HANS, ZH-HANT 而target可以有區分
   require("pantran").setup {
     -- Default engine to use for translation. To list valid engine names run
     -- `:lua =vim.tbl_keys(require("pantran.engines"))`.
