@@ -36,7 +36,11 @@ function M.download_attachments(output_dir, channel_id, message_ids)
     })
 
     if res.status ~= 200 then
-      vim.notify(string.format("無法獲取訊息 %s：%s", msg_id, res.status), vim.log.levels.WARN)
+      -- print(vim.inspect(res))
+      vim.notify(
+        string.format("無法獲取訊息: %s | msd_id: %s StatusCode: %s", res.body, msg_id, res.status),
+        vim.log.levels.WARN
+      )
       goto continue
     end
 
