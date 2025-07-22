@@ -398,6 +398,20 @@ local function setup_normal()
   map('n', "<M-L>", "<C-W>L", { desc = "[→] Move the current window to be at the very right" })
 
 
+  local autoPair = true
+  vim.api.nvim_create_user_command("SetAutoPair",
+    function(args)
+      autoPair = args.fargs[1] == "1"
+      vim.notify("auto pair: " .. tostring(autoPair), vim.log.levels.INFO)
+    end,
+    {
+      desc = [[auto pair ( ), [ ], { }, " ", ``]],
+      nargs = 1,
+      complete = function()
+        return { "1", "0" }
+      end
+    }
+  )
   for open, close in pairs({
     ["("] = ")",
     ["["] = "]",
@@ -406,8 +420,16 @@ local function setup_normal()
     ["`"] = "`",
   }) do
     map('i', open,
-      open .. close .. "<Left>", -- 輸入配對的括號並往左移動到中間，方便輸入括號內的內容
-      { desc = "自動補全" .. open }
+      function()
+        if not autoPair then
+          return open
+        end
+        return open .. close .. "<Left>" -- 輸入配對的括號並往左移動到中間，方便輸入括號內的內容
+      end,
+      {
+        desc = "自動補全" .. open,
+        expr = true,
+      }
     )
   end
 
