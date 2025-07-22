@@ -233,10 +233,26 @@ function M.setup(opts)
           -- underline = true
         })
 
-        local groupTODO = "TODO"
-        -- vim.fn.matchadd(groupTODO, 'TODO:? .*') -- 無效
-        vim.fn.matchadd(groupTODO, 'TODO .*')
-        vim.api.nvim_set_hl(0, groupTODO, { fg = "#8bb33d", italic = true })
+        -- local groupTODO = "TODO"
+        -- -- vim.fn.matchadd(groupTODO, 'TODO:? .*') -- 無效
+        -- vim.fn.matchadd(groupTODO, 'TODO .*')
+        -- vim.api.nvim_set_hl(0, groupTODO, { fg = "#8bb33d", italic = true })
+
+        -- https://github.com/orgs/community/discussions/16925
+        local highlights = {
+          { name = "NOTE",      fg = "#FFFFFF", bg = "#0000FF" },
+          { name = "TODO",      fg = "#F1F2E6", bg = "#8bb33d" },
+          { name = "WARNING",   fg = "#020505", bg = "#FFA500" },
+          { name = "FIXME",     fg = "#F8F6F4", bg = "#EA6890" },
+          { name = "TIP",       fg = "#323225", bg = "#99CC00" },
+          { name = "IMPORTANT", fg = "#F1F2E6", bg = "#FF00FF" },
+          { name = "CAUTION",   fg = "#F1F2E6", bg = "#FF0000" },
+        }
+        for _, hl in ipairs(highlights) do
+          local hl_name = "@" .. hl.name
+          vim.api.nvim_set_hl(0, hl_name, { fg = hl.fg, bg = hl.bg, bold = true })
+          vim.fn.matchadd(hl_name, "\\c \\?\\<" .. hl.name .. "\\> \\?") -- 前後如果有空白也會一併加上背景色(這樣比較明顯)
+        end
       end
     }
   )
