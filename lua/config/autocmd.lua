@@ -296,7 +296,7 @@ function M.setup(opts)
       group = groupName.binaryViwer,
       desc = "show file info",
       pattern = {
-        "*.png",
+        "*.png", "*.bmp", "*.ico",
         "*.webp", "*.webm",
         "*.jpeg", "*.jpg",
         "*.mp4", "*.mp3",
@@ -312,7 +312,8 @@ function M.setup(opts)
         -- 🟧 建一個buf
         local org_bug_id = vim.api.nvim_get_current_buf()
         vim.cmd("enew")              -- 開一個新的buffer
-        vim.cmd("bw " .. org_bug_id) -- 不要當前的這一個檔案, w 會連<C-O>, <C-I>都沒辦法再跳轉過來 (就其實可以討論，但目前先不要留它)
+        -- vim.cmd("bw " .. org_bug_id) -- 不要當前的這一個檔案, w 會連<C-O>, <C-I>都沒辦法再跳轉過來 (就其實可以討論，但目前先不要留它)
+        vim.cmd("bd " .. org_bug_id) -- bw確定會讓一些檔案沒辦法正常顯示，例如比較大一點的ico, 用bd可行
 
         vim.api.nvim_set_option_value("buftype", "nofile", { buf = 0 })
         vim.api.nvim_buf_set_name(0, filename)
@@ -331,6 +332,7 @@ function M.setup(opts)
         local helps = {
           -- 注意xxd 的option要放在前面，而且-c與-C是不同的
           string.format(":r! xxd -c 16 %s", abspath), -- 如果要看二進位的資料，提示使用者可以用xxd來查看
+          string.format("gimp %s", abspath),
           "",
         }
         -- vim.api.nvim_buf_set_lines(0, row, -1, false, helps) -- 由於最後故意給了一個""當成空行，不想要這個空行也變成Comment
