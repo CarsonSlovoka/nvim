@@ -346,6 +346,7 @@ function M.setup(opts)
           string.format(":r! xxd -c 16 %s", abspath), -- 如果要看二進位的資料，提示使用者可以用xxd來查看
           string.format("gimp %s", abspath),
           string.format("foot yazi %s", abspath),     -- <leader><F5>
+          string.format("kitty +kitten icat %s", abspath),
           "",
         }
         -- vim.api.nvim_buf_set_lines(0, row, -1, false, helps) -- 由於最後故意給了一個""當成空行，不想要這個空行也變成Comment
