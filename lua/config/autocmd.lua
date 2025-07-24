@@ -263,11 +263,12 @@ function M.setup(opts)
           },
           {
             name = "HYPERLINK",
-            fg = "#ffffff",
-            bg = "#0167CC",
+            fg = "#00c6ff", -- #00a6ff #00d3f5
+            -- fg = "#ffffff", bg = "#0167CC",
             underline = true,
             -- [[ \zshttps\?:\/\/\S*]]
-            pattern = [[ \zshttps\?:\/\/[a-zA-Z0-9#?./=]*]],
+            -- pattern = [[ \zshttps\?:\/\/[a-zA-Z0-9#?./=_%-]*]], -- 一開始沒空白也會失敗
+            pattern = [[\<https\?:\/\/[a-zA-Z0-9#?./=_%-]*\>]],
           },
         }
         for _, hl in ipairs(highlights) do
