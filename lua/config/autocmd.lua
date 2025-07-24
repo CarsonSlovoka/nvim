@@ -261,11 +261,26 @@ function M.setup(opts)
             bold = false,
             strikethrough = true,
           },
+          {
+            name = "HYPERLINK",
+            fg = "#ffffff",
+            bg = "#0167CC",
+            underline = true,
+            -- [[ \zshttps\?:\/\/\S*]]
+            pattern = [[ \zshttps\?:\/\/[a-zA-Z0-9#?./=]*]],
+          },
         }
         for _, hl in ipairs(highlights) do
           local hl_name = "@" .. hl.name
           vim.api.nvim_set_hl(0, hl_name,
-            { fg = hl.fg, bg = hl.bg, bold = hl.bold, strikethrough = hl.strikethrough }
+            {
+              -- TIP: 屬性如果是 nil 會用預設值
+              fg = hl.fg,
+              bg = hl.bg,
+              bold = hl.bold,
+              strikethrough = hl.strikethrough,
+              underline = hl.underline,
+            }
           )
           -- vim.fn.matchadd(hl_name, "\\c \\?\\<" .. hl.name .. "\\> \\?") -- 前後如果有空白也會一併加上背景色(這樣比較明顯)
           vim.fn.matchadd(hl_name, hl.pattern)
