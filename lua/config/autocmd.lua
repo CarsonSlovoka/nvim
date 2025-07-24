@@ -244,17 +244,29 @@ function M.setup(opts)
           -- ` \\?` 前面允許有空白
           -- 首字母要求大寫
           -- `:\\? \\?` 最後面可以有`: `或是僅有`:`都行
-          { name = "NOTE",      fg = "#FFFFFF", bg = "#0000FF", pattern = " \\?\\<N[Oo][Tt][Ee]\\>:\\? \\?" },
-          { name = "TODO",      fg = "#000000", bg = "#8bb33d", pattern = " \\?\\<T[Oo][Dd][Oo]\\>:\\? \\?" },
-          { name = "WARNING",   fg = "#020505", bg = "#FFA500", pattern = " \\?\\<W[Aa][Rr][Nn]\\([Ii][Nn][Gg]\\)\\?\\>:\\? \\?" }, -- ing可以不一定要有
-          { name = "FIXME",     fg = "#F8F6F4", bg = "#EA6890", pattern = " \\?\\<F[Ii][Xx][Mm][Ee]\\>:\\? \\?" },
-          { name = "TIP",       fg = "#323225", bg = "#99CC00", pattern = " \\?\\<T[Ii][Pp]\\>:\\? \\?" },
-          { name = "IMPORTANT", fg = "#F1F2E6", bg = "#FF00FF", pattern = " \\?\\<I[Mm][Pp][Oo][Rr][Tt][Aa][Nn][Tt]\\>:\\? \\?" },
-          { name = "CAUTION",   fg = "#F1F2E6", bg = "#FF0000", pattern = " \\?\\<C[Aa][Uu][Tt][Ii][Oo][Nn]\\>:\\? \\?" },
+          { name = "NOTE",       fg = "#FFFFFF", bg = "#0000FF", pattern = " \\?\\<N[Oo][Tt][Ee]\\>:\\? \\?" },
+          { name = "USAGE",      fg = "#FFFFFF", bg = "#179797", pattern = " \\?\\<U[Ss][Aa][Gg][Ee]\\>:\\? \\?" },
+          -- { name = "USAGE",      fg = "#060402", bg = "#24EBEB", pattern = " \\?\\<U[Ss][Aa][Gg][Ee]\\>:\\? \\?" },
+          { name = "TODO",       fg = "#000000", bg = "#8bb33d", pattern = " \\?\\<T[Oo][Dd][Oo]\\>:\\? \\?" },
+          { name = "WARNING",    fg = "#020505", bg = "#FFA500", pattern = " \\?\\<W[Aa][Rr][Nn]\\([Ii][Nn][Gg]\\)\\?\\>:\\? \\?" }, -- ing可以不一定要有
+          { name = "FIXME",      fg = "#F8F6F4", bg = "#EA6890", pattern = " \\?\\<F[Ii][Xx][Mm][Ee]\\>:\\? \\?" },
+          { name = "TIP",        fg = "#323225", bg = "#99CC00", pattern = " \\?\\<T[Ii][Pp][Ss]\\?\\>:\\? \\?" },
+          { name = "IMPORTANT",  fg = "#F1F2E6", bg = "#FF00FF", pattern = " \\?\\<I[Mm][Pp][Oo][Rr][Tt][Aa][Nn][Tt]\\>:\\? \\?" },
+          { name = "CAUTION",    fg = "#F1F2E6", bg = "#FF0000", pattern = " \\?\\<C[Aa][Uu][Tt][Ii][Oo][Nn]\\>:\\? \\?" },
+          { name = "DEPRECATED", fg = "#FFFFFF", bg = "#696969", pattern = "\\<D[Ee][Pp][Rr][Ee][Cc][Aa][Tt][Ee][Dd]\\>" },
+          {
+            name = "STRIKETHROUGH",
+            fg = "#8b949e",
+            pattern = "\\~\\~.*\\~\\~",
+            bold = false,
+            strikethrough = true,
+          },
         }
         for _, hl in ipairs(highlights) do
           local hl_name = "@" .. hl.name
-          vim.api.nvim_set_hl(0, hl_name, { fg = hl.fg, bg = hl.bg, bold = true })
+          vim.api.nvim_set_hl(0, hl_name,
+            { fg = hl.fg, bg = hl.bg, bold = hl.bold, strikethrough = hl.strikethrough }
+          )
           -- vim.fn.matchadd(hl_name, "\\c \\?\\<" .. hl.name .. "\\> \\?") -- 前後如果有空白也會一併加上背景色(這樣比較明顯)
           vim.fn.matchadd(hl_name, hl.pattern)
         end
