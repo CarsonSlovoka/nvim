@@ -268,7 +268,7 @@ function M.setup(opts)
             underline = true,
             -- [[ \zshttps\?:\/\/\S*]]
             -- pattern = [[ \zshttps\?:\/\/[a-zA-Z0-9#?./=_%-]*]], -- 一開始沒空白也會失敗
-            pattern = [[\<https\?:\/\/[a-zA-Z0-9#?./=_%-]*\>]],
+            pattern = [[\<https\?:\/\/[a-zA-Z0-9#?./=_%-:]*\>]],
           },
         }
         for _, hl in ipairs(highlights) do
