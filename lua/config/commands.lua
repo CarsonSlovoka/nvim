@@ -3228,6 +3228,32 @@ function commands.setup()
     }
   )
 
+  vim.api.nvim_create_user_command("Yazi",
+    function(args)
+      if vim.fn.executable("yazi") == 0 then
+        vim.fn.setloclist(0, {
+          { text = "https://yazi-rs.github.io/docs/installation/" },
+        }, 'a')
+        vim.notify("exe: yazi not found.", vim.log.levels.WARN)
+        vim.cmd("lopen 2")
+        return
+      end
+
+      local target = ""
+      if args.range ~= 0 then
+        target = table.concat(utils.range.get_selected_text(), '')
+      else
+        target = vim.fn.expand("%:p:h:t")
+      end
+      vim.cmd("!foot yazi " .. target .. " & ")
+    end,
+    {
+      desc = "!foot yazi fileOrDir",
+      nargs = 0,
+      range = true,
+    }
+  )
+
   vim.api.nvim_create_user_command("Viu",
     function(args)
       if args.fargs[1] == "-h" then
