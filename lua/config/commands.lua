@@ -3394,7 +3394,75 @@ vim.api.nvim_create_user_command("DownloadDiscordAttachments", function(args)
         comps
       )
     end
-  })
+  }
+)
 
+vim.api.nvim_create_user_command("Sum", function()
+  -- Please refer to: https://vi.stackexchange.com/a/47003/31859
 
+  -- Get VISUAL BLOCK
+  local start_pos = vim.fn.getpos("'<") -- Visual selected start position
+  local end_pos = vim.fn.getpos("'>")   -- Visual selected end position
+  local start_line = start_pos[2]
+  local end_line = end_pos[2]
+  local start_col = start_pos[3]
+  local end_col = end_pos[3]
+
+  -- Make sure start_col and end_col are in the correct order.
+  if start_col > end_col then
+    start_col, end_col = end_col, start_col
+  end
+
+  -- Get the contents of the selected rows
+  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+
+  -- Extraction of Visual Block column ranges
+  local block_content = {}
+  for i, line in ipairs(lines) do
+    -- Ensure that only start_col to end_col are extracted.
+    local len = #line
+    local col_start = math.min(start_col, len)
+    local col_end = math.min(end_col, len)
+    local prefix = " + "
+    if i == 1 then
+      prefix = ""
+    end
+    if col_start <= col_end then
+      table.insert(block_content, prefix .. string.sub(line, col_start, col_end))
+    else
+      table.insert(block_content, "") -- if the row has no content, insert an empty row
+    end
+  end
+
+  -- Creating a new buffer
+  vim.cmd("new | setlocal buftype=nofile noswapfile")
+
+  -- Paste Visual Block content to new buffer
+
+  -- vim.api.nvim_buf_set_lines(0, 0, -1, false, block_content)
+  local joined_content = table.concat(block_content, " ")
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { joined_content }) -- 直接寫上一整列，不再拆列
+
+  -- use bc get result
+  vim.cmd("%!bc")
+
+  -- copy result to reg "
+  vim.cmd("%y")
+
+  -- show result
+  print(joined_content .. "\n"
+    .. "="
+    .. vim.fn.getreg('"')
+    .. "\n"
+    .. "use `p` to paste if you want"
+  )
+
+  -- delete the temp buffer (really delete the buffer)
+  vim.cmd("bw")
+end, {
+  desc = "Calculate the sum of the columns of a visual block using bd and save it to the clipboard",
+  range = true,
+})
+
+33+55.23
 return commands
