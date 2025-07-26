@@ -810,6 +810,7 @@ local function install_telescope()
     "%.git/", -- 這種是精確匹配. 因為 % 會轉譯，也就是.並非任一字元，而是真的匹配.
     -- "^pack\\", -- 忽略pack目錄, 再打指令的時候用一個 \  就好，此外不能用成 /
   }           -- 忽略文件或目錄模式
+  local actions = require "telescope.actions"
   m.setup({
     defaults = {
       -- 預設配置
@@ -847,8 +848,9 @@ local function install_telescope()
       border = {},
       borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
       path_display = { "truncate" },
-      set_env = { ["COLORTERM"] = "truecolor" },                          -- 修正配色
+      set_env = { ["COLORTERM"] = "truecolor" }, -- 修正配色
       mappings = {
+        -- TIP: https://github.com/nvim-telescope/telescope.nvim/blob/b4da76be54691e854d3e0e02c36b0245f945c2c7/lua/telescope/mappings.lua#L133-L233
         n = {                                                             -- 一般模式
           ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
 
@@ -856,8 +858,17 @@ local function install_telescope()
           --   local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr) -- 這是mirror的toggle
           --   picker.layout_strategy = "horizontal"
           -- end
+          ["K"] = actions.preview_scrolling_up,
+          ["J"] = actions.preview_scrolling_down,
+          ["H"] = actions.preview_scrolling_left,
+          ["L"] = actions.preview_scrolling_right,
         },
-        i = {                                                             -- 插入模式
+        i = { -- 插入模式
+          ["<C-k>"] = actions.preview_scrolling_up,
+          ["<C-j>"] = actions.preview_scrolling_down,
+          ["<C-h>"] = actions.preview_scrolling_left,
+          ["<C-l>"] = actions.preview_scrolling_right,
+
           ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
           ["<C-x>"] = function(
           -- prompt_bufnr
