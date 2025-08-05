@@ -1935,7 +1935,11 @@ end
 local function install_ccc()
   -- -- vim.opt.termguicolors = true
 
-  local ccc = require("ccc")
+  local ok, ccc = pcall(require, "ccc")
+  if not ok then
+    vim.notify("Failed to load ccc", vim.log.levels.WARN)
+    return
+  end
   -- local mapping = ccc.mapping
 
   ccc.setup({
