@@ -567,4 +567,16 @@ vim.api.nvim_create_user_command("BkAddDir",
   }
 )
 
+
+vim.api.nvim_create_augroup("carson.native.plugin", {})
+vim.api.nvim_create_autocmd('VimLeave',
+  {
+    desc = "Automatically call BkSave to save the final state when you end vim",
+    group = "carson.native.plugin",
+    callback = function()
+      vim.cmd("BkSave")
+    end,
+  }
+)
+
 return bookmark
