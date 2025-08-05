@@ -215,6 +215,43 @@ font._saveXML(writer)
   return ""
 end
 
+local function program_font_validator()
+  if vim.fn.executable("font-validator") == 0 then
+    vim.notify(
+      "font-validator not found.\n" ..
+      "wget https://github.com/HinTak/Font-Validator/releases/download/FontVal-2.1.6/FontVal-2.1.6-ubuntu-18.04-x64.tgz\n" ..
+      "tar -xvzf FontVal-2.1.6-ubuntu-18.04-x64.tgz\n" ..
+      'sudo ln -siv "$HOME/FontVal-2.1.6-ubuntu-18.04-x64/FontValidator-ubuntu-18.04-x64" /usr/bin/font-validator'
+      ,
+      vim.log.levels.WARN
+    )
+    return
+  end
+
+  local fontPath = vim.fn.expand("%:p")
+  local fontname = "♻️" .. vim.fn.expand("%:t")
+  local exists, buf = utils.api.get_buf(vim.fn.getcwd() .. "/" .. fontname)
+  if not exists then
+    vim.api.nvim_command("enew")
+    buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+    vim.api.nvim_buf_set_name(buf, fontname)
+    -- vim.bo.filetype = "opentype"
+  elseif buf then
+    vim.api.nvim_set_current_buf(buf)
+  end
+
+  local r = vim.system({ "font-validator", "-file", fontPath, "-stdout" }):wait()
+  -- if r.code ~= 0 then -- 它回的可能都不會是0, 所以乾脆不判斷
+  --   vim.notify(string.format("❌ font-validator error. err code: %d %s", r.code, r.stderr), vim.log.levels.WARN)
+  --   return
+  -- end
+
+  if buf then
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
+  end
+end
+
 local function program_ots_sanitize()
   local fontpath = vim.fn.expand("%:p")
   local ok_lines = {
@@ -312,8 +349,13 @@ require("dap").configurations.opentype = {
     name = "convert to fontTools:ttx format",
     type = "custom",
     request = "launch",
-
     program = program_convert2ttx,
+  },
+  {
+    name = "font-validator",
+    type = "custom",
+    request = "launch",
+    program = program_font_validator,
   },
   {
     name = "ots-sanitize 字型驗證器",
