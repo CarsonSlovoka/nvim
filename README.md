@@ -176,6 +176,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── pantran.nvim                  -- ✅ 翻譯工具, engine: google, deepl, ... ( b87c3ae4 )
 │   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
 │   │
+│   ├── view/start/
+│   │         └── csvview.nvim       -- ✅ 方便查看和編輯csv ( v1.2.0... 22c9450 )
+│   │
 │   ├── sql/start/                   -- ✅ sql相關
 │   │         └── sqls.nvim          -- ( d1bc542 )
 │   │
@@ -901,6 +904,20 @@ git clone https://github.com/mfussenegger/nvim-dap-python.git ~/.config/nvim/pac
 ```sh
 git clone https://github.com/jbyuki/one-small-step-for-vimkind.git ~/.config/nvim/pack/debug/start/one-small-step-for-vimkind
 ```
+
+## view
+
+```sh
+mkdir -pv ~/.config/nvim/pack/view/start/
+```
+
+### [csvview.nvim](https://github.com/hat0uma/csvview.nvim)
+
+
+```sh
+git clone https://github.com/hat0uma/csvview.nvim.git ~/.config/nvim/pack/view/start/csvview.nvim
+```
+
 
 ## sql
 

@@ -2121,6 +2121,19 @@ local function install_image()
   )
 end
 
+local function install_csvview()
+  local ok, csvview = pcall(require, "csvview")
+  if not ok then
+    vim.notify("Failed to load csvview", vim.log.levels.WARN)
+    return
+  end
+  csvview.setup()
+  -- USAGE:
+  -- :CsvViewEnable
+  -- :CsvViewDisable
+  -- :CsvViewToggle
+end
+
 local installs = {
   {
     name = "registers",
@@ -2444,6 +2457,7 @@ local installs = {
   { name = "create color code", fn = install_ccc,            delay = 0 },
   { name = "pantran.nvim",      fn = install_pantran,        delay = 5 },
   { name = "image.nvim",        fn = install_image,          delay = 5 },
+  { name = "csvview.nvim",      fn = install_csvview,        delay = 5 },
   {
     name = "global-func",
     fn = function()
