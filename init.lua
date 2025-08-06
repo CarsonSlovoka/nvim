@@ -156,6 +156,7 @@ local function install_nvimTreesitter()
       "python", -- 為了在markdown突顯
 
       -- "ttx",
+      "xml",
 
       -- vscode-json-language-server 就有json, jsonc的lsp, 不過沒有json5的lsp
       "json",  -- 為了md上的codeblock突顯
