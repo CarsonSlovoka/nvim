@@ -87,8 +87,7 @@ require("config.autocmd").setup({
   end
 })
 
--- windows的系統不適用，所以只在非windows系統使用
-if not osUtils.IsWindows then
+if vim.uv.os_uname().sysname == "Linux" then
   require("config.input").fcitx.setup(
     "fcitx5-remote" -- which fcitx5-remote
   )
