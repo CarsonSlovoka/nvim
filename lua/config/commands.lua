@@ -3464,4 +3464,16 @@ end, {
   range = true,
 })
 
+vim.api.nvim_create_user_command("CloneSession", function(args)
+  local session_path = args.fargs[1] or "~/mySession.vim"
+  vim.cmd("mksession! " .. session_path)
+  vim.cmd(string.format("!foot nvim -S %s &", session_path))
+end, {
+  desc = "mksession ~/mySession.vim",
+  nargs = "?",
+  complete = function()
+    return "~/mySession.vim"
+  end
+})
+
 return commands
