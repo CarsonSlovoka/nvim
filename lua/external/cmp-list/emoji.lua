@@ -533,8 +533,39 @@ emoji_data.G.food = {
         "popcorn",
       },
     },
+    { "🍎",
+      {
+        "redApple",
+        "apple",
+        "macOS",
+      },
+    },
   }
 }
+
+emoji_data.G.OS = {
+  alias = { "OS", "platform" },
+  items = {
+    { "🐧",
+      {
+        "penguin",
+        "linux",
+      },
+    },
+    { "🪟",
+      {
+        "windows",
+      },
+    },
+    { "",
+      {
+        "macOS",
+        "iOS",
+      },
+    },
+  }
+}
+
 
 emoji_data.G.mood = {
   alias = { "mood", "feeling" },
