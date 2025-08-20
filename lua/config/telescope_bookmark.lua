@@ -574,7 +574,10 @@ vim.api.nvim_create_autocmd('VimLeave',
     desc = "Automatically call BkSave to save the final state when you end vim",
     group = "carson.native.plugin",
     callback = function()
-      vim.cmd("BkSave")
+      local confirm = vim.fn.input("Do you want to save with BkSave? (Y/n): ")
+      if confirm:lower() == 'y' then
+        vim.cmd("BkSave")
+      end
     end,
   }
 )
