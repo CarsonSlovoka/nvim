@@ -2314,7 +2314,18 @@ local installs = {
           -- BasedOnStyle: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#basedonstyle
           "--fallback-style=WebKit", -- https://www.webkit.org/code-style-guidelines/
           -- IncludeBlocks -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks 可以設定include是要如何被格式化
-        }
+        },
+        on_attach = function(client, bufnr)
+          -- 也可以加到這邊: https://github.com/CarsonSlovoka/nvim/blob/7089ab7cf0e95d6e5663b357a742eff55ddb208d/lua/config/autocmd.lua#L552-L558 但是會比較亂，要額外新增if的判斷
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+              -- 確定用clang-format也無法將結尾多的空白移除(至少在Clang 22.0.0是如此): https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+              -- https://stackoverflow.com/a/54486390/9935654
+              vim.cmd([[%s/\s\+$//e]])
+            end,
+          })
+        end,
       }
     end,
     delay = 5,
