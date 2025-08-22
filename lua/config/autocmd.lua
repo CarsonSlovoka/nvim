@@ -835,6 +835,7 @@ function M.setup(opts)
           { text = ":filetype plugin off" },
           { text = ":TSBufDisable highlight" },
           { text = ":TSBufEnable highlight" },
+          { text = ":autocmd!" }, -- 移除所有自動命令
         }, 'a')
 
         vim.notify(
