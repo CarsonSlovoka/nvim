@@ -5,6 +5,18 @@ local exec = require("utils.exec")
 local map = require("utils.keymap").keymap
 -- 如果有key已經被設定，有模糊的情況，會需要等待，如果不想要等待，可以按完之後隨便再按下一個不相關的鍵(ESC, space,...)使其快速反應
 
+---@param label string char
+local function set_mark(label)
+  local group = require("config.sign_define").group
+  local sign_id = vim.api.nvim_create_namespace(group .. "_" .. label)
+  local line = vim.api.nvim_win_get_cursor(0)[1]
+  -- 清除該 mark 的舊 sign
+  vim.fn.sign_unplace(group, { buffer = vim.fn.bufnr(), id = sign_id })
+
+  -- 放置新 sign
+  vim.fn.sign_place(sign_id, group, "MarkPin" .. label, vim.fn.bufnr(), { lnum = line })
+end
+
 
 -- 系統剪貼簿相關
 map("n", "<leader>y", '"+y', { desc = "複製到系統剪貼簿" })
@@ -15,8 +27,29 @@ map("n", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪�
 map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
 map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
 
-map("n", "/", 'ms/', { desc = "在搜尋前，先在目前的位置mark s再進行搜尋" })
-map("n", "?", 'ms?', { desc = "在搜尋前，先在目前的位置mark s再進行搜尋" })
+-- map("n", "/", 'ms/')
+map("n", "/",
+  function()
+    set_mark("s")
+    return "ms/"
+  end,
+  {
+    desc = "在搜尋前，先在目前的位置mark s再進行搜尋",
+    expr = true
+  }
+)
+
+-- map("n", "?", 'ms?')
+map("n", "?",
+  function()
+    set_mark("s")
+    return "ms?"
+  end,
+  {
+    desc = "在搜尋前，先在目前的位置mark s再進行搜尋",
+    expr = true
+  }
+)
 
 -- map("n", "<leader>.", ':<Up><CR>', { desc = "重複上一個命令" }) -- 這樣可行
 map("n", "<leader>,", '@:', { desc = "Repeat last command-line" }) -- 其實原本就有這個命令了 `:help @:` 先執行一次執令之後，再用@@也可以再次執行上一個指令
