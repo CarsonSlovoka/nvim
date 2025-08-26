@@ -31,6 +31,12 @@ map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪�
 map({ "i", "v" }, "<C-h>", '<C-Left>', { desc = "<C-Left>" })
 map({ "i", "v" }, "<C-l>", '<C-Right>', { desc = "<C-Right>" })
 
+-- map("i", "<C-S-h>", '<Left>', { desc = "move left" })
+map("i", "<A-h>", '<Left>', { desc = "move left" })
+map("i", "<A-j>", '<Down>', { desc = "move down" })
+map("i", "<A-k>", '<Up>', { desc = "move up" }) -- 避免和C-K digraphs 重複到
+map("i", "<A-l>", '<Right>', { desc = "move right" })
+
 -- map("n", "/", 'ms/')
 map("n", "/",
   function()
