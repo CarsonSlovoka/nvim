@@ -28,8 +28,8 @@ map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪�
 map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
 
 -- map("i", "<C-h>", '<C-o>b', { desc = "<C-Left>" }) -- 用C-o的效果不好
-map("i", "<C-h>", '<C-Left>', { desc = "<C-Left>" })
-map("i", "<C-l>", '<C-Right>', { desc = "<C-Right>" })
+map({ "i", "v" }, "<C-h>", '<C-Left>', { desc = "<C-Left>" })
+map({ "i", "v" }, "<C-l>", '<C-Right>', { desc = "<C-Right>" })
 
 -- map("n", "/", 'ms/')
 map("n", "/",
