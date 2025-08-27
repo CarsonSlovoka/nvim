@@ -2195,33 +2195,16 @@ local installs = {
         'pyright',
         'gopls',
         'ts_ls', -- javascript, typescript
+
+        -- html, css, json, eslint: https://github.com/hrsh7th/vscode-langservers-extracted
+        -- 👆裡面有 vscode-{html,css,json,eslint}-language-server 四個執行檔
+        'html',
+        "cssls",
+        "jsonls",
       })
     end,
     delay = 0
   },
-  {
-    name = "lspconfig html",
-    fn = function()
-      -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
-      -- require("lspconfig").html.setup {}
-    end,
-    delay = 5,
-  },
-  {
-    name = "lspconfig cssls",
-    fn = function()
-      -- require("lspconfig").cssls.setup {}
-    end,
-    delay = 5,
-  },
-  {
-    name = "lspconfig jsonls",
-    fn = function()
-      -- require("lspconfig").jsonls.setup {}
-    end,
-    delay = 5,
-  },
-
   {
     name = "lspconfig bashls",
     fn = function()
