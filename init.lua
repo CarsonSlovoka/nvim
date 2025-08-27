@@ -2195,6 +2195,7 @@ local installs = {
     fn = function()
       install_lspconfig()
       vim.lsp.enable('pyright')
+      vim.lsp.enable("gopls")
     end,
     delay = 0
   },
