@@ -2204,39 +2204,10 @@ local installs = {
         "bashls",
         "markdown_oxide",
         "clangd",
+        "lua_ls",
       })
     end,
     delay = 0
-  },
-  {
-    name = "lspconfig lua_ls",
-    fn = function()
-      -- require("lspconfig").lua_ls.setup {
-      --   settings = {
-      --     Lua = {
-      --       runtime = {
-      --         version = 'LuaJIT',
-      --         path = "/usr/bin/lua5.1",
-      --       },
-      --       diagnostics = {
-      --         -- 告訴 LSP `vim` 是一個全域變數
-      --         globals = { 'vim' },
-      --         -- disable = { "missing-fields" }, -- hrtime的警告還是會有
-      --       },
-      --       workspace = {
-      --         -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
-      --         library = vim.api.nvim_get_runtime_file('', true)
-      --         -- vim.api.nvim_ -- 👈 可以用來測試添加library的結果，如果沒有設定會看到Text並且沒有參數的提示
-      --       },
-      --       -- Do not send telemetry data containing a randomized but unique identifier
-      --       telemetry = {
-      --         enable = false
-      --       },
-      --     }
-      --   }
-      -- }
-    end,
-    delay = 5,
   },
   {
     name = "lspconfig sqls",
