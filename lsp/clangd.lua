@@ -75,6 +75,12 @@ end
 ---@type vim.lsp.Config
 return {
   cmd = {
+    -- https://manpages.ubuntu.com/manpages/noble/man1/clangd-18.1.html
+    -- 強列建議自己在專案下建立 `.clang-format` 的檔案在去設定該專案用的格式
+    -- 透過BaseOnStyle可以設定所有沒有被定義到的項目要參考所一個設定，共有LLVM, Google, WebKit, GNU, WebKit, ...
+    -- BasedOnStyle: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#basedonstyle
+    -- "--fallback-style=WebKit", -- https://www.webkit.org/code-style-guidelines/
+    -- IncludeBlocks -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks 可以設定include是要如何被格式化
     'clangd'
   },
   filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
