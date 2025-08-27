@@ -2202,18 +2202,10 @@ local installs = {
         "cssls",
         "jsonls",
         "bashls",
+        "markdown_oxide",
       })
     end,
     delay = 0
-  },
-  {
-    name = "lspconfig markdown_oxide",
-    fn = function()
-      -- require("lspconfig").markdown_oxide.setup {                           -- 請安裝rust後透過cargo來取得
-      --   cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
-      -- }
-    end,
-    delay = 5,
   },
   {
 
