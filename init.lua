@@ -274,11 +274,8 @@ local function install_lspconfig()
   -- ⭐ 如果你的neovim是透過source來生成，那麼所有內建的lua都會被放到 /usr/share/nvim/runtime/lua 目錄下，例如:
   --        ~/neovim/runtime/lua/vim/lsp.lua  # 假設你的neovim是clone到家目錄下，那麼此lsp.lua由source建立完成之後，就會被放到以下的目錄
   -- /usr/share/nvim/runtime/lua/vim/lsp.lua  # 而這些檔案正是nvim啟動時候會載入的檔案，如果你真想要debug，可以直接修改這些檔案來print出一些想要看到的資訊
-  local ok, m = pcall(require, "lspconfig")
-  if not ok then
-    vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
-    return
-  end
+  -- local ok, m = pcall(require, "lspconfig") -- 👈 用neovim內建的lsp即可，頂多去參考nvim-lspconfig這插件的設定即可, 但不需要真的載入該插件
+
 
   -- 🧙 ~/.local/state/nvim/lsp.log -- 在:checkhealth其實就可以看到log的路徑和目前log所佔的大小
   -- :h vim.lsp.log_levels
@@ -2194,57 +2191,18 @@ local installs = {
     name = "lspconfig",
     fn = function()
       install_lspconfig()
-      vim.lsp.enable('pyright')
-      vim.lsp.enable("gopls")
+      vim.lsp.enable({
+        'pyright',
+        'gopls',
+      })
     end,
     delay = 0
-  },
-  {
-    name = "lspconfig gopls",
-    fn = function()
-      -- :lua require("lspconfig").gopls.setup { settings = { gopls = { buildFlags = { "-tags=xxx" } } } } -- 👈 這招可行. (可再搭配 :e 來刷新)
-      vim.api.nvim_create_user_command("GoplsSetBuildFlags",
-        function(args)
-          -- local buildFlags = args.fargs
-          local buildFlags = table.concat(args.fargs, ",") -- https://stackoverflow.com/a/64318502/9935654
-          -- print(vim.inspect(buildFlags))
-          require("lspconfig").gopls.setup { settings = { gopls = { buildFlags = { "-tags=" .. buildFlags } } } }
-        end,
-        {
-          desc = "set build tags. 使查看變數定義能依據tags來跳轉",
-          nargs = "?",
-          complete = function(_, cmd_line)
-            local argc = #(vim.split(cmd_line, "%s+")) - 1
-            if argc == 1 then
-              -- return { "-tags=default" }
-              return { "default" }
-            end
-            return { "other" .. argc - 1 }
-          end,
-        }
-      )
-
-      require("lspconfig").gopls.setup {
-        settings = {
-          gopls = {
-            -- :lua print(vim.inspect(vim.lsp.get_active_clients()))
-            -- 已知在go專案新增.gopls.{lua, json, yml}這些都無效
-            buildFlags = {
-              -- "-tags=xxx"
-            } -- 這影響編輯時候對變數有定義是抓取哪一個檔案為主
-          }
-        },
-        -- on_attach = function(client, bunfr)
-        -- end
-      }
-    end,
-    delay = 5,
   },
   {
     name = "lspconfig ts_ls",
     fn = function()
       -- require("lspconfig").tsserver.setup {} Deprecated servers: tsserver -> ts_ls
-      require("lspconfig").ts_ls.setup {} -- javascript/typescript
+      -- require("lspconfig").ts_ls.setup {} -- javascript/typescript
     end,
     delay = 5,
   },
@@ -2252,21 +2210,21 @@ local installs = {
     name = "lspconfig html",
     fn = function()
       -- html, css, json: https://github.com/hrsh7th/vscode-langservers-extracted
-      require("lspconfig").html.setup {}
+      -- require("lspconfig").html.setup {}
     end,
     delay = 5,
   },
   {
     name = "lspconfig cssls",
     fn = function()
-      require("lspconfig").cssls.setup {}
+      -- require("lspconfig").cssls.setup {}
     end,
     delay = 5,
   },
   {
     name = "lspconfig jsonls",
     fn = function()
-      require("lspconfig").jsonls.setup {}
+      -- require("lspconfig").jsonls.setup {}
     end,
     delay = 5,
   },
@@ -2274,16 +2232,16 @@ local installs = {
   {
     name = "lspconfig bashls",
     fn = function()
-      require("lspconfig").bashls.setup {}
+      -- require("lspconfig").bashls.setup {}
     end,
     delay = 5,
   },
   {
     name = "lspconfig markdown_oxide",
     fn = function()
-      require("lspconfig").markdown_oxide.setup {                           -- 請安裝rust後透過cargo來取得
-        cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
-      }
+      -- require("lspconfig").markdown_oxide.setup {                           -- 請安裝rust後透過cargo來取得
+      --   cmd = { osUtils.GetExePathFromHome("/.cargo/bin/markdown-oxide") }, -- 指定可執行檔的完整路徑
+      -- }
     end,
     delay = 5,
   },
@@ -2294,141 +2252,141 @@ local installs = {
     -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html
     name = "lspconfig clangd",
     fn = function()
-      require("lspconfig").clangd.setup { -- 格式化不與vim.o.shiftwidth有關，而是要吃.clang-format或者額外取代
-        cmd = {
-          -- https://manpages.ubuntu.com/manpages/noble/man1/clangd-18.1.html
-          "clangd",
-          -- 強列建議自己在專案下建立 `.clang-format` 的檔案在去設定該專案用的格式
-          -- 透過BaseOnStyle可以設定所有沒有被定義到的項目要參考所一個設定，共有LLVM, Google, WebKit, GNU, WebKit, ...
-          -- BasedOnStyle: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#basedonstyle
-          "--fallback-style=WebKit", -- https://www.webkit.org/code-style-guidelines/
-          -- IncludeBlocks -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks 可以設定include是要如何被格式化
-        },
-        on_attach = function(client, bufnr)
-          -- 也可以加到這邊: https://github.com/CarsonSlovoka/nvim/blob/7089ab7cf0e95d6e5663b357a742eff55ddb208d/lua/config/autocmd.lua#L552-L558 但是會比較亂，要額外新增if的判斷
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            callback = function()
-              -- 確定用clang-format也無法將結尾多的空白移除(至少在Clang 22.0.0是如此): https://clang.llvm.org/docs/ClangFormatStyleOptions.html
-              -- https://stackoverflow.com/a/54486390/9935654
-              vim.cmd([[%s/\s\+$//e]])
-            end,
-          })
-        end,
-      }
+      -- require("lspconfig").clangd.setup { -- 格式化不與vim.o.shiftwidth有關，而是要吃.clang-format或者額外取代
+      --   cmd = {
+      --     -- https://manpages.ubuntu.com/manpages/noble/man1/clangd-18.1.html
+      --     "clangd",
+      --     -- 強列建議自己在專案下建立 `.clang-format` 的檔案在去設定該專案用的格式
+      --     -- 透過BaseOnStyle可以設定所有沒有被定義到的項目要參考所一個設定，共有LLVM, Google, WebKit, GNU, WebKit, ...
+      --     -- BasedOnStyle: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#basedonstyle
+      --     "--fallback-style=WebKit", -- https://www.webkit.org/code-style-guidelines/
+      --     -- IncludeBlocks -- https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks 可以設定include是要如何被格式化
+      --   },
+      --   on_attach = function(client, bufnr)
+      --     -- 也可以加到這邊: https://github.com/CarsonSlovoka/nvim/blob/7089ab7cf0e95d6e5663b357a742eff55ddb208d/lua/config/autocmd.lua#L552-L558 但是會比較亂，要額外新增if的判斷
+      --     vim.api.nvim_create_autocmd("BufWritePre", {
+      --       buffer = bufnr,
+      --       callback = function()
+      --         -- 確定用clang-format也無法將結尾多的空白移除(至少在Clang 22.0.0是如此): https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+      --         -- https://stackoverflow.com/a/54486390/9935654
+      --         vim.cmd([[%s/\s\+$//e]])
+      --       end,
+      --     })
+      --   end,
+      -- }
     end,
     delay = 5,
   },
   {
     name = "lspconfig lua_ls",
     fn = function()
-      require("lspconfig").lua_ls.setup {
-        settings = {
-          Lua = {
-            runtime = {
-              version = 'LuaJIT',
-              path = "/usr/bin/lua5.1",
-            },
-            diagnostics = {
-              -- 告訴 LSP `vim` 是一個全域變數
-              globals = { 'vim' },
-              -- disable = { "missing-fields" }, -- hrtime的警告還是會有
-            },
-            workspace = {
-              -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
-              library = vim.api.nvim_get_runtime_file('', true)
-              -- vim.api.nvim_ -- 👈 可以用來測試添加library的結果，如果沒有設定會看到Text並且沒有參數的提示
-            },
-            -- Do not send telemetry data containing a randomized but unique identifier
-            telemetry = {
-              enable = false
-            },
-          }
-        }
-      }
+      -- require("lspconfig").lua_ls.setup {
+      --   settings = {
+      --     Lua = {
+      --       runtime = {
+      --         version = 'LuaJIT',
+      --         path = "/usr/bin/lua5.1",
+      --       },
+      --       diagnostics = {
+      --         -- 告訴 LSP `vim` 是一個全域變數
+      --         globals = { 'vim' },
+      --         -- disable = { "missing-fields" }, -- hrtime的警告還是會有
+      --       },
+      --       workspace = {
+      --         -- 讓語言伺服器載入 Neovim 的運行時檔案，提供 API 補全
+      --         library = vim.api.nvim_get_runtime_file('', true)
+      --         -- vim.api.nvim_ -- 👈 可以用來測試添加library的結果，如果沒有設定會看到Text並且沒有參數的提示
+      --       },
+      --       -- Do not send telemetry data containing a randomized but unique identifier
+      --       telemetry = {
+      --         enable = false
+      --       },
+      --     }
+      --   }
+      -- }
     end,
     delay = 5,
   },
   {
     name = "lspconfig sqls",
     fn = function()
-      local lspconfig = require('lspconfig')
-      -- go install github.com/sqls-server/sqls@latest
-      lspconfig.sqls.setup {
-        on_attach = function(client, bufnr)
-          -- https://github.com/nanotee/sqls.nvim/blob/d1bc5421ef3e8edc5101e37edbb7de6639207a09/README.md?plain=1#L35-L40
-          require('sqls').on_attach(client, bufnr)
-        end,
-        settings = { -- :lua print(vim.inspect(require("lspconfig").sqls.manager.config.settings))
-          sqls = {
-            -- https://github.com/sqls-server/sqls/blob/efe7f66d16e9479e242d3876c2a4a878ee190568/README.md?plain=1#L184-L202
-            connections = {
-              -- { -- 可以透過 :SqlsInsertConnecions 來新增
-              --   driver = 'sqlite3',
-              --   -- sqlite3 ~/database.db
-              --   dataSourceName = vim.fn.expand('~/database.sqlite3'),
-              -- },
-            },
-          },
-        },
-      }
-
-      local accept_data_source_names = {
-        sqlite = true,
-        sqlite3 = true,
-        db = true,
-      }
-      vim.api.nvim_create_user_command('SqlsInsertConn',
-        function(args)
-          if #args.fargs ~= 2 then
-            vim.notify("#para ~= 2. :SqlsInsertConnecions sqlite3 my.db", vim.log.levels.ERROR)
-            return
-          end
-          local dataSourceName = vim.fn.fnamemodify(vim.fn.expand(args.fargs[2]), ":p") -- 轉為絕對路徑
-
-          -- local connections = require("lspconfig").sqls.manager.config.settings.sqls.connections -- 沒有辦法只改變這個就有用
-          local connections = {
-            { -- 將新增加的項目放在第一筆，如此 :SqlsSwitchConnection 直接選1即可
-              driver = args.fargs[1],
-              dataSourceName = dataSourceName,
-            }
-          } -- 所以重新加入
-
-          for _, conn in ipairs(require("lspconfig").sqls.manager.config.settings.sqls.connections) do
-            table.insert(connections, conn)
-          end
-
-          lspconfig.sqls.setup { -- 如果沒有重新setup，還是沒辦法應用
-            on_attach = function(client, bufnr)
-              require('sqls').on_attach(client, bufnr)
-            end,
-            settings = {
-              sqls = {
-                connections = connections,
-              },
-            },
-          }
-        end,
-        {
-          desc = "sqls.connections.insert(driver, dataSourceName))",
-          nargs = "+",
-          complete = function(arg_lead, cmd_line)
-            local argc = #(vim.split(cmd_line, "%s+")) - 1
-            if argc == 1 then
-              return { "sqlite3" }
-            end
-
-            local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
-            return vim.tbl_filter(
-              function(path)
-                return accept_data_source_names[string.lower(vim.fn.fnamemodify(path, ":e"))] or
-                    vim.fn.isdirectory(path) == 1 -- 目錄
-              end,
-              utils.table.sort_files_first(all_files)
-            )
-          end
-        }
-      )
+      -- local lspconfig = require('lspconfig')
+      -- -- go install github.com/sqls-server/sqls@latest
+      -- lspconfig.sqls.setup {
+      --   on_attach = function(client, bufnr)
+      --     -- https://github.com/nanotee/sqls.nvim/blob/d1bc5421ef3e8edc5101e37edbb7de6639207a09/README.md?plain=1#L35-L40
+      --     require('sqls').on_attach(client, bufnr)
+      --   end,
+      --   settings = { -- :lua print(vim.inspect(require("lspconfig").sqls.manager.config.settings))
+      --     sqls = {
+      --       -- https://github.com/sqls-server/sqls/blob/efe7f66d16e9479e242d3876c2a4a878ee190568/README.md?plain=1#L184-L202
+      --       connections = {
+      --         -- { -- 可以透過 :SqlsInsertConnecions 來新增
+      --         --   driver = 'sqlite3',
+      --         --   -- sqlite3 ~/database.db
+      --         --   dataSourceName = vim.fn.expand('~/database.sqlite3'),
+      --         -- },
+      --       },
+      --     },
+      --   },
+      -- }
+      --
+      -- local accept_data_source_names = {
+      --   sqlite = true,
+      --   sqlite3 = true,
+      --   db = true,
+      -- }
+      -- vim.api.nvim_create_user_command('SqlsInsertConn',
+      --   function(args)
+      --     if #args.fargs ~= 2 then
+      --       vim.notify("#para ~= 2. :SqlsInsertConnecions sqlite3 my.db", vim.log.levels.ERROR)
+      --       return
+      --     end
+      --     local dataSourceName = vim.fn.fnamemodify(vim.fn.expand(args.fargs[2]), ":p") -- 轉為絕對路徑
+      --
+      --     -- local connections = require("lspconfig").sqls.manager.config.settings.sqls.connections -- 沒有辦法只改變這個就有用
+      --     local connections = {
+      --       { -- 將新增加的項目放在第一筆，如此 :SqlsSwitchConnection 直接選1即可
+      --         driver = args.fargs[1],
+      --         dataSourceName = dataSourceName,
+      --       }
+      --     } -- 所以重新加入
+      --
+      --     for _, conn in ipairs(require("lspconfig").sqls.manager.config.settings.sqls.connections) do
+      --       table.insert(connections, conn)
+      --     end
+      --
+      --     lspconfig.sqls.setup { -- 如果沒有重新setup，還是沒辦法應用
+      --       on_attach = function(client, bufnr)
+      --         require('sqls').on_attach(client, bufnr)
+      --       end,
+      --       settings = {
+      --         sqls = {
+      --           connections = connections,
+      --         },
+      --       },
+      --     }
+      --   end,
+      --   {
+      --     desc = "sqls.connections.insert(driver, dataSourceName))",
+      --     nargs = "+",
+      --     complete = function(arg_lead, cmd_line)
+      --       local argc = #(vim.split(cmd_line, "%s+")) - 1
+      --       if argc == 1 then
+      --         return { "sqlite3" }
+      --       end
+      --
+      --       local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+      --       return vim.tbl_filter(
+      --         function(path)
+      --           return accept_data_source_names[string.lower(vim.fn.fnamemodify(path, ":e"))] or
+      --               vim.fn.isdirectory(path) == 1 -- 目錄
+      --         end,
+      --         utils.table.sort_files_first(all_files)
+      --       )
+      --     end
+      --   }
+      -- )
     end,
     delay = 5,
   },
