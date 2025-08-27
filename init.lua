@@ -2204,7 +2204,8 @@ local installs = {
         "markdown_oxide",
         "clangd",
         "lua_ls",
-        "sqls", -- 用處其實不高，可以考慮移除
+        "sqls",     -- 用處其實不高，可以考慮移除
+        "sourcekit" -- swift
       })
     end,
     delay = 0
