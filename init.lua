@@ -2194,17 +2194,10 @@ local installs = {
       vim.lsp.enable({
         'pyright',
         'gopls',
+        'ts_ls', -- javascript, typescript
       })
     end,
     delay = 0
-  },
-  {
-    name = "lspconfig ts_ls",
-    fn = function()
-      -- require("lspconfig").tsserver.setup {} Deprecated servers: tsserver -> ts_ls
-      -- require("lspconfig").ts_ls.setup {} -- javascript/typescript
-    end,
-    delay = 5,
   },
   {
     name = "lspconfig html",
