@@ -2201,16 +2201,10 @@ local installs = {
         'html',
         "cssls",
         "jsonls",
+        "bashls",
       })
     end,
     delay = 0
-  },
-  {
-    name = "lspconfig bashls",
-    fn = function()
-      -- require("lspconfig").bashls.setup {}
-    end,
-    delay = 5,
   },
   {
     name = "lspconfig markdown_oxide",
