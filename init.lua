@@ -1836,6 +1836,7 @@ local function install_nvim_dap()
   require("external.dap._tutorial") -- 教學測試用
   require("external.dap.opentype")
   require("external.dap.lua")
+  require("external.dap.swift")
 
   require("external.dap.ttx")
 
