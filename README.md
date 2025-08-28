@@ -630,6 +630,7 @@ EOF
 mkdir -v ~/codelldb
 wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix -O ~/codelldb/codelldb.zip # 52.34M
 unzip ~/codelldb/codelldb.zip -d ~/codelldb/
+rm -v ~/codelldb/codelldb.zip
 ```
 
 ## motion
