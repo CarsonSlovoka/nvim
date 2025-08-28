@@ -604,6 +604,34 @@ ls -l /usr/lib/node_modules/vscode-langservers-extracted/bin/
 ```
 
 
+#### swift
+
+```sh
+# 安裝swiftly
+curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz && \
+  tar zxf swiftly-$(uname -m).tar.gz && \
+  ./swiftly init --quiet-shell-followup && \
+  . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh" && \
+  hash -r
+
+# 設定環境變數
+tee -a ~/.bashrc <<EOF
+# swift
+export SWIFTLY_HOME_DIR=\$HOME/.local/share/swiftly
+export SWIFTLY_BIN_DIR=\$HOME/.local/share/swiftly/bin
+export SWIFTLY_TOOLCHAINS_DIR=\$HOME/.local/share/swiftly/toolchains
+if [[ ":\$PATH:" != *":\$SWIFTLY_BIN_DIR:"* ]]; then
+    # 如果當前的環境變數中沒有 \$SWIFTLY_BIN_DIR 的目錄才會加入
+    export PATH="\$SWIFTLY_BIN_DIR:\$PATH"
+fi
+EOF
+
+# 取得codelldb (debug用)
+mkdir -v ~/codelldb
+wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix -O ~/codelldb/codelldb.zip # 52.34M
+unzip ~/codelldb/codelldb.zip -d ~/codelldb/
+```
+
 ## motion
 
 ```bash
