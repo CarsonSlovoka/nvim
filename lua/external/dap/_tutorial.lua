@@ -1,6 +1,8 @@
+local test_tool = vim.uv.os_uname().sysname == "windows" and "notepad" or "vi"
+
 require("dap").adapters.notepad = { -- 名稱也可以大小寫混合
   type = 'executable',
-  command = "notepad"
+  command = test_tool
 }
 require("dap").configurations.test_text = { -- 記得看的不是附檔名，而是filetype
   -- 如果只有一個執行的時候就不會看到有選單
