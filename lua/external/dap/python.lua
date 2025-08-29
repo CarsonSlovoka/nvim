@@ -62,6 +62,14 @@ for _, config in ipairs({
   {
     type = "python",
     request = 'launch',
+    name = "debug (justMyCode=false) python3 <file> <args>",
+    program = "${file}",
+    args = require("dap-go").get_arguments,
+    justMyCode = false,
+  },
+  {
+    type = "python",
+    request = 'launch',
     name = "python3 <file from telescope>",
     program = function() -- 可以回傳的型別: string, thread
       -- return "${file}"         -- 保留字, 取當前檔案路徑
