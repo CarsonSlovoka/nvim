@@ -3491,7 +3491,7 @@ vim.api.nvim_create_user_command("Clear",
 
 vim.api.nvim_create_user_command("Gitfiles",
   function()
-    vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term")
+    vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
 
     -- 替tab命名
     local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
@@ -3499,12 +3499,16 @@ vim.api.nvim_create_user_command("Gitfiles",
       vim.notify("Not in a Git repository", vim.log.levels.ERROR)
       return
     end
+    vim.cmd(string.format("cd %s | tabnew | setlocal buftype=nofile | term", git_root))
+
     local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r"))
     vim.cmd("file search git files:" .. git_dirname)
 
     vim.cmd("startinsert")
     vim.api.nvim_input(
       [[git ls-files --exclude-standard --cached | fzf --preview "batcat --color=always --style=numbers {}" --bind "enter:execute(echo "$(pwd)/{}")+abort"<CR>]])
+
+    -- 可以考慮cd回原本的工作目錄
   end,
   {
     desc = [[搜尋git commit過的檔案 git ls-files | fzf --preview "batcat ..."]],
