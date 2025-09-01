@@ -37,6 +37,11 @@ map("i", "<A-j>", '<Down>', { desc = "move down" })
 map("i", "<A-k>", '<Up>', { desc = "move up" }) -- 避免和C-K digraphs 重複到
 map("i", "<A-l>", '<Right>', { desc = "move right" })
 
+map("t", "<leader><leader>c",
+  function() vim.cmd("Clear") end, -- git log -1 65a8fba -L3491,+11:commands.lua
+  { desc = "Clears the terminal's screen and can no longer use scrollback to find the previous input", }
+)
+
 -- map("n", "/", 'ms/')
 map("n", "/",
   function()
