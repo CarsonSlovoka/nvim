@@ -3489,7 +3489,7 @@ vim.api.nvim_create_user_command("Clear",
   }
 )
 
-vim.api.nvim_create_user_command("GitFiles",
+vim.api.nvim_create_user_command("Gitfiles",
   function()
     vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term")
 
