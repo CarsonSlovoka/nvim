@@ -220,7 +220,7 @@ function options.setup()
   -- concealcursor = nc -- (常用在help文檔)只有在visual時才會看到原本的文字，除此之外都會用conceal藏起來
   vim.opt_local.concealcursor = "" -- 空白(預設),與v都會用conceal包起來而如果是光標所在列，則會顯示原文, 至於visual下，則都會顯示原文
 
-
+  vim.o.scrollback = 100000        -- Minimum is 1, maximum is 100000. only in terminal buffers. default 10000
 
   custom_global_options()
 end
