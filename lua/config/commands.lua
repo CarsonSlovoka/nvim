@@ -11,6 +11,18 @@ vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- �
 
 local commands = {}
 
+
+local function get_cmp_config(fargs)
+  local config = {}
+  for _, arg in ipairs(fargs) do
+    local key, value = arg:match('^(.-)=(.*)$')
+    if key then
+      config[key] = value
+    end
+  end
+  return config
+end
+
 local function openCurrentDirWithFoot()
   local current_file_path = vim.fn.expand("%:p:h") -- 獲取當前文件所在的目錄
   if current_file_path ~= "" then
@@ -3490,7 +3502,9 @@ vim.api.nvim_create_user_command("Clear",
 )
 
 vim.api.nvim_create_user_command("Gitfiles",
-  function()
+  function(args)
+    local config = get_cmp_config(args.fargs)
+
     vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
 
     -- 替tab命名
@@ -3499,7 +3513,11 @@ vim.api.nvim_create_user_command("Gitfiles",
       vim.notify("Not in a Git repository", vim.log.levels.ERROR)
       return
     end
-    vim.cmd(string.format("cd %s | tabnew | setlocal buftype=nofile | term", git_root))
+    local cd_git_root = config["cdToGitRoot"] or "1"
+    if cd_git_root == "1" then
+      vim.cmd("cd " .. git_root)
+    end
+    vim.cmd("tabnew | setlocal buftype=nofile | term")
 
     local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r"))
     vim.cmd("file search git files:" .. git_dirname)
@@ -3512,6 +3530,12 @@ vim.api.nvim_create_user_command("Gitfiles",
   end,
   {
     desc = [[搜尋git commit過的檔案 git ls-files | fzf --preview "batcat ..."]],
+    nargs = "?",
+    complete = function()
+      return {
+        "cdToGitRoot=1"
+      }
+    end
   }
 )
 
