@@ -3542,26 +3542,42 @@ vim.api.nvim_create_user_command("Gitfiles",
 vim.api.nvim_create_user_command("PrintUcdblock",
   function(args)
     local config = get_cmp_config(args.fargs)
-    local unicodes = config["unicode"] or ""
-    if unicodes == "" then
-      -- error("請提供unicode", vim.log.levels.WARN)
-      vim.notify("請提供unicode. ex: `unicode=0x4e00`", vim.log.levels.WARN)
-      return
-    end
-    local lang = config["lang"] or "en"
 
+    local unicodes
+    if args.range > 0 then
+      local text = table.concat(utils.range.get_selected_text(), "")
+      unicodes = {}
+      for unicode in utils.utf8.codes(text) do
+        table.insert(unicodes, unicode)
+      end
+    else
+      unicodes = config["unicode"] or ""
+      if unicodes == "" then
+        -- error("請提供unicode", vim.log.levels.WARN)
+        vim.notify("請提供unicode. ex: `unicode=0x4e00`", vim.log.levels.WARN)
+        return
+      end
+      unicodes = vim.split(unicodes, ",")
+    end
+
+    local lang = config["lang"] or "en"
     local ub = require("ucd").UnicodeBlock.new()
 
     local result = {}
-    for _, unicode in ipairs(vim.split(unicodes, ",")) do
+    for _, unicode in ipairs(unicodes) do
       local block_name = ub:get_ucd_block(tonumber(unicode), lang)
-      result[unicode] = block_name
+      table.insert(result, {
+        ch = vim.fn.nr2char(tonumber(unicode) or 0),
+        codepoint = string.format("0x%X ( %d )", unicode, unicode),
+        block_name = block_name,
+      })
     end
     print(vim.inspect(result))
   end,
   {
     desc = [[顯示該unicode碼點位於blocks.txt的哪一段]],
     nargs = "*",
+    range = true,
     complete = function(arg_lead, cmd_line)
       local comps = {}
 
