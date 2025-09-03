@@ -11,4 +11,5 @@ return {
   sway = require "utils.sway",
   table = require "utils.table",
   time = require "utils.time",
+  utf8 = require "utils.utf8",
 }
