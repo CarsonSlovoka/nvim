@@ -3,7 +3,6 @@ local M = {}
 -- 獲取當前 Lua 檔案的目錄
 local cur_file = debug.getinfo(1, "S").source:sub(2)
 local CUR_DIR = vim.fn.fnamemodify(cur_file, ":h")
-print(CUR_DIR)
 
 
 ---
