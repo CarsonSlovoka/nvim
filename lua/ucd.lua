@@ -7,5 +7,6 @@ M.UnicodeBlock = require("ucd.blocks")
 -- local ub = M.UnicodeBlock.new()
 -- print(ub:get_ucd_block(0x0251, "zh"))
 -- print(ub:get_ucd_block(0x0251, "en"))
+-- print(ub:get_ucd_block(0x1fa00, "zh"))
 
 return M
