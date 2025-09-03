@@ -407,6 +407,11 @@ local function program_show_glyph_with_kitty()
   vim.cmd("tabnew | setlocal buftype=nofile | term")
   vim.cmd("startinsert")
   vim.api.nvim_input([[kitty --hold python /tmp/show_glyph <CR>]]) -- hold可以讓終端機保持，不會執行完腳本後就關閉
+  vim.fn.setqflist({
+    { text = ":r! python /tmp/show_glyph                       📝 可以得到輸出的結果", },
+    { text = ":r! python /tmp/show_glyph > /tmp/show_glyph.csv 📝 另儲新檔", },
+    { text = ":!kitty --hold cat /tmp/show_glyph.csv &         📝 接著在kitty使用cat也可以看到圖片", },
+  }, 'a')
 end
 
 local function program_font_validator()
