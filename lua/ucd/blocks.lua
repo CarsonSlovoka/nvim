@@ -361,7 +361,7 @@ function UnicodeBlock.new()
 end
 
 --- 查詢 Unicode 碼點所在的 Block 名稱
---- @param codepoint integer Unicode 碼點（十進位或十六進位字符串，例如 0x0251 或 "0251"）
+--- @param codepoint integer? Unicode 碼點（十進位或十六進位字符串，例如 0x0251 或 "0251"）
 --- @param lang string 語言代碼（"en" 或 "zh"）
 --- @return string @Block 的名稱（根據語言返回英文或中文，若無對應翻譯則返回英文）
 function UnicodeBlock:get_ucd_block(codepoint, lang)

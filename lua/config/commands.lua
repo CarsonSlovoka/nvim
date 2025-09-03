@@ -3539,4 +3539,69 @@ vim.api.nvim_create_user_command("Gitfiles",
   }
 )
 
+vim.api.nvim_create_user_command("PrintUcdblock",
+  function(args)
+    local config = get_cmp_config(args.fargs)
+    local unicodes = config["unicode"] or ""
+    if unicodes == "" then
+      -- error("請提供unicode", vim.log.levels.WARN)
+      vim.notify("請提供unicode. ex: `unicode=0x4e00`", vim.log.levels.WARN)
+      return
+    end
+    local lang = config["lang"] or "en"
+
+    local ub = require("ucd").UnicodeBlock.new()
+
+    local result = {}
+    for _, unicode in ipairs(vim.split(unicodes, ",")) do
+      local block_name = ub:get_ucd_block(tonumber(unicode), lang)
+      result[unicode] = block_name
+    end
+    print(vim.inspect(result))
+  end,
+  {
+    desc = [[顯示該unicode碼點位於blocks.txt的哪一段]],
+    nargs = "*",
+    complete = function(arg_lead, cmd_line)
+      local comps = {}
+
+      local argc = #(vim.split(cmd_line, '%s+')) - 1
+
+      -- 檢查是否有等號
+      local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+      if not prefix then
+        suffix = arg_lead
+        prefix = ''
+      end
+
+      local need_add_prefix = true
+      if argc == 0 or not arg_lead:match('=') then
+        comps = { 'unicode=', 'lang=', }
+        need_add_prefix = false
+      elseif prefix == "unicode" then
+        comps = {
+          "0x4e00",
+          "0x4e00,0x1fa00",
+        }
+      elseif prefix == "lang" then
+        comps = { "en", "zh" }
+      end
+
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+
+      -- 過濾補全結果，只返回以當前輸入開頭的選項
+      return vim.tbl_filter(
+        function(item)
+          return vim.startswith(item, suffix)
+        end,
+        comps
+      )
+    end
+  }
+)
+
 return commands
