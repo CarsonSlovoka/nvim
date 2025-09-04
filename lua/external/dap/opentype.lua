@@ -250,6 +250,7 @@ local function program_show_glyph()
   end
 
   local fontpath = vim.fn.expand("%:p")
+  local font_basename = vim.fn.expand("%:t")
 
   local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', false)
   vim.fn.setqflist({ { text = table.concat(cmd, " ") }, }, 'a') -- 輸出執行的cmd, 可用來除錯
@@ -260,7 +261,7 @@ local function program_show_glyph()
     return
   end
   vim.cmd("tabnew | setlocal buftype=nofile")
-  vim.cmd("file glyph: " .. vim.fn.expand("%:r"))
+  vim.cmd("file glyph: " .. font_basename)
   local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_set_option_value("filetype", "csv", { buf = buf })
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
@@ -274,6 +275,8 @@ local function program_show_glyph_with_kitty()
   if vim.fn.executable("python") == 0 then
     return
   end
+
+  local font_basename = vim.fn.expand("%:t")
 
   local input = vim.fn.input("glyph_index (ex: 1..200 500..600)") -- 一開始給一個空白，避免str.split分離錯
   local ranges = {}
@@ -295,6 +298,7 @@ local function program_show_glyph_with_kitty()
   local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true)
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
+  vim.cmd("file glyph: " .. font_basename)
   vim.cmd("startinsert")
   -- vim.api.nvim_input([[kitty --hold python /tmp/show_glyph <CR>]])
   vim.api.nvim_input(string.format([[kitty --hold %s <CR>]], table.concat(cmd, " "))) -- hold可以讓終端機保持，不會執行完腳本後就關閉
