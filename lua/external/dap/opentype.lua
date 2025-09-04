@@ -265,6 +265,21 @@ local function program_show_glyph()
   local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_set_option_value("filetype", "csv", { buf = buf })
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(r.stdout, "\n"))
+  vim.fn.setqflist({
+    { text = [[:%w !csvsql --query "SELECT * FROM stdin LIMIT 5;"                            📝 最多5筆]] },
+    { text = [[:%w !csvsql --query "SELECT * FROM stdin GROUP BY block;"                     📝 print顯示結果]] },
+    { text = [['<,'>w !csvsql --query "SELECT * FROM stdin GROUP BY block"                   📝 同上 (range模式)]] },
+    { text = [[:%w !csvsql --query "SELECT * FROM stdin GROUP BY block;" > /tmp/temp.csv     📝 將結果另儲到其它地方]] },
+    { text = [['<,'>w !csvsql --query "SELECT * FROM stdin GROUP BY block;" >> /tmp/temp.csv 📝 附加到檔案之後]] },
+    { text = [['<,'>w !csvsql --no-header-row --query "SELECT * FROM stdin GROUP BY f;"      📝 --no-header-row範例, 自動欄位:{a, b, ...}]] },
+    { text = [['<,'>w !csvsql --no-header-row --query "$(cat /tmp/query.sql)"                📝 (no header)利用外部的sql檔案來查詢]] },
+    { text = [[%w !csvsql --query "$(cat /tmp/query.sql)"                                    📝 利用外部的sql檔案來查詢]] },
+    { text = 'cexpr [] 📝 clear quickfix list' },
+  }, 'a')
+  -- :help wincmd
+  vim.cmd("vert botright split | edit /tmp/query.sql") -- 垂直分割，且將新的視窗放到右邊，並且focus過去
+  vim.cmd("copen 5 | cbo")                             -- 開始後移動到底部
+  vim.cmd("wincmd J")                                  -- move qflist at the very bottom
 
   return ""
 end
