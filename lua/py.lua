@@ -23,4 +23,11 @@ function M.read_script(script_name)
   return content
 end
 
+--- ~/.config/nvim/lua/py/ <script_name>
+---@param script_name string
+---@return string abspath
+function M.get_script_path(script_name)
+  return vim.fn.fnamemodify(CUR_DIR .. "/" .. "py" .. "/" .. script_name, ":p")
+end
+
 return M
