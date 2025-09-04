@@ -215,6 +215,33 @@ font._saveXML(writer)
   return ""
 end
 
+---@param fontpath string opentype fontpath
+---@param glyph_indice string `"[]"`, "[[start, end]...]" '[["737", "737"], ["814", "939"]]'
+---@param show_outline boolean draw outline (kgs)
+---@return table
+local function get_show_glyph_py_cmd(fontpath, glyph_indice, show_outline)
+  local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
+  local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
+  if not vim.fn.filereadable(blocks_txt_path) == 1 then
+    error("Blocks.txt not exists: " .. blocks_txt_path)
+  end
+
+  -- local script = require("py").read_script("show_glyph.py")
+  -- local cmd = { "python3", "-c", script, -- 👈 這種方式可行(也能適用arg傳遞, 但是如果用nvim_input一個一個打出來就會有問題)，且既然已經有了實體檔案，就不需要如此
+  local script_path = require("py").get_script_path("show_glyph.py")
+
+  local cmd         = { "python3", script_path,
+    fontpath,
+    "--glyph_indice", glyph_indice,
+    -- show_outline and "--show_outline" or "", -- 這樣會有一個空的參數，會抱錯
+    "--blocks_txt_path", blocks_txt_path,
+  }
+  if show_outline then
+    table.insert(cmd, "--show_outline")
+  end
+  return cmd
+end
+
 local function program_show_glyph()
   if vim.fn.executable("python") == 0 then
     return
@@ -222,25 +249,9 @@ local function program_show_glyph()
 
   local fontpath = vim.fn.expand("%:p")
 
-  local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
-  local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
-  if not vim.fn.filereadable(blocks_txt_path) == 1 then
-    error("Blocks.txt not exists: " .. blocks_txt_path)
-  end
-
-  local script = require("py").read_script("show_glyph.py") ..
-      "\n" ..
-      "main(%s, %s)"
-
-  local python_code = string.format(
-    script,
-    fontpath,
-    blocks_txt_path,
-    "False", -- show_outline: False
-    "[]"
-  )
-
-  local r = vim.system({ "python3", "-c", python_code }):wait()
+  local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', false)
+  vim.fn.setqflist({ { text = table.concat(cmd, " ") }, }, 'a') -- 輸出執行的cmd, 可用來除錯
+  local r = vim.system(cmd):wait()
   if r.code ~= 0 then
     vim.notify(string.format("❌ program_show_glyph err code: %d %s", r.code, r.stderr),
       vim.log.levels.WARN)
@@ -273,28 +284,18 @@ local function program_show_glyph_with_kitty()
   end
   local json_str_glyph_index = vim.fn.json_encode(ranges)
 
-  local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
-  local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
-  if not vim.fn.filereadable(blocks_txt_path) == 1 then
-    error("Blocks.txt not exists: " .. blocks_txt_path)
-  end
-
   local fontpath = vim.fn.expand("%:p")
-  local file, err = io.open("/tmp/show_glyph", "w")
-  if not file then
-    vim.notify("無法打開檔案 " .. err, vim.log.levels.WARN)
-    return
-  end
-  local script = require("py").read_script("show_glyph.py") ..
-      "\n" ..
-      "main(%s, %s)"
+  -- local file, err = io.open("/tmp/show_glyph", "w")
+  -- if not file then error(err) end
+  -- file:write("hello")
+  -- file:close()
 
-  file:write(string.format(script, fontpath, blocks_txt_path, "True", json_str_glyph_index))
-  file:close()
+  local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true)
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
   vim.cmd("startinsert")
-  vim.api.nvim_input([[kitty --hold python /tmp/show_glyph <CR>]]) -- hold可以讓終端機保持，不會執行完腳本後就關閉
+  -- vim.api.nvim_input([[kitty --hold python /tmp/show_glyph <CR>]])
+  vim.api.nvim_input(string.format([[kitty --hold %s <CR>]], table.concat(cmd, " "))) -- hold可以讓終端機保持，不會執行完腳本後就關閉
   vim.fn.setqflist({
     { text = ":r! python /tmp/show_glyph                       📝 可以得到輸出的結果", },
     { text = ":r! python /tmp/show_glyph > /tmp/show_glyph.csv 📝 另儲新檔", },

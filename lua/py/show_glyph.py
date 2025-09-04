@@ -1,8 +1,11 @@
-# python show_glyph.py
+# python show_glyph.py ~/.fonts/my.otf --glyph_indice '[[1, 200], [500, 600]]'
+# python show_glyph.py ~/.fonts/my.otf --glyph_indice '[]'
 
+import argparse
 import base64
 import csv
 import io
+import json
 import os
 import sys
 from typing import Any
@@ -13,11 +16,36 @@ from fontTools.ttLib.tables._c_m_a_p import table__c_m_a_p
 from fontTools.ttLib.tables._m_a_x_p import table__m_a_x_p
 from PIL import Image
 
-font_path = "%s"
-font: Any = TTFont(font_path)
+parser = argparse.ArgumentParser(description="glyph information")
+parser.add_argument("font_path", type=str, help="opentype fontpath")
+parser.add_argument(
+    "--show_outline",
+    action="store_true",  # maeans it's a flag # 指如果旗標設定後要採取的動作
+    help="print outline (for kitty terminal) (default: False)",  # 預設值與store的相反
+)
+parser.add_argument(
+    "--glyph_indice",
+    "-r",
+    default="[]",
+    help="[[start, end]...] ex: [[1, 200], [500, 600]]",
+)
+parser.add_argument(
+    "--blocks_txt_path",
+    type=str,
+    default="",
+    help="https://www.unicode.org/Public/draft/ucd/Blocks.txt",
+)
+args = parser.parse_args()
 
-BLOCK_TXT_PATH = "%s"
-# BLOCK_TXT_PATH = os.path.join( os.path.dirname(os.path.dirname(__file__)), "./ucd/db/Blocks.txt") # WARN: 從neovim來呼叫，__file__會不曉得
+BLOCK_TXT_PATH = args.blocks_txt_path
+if BLOCK_TXT_PATH == "":
+    BLOCK_TXT_PATH = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "./ucd/db/Blocks.txt"
+    )  # WARN: 從neovim來呼叫，__file__會不曉得
+
+    if not os.path.exists(BLOCK_TXT_PATH):
+        print(f"'{BLOCK_TXT_PATH}' not exists.")
+        exit(11)  # b
 
 
 def load_unicode_blocks():
@@ -90,7 +118,8 @@ def expand_ranges_to_array(ranges):
     :param ranges: 範圍列表，如 [["100", "200"], ["50", "88"], ...]
     :return: 包含所有範圍內整數的集合（去重複）
     """
-    if len(ranges) == 0:
+
+    if len(ranges) == 0 or ranges == "[]":
         return set()
     result = set()
     try:
@@ -98,12 +127,15 @@ def expand_ranges_to_array(ranges):
             start_num = int(start)
             end_num = int(end)
             result.update(range(start_num, end_num + 1))  # 包含 end
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as e:
         print("錯誤：範圍列表格式不正確或包含無效數字")
+        raise (e)
     return result
 
 
-def main(show_outline: bool, glyph_index=[]):
+def main(font_path, show_outline: bool, glyph_index=[]):
+    font: Any = TTFont(font_path)
+
     target_glyph_index_set = expand_ranges_to_array(glyph_index)
 
     cmap: table__c_m_a_p = font["cmap"]
@@ -172,3 +204,5 @@ def main(show_outline: bool, glyph_index=[]):
 #     print(f"Codepoint {cp}: {get_unicode_block_name(cp, blocks)}")
 
 # main(％s, ％s)
+
+main(args.font_path, args.show_outline, json.loads(args.glyph_indice))
