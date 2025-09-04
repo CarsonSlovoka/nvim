@@ -242,6 +242,8 @@ local function get_show_glyph_py_cmd(fontpath, glyph_indice, show_outline)
   return cmd
 end
 
+
+--- 使用python -c 以及py樣版的方式參考: `git show d4631c61 -L218,340:opentype.lua -L,:../../py/show_glyph.py`
 local function program_show_glyph()
   if vim.fn.executable("python") == 0 then
     return
