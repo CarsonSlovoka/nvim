@@ -147,8 +147,8 @@ def main(font_path, show_outline: bool, glyph_index=[]):
         "gid",
         "glyphName",
         "isUnicode",
-        "unicode codepoint",
-        "unicode ch",
+        "unicode_codepoint",
+        "unicode_ch",
         "block",
         "outline",
     ]
@@ -185,8 +185,8 @@ def main(font_path, show_outline: bool, glyph_index=[]):
                 unicode_point := glyphname_to_unicode_map.get(glyph_name, None)
             ) is not None:
                 row["isUnicode"] = True
-                row["unicode codepoint"] = f"U+{unicode_point:04x}"
-                row["unicode ch"] = chr(unicode_point)
+                row["unicode_codepoint"] = f"U+{unicode_point:04x}"
+                row["unicode_ch"] = chr(unicode_point)
                 row["block"] = get_unicode_block_name(unicode_point, blocks)
 
         if show_outline:
