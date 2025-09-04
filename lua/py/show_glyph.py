@@ -1,6 +1,9 @@
+# python show_glyph.py
+
 import base64
 import csv
 import io
+import os
 import sys
 from typing import Any
 
@@ -12,6 +15,32 @@ from PIL import Image
 
 font_path = "%s"
 font: Any = TTFont(font_path)
+
+BLOCK_TXT_PATH = "%s"
+# BLOCK_TXT_PATH = os.path.join( os.path.dirname(os.path.dirname(__file__)), "./ucd/db/Blocks.txt") # WARN: 從neovim來呼叫，__file__會不曉得
+
+
+def load_unicode_blocks():
+    # print(BLOCK_TXT_PATH)
+    blocks = []
+    with open(BLOCK_TXT_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            # 跳過註釋行和空行
+            if line.startswith("#") or not line.strip():
+                continue
+            # 格式例：0000..007F; Basic Latin
+            range_part, name = line.strip().split("; ")
+            start, end = range_part.split("..")
+            blocks.append({"start": int(start, 16), "end": int(end, 16), "name": name})
+    return blocks
+
+
+def get_unicode_block_name(codepoint, blocks):
+    codepoint = int(codepoint, 16) if isinstance(codepoint, str) else codepoint
+    for block in blocks:
+        if block["start"] <= codepoint <= block["end"]:
+            return block["name"]
+    return "No Block Defined"
 
 
 class GlyphRenderer:
@@ -88,6 +117,7 @@ def main(show_outline: bool, glyph_index=[]):
         "isUnicode",
         "unicode codepoint",
         "unicode ch",
+        "block",
         "outline",
     ]
 
@@ -105,7 +135,9 @@ def main(show_outline: bool, glyph_index=[]):
             for codepoint, glyph_name in best_unicode_cmap_subtable.items()
         }
 
+    blocks = load_unicode_blocks()
     glyph_render = GlyphRenderer(font_path, width=96, height=48)
+
     for gid, glyph_name in enumerate(glyph_order):
         # if gid != 22231: continue
 
@@ -123,6 +155,7 @@ def main(show_outline: bool, glyph_index=[]):
                 row["isUnicode"] = True
                 row["unicode codepoint"] = f"U+{unicode_point:04x}"
                 row["unicode ch"] = chr(unicode_point)
+                row["block"] = get_unicode_block_name(unicode_point, blocks)
 
         if show_outline:
             row["outline"] = glyph_render.render_glyph_to_kitty(
@@ -131,5 +164,11 @@ def main(show_outline: bool, glyph_index=[]):
 
         writer.writerow(row)
 
+
+# codepoint測試
+# blocks = load_unicode_blocks()
+# test_codepoints = ["0x0251", "0x0041", "0xFFFF"]
+# for cp in test_codepoints:
+#     print(f"Codepoint {cp}: {get_unicode_block_name(cp, blocks)}")
 
 # main(％s, ％s)

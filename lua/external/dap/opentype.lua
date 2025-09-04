@@ -222,6 +222,12 @@ local function program_show_glyph()
 
   local fontpath = vim.fn.expand("%:p")
 
+  local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
+  local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
+  if not vim.fn.filereadable(blocks_txt_path) == 1 then
+    error("Blocks.txt not exists: " .. blocks_txt_path)
+  end
+
   local script = require("py").read_script("show_glyph.py") ..
       "\n" ..
       "main(%s, %s)"
@@ -229,6 +235,7 @@ local function program_show_glyph()
   local python_code = string.format(
     script,
     fontpath,
+    blocks_txt_path,
     "False", -- show_outline: False
     "[]"
   )
@@ -266,6 +273,12 @@ local function program_show_glyph_with_kitty()
   end
   local json_str_glyph_index = vim.fn.json_encode(ranges)
 
+  local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
+  local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
+  if not vim.fn.filereadable(blocks_txt_path) == 1 then
+    error("Blocks.txt not exists: " .. blocks_txt_path)
+  end
+
   local fontpath = vim.fn.expand("%:p")
   local file, err = io.open("/tmp/show_glyph", "w")
   if not file then
@@ -276,7 +289,7 @@ local function program_show_glyph_with_kitty()
       "\n" ..
       "main(%s, %s)"
 
-  file:write(string.format(script, fontpath, "True", json_str_glyph_index))
+  file:write(string.format(script, fontpath, blocks_txt_path, "True", json_str_glyph_index))
   file:close()
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
