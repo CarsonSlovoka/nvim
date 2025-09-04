@@ -260,7 +260,7 @@ local function program_show_glyph()
       vim.log.levels.WARN)
     return
   end
-  vim.cmd("tabnew | setlocal buftype=nofile")
+  vim.cmd("tabnew | setlocal buftype=nofile bufhidden=wipe")
   vim.cmd("file glyph: " .. font_basename)
   local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_set_option_value("filetype", "csv", { buf = buf })
@@ -298,6 +298,10 @@ local function program_show_glyph_with_kitty()
   local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true)
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
+  -- 以下設定了關閉了該buffer還是在，暫時先不處理
+  -- vim.cmd("tabnew | setlocal buftype=nofile bufhidden=wipe | term")
+  -- vim.cmd("setlocal bufhidden=wipe")
+
   vim.cmd("file glyph: " .. font_basename)
   vim.cmd("startinsert")
   -- vim.api.nvim_input([[kitty --hold python /tmp/show_glyph <CR>]])
