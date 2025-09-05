@@ -276,17 +276,68 @@ local function program_show_glyph()
     { text = [['<,'>w !csvsql --no-header-row --query "$(cat /tmp/query.sql)"                📝 (no header)利用外部的sql檔案來查詢]] },
     { text = [[%w !csvsql --query "$(cat /tmp/query.sql)"                                    📝 利用外部的sql檔案來查詢]] },
     { text = 'cexpr [] 📝 clear quickfix list' },
-    --
   }, 'a')
   -- :help wincmd
-  vim.cmd("vert botright split | edit /tmp/query.sql") -- 垂直分割，且將新的視窗放到右邊，並且focus過去
+  -- vim.cmd("vert botright split | edit /tmp/query.sql") -- 垂直分割，且將新的視窗放到右邊，並且focus過去
+  vim.cmd("vert botright split | enew | setlocal buftype=nofile noswapfile") -- 開一個tmp視窗
+  local win_id_sql = vim.api.nvim_get_current_win()
+  vim.cmd("set filetype=sql")
+
+
+  -- 直接在暫存器寫上實用的指令
+  -- vim.cmd([[let @j="'<,'>join | y s | let sql = @s | u"]])
+  -- vim.cmd([[let @j="vip:join | y s | let sql = @s | u"]]) -- 更方便, 透過vip來選取, 但是只是把指令貼到command非真的巨集
+  -- vim.cmd([[let @j="vip:join | y s | :let sql=@s | u \<CR>"]]) -- 最後面會有^@東西跑出來
+  -- vim.cmd([[let @h="vip:join | y s | :let sql=substitute(@s, '\\0', '', '') | u \<CR>"]])  -- 這也沒用還是有^@
+  vim.cmd([[let @j="vip:join | y s | :let sql=@s[:-2] | u \<CR>"]]) -- 直接將最後一個字符移除, 即從導數第二個字符開始
+  vim.cmd([[let @r="vip:join | y s | :let sql=@s[:-2] | u"]])       -- 不CR，如果要改變數的名稱，會比較方便
+  -- NOTE: 不要用join!不然列與列中的間距會被移掉(空白)
+  -- NOTE: 目前這樣會有一個瑕疵，如果原本已經只有一列，則會異常
+
+
+  -- vim.cmd([[let @a="'<,'>!csvsql --query '  '"]]) -- 可以直接將' '裡面的內容用某一個變數取代
+  vim.cmd('let sql=""')
+  -- vim.cmd([[let @a=printf("%!csvsql --query '%s'", sql)]]) -- ❌ 需要初始化sql變數，而且它不會隨著sql變數的值改變，首次判斷完之後就是固定的常數
+  -- vim.cmd([[let @a=printf("%%!csvsql --query '%s'", "g:sql")]]) -- ❌ 需要初始化sql變數，而且它不會隨著sql變數的值改變，首次判斷完之後就是固定的常數
+  vim.cmd([[let @a=':exe printf("%%!csvsql --query %s%s%s", "\"", g:sql, "\"")']])
+
+  -- 以下兩種也是一開始完之後就是常數
+  -- vim.cmd([[let @b=printf("'<,'>!csvsql --query '%s'", @j)]])
+  -- vim.cmd([[let @b=printf("'<,'>!csvsql --query '%s'", sql)]])
+  vim.cmd([[let @b=':exe printf("%s<,%s>!csvsql --query %s%s%s", "\x27", "\x27", "\"", g:sql, "\"")']]) -- 注意！因為:exe不能接受range, 所要可以先選之後取消，再用此命令，還是可以曉得range
+
+  -- vim.cmd([[let saveAs=printf("%w !csvsql --query '%s' > /tmp/my.csv", sql)]]) -- ❌ 這是常數
+  vim.cmd([[let saveAs=':exe printf("%%w !csvsql --query %s%s%s > /tmp/my.csv", "\x22", g:sql, "\x22")']])
+  vim.cmd(
+    [[let saveAsAndOpen=':exe printf("%%w !csvsql --query %s%s%s > /tmp/my.csv", "\x22", g:sql, "\x22") | tabnew | e /tmp/my.csv']])
+
+  vim.cmd([[let @c="%y | tabnew | setlocal buftype=nofile noswapfile filetype=csv | 0pu"]])
+  vim.cmd([[let clone=@c]])
+  -- '<,'>!csvsql --query '@j'
   vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-    "SELECT * FROM stdin LIMIT 5;",
+    [[-- 對選取內容使用`@j`, 之後可用`@a`, `@b`, `saveAs`等變數來輔助]],
+    [[-- j  '<,'>join | y s | let sql = @s | u     -- 複製指令成一列給s，也設定sql和s相同, 用於--query之後貼上此內容]],
+    "",
+    [[-- a  %!csvsql --query ""      👈 在原buffer異動]],
+    [[-- b  '<,'>!csvsql --query ""  👈 在原buffer異動]],
+    [[--  在`%`或'<,'>之後加上w可以變成print的效果 ]],
+    "",
+    "-- saveAs",
+    -- [[-- saveAs  %w!csvsql --query '' > /tmp/my.csv     👈 另儲新檔]], -- ❌ %w!csvsql之間要有空格！ 且%w! csvsql也是錯誤，要是%w !csvsql
+    [[-- saveAs  %w !csvsql --query '' > /tmp/my.csv     👈 另儲新檔]],
+    "",
+    "",
+    [[-- c  %y | tabnew | setlocal buftype=nofile noswapfile filetype=csv | 0pu  -- 複製當前的內容貼在新的頁籤]],
+    "",
+    "",
+    "SELECT * FROM stdin LIMIT 5",
+    ";",
     "",
     "SELECT *",
     "FROM stdin",
     "GROUP BY block",
     "ORDER BY gid ASC",
+    ";",
     -- 不能這樣，每列中不可以有換行符
     -- [[
     -- SELECT *
@@ -294,10 +345,13 @@ local function program_show_glyph()
     -- ]]
     "",
   })
-  vim.cmd("w")
+
+  -- vim.cmd("w") -- 如此不需要真的寫入檔案
   vim.cmd("copen 5 | cbo") -- 開始後移動到底部
   vim.cmd("wincmd J")      -- move qflist at the very bottom
 
+
+  vim.api.nvim_set_current_win(win_id_sql) -- focus sql的視窗
 
   return ""
 end
