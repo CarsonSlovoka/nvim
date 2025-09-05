@@ -296,7 +296,7 @@ local function program_show_glyph()
 
 
   -- vim.cmd([[let @a="'<,'>!csvsql --query '  '"]]) -- 可以直接將' '裡面的內容用某一個變數取代
-  vim.cmd('let sql=""')
+  -- vim.cmd('let sql=""')
   -- vim.cmd([[let @a=printf("%!csvsql --query '%s'", sql)]]) -- ❌ 需要初始化sql變數，而且它不會隨著sql變數的值改變，首次判斷完之後就是固定的常數
   -- vim.cmd([[let @a=printf("%%!csvsql --query '%s'", "g:sql")]]) -- ❌ 需要初始化sql變數，而且它不會隨著sql變數的值改變，首次判斷完之後就是固定的常數
   vim.cmd([[let @a=':exe printf("%%!csvsql --query %s%s%s", "\"", g:sql, "\"")']])
@@ -311,27 +311,40 @@ local function program_show_glyph()
   vim.cmd(
     [[let saveAsAndOpen=':exe printf("%%w !csvsql --query %s%s%s > /tmp/my.csv", "\x22", g:sql, "\x22") | tabnew | e /tmp/my.csv']])
 
+  vim.cmd([[let preview=':exe printf("%%w !csvsql --query %s%s%s", "\x22", g:sql, "\x22")']])
+  -- vim.cmd( [[let previewRedirZ=':redir @+ | exe printf("%%w !csvsql --query %s%s%s", "\x22", g:sql, "\x22") | redir END']]) -- ❌ 這是錯的，會崩潰
+  vim.cmd([[
+  let previewRedirZ=':let @z=execute(printf("%%w !csvsql --query %s%s%s", "\x22", g:sql, "\x22"))'
+  ]]) -- 可將stdout的內容直接放到"z 而不需要透過redir來幫忙
+  -- substitute(g:sql, "%", "%%", "g") -- 這個也沒辦法解決%的問題
+
   vim.cmd([[let @c="%y | tabnew | setlocal buftype=nofile noswapfile filetype=csv | 0pu"]])
   vim.cmd([[let clone=@c]])
   -- '<,'>!csvsql --query '@j'
   vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-    [[-- 對選取內容使用`@j`, 之後可用`@a`, `@b`, `saveAs`等變數來輔助]],
+    [[-- 對選取內容使用`@j`, 之後可用`@a`, `@b`, `saveAs`, `saveAsAndOpen`等變數來輔助]],
     [[-- j  '<,'>join | y s | let sql = @s | u     -- 複製指令成一列給s，也設定sql和s相同, 用於--query之後貼上此內容]],
     "",
     [[-- a  %!csvsql --query ""      👈 在原buffer異動]],
     [[-- b  '<,'>!csvsql --query ""  👈 在原buffer異動]],
     [[--  在`%`或'<,'>之後加上w可以變成print的效果 ]],
+    [[--  有w時就是一種輸出的導向(預設是stdout, 也可以指定檔案) ]],
+    "",
+    "-- :NewTmp | set filetype=csv",
     "",
     "-- saveAs",
     -- [[-- saveAs  %w!csvsql --query '' > /tmp/my.csv     👈 另儲新檔]], -- ❌ %w!csvsql之間要有空格！ 且%w! csvsql也是錯誤，要是%w !csvsql
     [[-- saveAs  %w !csvsql --query '' > /tmp/my.csv     👈 另儲新檔]],
     "",
+    "其它參考",
+    [[-- csvsql --query 'SELECT * FROM temp WHERE block LIKE "Math%"' /tmp/temp.csv"]],
     "",
     [[-- c  %y | tabnew | setlocal buftype=nofile noswapfile filetype=csv | 0pu  -- 複製當前的內容貼在新的頁籤]],
     "",
     "",
     "SELECT * FROM stdin LIMIT 5",
     ";",
+    "",
     "",
     "SELECT *",
     "FROM stdin",
@@ -343,6 +356,31 @@ local function program_show_glyph()
     -- SELECT *
     -- FROM stdin;
     -- ]]
+    "",
+    "-- 🟧 查看block共有哪些",
+    "",
+    "SELECT block",
+    "FROM stdin",
+    "GROUP BY block",
+    ";",
+    "",
+    "-- 🟧 找指定的block內容",
+    "",
+    "SELECT *",
+    "FROM stdin",
+    "WHERE isUnicode=1",
+    "AND block == 'Basic Latin'",
+    "OR block == 'Mathematical Operators'",
+    "OR block IN ('Enclosed Alphanumerics', 'Number Forms')",
+    "-- OR unicode_ch IN ('我')",
+    "",
+    "-- %不能用，會衝突",
+    "-- OR block LIKE Math%",
+    "-- 字串用單引號'，因為previewRedirZ中用的是雙引號",
+    ";",
+    "",
+    "",
+    "-- 🟧",
     "",
   })
 
