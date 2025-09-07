@@ -1605,7 +1605,12 @@ local function install_lualine()
           end
           return indent_style
         end,
-        'encoding', 'fileformat', 'filetype',
+        -- 'encoding', -- 這也可，但是預設不會顯示bomb
+        {
+          'encoding',
+          show_bomb = true
+        },
+        'fileformat', 'filetype',
       },
     }
   }
