@@ -3524,7 +3524,29 @@ vim.api.nvim_create_user_command("Gitfiles",
 
     vim.cmd("startinsert")
     vim.api.nvim_input(
-      [[git ls-files --exclude-standard --cached | fzf --preview "batcat --color=always --style=numbers {}" --bind "enter:execute(echo "$(pwd)/{}")+abort"<CR>]])
+      string.format([[
+git ls-files --exclude-standard --cached |
+fzf --style full \
+    %s \
+    %s  \
+    %s && printf " [%%s] " {}' \
+    --bind 'focus:+transform-header:file --brief {} || echo "No file selected"' \
+    --bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' \
+    --color 'border:#aaaaaa,label:#cccccc' \
+    --color 'preview-border:#9999cc,preview-label:#ccccff' \
+    --color 'list-border:#669966,list-label:#99cc99' \
+    --color 'input-border:#996666,input-label:#ffcccc' \
+    --color 'header-border:#6699cc,header-label:#99ccff' \
+    --bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" \
+    --bind 'ctrl-/:change-preview-window(down|hidden|)' \
+    --bind "alt-p:preview-up,alt-n:preview-down"
+<CR>
+]],
+        "",                                                       -- --input-label ' Input ' --header-label ' File Type '
+        [[--preview "batcat --color=always --style=numbers {}"]], -- '~/fzf/bin/fzf-preview.sh {}'
+        "--bind 'focus:transform-preview-label:[[ -n {} ]]"       -- Previewing
+      )
+    )
 
     -- 可以考慮cd回原本的工作目錄
   end,
