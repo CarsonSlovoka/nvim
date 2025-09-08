@@ -337,6 +337,31 @@ map({ 'n', 'v' }, '<leader>gf',
   }
 )
 
+map({ 'n', 'v' }, 'gi',
+  function()
+    if vim.fn.executable("chafa") == 0 then
+      vim.notify("chafa not found. sudo apt install chafa", vim.log.levels.WARN)
+      return
+    end
+    vim.cmd("cd %:h")
+    local mode = vim.fn.mode()
+    local img_path = ""
+    if mode == "n" then
+      vim.cmd("normal! viby") -- 複製( )中的內容
+      img_path = vim.fn.getreg('"')
+    else
+      img_path = utils.range.get_selected_text()[1]
+      vim.api.nvim_input("<esc>")
+    end
+    vim.cmd("tabnew")
+    vim.cmd("term chafa " .. img_path)
+    vim.cmd("startinsert")
+  end,
+  {
+    desc = "使用chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
+  }
+)
+
 local function setup_normal()
   map('n', -- normal mode
     '<leader>cwd',
