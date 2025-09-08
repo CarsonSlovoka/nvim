@@ -168,7 +168,7 @@ def main(font_path, show_outline: bool, glyph_index=[]):
         }
 
     blocks = load_unicode_blocks()
-    glyph_render = GlyphRenderer(font_path, width=96, height=48)
+    glyph_render = GlyphRenderer(font_path, width=48, height=48)
 
     for gid, glyph_name in enumerate(glyph_order):
         # if gid != 22231: continue
