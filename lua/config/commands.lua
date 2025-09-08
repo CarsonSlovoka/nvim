@@ -3522,6 +3522,20 @@ vim.api.nvim_create_user_command("Gitfiles",
     local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r"))
     vim.cmd("file search git files:" .. git_dirname)
 
+
+    -- 檢查 fzf-preview.sh 路徑
+    local preview_cmd
+    --- fzf-preview.sh有一些協議可以在終端機呈現圖像 https://github.com/junegunn/fzf/blob/a0a334fc8d/bin/fzf-preview.sh#L60-L86
+    --- chafa 可以foot啟動的nvim中的terminal中呈現圖像
+    local fzf_preview_path = vim.fn.expand(vim.fn.getenv("FZF_PREVIEW_SH_PATH"))
+    if fzf_preview_path ~= vim.NIL and vim.fn.filereadable(fzf_preview_path) == 1 then
+      preview_cmd = string.format([[--preview "%s {}"]], fzf_preview_path)
+    elseif vim.fn.filereadable(vim.fn.expand("~/fzf/bin/fzf-preview.sh")) == 1 then
+      preview_cmd = string.format([[--preview "%s {}"]], vim.fn.expand("~/fzf/bin/fzf-preview.sh"))
+    else
+      preview_cmd = [[--preview "batcat --color=always --style=numbers {}"]]
+    end
+
     vim.cmd("startinsert")
     vim.api.nvim_input(
       string.format([[
@@ -3542,9 +3556,9 @@ fzf --style full \
     --bind "alt-p:preview-up,alt-n:preview-down"
 <CR>
 ]],
-        "",                                                       -- --input-label ' Input ' --header-label ' File Type '
-        [[--preview "batcat --color=always --style=numbers {}"]], -- '~/fzf/bin/fzf-preview.sh {}'
-        "--bind 'focus:transform-preview-label:[[ -n {} ]]"       -- Previewing
+        "",                                                 -- --input-label ' Input ' --header-label ' File Type '
+        preview_cmd,
+        "--bind 'focus:transform-preview-label:[[ -n {} ]]" -- Previewing
       )
     )
 
