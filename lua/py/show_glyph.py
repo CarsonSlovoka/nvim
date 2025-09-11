@@ -101,13 +101,19 @@ class GlyphRenderer:
 
             b64 = base64.b64encode(png_data).decode("ascii")
 
-            chunk_size = 4096
-            output = []
-            for i in range(0, len(b64), chunk_size):
-                chunk = b64[i : i + chunk_size]
-                m = 1 if i + chunk_size < len(b64) else 0
-                output.append(f"\033_Gf=100,a=T,m={m};{chunk}\033\\")
-            return "".join(output)
+            # 以下可行，但是想要直接寫入base64, 透過 [image.nvim](https://github.com/3rd/image.nvim) 來渲染，如此可以在編輯中也能看到圖
+            # chunk_size = 4096
+            # output = []
+            # for i in range(0, len(b64), chunk_size):
+            #     chunk = b64[i : i + chunk_size]
+            #     m = 1 if i + chunk_size < len(b64) else 0
+            #     output.append(f"\033_Gf=100,a=T,m={m};{chunk}\033\\")
+            # return "".join(output)
+
+            # https://github.com/3rd/image.nvim/issues/135
+            # https://github.com/3rd/image.nvim/pull/241/files
+            return f"![{glyph_index}](data:image/png;base64,{b64})"
+
         except Exception as e:
             return f"Error rendering glyph {glyph_index}: {str(e)}"
 
