@@ -1,6 +1,7 @@
 return {
   api = require "utils.api",
   array = require "utils.array",
+  buf = require "utils.buf",
   cmd = require "utils.cmd",
   complete = require "utils.complete",
   encoding = require "utils.encoding",
