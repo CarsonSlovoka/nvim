@@ -347,7 +347,22 @@ function M.setup(opts)
             avif = true,
           }
           if hijack_file_patterns[ext] then
-            -- 直接用image.nvim來顯示就好
+            -- 直接用image.nvim來顯示就好, 不過還是再開一個視窗寫入基本訊息
+            -- WARN: 必須再開一個視窗因為image.nvim的會先執行，該buf寫不進去(可以可以先改成可寫再變唯讀？沒試過)
+            vim.cmd("vert botright split | enew | setlocal buftype=nofile noswapfile")
+            utils.buf.set_lines(vim.api.nvim_get_current_buf(), 0, {
+              {
+                { "filepath: ", "" },
+                { abspath,      "@label" },
+              },
+              {},
+              {
+                { vim.fn.system([[ls -lh ]] .. abspath):gsub('\n', ''), "" },
+              },
+              {
+                { vim.fn.system(string.format([[file %s ]], abspath)):gsub('\n', ''), "" },
+              },
+            })
             return
           end
         end
