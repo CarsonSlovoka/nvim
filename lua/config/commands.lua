@@ -3656,4 +3656,70 @@ vim.api.nvim_create_user_command("PrintUcdblock",
   }
 )
 
+vim.api.nvim_create_user_command('GetImgDataURL', function(args)
+  -- NOTE: 可以得到base64編碼的內容, 對象可為{選取得內容(通常用於svg) 該檔案本身(路徑) }
+
+  local config = get_cmp_config(args.fargs)
+  local mimeType = config["mimeType"] or ""
+
+  local cmd = ""
+  if args.range ~= 0 and mimeType == "image/svg+xml" then
+    -- 讀取當前緩衝區內容
+    -- local svg_txt = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), '')
+    local svg_txt = table.concat(utils.range.get_selected_text(), "")
+    -- echo -n  do not output the trailing newline
+    cmd = string.format([[echo -n %s | base64]], vim.fn.shellescape(svg_txt)) -- 利用linux的工具，取得base64編碼的結果
+  else
+    local abs_path = vim.fn.expand(("%:p"))
+    cmd = string.format([[base64 -w 0 '%s' ]], abs_path) -- -w 0 -- disable line wrapping
+  end
+
+  local base64 = vim.fn.system(cmd)
+  base64 = base64:gsub('\n', '')
+
+  local data_url = (mimeType ~= "" and "data:" .. mimeType .. ';base64,' or "") .. base64
+
+  -- vim.api.nvim_put({ data_url }, 'l', true, true) -- 👈 可以考慮直接貼上
+  --
+  -- 將結果放入暫存器" 讓使用者自己貼上
+  vim.fn.setreg('"', data_url)
+
+  -- 提示使用者
+  vim.api.nvim_echo({
+    { 'press ',                                                       "Normal" },
+    { 'p',                                                            'YellowBold' },
+    { ' to get result ',                                              "Normal" },
+    { mimeType ~= "" and "data:" .. mimeType .. ';base64,... ' or "", '@label' },
+  }
+  , false, {})
+end, {
+  desc = "get data URL: data:image/svg+xml;base64,...  for inline encoded image",
+  nargs = "?",
+  range = true,
+  complete = function(arg_lead, cmd_line)
+    local comps = {}
+    local argc = #(vim.split(cmd_line, '%s+')) - 1
+    local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+    if not prefix then
+      suffix = arg_lead
+      prefix = ''
+    end
+    local need_add_prefix = true
+    if argc == 0 or not arg_lead:match('=') then
+      comps = { 'mimeType=' }
+      need_add_prefix = false
+    elseif prefix == "mimeType" then
+      comps = {
+        "image/svg+xml",
+        "image/png",
+      }
+    end
+    if need_add_prefix then
+      for i, comp in ipairs(comps) do
+        comps[i] = prefix .. "=" .. comp
+      end
+    end
+    return vim.tbl_filter(function(item) return vim.startswith(item, suffix) end, comps)
+  end
+})
 return commands
