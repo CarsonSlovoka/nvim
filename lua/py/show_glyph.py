@@ -1,5 +1,6 @@
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[[1, 200], [500, 600]]'
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[]'
+# python show_glyph.py ~/.fonts/my.otf --show_outline --glyph_indice [[1,200],[500,600]]  # WARN: 👈 如果要在nvim debug glyph_indice中有多的空白要拿掉
 
 import argparse
 import base64
@@ -14,6 +15,11 @@ import freetype  # pip install freetype-py==2.5.1
 from fontTools.ttLib import TTFont  # pip install fonttools==4.59.2
 from fontTools.ttLib.tables._c_m_a_p import table__c_m_a_p
 from fontTools.ttLib.tables._m_a_x_p import table__m_a_x_p
+from freetype.ft_enums.ft_curve_tags import (
+    FT_Curve_Tag_Conic,
+    FT_Curve_Tag_Cubic,
+    FT_Curve_Tag_On,
+)
 from PIL import Image
 
 parser = argparse.ArgumentParser(description="glyph information")
@@ -71,6 +77,12 @@ def get_unicode_block_name(codepoint, blocks):
     return "No Block Defined"
 
 
+class Point:
+    def __init__(self, xy: tuple):
+        self.x = xy[0]
+        self.y = xy[1]
+
+
 class GlyphRenderer:
     """用於將字型檔案的 glyph 渲染為 Kitty 終端機圖形控制序列的類"""
 
@@ -78,9 +90,80 @@ class GlyphRenderer:
         """初始化字型檔案並創建 FreeType Face 物件"""
         try:
             self.face = freetype.Face(font_path)
-            self.face.set_char_size(kwargs.get("width", 48) * kwargs.get("height", 48))
+            self.face.set_char_size(kwargs.get("width", 96) * kwargs.get("height", 96))
+            self.mimetype = kwargs.get("format", "image/svg+xml")
         except Exception as e:
             raise ValueError(f"Failed to initialize font at {font_path}: {str(e)}")
+
+    def get_glyph_svg(self, glyph: freetype.GlyphSlot) -> str:
+        outline = glyph.outline
+        if outline.n_points == 0:
+            return ""
+
+        # 計算 max_y 用於翻轉並偏移
+        points = outline.points
+        max_y = max(p[1] for p in points) if points else 0
+
+        # 準備 SVG 路徑數據
+        path_data = []
+        current_pos = None  # 追蹤當前位置，避免重複
+
+        def scale(x, y):
+            # return x / 64.0, (max_y - y) / 64.0
+            return x / 8.0, (max_y - y) / 8.0
+
+        def move_to(to, user):
+            nonlocal current_pos
+            tx, ty = scale(to.x, to.y)
+            user.append(f"M {tx:.3f} {ty:.3f} ")
+            current_pos = (tx, ty)
+
+        def line_to(to, user):
+            nonlocal current_pos
+            tx, ty = scale(to.x, to.y)
+            if (tx, ty) != current_pos:  # 避免重複
+                user.append(f"L {tx:.3f} {ty:.3f} ")
+            current_pos = (tx, ty)
+
+        def conic_to(control, to, user):
+            nonlocal current_pos
+            cx, cy = scale(control.x, control.y)
+            tx, ty = scale(to.x, to.y)
+            user.append(f"Q {cx:.3f} {cy:.3f} {tx:.3f} {ty:.3f} ")
+            current_pos = (tx, ty)
+
+        def cubic_to(control1, control2, to, user):
+            nonlocal current_pos
+            c1x, c1y = scale(control1.x, control1.y)
+            c2x, c2y = scale(control2.x, control2.y)
+            tx, ty = scale(to.x, to.y)
+            user.append(f"C {c1x:.3f} {c1y:.3f} {c2x:.3f} {c2y:.3f} {tx:.3f} {ty:.3f} ")
+            current_pos = (tx, ty)
+
+        # 使用 decompose 分解輪廓 ( 就不需要處理 FT_Curve_Tag_Conic, FT_Curve_Tag_Cubic, FT_Curve_Tag_On )
+        outline.decompose(
+            move_to=move_to,
+            line_to=line_to,
+            conic_to=conic_to,
+            cubic_to=cubic_to,
+            context=path_data,  # user 是 context，這裡用 list 收集
+        )
+
+        # 如果有輪廓，添加 Z 關閉最後一個輪廓
+        if path_data:
+            path_data.append("Z ")
+
+        svg_path_data = "".join(path_data)
+        # return svg_path_data
+
+        # 可選：計算 bbox 並返回完整 SVG
+        bbox = outline.get_bbox()
+        xmin, ymin = scale(bbox.xMin, bbox.yMax)  # 注意翻轉
+        xmax, ymax = scale(bbox.xMax, bbox.yMin)
+        width = xmax - xmin
+        height = ymax - ymin
+        full_svg = f'<svg viewBox="{xmin:.3f} {ymin:.3f} {width:.3f} {height:.3f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
+        return full_svg
 
     def render_glyph_to_kitty(self, glyph_index) -> str:
         """將指定 glyph index 渲染為 Kitty 終端機圖形控制序列"""
@@ -91,15 +174,28 @@ class GlyphRenderer:
             if width == 0 or rows == 0:
                 return ""  # glyph無效
 
-            data = bytes(bitmap.buffer)
-            img = Image.frombytes("L", (width, rows), data)  # gray mode
+            b64 = ""
+            mimetype: str = self.mimetype
+            if mimetype == "image/svg+xml":
+                # 獲取字形的 SVG 數據
+                svg_data = self.get_glyph_svg(self.face.glyph)
+                # print(svg_data)
+                if not svg_data:
+                    raise ValueError("無法生成 SVG 數據")
 
-            # 轉成 PNG bytes
-            buf = io.BytesIO()
-            img.save(buf, format="PNG")
-            png_data = buf.getvalue()
+                svg_bytes = svg_data.encode("utf-8")
+                b64 = base64.b64encode(svg_bytes).decode("utf-8")
 
-            b64 = base64.b64encode(png_data).decode("ascii")
+            else:
+                mimetype = "image/png"
+                data = bytes(bitmap.buffer)
+                img = Image.frombytes("L", (width, rows), data)  # gray mode
+
+                # 轉成 PNG bytes
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                png_data = buf.getvalue()
+                b64 = base64.b64encode(png_data).decode("ascii")
 
             # 以下可行，但是想要直接寫入base64, 透過 [image.nvim](https://github.com/3rd/image.nvim) 來渲染，如此可以在編輯中也能看到圖
             # chunk_size = 4096
@@ -112,10 +208,10 @@ class GlyphRenderer:
 
             # https://github.com/3rd/image.nvim/issues/135
             # https://github.com/3rd/image.nvim/pull/241/files
-            return f"![{glyph_index}](data:image/png;base64,{b64})"
+            return f"![{glyph_index}](data:{mimetype};base64,{b64})"
 
         except Exception as e:
-            return f"Error rendering glyph {glyph_index}: {str(e)}"
+            return f"❌ Error rendering glyph {glyph_index}: {str(e)}"
 
 
 def expand_ranges_to_array(ranges):
