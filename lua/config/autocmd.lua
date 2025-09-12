@@ -329,12 +329,29 @@ function M.setup(opts)
         "*.jpeg", "*.jpg",
         "*.mp4", "*.mp3",
       },
-      callback = function()
+      callback = function(e)
         if vim.fn.executable("file") == 0 or vim.fn.executable("ls") == 0 then
           return
         end
 
         local abspath = vim.fn.expand("%:p")
+
+        if vim.env.KITTY_WINDOW_ID ~= nil then
+          local ext = string.lower(vim.fn.fnamemodify(e.file, ":e")) -- png
+          local hijack_file_patterns = {
+            png = true,
+            jpg = true,
+            jpeg = true,
+            gif = true,
+            webp = true,
+            avif = true,
+          }
+          if hijack_file_patterns[ext] then
+            -- 直接用image.nvim來顯示就好
+            return
+          end
+        end
+
         local filename = "♻️" .. vim.fn.expand("%:t") -- 為了盡量避免與當前的buf同名，前面加上♻️
 
         -- 🟧 建一個buf
