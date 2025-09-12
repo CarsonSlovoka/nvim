@@ -22,3 +22,50 @@ function Example_buf_appendbufline()
     {}
   )
 end
+
+function Example_buf_set_lines()
+  vim.api.nvim_create_user_command("Examplebufsetlines",
+    function()
+      local buf = vim.api.nvim_get_current_buf()
+
+      -- 加在結尾，如果空間不夠會自己補
+      utils.buf.set_lines(buf, vim.api.nvim_buf_line_count(buf),
+        {
+          {
+            { 'line1 col1 ', '@label' },
+            { 'line1 col2',  'Yellow' }
+          },
+          {
+            { "line2 col1 ", "Red" },
+            { "line2 col2 ", "" }, -- 沒有給就是不套用hl_group
+            { "line2 col3 ", "@label" }
+          },
+          {
+            { "中文 ", "@label" },
+            { "line2", "Red" }
+          },
+        }
+      )
+
+      -- 加在開頭，有機會覆蓋掉已經存在的文字
+      utils.buf.set_lines(buf, 0,
+        {
+          {
+            { '新增在頭 ', 'YellowBold' },
+            { 'line1 col2', 'Yellow' }
+          },
+          {
+            { "line2 col1 ", "Red" },
+            { "line2 col2 ", "" }, -- 沒有給就是不套用hl_group
+            { "line2 col3 ", "@label" }
+          },
+          {
+            { "中文 ", "@label" },
+            { "line2", "Red" }
+          },
+        }
+      )
+    end,
+    {}
+  )
+end
