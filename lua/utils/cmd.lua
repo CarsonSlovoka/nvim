@@ -121,4 +121,18 @@ function M.get_complete_list(argLead, cmp_table)
   return completions
 end
 
+--- 解析 [complete](https://github.com/CarsonSlovoka/nvim/blob/b201ef3fd87/lua/config/commands.lua#L3618-L3654) 所提供的參數
+---
+---@param fargs string[]
+function M.get_cmp_config(fargs)
+  local config = {}
+  for _, arg in ipairs(fargs) do
+    local key, value = arg:match('^(.-)=(.*)$')
+    if key then
+      config[key] = value
+    end
+  end
+  return config
+end
+
 return M

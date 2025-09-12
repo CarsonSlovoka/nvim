@@ -11,18 +11,6 @@ vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- �
 
 local commands = {}
 
-
-local function get_cmp_config(fargs)
-  local config = {}
-  for _, arg in ipairs(fargs) do
-    local key, value = arg:match('^(.-)=(.*)$')
-    if key then
-      config[key] = value
-    end
-  end
-  return config
-end
-
 local function openCurrentDirWithFoot()
   local current_file_path = vim.fn.expand("%:p:h") -- 獲取當前文件所在的目錄
   if current_file_path ~= "" then
@@ -3503,7 +3491,7 @@ vim.api.nvim_create_user_command("Clear",
 
 vim.api.nvim_create_user_command("Gitfiles",
   function(args)
-    local config = get_cmp_config(args.fargs)
+    local config = utils.cmd.get_cmp_config(args.fargs)
 
     vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
 
@@ -3577,7 +3565,7 @@ fzf --style full \
 
 vim.api.nvim_create_user_command("PrintUcdblock",
   function(args)
-    local config = get_cmp_config(args.fargs)
+    local config = utils.cmd.get_cmp_config(args.fargs)
 
     local unicodes
     if args.range > 0 then
@@ -3659,7 +3647,7 @@ vim.api.nvim_create_user_command("PrintUcdblock",
 vim.api.nvim_create_user_command('GetImgDataURL', function(args)
   -- NOTE: 可以得到base64編碼的內容, 對象可為{選取得內容(通常用於svg) 該檔案本身(路徑) }
 
-  local config = get_cmp_config(args.fargs)
+  local config = utils.cmd.get_cmp_config(args.fargs)
   local mimeType = config["mimeType"] or ""
 
   local cmd = ""
