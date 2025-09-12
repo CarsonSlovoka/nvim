@@ -2160,8 +2160,27 @@ local function install_image()
         }, false, {})
       end
 
+
+      if cfg["enabled"] then
+        -- WARN: 直接改此設定值不能從disabled變成enable, 所以後面還需要調用 enable() 或 disable
+        if cfg["enabled"] == "toggle" then
+          markdown_config.enabled = not markdown_config.enabled
+        else
+          markdown_config.enabled = cfg["enabled"] == "1" or false
+        end
+      end
+
       -- 目前image.nvim似乎沒有提供其它的config可以再改裡面的設定，所以只能重新setup
       -- print(vim.inspect(config))
+
+      if cfg["enabled"] then
+        if markdown_config.enabled then
+          require("image").enable()
+        else
+          require("image").disable()
+        end
+      end
+
       require("image").setup(config)
     end,
     {
@@ -2177,9 +2196,9 @@ local function install_image()
         end
         local need_add_prefix = true
         if argc == 0 or not arg_lead:match('=') then
-          comps = { 'enable', 'at_cursor=', 'cursor_mode=' }
+          comps = { 'enabled=', 'at_cursor=', 'cursor_mode=' }
           need_add_prefix = false
-        elseif prefix == "at_cursor" then
+        elseif prefix == "at_cursor" or prefix == "enabled" then
           comps = {
             "1",
             "0",
