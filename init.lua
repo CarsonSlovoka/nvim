@@ -2063,7 +2063,7 @@ local function install_image()
   -- 啟動kitty後，如果查看markdown沒有看到圖片
   -- 1. 關閉nvim後，啟動kitty先嘗試看看圖片是否能正常顯示: `kitty +kitten icat https://sw.kovidgoyal.net/kitty/_static/kitty.svg`
   -- 2. 如果有看到，那麼可以再該markdown文件用 :e 重新載入頁面應該就會出現
-  require("image").setup({
+  local config = {
     backend = "kitty",
     -- processor 的magick_cli, magick_rock 不是指執行檔，而是image.nvim裡面的子lua腳本
     -- 如果用的是magick_cli只需要convert, identify兩個執行檔即可: https://github.com/3rd/image.nvim/blob/4c51d6202628b3b51e368152c053c3fb5c5f76f2/lua/image/processors/magick_cli.lua#L3-L10
@@ -2103,7 +2103,8 @@ local function install_image()
     editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
     tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
     hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
-  })
+  }
+  require("image").setup(config)
 
 
   vim.api.nvim_create_user_command("ImageToggle",
@@ -2118,6 +2119,85 @@ local function install_image()
     {
       nargs = 0,
       desc = "image.nvim toggle"
+    }
+  )
+  vim.api.nvim_create_user_command("DisplayImageSettings",
+    function(args)
+      -- TIP: 可透過 :lua print(vim.inspect(require("image").get_images())) 查看圖片，以及瞭解設定
+
+      local cfg = utils.cmd.get_cmp_config(args.fargs)
+      local markdown_config = config.integrations.markdown
+
+      ---@type boolean
+      local at_cursor
+      if cfg["at_cursor"] == "toggle" then
+        at_cursor = not markdown_config.only_render_image_at_cursor
+      elseif cfg["at_cursor"] then
+        at_cursor = cfg["at_cursor"] == "1"
+      else
+        at_cursor = true
+      end
+
+      ---@type string "inline" or "popup"
+      local cursor_mode
+      if not at_cursor and cfg["at_cursor"] ~= nil then
+        -- 只有變成inline時可以全部顯示
+        cursor_mode = "inline"
+      else
+        cursor_mode = cfg["cursor_mode"] or "inline"
+      end
+
+      markdown_config.only_render_image_at_cursor = at_cursor
+
+      if cursor_mode == "inline" or cursor_mode == "popup" then
+        markdown_config.only_render_image_at_cursor_mode = cursor_mode
+      else
+        vim.api.nvim_echo({
+          { '❌ cursor_mode should be ', "Normal" },
+          { 'inline', '@label' },
+          { ' or ', "Normal" },
+          { 'popup', '@label' },
+        }, false, {})
+      end
+
+      -- 目前image.nvim似乎沒有提供其它的config可以再改裡面的設定，所以只能重新setup
+      -- print(vim.inspect(config))
+      require("image").setup(config)
+    end,
+    {
+      nargs = '*',
+      desc = "image.nvim.setup(...)",
+      complete = function(arg_lead, cmd_line)
+        local comps = {}
+        local argc = #(vim.split(cmd_line, '%s+')) - 1
+        local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+        if not prefix then
+          suffix = arg_lead
+          prefix = ''
+        end
+        local need_add_prefix = true
+        if argc == 0 or not arg_lead:match('=') then
+          comps = { 'enable', 'at_cursor=', 'cursor_mode=' }
+          need_add_prefix = false
+        elseif prefix == "at_cursor" then
+          comps = {
+            "1",
+            "0",
+            "toggle",
+          }
+        elseif prefix == "cursor_mode" then
+          comps = {
+            "popup",
+            "inline",
+          }
+        end
+        if need_add_prefix then
+          for i, comp in ipairs(comps) do
+            comps[i] = prefix .. "=" .. comp
+          end
+        end
+        return vim.tbl_filter(function(item) return vim.startswith(item, suffix) end, comps)
+      end
     }
   )
 end
