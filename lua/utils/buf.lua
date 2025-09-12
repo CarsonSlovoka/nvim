@@ -32,7 +32,10 @@ end
 --- @param l_start integer write statline
 ---   - 加在結尾: `vim.api.nvim_buf_line_count(buf)` 如果空間不夠會自己補
 ---   - ⚠️ 加在開頭: `0` 有機會覆蓋掉已經存在的文字
+---
 --- @param msgs table  { {{'line1 col1', 'Normal'}, {'line1 col2', 'ERROR'}}, {{"line2", ""}} }
+---   ⚠️ 當遇到該錯誤: *replacement string' item contains newlines*
+---   可以可慮將newline都移除: `msg:gsub('\n', '')`
 function M.set_lines(buf, l_start, msgs)
   --- @type HighlightEntry[]
   local highlight_positions = {}
