@@ -21,7 +21,7 @@ function M.showHelpAtQuickFix(helpMsgs)
   local qf_list = vim.fn.getqflist({ id = 0, all = 1 })
   -- 將 Quickfix 條目設定到 Quickfix 列表
   -- vim.fn.setqflist(quickFixList, 'r') -- 'r' 表示覆蓋當前列表, 這樣title也會被覆蓋
-  vim.fn.setqflist({}, 'r', {title = qf_list.title, items = quickFixList, user_data = qf_list.user_data  })
+  vim.fn.setqflist({}, 'r', { title = qf_list.title, items = quickFixList, user_data = qf_list.user_data })
 
   vim.cmd('copen')
 end
