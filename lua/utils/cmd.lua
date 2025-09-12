@@ -78,6 +78,8 @@ function M.open_qflist_if_not_open()
   end
 end
 
+--- @deprecated 建議用`get_cmp_config`來取代
+---
 --- 得到補全的清單
 --- @param argLead string
 --- @param cmp_table table
