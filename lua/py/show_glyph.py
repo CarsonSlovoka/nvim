@@ -1,6 +1,7 @@
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[[1, 200], [500, 600]]'
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[]'
 # python show_glyph.py ~/.fonts/my.otf --show_outline --glyph_indice [[1,200],[500,600]]  # WARN: 👈 如果要在nvim debug glyph_indice中有多的空白要拿掉
+# python show_glyph.py ~/.fonts/my.otf --mimetype=kgp -w=96 --height=96 --precision=3 --show_outline --glyph_indice [[1,200],[500,600]]
 
 import argparse
 import base64
@@ -41,7 +42,34 @@ parser.add_argument(
     default="",
     help="https://www.unicode.org/Public/draft/ucd/Blocks.txt",
 )
+parser.add_argument(
+    "--mimetype",
+    type=str,
+    default="image/svg+xml",
+    help="image/svg+xml, image/png, kgp",
+)
+parser.add_argument(
+    "--precision",
+    type=int,
+    default=1,
+    help=".1f, .2f, ...",
+)
+parser.add_argument(
+    "--width",  # parse_args() 之後要用的名稱, 即: args.width
+    "-w",  # 這個名稱只能當成輸入，不能: args.w
+    type=int,
+    default=48,
+    help="img width: 48, 96, ...",
+)
+parser.add_argument(
+    "--height",
+    # "-h", # argument -h: conflicting option string: -h 會與幫助衝突
+    type=int,
+    default=48,
+    help="img height: 48, 96, ...",
+)
 args = parser.parse_args()
+# print(args)
 
 BLOCK_TXT_PATH = args.blocks_txt_path
 if BLOCK_TXT_PATH == "":
@@ -192,8 +220,7 @@ class GlyphRenderer:
                 svg_bytes = svg_data.encode("utf-8")
                 b64 = base64.b64encode(svg_bytes).decode("utf-8")
 
-            else:
-                mimetype = "image/png"
+            else:  # 統一用png處理
                 data = bytes(bitmap.buffer)
                 img = Image.frombytes("L", (width, rows), data)  # gray mode
 
@@ -203,14 +230,16 @@ class GlyphRenderer:
                 png_data = buf.getvalue()
                 b64 = base64.b64encode(png_data).decode("ascii")
 
-            # 以下可行，但是想要直接寫入base64, 透過 [image.nvim](https://github.com/3rd/image.nvim) 來渲染，如此可以在編輯中也能看到圖
-            # chunk_size = 4096
-            # output = []
-            # for i in range(0, len(b64), chunk_size):
-            #     chunk = b64[i : i + chunk_size]
-            #     m = 1 if i + chunk_size < len(b64) else 0
-            #     output.append(f"\033_Gf=100,a=T,m={m};{chunk}\033\\")
-            # return "".join(output)
+                if mimetype == "kgp":
+                    chunk_size = 4096
+                    output = []
+                    for i in range(0, len(b64), chunk_size):
+                        chunk = b64[i : i + chunk_size]
+                        m = 1 if i + chunk_size < len(b64) else 0
+                        output.append(f"\033_Gf=100,a=T,m={m};{chunk}\033\\")
+                    return "".join(output)
+
+                mimetype = "image/png"  # 強制設定成png
 
             # https://github.com/3rd/image.nvim/issues/135
             # https://github.com/3rd/image.nvim/pull/241/files
@@ -247,7 +276,6 @@ def main(font_path, show_outline: bool, glyph_index=[]):
     target_glyph_index_set = expand_ranges_to_array(glyph_index)
 
     cmap: table__c_m_a_p = font["cmap"]
-    maxp: table__m_a_x_p = font["maxp"]
 
     glyph_order = font.getGlyphOrder()
 
@@ -276,7 +304,13 @@ def main(font_path, show_outline: bool, glyph_index=[]):
         }
 
     blocks = load_unicode_blocks()
-    glyph_render = GlyphRenderer(font_path, width=48, height=48)
+    glyph_render = GlyphRenderer(
+        font_path,
+        width=args.width,
+        height=args.height,
+        mimetype=args.mimetype,
+        precision=args.precision,
+    )
 
     for gid, glyph_name in enumerate(glyph_order):
         # if gid != 22231: continue
