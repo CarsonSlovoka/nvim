@@ -91,7 +91,8 @@ class GlyphRenderer:
         try:
             self.face = freetype.Face(font_path)
             self.face.set_char_size(kwargs.get("width", 96) * kwargs.get("height", 96))
-            self.mimetype = kwargs.get("format", "image/svg+xml")
+            self.mimetype = kwargs.get("mimetype", "image/svg+xml")
+            self.precision = kwargs.get("precision", 1)
         except Exception as e:
             raise ValueError(f"Failed to initialize font at {font_path}: {str(e)}")
 
@@ -110,26 +111,29 @@ class GlyphRenderer:
 
         def scale(x, y):
             # return x / 64.0, (max_y - y) / 64.0
-            return x / 8.0, (max_y - y) / 8.0
+            # return 8.0 * x, 8.0 * (max_y - y)
+            return x, (max_y - y)
 
         def move_to(to, user):
             nonlocal current_pos
             tx, ty = scale(to.x, to.y)
-            user.append(f"M {tx:.3f} {ty:.3f} ")
+            user.append(f"M {tx:.{self.precision}f} {ty:.{self.precision}f} ")
             current_pos = (tx, ty)
 
         def line_to(to, user):
             nonlocal current_pos
             tx, ty = scale(to.x, to.y)
             if (tx, ty) != current_pos:  # 避免重複
-                user.append(f"L {tx:.3f} {ty:.3f} ")
+                user.append(f"L {tx:.{self.precision}f} {ty:.{self.precision}f} ")
             current_pos = (tx, ty)
 
         def conic_to(control, to, user):
             nonlocal current_pos
             cx, cy = scale(control.x, control.y)
             tx, ty = scale(to.x, to.y)
-            user.append(f"Q {cx:.3f} {cy:.3f} {tx:.3f} {ty:.3f} ")
+            user.append(
+                f"Q {cx:.{self.precision}f} {cy:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
+            )
             current_pos = (tx, ty)
 
         def cubic_to(control1, control2, to, user):
@@ -137,7 +141,9 @@ class GlyphRenderer:
             c1x, c1y = scale(control1.x, control1.y)
             c2x, c2y = scale(control2.x, control2.y)
             tx, ty = scale(to.x, to.y)
-            user.append(f"C {c1x:.3f} {c1y:.3f} {c2x:.3f} {c2y:.3f} {tx:.3f} {ty:.3f} ")
+            user.append(
+                f"C {c1x:.{self.precision}f} {c1y:.{self.precision}f} {c2x:.{self.precision}f} {c2y:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
+            )
             current_pos = (tx, ty)
 
         # 使用 decompose 分解輪廓 ( 就不需要處理 FT_Curve_Tag_Conic, FT_Curve_Tag_Cubic, FT_Curve_Tag_On )
@@ -162,7 +168,7 @@ class GlyphRenderer:
         xmax, ymax = scale(bbox.xMax, bbox.yMin)
         width = xmax - xmin
         height = ymax - ymin
-        full_svg = f'<svg viewBox="{xmin:.3f} {ymin:.3f} {width:.3f} {height:.3f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
+        full_svg = f'<svg viewBox="{xmin:.{self.precision}f} {ymin:.{self.precision}f} {width:.{self.precision}f} {height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
         return full_svg
 
     def render_glyph_to_kitty(self, glyph_index) -> str:
