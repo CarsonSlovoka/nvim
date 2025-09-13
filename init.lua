@@ -2170,6 +2170,12 @@ local function install_image()
         end
       end
 
+      for _, key in ipairs({ "max_height", "max_width" }) do
+        if cfg[key] then
+          config[key] = cfg[key] == "nil" and nil or tonumber(cfg[key])
+        end
+      end
+
       -- 目前image.nvim似乎沒有提供其它的config可以再改裡面的設定，所以只能重新setup
       -- print(vim.inspect(config))
 
@@ -2209,7 +2215,11 @@ local function install_image()
         local need_add_prefix = true
         if argc == 0 or not arg_lead:match('=') then
           comps = vim.tbl_filter(function(item) return not exist_comps[item] end, -- 過濾已輸入過的選項
-            { 'enabled=', 'at_cursor=', 'cursor_mode=' })                         -- 全選項
+            {
+              'enabled=', 'at_cursor=', 'cursor_mode=',
+              'max_width=', 'max_height=',
+            }) -- 全選項
+
           need_add_prefix = false
         elseif prefix == "at_cursor" or prefix == "enabled" then
           comps = {
@@ -2221,6 +2231,13 @@ local function install_image()
           comps = {
             "popup",
             "inline",
+          }
+        elseif prefix == "max_width" or prefix == 'max_height' then
+          comps = { -- %
+            "nil",
+            '5',
+            '20',
+            '50',
           }
         end
         if need_add_prefix then
