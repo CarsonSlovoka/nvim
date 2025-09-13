@@ -426,8 +426,11 @@ local function program_show_glyph_with_kitty()
   -- file:write("hello")
   -- file:close()
 
+  local input_wxh = vim.fn.input("width x height (ex: 48x48, 96x96, ...)")
+  local width, height = input_wxh:match("(%d+)x(%d+)")
+
   local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true,
-    { mimetype = "kgp", width = 48, height = 48, precision = 1 })
+    { mimetype = "kgp", width = width or 48, height = height or 48, precision = 1 })
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
   -- 以下設定了關閉了該buffer還是在，暫時先不處理
