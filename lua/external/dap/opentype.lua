@@ -218,8 +218,9 @@ end
 ---@param fontpath string opentype fontpath
 ---@param glyph_indice string `"[]"`, "[[start, end]...]" '[["737", "737"], ["814", "939"]]'
 ---@param show_outline boolean draw outline (kgs)
+---@param options {mimetype: string, precision: number, width: number, height: number}
 ---@return table
-local function get_show_glyph_py_cmd(fontpath, glyph_indice, show_outline)
+local function get_show_glyph_py_cmd(fontpath, glyph_indice, show_outline, options)
   local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
   local blocks_txt_path = vim.fn.fnamemodify(cur_dir .. "/../../ucd/db/Blocks.txt", ":p")
   if not vim.fn.filereadable(blocks_txt_path) == 1 then
@@ -235,6 +236,10 @@ local function get_show_glyph_py_cmd(fontpath, glyph_indice, show_outline)
     "--glyph_indice", glyph_indice,
     -- show_outline and "--show_outline" or "", -- 這樣會有一個空的參數，會抱錯
     "--blocks_txt_path", blocks_txt_path,
+    "--mimetype", options["mimetype"] or "image/svg+xml",
+    "--precision", 1,
+    "-w", options["width"] or 48,
+    "--height", options["height"] or 48,
   }
   if show_outline then
     table.insert(cmd, "--show_outline")
@@ -253,7 +258,7 @@ local function program_show_glyph(include_outline)
   local fontpath = vim.fn.expand("%:p")
   local font_basename = vim.fn.expand("%:t")
 
-  local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', include_outline or false)
+  local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', include_outline or false, {})
   vim.fn.setqflist({ { text = table.concat(cmd, " ") }, }, 'a') -- 輸出執行的cmd, 可用來除錯
   local r = vim.system(cmd):wait()
   if r.code ~= 0 then
@@ -421,7 +426,8 @@ local function program_show_glyph_with_kitty()
   -- file:write("hello")
   -- file:close()
 
-  local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true)
+  local cmd = get_show_glyph_py_cmd(fontpath, string.format("'%s'", json_str_glyph_index), true,
+    { mimetype = "kgp", width = 48, height = 48, precision = 1 })
 
   vim.cmd("tabnew | setlocal buftype=nofile | term")
   -- 以下設定了關閉了該buffer還是在，暫時先不處理
