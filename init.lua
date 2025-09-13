@@ -2217,7 +2217,8 @@ local function install_image()
         end
 
         local input = need_add_prefix and prefix .. "=" .. suffix or suffix
-        return vim.tbl_filter(function(item) return vim.startswith(item, input) end, comps)
+        -- return vim.tbl_filter(function(item) return vim.startswith(item, input) end, comps) -- 比較嚴格的匹配
+        return vim.tbl_filter(function(item) return item:match(input) end, comps) -- 改用match比較自由
       end
     }
   )
