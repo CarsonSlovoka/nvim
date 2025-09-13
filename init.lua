@@ -2215,7 +2215,9 @@ local function install_image()
             comps[i] = prefix .. "=" .. comp
           end
         end
-        return vim.tbl_filter(function(item) return vim.startswith(item, suffix) end, comps)
+
+        local input = need_add_prefix and prefix .. "=" .. suffix or suffix
+        return vim.tbl_filter(function(item) return vim.startswith(item, input) end, comps)
       end
     }
   )
