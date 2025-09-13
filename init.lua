@@ -2190,13 +2190,26 @@ local function install_image()
         local comps = {}
         local argc = #(vim.split(cmd_line, '%s+')) - 1
         local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+
+        -- 使得已經輸入過的選項，不會再出現
+        local exist_comps = {}
+        if argc > 1 then
+          for _, key in ipairs(vim.split(cmd_line, '%s+')) do
+            local k, _ = key:match('^(.-)=(.*)$')
+            if k then
+              exist_comps[k .. "="] = true
+            end
+          end
+        end
+
         if not prefix then
           suffix = arg_lead
           prefix = ''
         end
         local need_add_prefix = true
         if argc == 0 or not arg_lead:match('=') then
-          comps = { 'enabled=', 'at_cursor=', 'cursor_mode=' }
+          comps = vim.tbl_filter(function(item) return not exist_comps[item] end, -- 過濾已輸入過的選項
+            { 'enabled=', 'at_cursor=', 'cursor_mode=' })                         -- 全選項
           need_add_prefix = false
         elseif prefix == "at_cursor" or prefix == "enabled" then
           comps = {
