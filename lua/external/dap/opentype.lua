@@ -250,15 +250,21 @@ end
 
 --- 使用python -c 以及py樣版的方式參考: `git show d4631c61 -L218,340:opentype.lua -L,:../../py/show_glyph.py`
 --- @param include_outline boolean
-local function program_show_glyph(include_outline)
+--- @param options {mimetype: string}|nil
+local function program_show_glyph(include_outline, options)
   if vim.fn.executable("python") == 0 then
     return
+  end
+
+  if options == nil then
+    options = {}
   end
 
   local fontpath = vim.fn.expand("%:p")
   local font_basename = vim.fn.expand("%:t")
 
-  local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', include_outline or false, {})
+  local cmd = get_show_glyph_py_cmd(fontpath, '"[]"', include_outline or false,
+    { mimetype = options["mimetype"] or "image/svg+xml" })
   vim.fn.setqflist({ { text = table.concat(cmd, " ") }, }, 'a') -- 輸出執行的cmd, 可用來除錯
   local r = vim.system(cmd):wait()
   if r.code ~= 0 then
@@ -596,6 +602,14 @@ require("dap").configurations.opentype = {
     request = "launch",
     program = function()
       program_show_glyph(true)
+    end,
+  },
+  {
+    name = "show glyph (include outline (format: svg))",
+    type = "custom",
+    request = "launch",
+    program = function()
+      program_show_glyph(true, { mimetype = "svg" })
     end,
   },
   {

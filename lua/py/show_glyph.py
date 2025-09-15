@@ -210,9 +210,18 @@ class GlyphRenderer:
 
             b64 = ""
             mimetype: str = self.mimetype
-            if mimetype == "image/svg+xml":
+            if mimetype == "image/svg+xml" or mimetype == "svg":
                 # 獲取字形的 SVG 數據
                 svg_data = self.get_glyph_svg(self.face.glyph)
+
+                if mimetype == "svg":
+                    # 輸出實體的svg資料，到/tmp去，如果 /tmp 用的是 tmpfs 的檔案系統也等同於在記憶體中操作
+                    svg_path = f"/tmp/glyph/{self.face.postscript_name.decode('utf-8')}/{glyph_index}"
+                    os.makedirs(os.path.dirname(svg_path), exist_ok=True)
+                    with open(svg_path, "w") as f:
+                        f.write(svg_data)
+                    return f"![{glyph_index}]({svg_path})"
+
                 # print(svg_data)
                 if not svg_data:
                     raise ValueError("無法生成 SVG 數據")
