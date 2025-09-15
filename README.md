@@ -1016,6 +1016,13 @@ git clone https://github.com/uga-rosa/ccc.nvim.git ~/.config/nvim/pack/tools/sta
 
 ### [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim)
 
+<span>
+    <img src="https://img.shields.io/github/stars/brianhuster/live-preview.nvim" alt=""/>
+    <img src="https://img.shields.io/github/last-commit/brianhuster/live-preview.nvim" alt=""/>
+    <img src="https://img.shields.io/github/commit-activity/y/brianhuster/live-preview.nvim" alt=""/>
+</span>
+
+
 ```sh
 git clone --depth 1 https://github.com/brianhuster/live-preview.nvim ~/.config/nvim/pack/tools/start/live-preview.nvim
 ```
