@@ -174,6 +174,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   ├── tools/start/
 │   │         ├── image.nvim                    -- ✅ 使用kitty終端機，能在markdown文件直接看到圖片 ( v1.4.0 446a8a5c )
 │   │         ├── pantran.nvim                  -- ✅ 翻譯工具, engine: google, deepl, ... ( b87c3ae4 )
+│   │         ├── live-preview.nvim             -- ✅ 即時渲染html, md, svg, ...的結果 v0.9.5... ( 35ddc5a )
 │   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
 │   │
 │   ├── view/start/
@@ -1012,6 +1013,25 @@ git clone https://github.com/uga-rosa/ccc.nvim.git ~/.config/nvim/pack/tools/sta
     - h 減1
     - a 新增alpha通道
     - 0, 1, ... 9: 設定該數值所佔的比率
+
+### [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim)
+
+```sh
+git clone --depth 1 https://github.com/brianhuster/live-preview.nvim ~/.config/nvim/pack/tools/start/live-preview.nvim
+```
+
+```vim
+:LivePreview pick " 在目前的工作目錄中，挑選出可以執行的項目
+:LivePreview start " 預設用當前buffer的檔案 (附檔名需要一致，不是看filetype)
+" NOTE: 一次只能啟動一個項目，不能start之後又再去start其它的，要先close才行
+" :LivePreview start ~/my.svg " ❌ 不支持路徑的expand
+:LivePreview start redir/my.svg " ⚠️ 可以指定文件路徑，但是路徑只適用相對路徑
+
+:LivePreview close " 結束
+```
+
+> [!WARNING] 如果執行失敗，就算close後再start也沒用，需要整個重啟
+
 
 # [neovide](https://github.com/neovide/neovide)
 

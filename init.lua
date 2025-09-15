@@ -2267,6 +2267,11 @@ local function install_csvview()
   -- :CsvViewToggle
 end
 
+local function install_live_preview()
+  -- :che livepreview 可以看到預設的設定, port預設是5500
+  require('livepreview.config').set()
+end
+
 local installs = {
   {
     name = "registers",
@@ -2373,6 +2378,7 @@ local installs = {
   { name = "pantran.nvim",      fn = install_pantran,        delay = 5 },
   { name = "image.nvim",        fn = install_image,          delay = 5 },
   { name = "csvview.nvim",      fn = install_csvview,        delay = 5 },
+  { name = "live-preview.nvim", fn = install_live_preview,   delay = 5 },
   {
     name = "global-func",
     fn = function()
