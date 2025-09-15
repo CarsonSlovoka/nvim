@@ -216,7 +216,7 @@ class GlyphRenderer:
 
                 if mimetype == "svg":
                     # 輸出實體的svg資料，到/tmp去，如果 /tmp 用的是 tmpfs 的檔案系統也等同於在記憶體中操作
-                    svg_path = f"/tmp/glyph/{self.face.postscript_name.decode('utf-8')}/{glyph_index}"
+                    svg_path = f"/tmp/glyph/{self.face.postscript_name.decode('utf-8')}/{glyph_index}.svg"  # 有的插件如live-preview.nvim需要明確的附檔名
                     os.makedirs(os.path.dirname(svg_path), exist_ok=True)
                     with open(svg_path, "w") as f:
                         f.write(svg_data)
