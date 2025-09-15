@@ -196,7 +196,18 @@ class GlyphRenderer:
         xmax, ymax = scale(bbox.xMax, bbox.yMin)
         width = xmax - xmin
         height = ymax - ymin
-        full_svg = f'<svg viewBox="{xmin:.{self.precision}f} {ymin:.{self.precision}f} {width:.{self.precision}f} {height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
+
+        # 設定水平和垂直 padding 為 width 和 height 的 5%
+        horizontal_padding = width * 0.05
+        vertical_padding = height * 0.05
+
+        # 調整 viewBox，增加留白
+        viewBox_xmin = xmin - horizontal_padding
+        viewBox_ymin = ymin - vertical_padding
+        viewBox_width = width + 2 * horizontal_padding
+        viewBox_height = height + 2 * vertical_padding
+
+        full_svg = f'<svg viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
         return full_svg
 
     def render_glyph_to_kitty(self, glyph_index) -> str:
