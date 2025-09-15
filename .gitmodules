@@ -92,6 +92,9 @@
 [submodule "tools/image.nvim"]
     path = pack/tools/start/image.nvim
     url = https://github.com/3rd/image.nvim.git
+[submodule "tools/live-preview.nvim"]
+    path = pack/tools/start/live-preview.nvim
+    url = https://github.com/brianhuster/live-preview.nvim
 
 [submodule "view/csvview.nvim"]
     path = pack/view/start/csvview.nvim
