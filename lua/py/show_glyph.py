@@ -207,7 +207,7 @@ class GlyphRenderer:
         viewBox_width = width + 2 * horizontal_padding
         viewBox_height = height + 2 * vertical_padding
 
-        full_svg = f'<svg viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
+        full_svg = f'<svg width="" height="" viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
         return full_svg
 
     def render_glyph_to_kitty(self, glyph_index) -> str:
