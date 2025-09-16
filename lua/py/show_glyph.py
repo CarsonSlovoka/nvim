@@ -138,11 +138,49 @@ HTML_TEMPLATE = """
     circle {
       cursor: pointer;
     }
+
+    .control-panel {
+      margin: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      display: inline-block;
+    }
+    .control-panel label {
+      margin-right: 10px;
+    }
+    .control-panel input {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
 <body>
   <h1>%s</h1>
+  <div class="control-panel">
+    <div>
+      <label>SVG Width: <input type="number" id="svg-width" value="800"></label>
+    </div>
+    <div>
+      <label>SVG Height: <input type="number" id="svg-height" value="800"></label>
+    </div>
+    <div>
+      <label>Stroke Width: <input type="range" id="stroke-width" min="0" max="16" step="0.1" value="3"></label>
+      <span id="stroke-width-value">3</span>
+    </div>
+    <div>
+      <label>Circle Fill Opacity: <input type="range" id="circle-opacity" min="0" max="1" step="0.05"
+          value="0.75"></label>
+      <span id="circle-opacity-value">0.75</span>
+    </div>
+    <div>
+      <label>Text Fill Opacity: <input type="range" id="text-opacity" min="0" max="1" step="0.05" value="1"></label>
+      <span id="text-opacity-value">1</span>
+    </div>
+    <div>
+      <label>Data Index Filter (e.g., 1..10,18..21): <input type="text" id="data-idx-filter"
+          placeholder="e.g., 1..10,18..21"></label>
+    </div>
+  </div>
   %s
 </body>
 
@@ -152,7 +190,79 @@ HTML_TEMPLATE = """
   const circles = svg.selectAll("circle")
   const texts = svg.selectAll("text")
 
-  // 附加拖拽行為
+  // 控制面版
+  const svgWidthInput = d3.select("#svg-width")
+  const svgHeightInput = d3.select("#svg-height")
+  const strokeWidthInput = d3.select("#stroke-width")
+  const strokeWidthValue = d3.select("#stroke-width-value")
+  const circleOpacityInput = d3.select("#circle-opacity")
+  const circleOpacityValue = d3.select("#circle-opacity-value")
+  const textOpacityInput = d3.select("#text-opacity")
+  const textOpacityValue = d3.select("#text-opacity-value")
+  const dataIdxFilterInput = d3.select("#data-idx-filter")
+
+  // Update SVG width, height
+  svgWidthInput.on("input", function () {
+    svg.attr("width", this.value)
+  })
+  svgHeightInput.on("input", function () {
+    svg.attr("height", this.value)
+  })
+
+  // Update stroke width
+  strokeWidthInput.on("input", function () {
+    svg.select("g").attr("stroke-width", this.value)
+    strokeWidthValue.text(this.value)
+  })
+
+  // Update circle fill-opacity
+  circleOpacityInput.on("input", function () {
+    svg.select("g[aria-label] g").attr("fill-opacity", this.value)
+    circleOpacityValue.text(this.value)
+  })
+
+  // Update text fill-opacity
+  textOpacityInput.on("input", function () {
+    svg.select("g[aria-label] g[font-size]").attr("fill-opacity", this.value)
+    textOpacityValue.text(this.value)
+  })
+
+  // Parse data-idx filter
+  function parseIdxFilter(input) {
+    if (!input) return null
+    const ranges = input.split(",").map(s => s.trim())
+    const indices = new Set()
+    ranges.forEach(range => {
+      if (range.includes("..")) {
+        const [start, end] = range.split("..").map(Number)
+        for (let i = start; i <= end; i++) {
+          indices.add(i)
+        }
+      } else {
+        indices.add(Number(range))
+      }
+    })
+    return indices
+  }
+
+  // 過濾要呈現的data-idx對像
+  dataIdxFilterInput.on("input", function () {
+    const indices = parseIdxFilter(this.value)
+    circles.each(function () {
+      const idx = Number(d3.select(this).attr("data-idx"))
+      d3.select(this).style("display", indices && !indices.has(idx) ? "none" : null)
+    })
+
+    // 雖然text沒有data-idx, 但是它是按照順序寫的
+    texts.each(function () {
+      const textIdx = Number(this.textContent)
+      d3.select(this).style("display", indices && !indices.has(textIdx) ? "none" : null)
+    })
+    updatePath()
+  })
+
+
+  // 附加拖曳行為
   circles.call(d3.drag()
     .on("start", function () {
       d3.select(this).raise().classed("active", true)
