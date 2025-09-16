@@ -630,7 +630,7 @@ function M.setup(opts)
         "yml", "yaml",
         "json", "json5", "jsonc",
         "toml",
-        "xml", "ttx",
+        "xml", "svg", "ttx",
         "gs",
         "gohtml", "gotmpl",
         "html",
