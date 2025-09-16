@@ -120,7 +120,7 @@ class PointData:
     y: float
     type: str
     color: str
-    idx: int  # zero-base
+    idx: int  # base-index: 1, 因為都是先push才取所有index從1開始
 
 
 class GlyphRenderer:
