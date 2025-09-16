@@ -372,9 +372,9 @@ class GlyphRenderer:
             f'<svg width="" height="" '
             f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
             f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="3">\n  <path d="{svg_path_data}"/>\n</g>'
-            f'\n<g data-label="" fill-opacity="">'  # 如果不想要circle, text 可以直接從這邊調整
-            f'\n<g fill-opacity="">\n  {"\n  ".join(svg_points)}</g>'
-            f'\n<g fill-opacity="" font-size="3em">\n  {"\n  ".join(svg_texts)}</g>'
+            f'\n<g aria-label="" fill-opacity="1">'  # 如果不想要circle, text 可以直接從這邊調整
+            f'\n<g fill-opacity="1">\n  {"\n  ".join(svg_points)}</g>'
+            f'\n<g fill-opacity="1" font-size="3em">\n  {"\n  ".join(svg_texts)}</g>'
             f"\n</g>"
             f"\n</svg>"
         )
