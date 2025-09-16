@@ -3,6 +3,7 @@
 # python show_glyph.py ~/.fonts/my.otf --show_outline --glyph_indice [[1,200],[500,600]]  # WARN: 👈 如果要在nvim debug glyph_indice中有多的空白要拿掉
 # python show_glyph.py ~/.fonts/my.otf --mimetype=kgp -w=96 --height=96 --precision=3 --show_outline --glyph_indice [[1,200],[500,600]]
 # python show_glyph.py ~/.fonts/my.otf --mimetype=svg --precision=0 --show_outline --glyph_indice [[1,200],[500,600]]
+# python show_glyph.py ~/.fonts/my.otf --mimetype=html --precision=0 --show_outline --glyph_indice [[1,200],[500,600]]
 
 
 import argparse
@@ -49,7 +50,7 @@ parser.add_argument(
     "--mimetype",
     type=str,
     default="image/svg+xml",
-    help="image/svg+xml, image/png, kgp",
+    help="image/svg+xml, image/png, kgp, svg, html",
 )
 parser.add_argument(
     "--precision",
@@ -121,6 +122,113 @@ class PointData:
     type: str
     color: str
     idx: int  # base-index: 1, 因為都是先push才取所有index從1開始
+
+
+# 此HTML可以拖曳點
+HTML_TEMPLATE = """
+<head>
+  <meta charset="UTF-8">
+  <title>%s</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    svg {
+      border: 1px solid #ccc;
+      cursor: move;
+    }
+    circle {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>%s</h1>
+  %s
+</body>
+
+<script>
+  const svg = d3.select("svg")
+  const path = svg.select("path")
+  const circles = svg.selectAll("circle")
+  const texts = svg.selectAll("text")
+
+  // 附加拖拽行為
+  circles.call(d3.drag()
+    .on("start", function () {
+      d3.select(this).raise().classed("active", true)
+    })
+    .on("drag", function (event) {
+      const circle = d3.select(this)
+      circle.attr("cx", event.x).attr("cy", event.y)
+
+      // 更新對應的 text（假設 circles 和 texts 順序相同）
+      const index = circles.nodes().indexOf(this)
+      const correspondingText = d3.select(texts.nodes()[index])
+      correspondingText.attr("x", event.x).attr("y", event.y + 5) // 可選偏移 y 以避免完全重疊
+
+      // 更新 path
+      updatePath()
+    })
+    .on("end", function () {
+      d3.select(this).classed("active", false)
+    })
+  )
+
+  // 更新 path 的 d 屬性
+  function updatePath() {
+    let pathD = ""
+    let i = 0
+    const circleNodes = circles.nodes()
+
+    while (i < circleNodes.length) {
+      const circle = d3.select(circleNodes[i])
+      const type = circle.attr("data-type")
+      const cx = parseFloat(circle.attr("cx"))
+      const cy = parseFloat(circle.attr("cy"))
+
+      if (type === "move") {
+        pathD += `M ${cx} ${cy} `
+      } else if (type === "line") {
+        pathD += `L ${cx} ${cy} `
+      } else if (type === "conic") {
+        // 第一個 conic 是控制點
+        pathD += `Q ${cx} ${cy} `
+        // 下一個是終點
+        i++
+        const nextCircle = d3.select(circleNodes[i])
+        const nextCx = parseFloat(nextCircle.attr("cx"))
+        const nextCy = parseFloat(nextCircle.attr("cy"))
+        pathD += `${nextCx} ${nextCy} `
+      } else if (type === "cubic") {
+        pathD += `C ${cx} ${cy} ` // 控制點
+        i++
+        if (i < circleNodes.length) { // 確保index不會超出
+          // 控制點
+          const nextCircle1 = d3.select(circleNodes[i])
+          const nextCx1 = parseFloat(nextCircle1.attr("cx"))
+          const nextCy1 = parseFloat(nextCircle1.attr("cy"))
+          pathD += `${nextCx1} ${nextCy1} `
+          i++
+          if (i < circleNodes.length) {
+            // 終點
+            const nextCircle2 = d3.select(circleNodes[i])
+            const nextCx2 = parseFloat(nextCircle2.attr("cx"))
+            const nextCy2 = parseFloat(nextCircle2.attr("cy"))
+            pathD += `${nextCx2} ${nextCy2} `
+          }
+        }
+      }
+
+      i++
+    }
+
+    // 添加閉合 Z（根據原 path）
+    pathD += "Z"
+
+    path.attr("d", pathD)
+  }
+</script>
+"""
 
 
 class GlyphRenderer:
@@ -272,7 +380,12 @@ class GlyphRenderer:
         )
         return full_svg
 
-    def render_glyph(self, glyph_index) -> str:
+    def render_glyph(
+        self,
+        glyph_index: int,
+        glyph_name: str,
+        unicode="",
+    ) -> str:
         """畫出指定的 glyph index 圖形"""
         try:
             self.face.load_glyph(glyph_index, getattr(freetype, "FT_LOAD_RENDER"))
@@ -283,17 +396,27 @@ class GlyphRenderer:
 
             b64 = ""
             mimetype: str = self.mimetype
-            if mimetype == "image/svg+xml" or mimetype == "svg":
+            if mimetype == "image/svg+xml" or mimetype == "svg" or mimetype == "html":
                 # 獲取字形的 SVG 數據
                 svg_data = self.get_glyph_svg(self.face.glyph)
 
-                if mimetype == "svg":
+                if mimetype == "svg" or mimetype == "html":
                     # 輸出實體的svg資料，到/tmp去，如果 /tmp 用的是 tmpfs 的檔案系統也等同於在記憶體中操作
-                    svg_path = f"/tmp/glyph/{self.face.postscript_name.decode('utf-8')}/{glyph_index}.svg"  # 有的插件如live-preview.nvim需要明確的附檔名
-                    os.makedirs(os.path.dirname(svg_path), exist_ok=True)
-                    with open(svg_path, "w") as f:
-                        f.write(svg_data)
-                    return f"![{glyph_index}]({svg_path})"
+                    output_path = f"/tmp/glyph/{self.face.postscript_name.decode('utf-8')}/{glyph_index}.{mimetype}"  # 有的插件如live-preview.nvim需要明確的附檔名
+                    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+                    content = ""
+                    if mimetype == "svg":
+                        content = svg_data
+                    if mimetype == "html":
+                        content = HTML_TEMPLATE % (
+                            glyph_name,
+                            f"{glyph_name} ({unicode})",
+                            svg_data,
+                        )
+                    with open(output_path, "w") as f:
+                        f.write(content)
+                    return f"![{glyph_index}]({output_path})"
 
                 # print(svg_data)
                 if not svg_data:
@@ -416,7 +539,9 @@ def main(font_path, show_outline: bool, glyph_index=[]):
 
         if show_outline:
             row["outline"] = glyph_render.render_glyph(
-                gid
+                gid,
+                row["glyphName"],
+                row["unicode_codepoint"] if "unicode_codepoint" in row else "",
             )  # nvim 沒辦法做，再外層的終端機可以
 
         writer.writerow(row)
