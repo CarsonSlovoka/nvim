@@ -2,6 +2,8 @@
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[]'
 # python show_glyph.py ~/.fonts/my.otf --show_outline --glyph_indice [[1,200],[500,600]]  # WARN: 👈 如果要在nvim debug glyph_indice中有多的空白要拿掉
 # python show_glyph.py ~/.fonts/my.otf --mimetype=kgp -w=96 --height=96 --precision=3 --show_outline --glyph_indice [[1,200],[500,600]]
+# python show_glyph.py ~/.fonts/my.otf --mimetype=svg --precision=1 --show_outline --glyph_indice [[1,200],[500,600]]
+
 
 import argparse
 import base64
@@ -10,6 +12,7 @@ import io
 import json
 import os
 import sys
+from dataclasses import dataclass
 from typing import Any
 
 import freetype  # pip install freetype-py==2.5.1
@@ -111,6 +114,14 @@ class Point:
         self.y = xy[1]
 
 
+@dataclass
+class PointData:
+    x: float
+    y: float
+    type: str
+    color: str
+
+
 class GlyphRenderer:
     """用於將字型檔案的 glyph 渲染為 Kitty 終端機圖形控制序列的類"""
 
@@ -135,17 +146,19 @@ class GlyphRenderer:
 
         # 準備 SVG 路徑數據
         path_data = []
+        points_data: list[PointData] = []  # 儲存點的座標和類型
         current_pos = None  # 追蹤當前位置，避免重複
 
         def scale(x, y):
             # return x / 64.0, (max_y - y) / 64.0
             # return 8.0 * x, 8.0 * (max_y - y)
-            return x, (max_y - y)
+            return x, (max_y - y)  # 用max_y - y 是因為y座標系是相反的
 
         def move_to(to, user):
             nonlocal current_pos
             tx, ty = scale(to.x, to.y)
             user.append(f"M {tx:.{self.precision}f} {ty:.{self.precision}f} ")
+            points_data.append(PointData(tx, ty, "move", "black"))  # 移動點用黑色
             current_pos = (tx, ty)
 
         def line_to(to, user):
@@ -153,6 +166,7 @@ class GlyphRenderer:
             tx, ty = scale(to.x, to.y)
             if (tx, ty) != current_pos:  # 避免重複
                 user.append(f"L {tx:.{self.precision}f} {ty:.{self.precision}f} ")
+                points_data.append(PointData(tx, ty, "line", "green"))  # 線段點用綠色
             current_pos = (tx, ty)
 
         def conic_to(control, to, user):
@@ -162,6 +176,10 @@ class GlyphRenderer:
             user.append(
                 f"Q {cx:.{self.precision}f} {cy:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
+            points_data.append(
+                PointData(cx, cy, "conic", "#ffa600")
+            )  # 二次貝茲控制點顏色橘色
+            points_data.append(PointData(tx, ty, "conic", "#ff5000"))  # 結束點
             current_pos = (tx, ty)
 
         def cubic_to(control1, control2, to, user):
@@ -172,6 +190,11 @@ class GlyphRenderer:
             user.append(
                 f"C {c1x:.{self.precision}f} {c1y:.{self.precision}f} {c2x:.{self.precision}f} {c2y:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
+            points_data.append(
+                PointData(c1x, c1y, "cubic", "#ff2b00")
+            )  # 三次貝茲控制點顏色紅色
+            points_data.append(PointData(c2x, c2y, "cubic", "#ff2b00"))
+            points_data.append(PointData(tx, ty, "cubic", "red"))
             current_pos = (tx, ty)
 
         # 使用 decompose 分解輪廓 ( 就不需要處理 FT_Curve_Tag_Conic, FT_Curve_Tag_Cubic, FT_Curve_Tag_On )
@@ -207,7 +230,21 @@ class GlyphRenderer:
         viewBox_width = width + 2 * horizontal_padding
         viewBox_height = height + 2 * vertical_padding
 
-        full_svg = f'<svg width="" height="" viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg"><path d="{svg_path_data}"/></svg>'
+        # 生成 SVG 圓點
+        svg_points = []
+        for pd in points_data:
+            r = max(width, height) * 0.003
+            svg_points.append(
+                f'<circle data-type="{pd.type}" cx="{pd.x:.{self.precision}f}" cy="{pd.y:.{self.precision}f}" r="{r:.0f}" fill="{pd.color}" />'
+            )
+
+        full_svg = (
+            f'<svg width="" height="" '
+            f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
+            f'\n<g><path d="{svg_path_data}"/></g>'
+            f'\n<g fill-opacity="">{"".join(svg_points)}</g>'
+            f"\n</svg>"
+        )
         return full_svg
 
     def render_glyph_to_kitty(self, glyph_index) -> str:
