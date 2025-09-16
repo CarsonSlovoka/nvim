@@ -2,7 +2,7 @@
 # python show_glyph.py ~/.fonts/my.otf --glyph_indice '[]'
 # python show_glyph.py ~/.fonts/my.otf --show_outline --glyph_indice [[1,200],[500,600]]  # WARN: 👈 如果要在nvim debug glyph_indice中有多的空白要拿掉
 # python show_glyph.py ~/.fonts/my.otf --mimetype=kgp -w=96 --height=96 --precision=3 --show_outline --glyph_indice [[1,200],[500,600]]
-# python show_glyph.py ~/.fonts/my.otf --mimetype=svg --precision=1 --show_outline --glyph_indice [[1,200],[500,600]]
+# python show_glyph.py ~/.fonts/my.otf --mimetype=svg --precision=0 --show_outline --glyph_indice [[1,200],[500,600]]
 
 
 import argparse
@@ -241,7 +241,7 @@ class GlyphRenderer:
         full_svg = (
             f'<svg width="" height="" '
             f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
-            f'\n<g><path d="{svg_path_data}"/></g>'
+            f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="5"><path d="{svg_path_data}"/></g>'
             f'\n<g fill-opacity="">{"".join(svg_points)}</g>'
             f"\n</svg>"
         )
