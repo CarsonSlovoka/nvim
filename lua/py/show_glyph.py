@@ -192,6 +192,17 @@ HTML_TEMPLATE = """
       <label>Data Index Filter (e.g., 1..10,18..21): <input type="text" id="data-idx-filter"
           placeholder="e.g., 1..10,18..21"></label>
     </div>
+
+    <div>
+      <label>Enable Data Type Filter: <input type="checkbox" id="type-filter-toggle" checked></label>
+    </div>
+    <div class="checkbox-group">
+      <label>Data Type Filter:</label>
+      <label><input type="checkbox" id="type-move" value="move" checked> Move</label>
+      <label><input type="checkbox" id="type-line" value="line" checked> Line</label>
+      <label><input type="checkbox" id="type-cubic" value="cubic" checked> Cubic</label>
+      <label><input type="checkbox" id="type-conic" value="conic" checked> Conic</label>
+    </div>
   </div>
   %s
 </body>
@@ -217,6 +228,11 @@ HTML_TEMPLATE = """
   const circleRadiusValue = d3.select("#circle-radius-value")
   const fillColorInput = d3.select("#fill-color")
   const strokeColorInput = d3.select("#stroke-color")
+  const typeFilterToggle = d3.select("#type-filter-toggle")
+  const typeMoveInput = d3.select("#type-move")
+  const typeLineInput = d3.select("#type-line")
+  const typeCubicInput = d3.select("#type-cubic")
+  const typeConicInput = d3.select("#type-conic")
 
   // Update SVG width, height
   svgWidthInput.on("input", function () {
@@ -300,6 +316,49 @@ HTML_TEMPLATE = """
     updatePath()
   })
 
+  // Parse data-type filter from checkboxes
+  function parseTypeFilter() {
+    const types = []
+    if (typeMoveInput.property("checked")) types.push("move")
+    if (typeLineInput.property("checked")) types.push("line")
+    if (typeCubicInput.property("checked")) types.push("cubic")
+    if (typeConicInput.property("checked")) types.push("conic")
+    return types.length > 0 ? new Set(types) : null
+  }
+
+  // Update visibility based on data-idx and data-type filters
+  function updateVisibility() {
+    const idxFilter = parseIdxFilter(dataIdxFilterInput.property("value"))
+    const typeFilter = typeFilterToggle.property("checked") ? parseTypeFilter() : null
+
+    circles.each(function() {
+      const idx = Number(d3.select(this).attr("data-idx"))
+      const type = d3.select(this).attr("data-type").toLowerCase()
+      const idxVisible = !idxFilter || idxFilter.has(idx)
+      const typeVisible = !typeFilter || typeFilter.has(type)
+      d3.select(this).style("display", idxVisible && typeVisible ? null : "none")
+    })
+
+    texts.each(function() {
+      const textIdx = Number(this.textContent)
+      const idxVisible = !idxFilter || idxFilter.has(textIdx)
+      const typeVisible = !typeFilter || circles.filter(function() {
+        return Number(d3.select(this).attr("data-idx")) === textIdx
+      }).nodes().some(node => typeFilter.has(d3.select(node).attr("data-type").toLowerCase()))
+      d3.select(this).style("display", idxVisible && typeVisible ? null : "none")
+    })
+
+    updatePath()
+  }
+
+  // Attach input listeners for filters
+  dataIdxFilterInput.on("input", updateVisibility)
+  typeFilterToggle.on("change", updateVisibility)
+  typeMoveInput.on("change", updateVisibility)
+  typeLineInput.on("change", updateVisibility)
+  typeCubicInput.on("change", updateVisibility)
+  typeConicInput.on("change", updateVisibility)
+
 
   // 附加拖曳行為
   circles.call(d3.drag()
@@ -327,7 +386,7 @@ HTML_TEMPLATE = """
   function updatePath() {
     let pathD = ""
     let i = 0
-    const circleNodes = circles.nodes()
+    let circleNodes = circles.nodes()
 
     while (i < circleNodes.length) {
       const circle = d3.select(circleNodes[i])
