@@ -171,7 +171,7 @@ class GlyphRenderer:
                 user.append(f"L {tx:.{self.precision}f} {ty:.{self.precision}f} ")
                 points_data.append(
                     PointData(tx, ty, "line", "green", len(user))
-                )  # 線段點用綠色
+                )  # 線段終點綠色
             current_pos = (tx, ty)
 
         def conic_to(control, to, user):
@@ -181,12 +181,11 @@ class GlyphRenderer:
             user.append(
                 f"Q {cx:.{self.precision}f} {cy:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
-            points_data.append(
-                PointData(cx, cy, "conic", "#ffa600", len(user))
-            )  # 二次貝茲控制點顏色橘色
-            points_data.append(
-                PointData(tx, ty, "conic", "#ff5000", len(user))
-            )  # 結束點
+            # 二次貝茲控制點顏色橘色
+            points_data.append(PointData(cx, cy, "conic", "#ffa600", len(user)))
+
+            # 結束點
+            points_data.append(PointData(tx, ty, "conic", "#ffa6", len(user)))
             current_pos = (tx, ty)
 
         def cubic_to(control1, control2, to, user):
@@ -197,11 +196,12 @@ class GlyphRenderer:
             user.append(
                 f"C {c1x:.{self.precision}f} {c1y:.{self.precision}f} {c2x:.{self.precision}f} {c2y:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
-            points_data.append(
-                PointData(c1x, c1y, "cubic", "#ff2b00", len(user))
-            )  # 三次貝茲控制點顏色紅色
-            points_data.append(PointData(c2x, c2y, "cubic", "#ff2b00", len(user)))
-            points_data.append(PointData(tx, ty, "cubic", "red", len(user)))
+            # 三次貝茲控制點顏色紅色
+            points_data.append(PointData(c1x, c1y, "cubic", "#ff1100", len(user)))
+            points_data.append(PointData(c2x, c2y, "cubic", "#ff1100", len(user)))
+
+            # 結束點
+            points_data.append(PointData(tx, ty, "cubic", "#debe44", len(user)))
             current_pos = (tx, ty)
 
         # 使用 decompose 分解輪廓 ( 就不需要處理 FT_Curve_Tag_Conic, FT_Curve_Tag_Cubic, FT_Curve_Tag_On )
@@ -242,6 +242,9 @@ class GlyphRenderer:
         svg_texts = []  # 標記是第幾個點
         for pd in points_data:
             r = max(width, height) * 0.003
+            if pd.type == "move":
+                r = r * 2  # 增加起始點的大小
+
             svg_points.append(
                 (
                     f'<circle data-type="{pd.type}" data-idx="{pd.idx}" '
