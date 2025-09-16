@@ -244,7 +244,7 @@ class GlyphRenderer:
         except Exception as e:
             raise ValueError(f"Failed to initialize font at {font_path}: {str(e)}")
 
-    def get_glyph_svg(self, glyph: freetype.GlyphSlot) -> str:
+    def get_glyph_svg(self, glyph: freetype.GlyphSlot, **options) -> str:
         outline = glyph.outline
         if outline.n_points == 0:
             return ""
@@ -372,7 +372,7 @@ class GlyphRenderer:
             f'<svg width="" height="" '
             f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
             f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="3">\n  <path d="{svg_path_data}"/>\n</g>'
-            f'\n<g aria-label="" fill-opacity="1">'  # 如果不想要circle, text 可以直接從這邊調整
+            f'\n<g aria-label="" fill-opacity="{1 if options.get("show_label") else 0}">'  # 如果不想要circle, text 可以直接從這邊調整
             f'\n<g fill-opacity="1">\n  {"\n  ".join(svg_points)}</g>'
             f'\n<g fill-opacity="1" font-size="3em">\n  {"\n  ".join(svg_texts)}</g>'
             f"\n</g>"
@@ -398,7 +398,9 @@ class GlyphRenderer:
             mimetype: str = self.mimetype
             if mimetype == "image/svg+xml" or mimetype == "svg" or mimetype == "html":
                 # 獲取字形的 SVG 數據
-                svg_data = self.get_glyph_svg(self.face.glyph)
+                svg_data = self.get_glyph_svg(
+                    self.face.glyph, show_label=(True if mimetype == "html" else False)
+                )
 
                 if mimetype == "svg" or mimetype == "html":
                     # 輸出實體的svg資料，到/tmp去，如果 /tmp 用的是 tmpfs 的檔案系統也等同於在記憶體中操作
