@@ -239,6 +239,7 @@ class GlyphRenderer:
 
         # 生成 SVG 圓點
         svg_points = []
+        svg_texts = []  # 標記是第幾個點
         for pd in points_data:
             r = max(width, height) * 0.003
             svg_points.append(
@@ -248,12 +249,22 @@ class GlyphRenderer:
                     f'r="{r:.0f}" fill="{pd.color}"/>'
                 )
             )
+            svg_texts.append(
+                (
+                    f'<text x="{pd.x:.{self.precision}f}" y="{pd.y:.{self.precision}f}">'
+                    f"{pd.idx}"
+                    f"</text>"
+                )
+            )
 
         full_svg = (
             f'<svg width="" height="" '
             f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
             f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="3"><path d="{svg_path_data}"/></g>'
+            f'\n<g data-label="" fill-opacity="">'  # 如果不想要circle, text 可以直接從這邊調整
             f'\n<g fill-opacity="">{"".join(svg_points)}</g>'
+            f'\n<g fill-opacity="">{"".join(svg_texts)}</g>'
+            f"\n</g>"
             f"\n</svg>"
         )
         return full_svg
