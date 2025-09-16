@@ -272,8 +272,8 @@ class GlyphRenderer:
         )
         return full_svg
 
-    def render_glyph_to_kitty(self, glyph_index) -> str:
-        """將指定 glyph index 渲染為 Kitty 終端機圖形控制序列"""
+    def render_glyph(self, glyph_index) -> str:
+        """畫出指定的 glyph index 圖形"""
         try:
             self.face.load_glyph(glyph_index, getattr(freetype, "FT_LOAD_RENDER"))
             bitmap = self.face.glyph.bitmap
@@ -313,6 +313,7 @@ class GlyphRenderer:
                 b64 = base64.b64encode(png_data).decode("ascii")
 
                 if mimetype == "kgp":
+                    # 渲染為 Kitty 終端機圖形控制序列
                     chunk_size = 4096
                     output = []
                     for i in range(0, len(b64), chunk_size):
@@ -414,7 +415,7 @@ def main(font_path, show_outline: bool, glyph_index=[]):
                 row["block"] = get_unicode_block_name(unicode_point, blocks)
 
         if show_outline:
-            row["outline"] = glyph_render.render_glyph_to_kitty(
+            row["outline"] = glyph_render.render_glyph(
                 gid
             )  # nvim 沒辦法做，再外層的終端機可以
 
