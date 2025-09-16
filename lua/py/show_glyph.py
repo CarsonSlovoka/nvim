@@ -168,13 +168,25 @@ HTML_TEMPLATE = """
       <span id="stroke-width-value">3</span>
     </div>
     <div>
-      <label>Circle Fill Opacity: <input type="range" id="circle-opacity" min="0" max="1" step="0.05"
-          value="0.75"></label>
+      <label>Circle Fill Opacity: <input type="range" id="circle-opacity" min="0" max="1" step="0.05" value="0.75"></label>
       <span id="circle-opacity-value">0.75</span>
     </div>
     <div>
       <label>Text Fill Opacity: <input type="range" id="text-opacity" min="0" max="1" step="0.05" value="1"></label>
       <span id="text-opacity-value">1</span>
+    </div>
+    <div>
+      <label>Font Size: <input type="number" id="font-size" min="1" value="78"></label>
+    </div>
+    <div>
+      <label>Circle Radius: <input type="range" id="circle-radius" min="1" max="50" step="0.5" value="6"></label>
+      <span id="circle-radius-value">6</span>
+    </div>
+    <div>
+      <label>Fill Color: <input type="color" id="fill-color" value="#ffc600"></label>
+    </div>
+    <div>
+      <label>Stroke Color: <input type="color" id="stroke-color" value="#000000"></label>
     </div>
     <div>
       <label>Data Index Filter (e.g., 1..10,18..21): <input type="text" id="data-idx-filter"
@@ -200,6 +212,11 @@ HTML_TEMPLATE = """
   const textOpacityInput = d3.select("#text-opacity")
   const textOpacityValue = d3.select("#text-opacity-value")
   const dataIdxFilterInput = d3.select("#data-idx-filter")
+  const fontSizeInput = d3.select("#font-size")
+  const circleRadiusInput = d3.select("#circle-radius")
+  const circleRadiusValue = d3.select("#circle-radius-value")
+  const fillColorInput = d3.select("#fill-color")
+  const strokeColorInput = d3.select("#stroke-color")
 
   // Update SVG width, height
   svgWidthInput.on("input", function () {
@@ -226,6 +243,28 @@ HTML_TEMPLATE = """
     svg.select("g[aria-label] g[font-size]").attr("fill-opacity", this.value)
     textOpacityValue.text(this.value)
   })
+
+  // Update font size
+  fontSizeInput.on("input", function() {
+    svg.select("g[aria-label] g[font-size]").attr("font-size", this.value)
+  })
+
+  // Update circle radius
+  circleRadiusInput.on("input", function() {
+    svg.selectAll("circle").attr("r", this.value)
+    circleRadiusValue.text(this.value)
+  })
+
+  // Update fill color
+  fillColorInput.on("input", function() {
+    svg.select("g").attr("fill", this.value)
+  })
+
+  // Update stroke color
+  strokeColorInput.on("input", function() {
+    svg.select("g").attr("stroke", this.value)
+  })
+  
 
   // Parse data-idx filter
   function parseIdxFilter(input) {
