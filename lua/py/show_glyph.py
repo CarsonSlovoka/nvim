@@ -371,14 +371,17 @@ class GlyphRenderer:
         full_svg = (
             f'<svg width="" height="" '
             f'viewBox="{viewBox_xmin:.{self.precision}f} {viewBox_ymin:.{self.precision}f} {viewBox_width:.{self.precision}f} {viewBox_height:.{self.precision}f}" xmlns="http://www.w3.org/2000/svg">'
-            f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="3">\n  <path d="{svg_path_data}"/>\n</g>'
-            f'\n<g aria-label="" fill-opacity="{1 if options.get("show_label") else 0}">'  # 如果不想要circle, text 可以直接從這邊調整
-            f'\n<g fill-opacity="1">\n  {"\n  ".join(svg_points)}</g>'
-            f'\n<g fill-opacity="1" font-size="3em">\n  {"\n  ".join(svg_texts)}</g>'
-            f"\n</g>"
-            f"\n</svg>"
+            f'\n<g fill-opacity="0.75" fill="#ffc600" stroke="{ "black" if options.get("show_label") else "none" }" stroke-width="3">\n  <path d="{svg_path_data}"/>\n</g>'
         )
-        return full_svg
+        if options.get("show_label"):
+            # image.nvim中對fill-opacity似乎沒有辦法，就算設定為0，都還是看的到, 所以如果不呈現就乾脆不寫
+            full_svg += (
+                f'\n<g aria-label="" fill-opacity="1">'  # 如果不想要circle, text 可以直接從這邊調整
+                f'\n  <g fill-opacity="1">\n    {"\n    ".join(svg_points)}</g>'
+                f'\n  <g fill-opacity="1" font-size="3em">\n    {"\n    ".join(svg_texts)}</g>'
+                f"\n</g>"
+            )
+        return full_svg + "\n</svg>"
 
     def render_glyph(
         self,
