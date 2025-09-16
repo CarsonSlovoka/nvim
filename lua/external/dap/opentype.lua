@@ -597,19 +597,18 @@ require("dap").configurations.opentype = {
     program = program_show_glyph,
   },
   {
-    name = "show glyph (include outline)",
+    name = "show glyph (include outline (format: dataURL, svg, png, html, kgp))",
     type = "custom",
     request = "launch",
     program = function()
-      program_show_glyph(true)
-    end,
-  },
-  {
-    name = "show glyph (include outline (format: svg))",
-    type = "custom",
-    request = "launch",
-    program = function()
-      program_show_glyph(true, { mimetype = "svg" })
+      local candidates = { 'I:image/svg+xml', 'P:image/png', 'K:kgp', 'S:svg', 'H:html', "C:CONCEAL" }
+      local idx = vim.fn.confirm("mimetype?", "&" .. table.concat(candidates, "\n&"), 6)
+      if idx == 6 then
+        vim.api.nvim_echo({ { "cancel", "@WARNING" } }, false, {})
+        return
+      end
+      local mimetype = vim.fn.split(candidates[idx], ":")[2]
+      program_show_glyph(true, { mimetype = mimetype })
     end,
   },
   {
