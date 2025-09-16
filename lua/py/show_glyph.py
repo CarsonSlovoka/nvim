@@ -263,7 +263,7 @@ class GlyphRenderer:
             f'\n<g fill-opacity="0.5" fill="yellow" stroke="black" stroke-width="3"><path d="{svg_path_data}"/></g>'
             f'\n<g data-label="" fill-opacity="">'  # 如果不想要circle, text 可以直接從這邊調整
             f'\n<g fill-opacity="">{"".join(svg_points)}</g>'
-            f'\n<g fill-opacity="">{"".join(svg_texts)}</g>'
+            f'\n<g fill-opacity="" font-size="3em">{"".join(svg_texts)}</g>'
             f"\n</g>"
             f"\n</svg>"
         )
