@@ -53,7 +53,7 @@ end
 
 
 -- 會用到vim.fn會需要runtime才行，所以不能直接用lua5.1來跑
--- 可以用 require("utils.table_test") 的方式來測試
+-- 可以用 require("utils.table_test") 的方式來測試 (例如: 加在init.lua中)
 t.RunTest({
   { fn = Example_sort_files_first,  name = "Example_sort_files_first" },
   { fn = Example_get_mapping_table, name = "Example_get_mapping_table" },
