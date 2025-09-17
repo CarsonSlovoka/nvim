@@ -426,6 +426,10 @@ function M.setup(opts)
           " 2710x1234
           syntax match @type /\d\+x\d\+/
         ]])
+
+        if vim.env.KITTY_WINDOW_ID == nil then
+          vim.cmd("Chafa " .. abspath)
+        end
       end
     }
   )
