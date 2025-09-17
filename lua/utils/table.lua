@@ -23,4 +23,33 @@ function M.sort_files_first(tbl)
   return tbl
 end
 
+--- contains({"ico", "png"}, "svg") -- false
+---
+--- 如果想元素很多且要頻繁的使用，可以用字典的方法會比較有效，參考: `get_mapping_table`
+---
+---@param t table
+---@param elem any
+function M.contains(t, elem)
+  for _, e in ipairs(t) do
+    if e == elem then
+      return true
+    end
+  end
+  return false
+end
+
+--- local m = get_mapping_table({"ico", "png"})
+--- m["svg"] -- nil
+--- m["png"] -- true
+---
+---@param t table
+---@return {string:boolean}[]
+function M.get_mapping_table(t)
+  local map = {}
+  for _, key in ipairs(t) do
+    map[key] = true
+  end
+  return map
+end
+
 return M
