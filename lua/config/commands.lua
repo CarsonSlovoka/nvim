@@ -2429,25 +2429,13 @@ function commands.setup()
       if not output_filename:match("%.mp4$") then
         output_filename = output_filename .. ".mp4"
       end
-
-      local output_mkv_path = output_dir .. "/" .. 'recording.mkv'
       -- local output_mp4_path = output_mkv_path:gsub("%.mkv$", ".mp4")
-      local output_mp4_path = output_dir .. "/" .. output_filename
+      local output_path = output_dir .. "/" .. output_filename
 
-      local mkv_exists = vim.uv.fs_stat(output_mkv_path)
-      local mp4_exists = vim.uv.fs_stat(output_mp4_path)
-
-      -- Check if MP4 file already exists
-      if mkv_exists or mp4_exists then
-        local msg = ""
-        if mkv_exists then
-          msg = output_mkv_path .. "\n"
-        end
-        if mp4_exists then
-          msg = msg .. output_mp4_path
-        end
+      -- Check if file already exists
+      if vim.uv.fs_stat(output_path) then
         local choice = vim.fn.confirm(
-          "File " .. msg .. " already exists. Overwrite?",
+          "File " .. output_path .. " already exists. Overwrite?",
           "&Yes\n&No",
           2                 -- 默認的選擇, 也就是No
         )
@@ -2459,11 +2447,8 @@ function commands.setup()
         -- 如果你是自己用終端機跑，其實wl-recorder也會問是否要取代，我在猜因為用term來跑，尋問的地方會有問題
         -- 導致可以錄，但是結果出不來。總之如果要覆蓋，直接在這邊先刪除
         -- Delete existing files if they exist
-        if mkv_exists then
-          os.remove(output_mkv_path)
-        end
-        if mp4_exists then
-          os.remove(output_mp4_path)
+        if output_path then
+          os.remove(output_path)
         end
       end
 
@@ -2488,7 +2473,7 @@ function commands.setup()
       local rec_cmd = string.format(
         'wf-recorder %s %s %s -g "$(slurp)" --audio --file=%s',
         framerate_opt, no_damage_opt, no_dmabuf_opt,
-        output_mkv_path
+        output_path
       )
 
       -- -- debug
@@ -2504,28 +2489,28 @@ function commands.setup()
           text = rec_cmd,
         },
         {
-          -- -c:v libx264 使用H.264編碼器重新編碼視訊
+          -- -c:v libx264 使用H.264編碼器重新編碼視訊 adfj jifdsa   ddd
           -- -c:a aac 用AAC編碼器重新編碼音訊
           text = string.format("ffmpeg -i %s -c:v libx264 -c:a aac %s  👈 如果有些播放器不行播可以嘗試使用此指令重新編碼視、音訊來解決",
-            vim.fn.shellescape(output_mp4_path),                           -- input
-            vim.fn.shellescape(output_mp4_path:gsub("%.mp4$", "_fix.mp4")) -- output
+            vim.fn.shellescape(output_path),                           -- input
+            vim.fn.shellescape(output_path:gsub("%.mp4$", "_fix.mp4")) -- output
           )
         }
       }, 'a')
 
       vim.cmd('term ' .. rec_cmd)
 
-      -- 設置自動命令，在終端退出後轉換
-      vim.api.nvim_create_autocmd("TermClose", {
-        pattern = "*",
-        once = true,
-        callback = function()
-          os.execute('ffmpeg -i ' ..
-            vim.fn.shellescape(output_mkv_path) .. ' -c:v copy -c:a copy ' .. vim.fn.shellescape(output_mp4_path))
-          os.remove(output_mkv_path)
-          vim.notify("轉換完成，已保存為 " .. output_mp4_path, vim.log.levels.INFO)
-        end,
-      })
+      -- ~~設置自動命令，在終端退出後轉換~~ 不需要先變mkv再轉mp4，在一開始直接用mp4即可
+      -- vim.api.nvim_create_autocmd("TermClose", {
+      --   pattern = "*",
+      --   once = true,
+      --   callback = function()
+      --     os.execute('ffmpeg -i ' ..
+      --       vim.fn.shellescape(output_mkv_path) .. ' -c:v copy -c:a copy ' .. vim.fn.shellescape(output_mp4_path))
+      --     os.remove(output_mkv_path)
+      --     vim.notify("轉換完成，已保存為 " .. output_mp4_path, vim.log.levels.INFO)
+      --   end,
+      -- })
     end,
     {
       nargs = "+",
@@ -2538,6 +2523,7 @@ function commands.setup()
 
           -- Add common directories
           local home = os.getenv("HOME")
+          table.insert(dirs, ".") -- 使用當前的工作目錄
           table.insert(dirs, home .. "/Documents")
           table.insert(dirs, home .. "/Downloads")
 
