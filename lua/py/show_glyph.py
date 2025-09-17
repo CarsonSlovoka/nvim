@@ -192,6 +192,9 @@ HTML_TEMPLATE = """
       <label>Data Index Filter (e.g., 1..10,18..21): <input type="text" id="data-idx-filter"
           placeholder="e.g., 1..10,18..21"></label>
     </div>
+    <div>
+      <label>Filter circles: <input type="checkbox" id="circles-filter-toggle"></label>
+    </div>
 
     <div>
       <label>Enable Data Type Filter: <input type="checkbox" id="type-filter-toggle" checked></label>
@@ -222,12 +225,15 @@ HTML_TEMPLATE = """
   const circleOpacityValue = d3.select("#circle-opacity-value")
   const textOpacityInput = d3.select("#text-opacity")
   const textOpacityValue = d3.select("#text-opacity-value")
-  const dataIdxFilterInput = d3.select("#data-idx-filter")
   const fontSizeInput = d3.select("#font-size")
   const circleRadiusInput = d3.select("#circle-radius")
   const circleRadiusValue = d3.select("#circle-radius-value")
   const fillColorInput = d3.select("#fill-color")
   const strokeColorInput = d3.select("#stroke-color")
+
+  const dataIdxFilterInput = d3.select("#data-idx-filter")
+  const circlesFilterInput = d3.select("#circles-filter-toggle")
+
   const typeFilterToggle = d3.select("#type-filter-toggle")
   const typeMoveInput = d3.select("#type-move")
   const typeLineInput = d3.select("#type-line")
@@ -353,7 +359,8 @@ HTML_TEMPLATE = """
 
   // Attach input listeners for filters
   dataIdxFilterInput.on("input", updateVisibility)
-  typeFilterToggle.on("change", updateVisibility)
+  circlesFilterInput.on("change", updateVisibility)
+  typeFilterToggle.on("change", updateVisibility)  
   typeMoveInput.on("change", updateVisibility)
   typeLineInput.on("change", updateVisibility)
   typeCubicInput.on("change", updateVisibility)
@@ -386,7 +393,10 @@ HTML_TEMPLATE = """
   function updatePath() {
     let pathD = ""
     let i = 0
-    let circleNodes = circles.nodes()
+    const circleNodes = circlesFilterInput.property("checked") ?
+      circles.nodes().filter(node => d3.select(node).style("display") !== "none") :
+      circles.nodes();
+
 
     while (i < circleNodes.length) {
       const circle = d3.select(circleNodes[i])
