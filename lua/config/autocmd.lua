@@ -345,6 +345,7 @@ function M.setup(opts)
             gif = true,
             webp = true,
             avif = true,
+            ico = true,
           }
           if hijack_file_patterns[ext] then
             -- 直接用image.nvim來顯示就好, 不過還是再開一個視窗寫入基本訊息
