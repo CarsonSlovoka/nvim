@@ -267,6 +267,10 @@ local function program_show_glyph(include_outline, options)
     { mimetype = options["mimetype"] or "image/svg+xml" })
   vim.fn.setqflist({ { text = table.concat(cmd, " ") }, }, 'a') -- 輸出執行的cmd, 可用來除錯
   local r = vim.system(cmd):wait()
+  -- vim.system(cmd, { text = true }, function(r)
+  --   -- vim.cmd("tabnew | setlocal buftype=nofile bufhidden=wipe") -- 這不能在on_exit中使用
+  -- end())
+
   if r.code ~= 0 then
     vim.notify(string.format("❌ program_show_glyph err code: %d %s", r.code, r.stderr),
       vim.log.levels.WARN)
