@@ -2501,16 +2501,24 @@ function commands.setup()
       vim.cmd('term ' .. rec_cmd)
 
       -- ~~設置自動命令，在終端退出後轉換~~ 不需要先變mkv再轉mp4，在一開始直接用mp4即可
-      -- vim.api.nvim_create_autocmd("TermClose", {
-      --   pattern = "*",
-      --   once = true,
-      --   callback = function()
-      --     os.execute('ffmpeg -i ' ..
-      --       vim.fn.shellescape(output_mkv_path) .. ' -c:v copy -c:a copy ' .. vim.fn.shellescape(output_mp4_path))
-      --     os.remove(output_mkv_path)
-      --     vim.notify("轉換完成，已保存為 " .. output_mp4_path, vim.log.levels.INFO)
-      --   end,
-      -- })
+      vim.api.nvim_create_autocmd("TermClose", {
+        pattern = "*",
+        once = true,
+        callback = function()
+          -- os.execute('ffmpeg -i ' ..
+          --   vim.fn.shellescape(output_mkv_path) .. ' -c:v copy -c:a copy ' .. vim.fn.shellescape(output_mp4_path))
+          -- os.remove(output_mkv_path)
+          -- vim.notify("轉換完成，已保存為 " .. output_mp4_path, vim.log.levels.INFO)
+
+          -- 自動開啟輸出的目錄
+          if vim.fn.executable('thunar') == 1 then
+            vim.cmd("!thunar " .. vim.fn.fnamemodify(output_path, ":h") .. " & ")
+          end
+
+          -- 順便也自動播放該檔案
+          vim.ui.open(output_path) -- 用系統預設的工具來開啟檔案
+        end,
+      })
     end,
     {
       nargs = "+",
