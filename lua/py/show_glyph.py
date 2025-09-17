@@ -199,7 +199,7 @@ HTML_TEMPLATE = """
     <div>
       <label>Enable Data Type Filter: <input type="checkbox" id="type-filter-toggle" checked></label>
     </div>
-    <div class="checkbox-group">
+    <div id="type-group" class="checkbox-group">
       <label>Data Type Filter:</label>
       <label><input type="checkbox" id="type-move" value="move" checked> Move</label>
       <label><input type="checkbox" id="type-line" value="line" checked> Line</label>
@@ -360,7 +360,12 @@ HTML_TEMPLATE = """
   // Attach input listeners for filters
   dataIdxFilterInput.on("input", updateVisibility)
   circlesFilterInput.on("change", updateVisibility)
-  typeFilterToggle.on("change", updateVisibility)  
+  typeFilterToggle.on("change", (e) => {
+    document.querySelector("#type-group").querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.disabled = !e.target.checked
+    })
+    updateVisibility()
+  })
   typeMoveInput.on("change", updateVisibility)
   typeLineInput.on("change", updateVisibility)
   typeCubicInput.on("change", updateVisibility)
