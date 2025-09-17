@@ -18,7 +18,7 @@ local function Example_sort_files_first()
   local pass = true
   local errs = { errors = {} }
   for i, item in ipairs({
-    { myList[1], "/path/to/file3.txt" },
+    { myList[1], "/path/to/file1.txt" },
     { myList[2], "/path/to/file2.txt" },
     { myList[3], "/path/to/folder1" },
     { myList[4], "/path/to/folder2" },
