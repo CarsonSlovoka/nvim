@@ -3704,4 +3704,126 @@ end, {
     return vim.tbl_filter(function(item) return vim.startswith(item, suffix) end, comps)
   end
 })
+
+vim.api.nvim_create_user_command("Chafa",
+  function(args)
+    if vim.fn.executable("chafa") == 0 then
+      vim.notify("chafa not found. sudo apt install chafa", vim.log.levels.WARN)
+      return
+    end
+
+    local cfg = utils.cmd.get_cmp_config(args.fargs)
+
+    local img_path
+    if args.fargs[1] == "." then
+      vim.cmd("cd %:h")
+      img_path = vim.fn.expand("%:p")
+    else
+      img_path = args.fargs[1]
+    end
+
+    vim.cmd("tabnew")
+
+    local ext = vim.fn.fnamemodify(img_path, ':e')
+    local cmd = ""
+    if ext == "ico" and vim.fn.executable("convert") then
+      -- chafa沒辦法直接處理ico, 用 imagemagick 提供的工具 convert 轉成png再進行
+      cmd = string.format("convert %q PNG:- | chafa -", img_path)
+    else
+      cmd = "chafa " .. img_path
+    end
+    -- 可選項
+    if cfg["size"] then
+      cmd = cmd .. " -s " .. cfg["size"]
+    end
+    if cfg["color"] then
+      cmd = cmd .. " -c " .. cfg["color"]
+    end
+    vim.cmd("term " .. cmd)
+    vim.cmd("startinsert")
+
+    -- 在qflist中寫上可以透過-s和-c去調整大小和顏色
+    vim.fn.setqflist({
+      { text = cmd },
+      { text = cmd .. " -s 10x10" },
+      { text = cmd .. " -s 10x10 -c 2" },
+      { text = cmd .. " -s 10x10 -c 256" },
+    }, 'a')
+  end,
+  {
+    desc = "使用chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
+    nargs = "+",
+    complete = function(arg_lead, cmd_line)
+      local comps = {}
+      local argc = #(vim.split(cmd_line, '%s+')) - 1
+      local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+
+      if argc == 1 then
+        local accept_ext = utils.table.get_mapping_table({ "png", "webp", "ico", "jpg", "jpeg" })
+        local accept_files = vim.tbl_filter(
+          function(file)
+            if vim.fn.isdirectory(file) == 1 then
+              -- 是目錄就繼續
+              return true
+            end
+            local ext = string.lower(vim.fn.fnamemodify(file, ':e'))
+            return accept_ext[ext] == true
+          end,
+          vim.fn.getcompletion(arg_lead, "file")
+        )
+
+        if arg_lead == "" then
+          return {
+            ".",                 -- 在實作直接客製成`.`視為 vim.fn.expand("%:p") 即可 -- 將目前的檔案放在第一個(不管這個附檔名對不對)
+            unpack(accept_files) -- 之後的會挑附檔名
+          }
+        else
+          return accept_files
+        end
+      end
+
+      -- 使得已經輸入過的選項，不會再出現
+      local exist_comps = {}
+      if argc > 2 then
+        for _, key in ipairs(vim.split(cmd_line, '%s+')) do
+          local k, _ = key:match('^(.-)=(.*)$')
+          if k then
+            exist_comps[k .. "="] = true
+          end
+        end
+      end
+
+      if not prefix then
+        suffix = arg_lead
+        prefix = ''
+      end
+      local need_add_prefix = true
+      if argc == 0 or not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end, -- 過濾已輸入過的選項
+          { 'size=', 'color=', }                           -- 全選項
+        )
+        need_add_prefix = false
+      elseif prefix == "size" then
+        comps = {
+          "3x3",
+          "10x10",
+          "10x15",
+        }
+      elseif prefix == "color" then
+        comps = {
+          "none",
+          "2", "8", "16/8", "16", "240", "256", "full"
+        }
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or suffix
+      return vim.tbl_filter(function(item) return item:match(input) end, comps) -- 改用match比較自由
+    end
+  }
+)
 return commands

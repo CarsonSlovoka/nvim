@@ -343,6 +343,7 @@ map({ 'n', 'v' }, 'gi',
       vim.notify("chafa not found. sudo apt install chafa", vim.log.levels.WARN)
       return
     end
+
     vim.cmd("cd %:h")
     local mode = vim.fn.mode()
     local img_path = ""
@@ -353,26 +354,8 @@ map({ 'n', 'v' }, 'gi',
       img_path = utils.range.get_selected_text()[1]
       vim.api.nvim_input("<esc>")
     end
-    vim.cmd("tabnew")
 
-    local ext = vim.fn.fnamemodify(img_path, ':e')
-    local cmd = ""
-    if ext == "ico" and vim.fn.executable("convert") then
-      -- chafa沒辦法直接處理ico, 用 imagemagick 提供的工具 convert 轉成png再進行
-      cmd = string.format("convert %q PNG:- | chafa -", img_path)
-    else
-      cmd = "chafa " .. img_path
-    end
-    vim.cmd("term " .. cmd)
-    vim.cmd("startinsert")
-
-    -- 在qflist中寫上可以透過-s和-c去調整大小和顏色
-    vim.fn.setqflist({
-      { text = cmd },
-      { text = cmd .. " -s 10x10" },
-      { text = cmd .. " -s 10x10 -c 2" },
-      { text = cmd .. " -s 10x10 -c 256" },
-    }, 'a')
+    vim.cmd("Chafa " .. img_path)
   end,
   {
     desc = "使用chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
