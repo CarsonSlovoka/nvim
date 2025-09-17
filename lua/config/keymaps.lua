@@ -365,6 +365,14 @@ map({ 'n', 'v' }, 'gi',
     end
     vim.cmd("term " .. cmd)
     vim.cmd("startinsert")
+
+    -- 在qflist中寫上可以透過-s和-c去調整大小和顏色
+    vim.fn.setqflist({
+      { text = cmd },
+      { text = cmd .. " -s 10x10" },
+      { text = cmd .. " -s 10x10 -c 2" },
+      { text = cmd .. " -s 10x10 -c 256" },
+    }, 'a')
   end,
   {
     desc = "使用chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
