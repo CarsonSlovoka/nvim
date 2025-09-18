@@ -128,7 +128,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
-│   │       └── nvim-lspconfig/      -- ✅ 語言協議(語言伺服器要額外安裝, 每個語言的裝法不同), 配合好該語言的伺服器，即可在編輯完成後，做檢查之類的 (v2.0.0... 747de98)
+│   │       └── nvim-lspconfig/      -- 🚮 從nvim 0.11開始，這已經不需要了, 不過當中的語言設定檔還是有一些參考價值
 │   │
 │   ├── git/start/                   -- ✅ git
 │   │       │
@@ -348,19 +348,21 @@ func main() {
 
 ## lsp
 
-1. 下載lsp
+1. ~~下載LSP~~
 2. 安裝語言伺服器
 3. 編輯init.lua: `require'lspconfig'.gopls.setup{}`
 
 ![lsp_checkhealth](.img/lsp_checkhealth.webp)
 
-### 下載lsp(language server protocol)
+### ~~下載lsp(language server protocol)~~ (已不再需要)
 
 ```bash
 ## 這個只是protocol, 至於server還是要再另外安裝
 mkdir -p ~/.config/nvim/pack/lsp/start
 git clone https://github.com/neovim/nvim-lspconfig.git ~/.config/nvim/pack/lsp/start/nvim-lspconfig
 ```
+
+> [!NOTE] 可以參考裡面的設定檔，至於安裝則是不用了
 
 ### 安裝語言伺服器
 
