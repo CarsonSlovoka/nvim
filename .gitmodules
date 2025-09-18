@@ -32,9 +32,14 @@
 [submodule "plenary.nvim"]
     path = pack/utils/start/plenary.nvim
     url = https://github.com/nvim-lua/plenary.nvim.git
+
+# search
 [submodule "telescope.nvim"]
     path = pack/search/start/telescope.nvim
     url = https://github.com/nvim-telescope/telescope.nvim.git
+[submodule "fzf-lua.nvim"]
+    path = pack/search/start/fzf-lua
+    url = https://github.com/ibhagwan/fzf-lua
 
 [submodule "github-nvim-theme"]
     path = pack/theme/start/github-nvim-theme

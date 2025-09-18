@@ -1517,6 +1517,13 @@ local function install_telescope()
 end
 
 
+local function install_fzf_lua()
+  -- https://github.com/ibhagwan/fzf-lua
+  -- :checkhealth fzf_lua
+  require("fzf-lua").setup({ winopts = { row = 1, col = 0 } })
+end
+
+
 local function install_ibl()
   local ok, m = pcall(require, "ibl") -- pack/other/start/indent-blankline.nvim/lua/ibl
   if not ok then
@@ -2364,6 +2371,7 @@ local installs = {
   { name = "nvimWebDevicons", fn = install_nvimWebDevicons, delay = 0 },
   { name = "nvim_tree",       fn = install_nvim_tree,       delay = 0 },
   { name = "telescope",       fn = install_telescope,       delay = 0 },
+  { name = "fzf_lua",         fn = install_fzf_lua,         delay = 0 },
   {
     name = "ibl",
     fn = function()

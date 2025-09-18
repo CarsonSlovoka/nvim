@@ -146,7 +146,8 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.14.0  321bc615)
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
-│   │          └── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... a4ed825)
+│   │          ├── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... a4ed825)
+│   │          └── fzf-lua.nvim      -- ✅ 與 telescope.nvim 類似，但是速度更快 ( fd244f2 )
 │   │
 │   ├── theme/start/                 -- ✅ 主題相關
 │   │         └── github-nvim-theme  -- ✅ 配色 (v1.1.2... c106c94)
@@ -820,6 +821,22 @@ mkdir -pv ~/.config/nvim/pack/search/start/
 git clone https://github.com/nvim-telescope/telescope.nvim ~/.config/nvim/pack/search/start/telescope.nvim
 ```
 
+### [fzf-lua](https://github.com/ibhagwan/fzf-lua)
+
+```sh
+git clone --depth 1 https://github.com/ibhagwan/fzf-lua ~/.config/nvim/pack/search/start/fzf-lua
+```
+
+```vim
+:lua require("fzf-lua").files()
+:FzfLua files cwd=~/.config  " 之後的可選項可以用tab叫出，但是當中的數值需要自己完成
+:FzfLua files     " 找檔案
+:FzfLua git_files " 找檔案(git提交的)
+:FzfLua lines     " 找內文(僅限: 當前檔案)
+:FzfLua live_grep " 找內文
+
+:checkhealth fzf_lua
+```
 
 ## theme
 
