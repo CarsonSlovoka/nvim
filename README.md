@@ -531,15 +531,18 @@ cargo -V
 
 **[install markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide/tree/main?tab=readme-ov-file#vscode)**
 
-```yaml
-cargo install --locked --git https://github.com/Feel-ix-343/markdown-oxide.git markdown-oxide
-cargo install --list
-# markdown-oxide v0.24.0 (https://github.com/Feel-ix-343/markdown-oxide.git#23f4d84f
+```sh
+cargo install --locked --git https://github.com/Feel-ix-343/markdown-oxide.git markdown-oxide # 如果日後有更新, 可以再用同樣的指令即可
+cargo install --list | grep markdown-oxide
+# markdown-oxide v0.25.8 (https://github.com/Feel-ix-343/markdown-oxide.git#7365fbe5)
 ls -l $(which markdown-oxide)
 # ~/.cargo/bin/markdown-oxide
 
 # cargo uninstall markdown-oxide
 ```
+
+> [!NOTE] cargo 安裝的動作, 可能要先將 `[url "github:"]` 先移除才能安裝
+
 
 #### [clangd](https://github.com/clangd/clangd)
 
