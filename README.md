@@ -33,8 +33,10 @@ nvim -V1 -v
 
 # Version
 
+`nvim --version`
+
 ```
-NVIM v0.11.0
+NVIM v0.11.4
 Build type: RelWithDebInfo
 LuaJIT 2.1.1741730670
 ```
