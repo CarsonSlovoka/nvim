@@ -596,8 +596,11 @@ lua-language-server --version
 #### [vscode-langservers-extracted](https://github.com/hrsh7th/vscode-langservers-extracted)
 
 ```bash
-# sudo npm install -g npm@11.2.0 # 更新(可選)
+# npm view npm version           # 查看目前最新版本的npm版號
+# sudo npm install npm@latest -g # (可選) 直接更新到最後一版
+
 sudo npm i -g vscode-langservers-extracted
+npm info vscode-langservers-extracted # 看套件資訊，當中也可以看到版號: vscode-langservers-extracted@4.10.0
 ```
 
 ```bash
