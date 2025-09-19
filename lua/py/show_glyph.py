@@ -491,7 +491,7 @@ class GlyphRenderer:
             tx, ty = scale(to.x, to.y)
             user.append(f"M {tx:.{self.precision}f} {ty:.{self.precision}f} ")
             points_data.append(
-                PointData(tx, ty, "move", "#3d3d3d", len(user))
+                PointData(tx, ty, "move", "#3d3d3d", len(points_data) + 1)
             )  # 移動點用黑色
             current_pos = (tx, ty)
 
@@ -501,7 +501,7 @@ class GlyphRenderer:
             if (tx, ty) != current_pos:  # 避免重複
                 user.append(f"L {tx:.{self.precision}f} {ty:.{self.precision}f} ")
                 points_data.append(
-                    PointData(tx, ty, "line", "green", len(user))
+                    PointData(tx, ty, "line", "green", len(points_data) + 1)
                 )  # 線段終點綠色
             current_pos = (tx, ty)
 
@@ -513,10 +513,14 @@ class GlyphRenderer:
                 f"Q {cx:.{self.precision}f} {cy:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
             # 二次貝茲控制點顏色橘色
-            points_data.append(PointData(cx, cy, "conic", "#ffa600", len(user)))
+            points_data.append(
+                PointData(cx, cy, "conic", "#ffa600", len(points_data) + 1)
+            )
 
             # 結束點
-            points_data.append(PointData(tx, ty, "conic", "#ffa6", len(user)))
+            points_data.append(
+                PointData(tx, ty, "conic", "#ffa6", len(points_data) + 1)
+            )
             current_pos = (tx, ty)
 
         def cubic_to(control1, control2, to, user):
@@ -528,11 +532,17 @@ class GlyphRenderer:
                 f"C {c1x:.{self.precision}f} {c1y:.{self.precision}f} {c2x:.{self.precision}f} {c2y:.{self.precision}f} {tx:.{self.precision}f} {ty:.{self.precision}f} "
             )
             # 三次貝茲控制點顏色紅色
-            points_data.append(PointData(c1x, c1y, "cubic", "#ff1100", len(user)))
-            points_data.append(PointData(c2x, c2y, "cubic", "#ff1100", len(user)))
+            points_data.append(
+                PointData(c1x, c1y, "cubic", "#ff1100", len(points_data) + 1)
+            )
+            points_data.append(
+                PointData(c2x, c2y, "cubic", "#ff1100", len(points_data) + 1)
+            )
 
             # 結束點
-            points_data.append(PointData(tx, ty, "cubic", "#debe44", len(user)))
+            points_data.append(
+                PointData(tx, ty, "cubic", "#debe44", len(points_data) + 1)
+            )
             current_pos = (tx, ty)
 
         # 使用 decompose 分解輪廓 ( 就不需要處理 FT_Curve_Tag_Conic, FT_Curve_Tag_Cubic, FT_Curve_Tag_On )
