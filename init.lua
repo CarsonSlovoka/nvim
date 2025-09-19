@@ -1528,6 +1528,7 @@ local function install_fzf_lua()
       preview = {
         hidden = false, -- 啟動時顯示預覽
       },
+      fullscreen = true,
     },
     keymap = {
       builtin = {
