@@ -3484,6 +3484,7 @@ vim.api.nvim_create_user_command("Clear",
 )
 
 vim.api.nvim_create_user_command("Gitfiles",
+  -- NOTE: 有關於: nvim自動開啟終端機，並且能補獲所有stdout的內容，可參考: https://gist.github.com/CarsonSlovoka/e228da4f10f61e448f3bbba953b0e638
   function(args)
     local config = utils.cmd.get_cmp_config(args.fargs)
 
@@ -3499,7 +3500,8 @@ vim.api.nvim_create_user_command("Gitfiles",
     if cd_git_root == "1" then
       vim.cmd("cd " .. git_root)
     end
-    vim.cmd("tabnew | setlocal buftype=nofile | term")
+    -- vim.cmd("tabnew | setlocal buftype=nofile | term") -- 👈 如果後面用的是 vim.fn.jobstart 且指定了 term = true, 就先當於是如此
+    vim.cmd("tabnew | setlocal buftype=nofile")
 
     local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r"))
     vim.cmd("file search git files:" .. git_dirname)
@@ -3518,31 +3520,80 @@ vim.api.nvim_create_user_command("Gitfiles",
       preview_cmd = [[--preview "batcat --color=always --style=numbers {}"]]
     end
 
+    -- CAUTION: 以下是用於輸入，但是用於 vim.fn.jobstart 之前 不能有 \ 出現，要所有的內容都變一行
+    -- local cmd_str = string.format([[
+    -- git ls-files --exclude-standard --cached | \
+    -- fzf --style full \
+    --     %s \
+    --     %s  \
+    --     %s && printf " [%%s] " {}' \
+    --     --bind 'focus:+transform-header:file --brief {} || echo "No file selected"' \
+    --     --bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' \
+    --     --color 'border:#aaaaaa,label:#cccccc' \
+    --     --color 'preview-border:#9999cc,preview-label:#ccccff' \
+    --     --color 'list-border:#669966,list-label:#99cc99' \
+    --     --color 'input-border:#996666,input-label:#ffcccc' \
+    --     --color 'header-border:#6699cc,header-label:#99ccff' \
+    --     --bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" \
+    --     --bind 'ctrl-/:change-preview-window(down|hidden|)' \
+    --     --bind "alt-p:preview-up,alt-n:preview-down"
+    -- <CR>
+    -- ]],
+    --   "",                                                 -- --input-label ' Input ' --header-label ' File Type '
+    --   preview_cmd,
+    --   "--bind 'focus:transform-preview-label:[[ -n {} ]]" -- Previewing
+    -- )
+    local cmd = {
+      "git ls-files --exclude-standard --cached |",
+      "fzf --style full",
+      preview_cmd,
+      "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]], -- Previewing
+      [[--bind 'focus:+transform-header:file --brief {} || echo "No file selected"' ]],
+      [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
+      [[--color 'border:#aaaaaa,label:#cccccc' ]],
+      [[--color 'preview-border:#9999cc,preview-label:#ccccff' ]],
+      [[--color 'list-border:#669966,list-label:#99cc99' ]],
+      [[--color 'input-border:#996666,input-label:#ffcccc' ]],
+      [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
+      [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- echo結果, 也將結果複製到剪貼簿
+      [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                           -- 透過 ctrl-/ 可以切換
+      [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                   -- alt:{p,n} 可以控制preview up, down
+    }
+
+    -- 使用 termopen 開啟一個互動式 terminal
+    -- local job_id = vim.fn.jobstart(vim.o.shell, { -- 可以用o.shell, 但是這樣輸入完指令後不會馬上離開，要手動使用exit
+    local cmd_str = table.concat(cmd, " ")
+    local buf = vim.api.nvim_get_current_buf()
+    local job_id = vim.fn.jobstart(cmd_str, {
+      on_exit = function(_, exit_code)
+        -- 當 terminal 退出時，提取 buffer 內容
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        lines = vim.tbl_filter(function() return lines ~= "" end, lines) -- 忽略空行
+
+        -- 打開選擇的檔案
+        vim.cmd("e " .. lines[1])
+
+        -- 關閉 terminal 窗口
+        vim.api.nvim_buf_delete(buf, { force = true })
+      end,
+      term = true -- 如果遇到requires unmodified buffer的錯誤，請確認當前的buf不是在term下
+    })
+    -- 檢查是否成功啟動 terminal
+    if job_id <= 0 then
+      print("Failed to start terminal")
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
+    end
+
+    -- 可以設置自動命令, 在某些情況時觸發一些自定義的動作
+    -- vim.api.nvim_buf_attach(buf, false, {
+    --   on_lines = function()
+    --     vim.fn.jobstop(job_id)
+    --   end
+    -- })
+
     vim.cmd("startinsert")
-    vim.api.nvim_input(
-      string.format([[
-git ls-files --exclude-standard --cached |
-fzf --style full \
-    %s \
-    %s  \
-    %s && printf " [%%s] " {}' \
-    --bind 'focus:+transform-header:file --brief {} || echo "No file selected"' \
-    --bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' \
-    --color 'border:#aaaaaa,label:#cccccc' \
-    --color 'preview-border:#9999cc,preview-label:#ccccff' \
-    --color 'list-border:#669966,list-label:#99cc99' \
-    --color 'input-border:#996666,input-label:#ffcccc' \
-    --color 'header-border:#6699cc,header-label:#99ccff' \
-    --bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" \
-    --bind 'ctrl-/:change-preview-window(down|hidden|)' \
-    --bind "alt-p:preview-up,alt-n:preview-down"
-<CR>
-]],
-        "",                                                 -- --input-label ' Input ' --header-label ' File Type '
-        preview_cmd,
-        "--bind 'focus:transform-preview-label:[[ -n {} ]]" -- Previewing
-      )
-    )
+    -- vim.api.nvim_input(cmd_str) -- 是用vim.o.shell時，自動輸入一開始的指令, 是可行，但是最後要手動用 exit 才能離開
 
     -- 可以考慮cd回原本的工作目錄
   end,
