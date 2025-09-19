@@ -126,12 +126,20 @@ end
 --- 解析 [complete](https://github.com/CarsonSlovoka/nvim/blob/b201ef3fd87/lua/config/commands.lua#L3618-L3654) 所提供的參數
 ---
 ---@param fargs string[]
-function M.get_cmp_config(fargs)
+---@param update boolean?
+function M.get_cmp_config(fargs, update)
+  update = update or false
+
   local config = {}
-  for _, arg in ipairs(fargs) do
+  -- 倒序遍歷 fargs (使得如果update為true時，會直接異動fargs)
+  for i = #fargs, 1, -1 do
+    local arg = fargs[i]
     local key, value = arg:match('^(.-)=(.*)$')
     if key then
       config[key] = value
+      if update then
+        table.remove(fargs, i) -- 移除匹配的項目
+      end
     end
   end
   return config
