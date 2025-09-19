@@ -835,6 +835,9 @@ git clone --depth 1 https://github.com/ibhagwan/fzf-lua ~/.config/nvim/pack/sear
 :FzfLua lines     " 找內文(僅限: 當前檔案)
 :FzfLua live_grep " 找內文
 
+:lua FzfLua.live_grep({resume=true}) -- 透過resume可以接續上一次的搜尋, 所有的項目都可以加上resume
+:lua FzfLua.git_files({resume=true})
+
 :checkhealth fzf_lua
 ```
 
