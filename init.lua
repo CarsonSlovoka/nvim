@@ -1520,7 +1520,26 @@ end
 local function install_fzf_lua()
   -- https://github.com/ibhagwan/fzf-lua
   -- :checkhealth fzf_lua
-  require("fzf-lua").setup({ winopts = { row = 1, col = 0 } })
+  require("fzf-lua").setup({
+    winopts = {
+      row = 10,
+      col = 0,
+      preview = {
+        hidden = false, -- 啟動時顯示預覽
+      },
+    },
+    keymap = {
+      builtin = {
+        -- ['<C-p>'] = 'preview-up', 👈 預設就是如此
+        -- ['<C-n>'] = 'preview-down',
+        -- ['<A-h>'] = 'preview-page-left', 沒有這選項
+        -- ['<A-l>'] = 'preview-page-right',
+        ['<A-p>'] = 'preview-page-up',
+        ['<A-n>'] = 'preview-page-down',
+        ['<C-t>'] = 'toggle-preview', -- 用 Ctrl+T 來 toggle 預覽視窗（隱藏/顯示）
+      },
+    },
+  })
 end
 
 
