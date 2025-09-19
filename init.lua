@@ -1508,7 +1508,8 @@ local function install_telescope()
     function()
       local cur_dir = vim.fn.expand("%:p:h")
       vim.cmd("cd " .. cur_dir)
-      require("telescope.builtin").git_status()
+      -- require("telescope.builtin").git_status()
+      require("fzf-lua").git_status()
     end,
     {
       desc = "git status"
