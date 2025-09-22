@@ -3927,6 +3927,13 @@ vim.api.nvim_create_user_command("Align",
       vim.api.nvim_buf_set_lines(0, cur_line - 1, cur_line - 1, false, { new_line_content })
       -- vim.cmd("normal! OIgccV<End>:'<,'>right 120") -- 沒用
       -- vim.cmd(string.format("normal! %dGgcc", cur_line)) -- 這也不能變成註解
+      --
+      vim.api.nvim_echo({
+        { '💡 橫刻度也可以考慮使用以下方法生成\n', "@label" },
+        { 'iX\n', "@label" },
+        { ":right ", '@keyword' },
+        { "120", 'Normal' },
+      }, false, {})
     end
 
     local fillWidth = (tonumber(config["fillWidth"]) or 100) + alignCol -- 至少要大於alignCol
