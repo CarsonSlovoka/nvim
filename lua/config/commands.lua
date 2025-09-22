@@ -3877,4 +3877,124 @@ vim.api.nvim_create_user_command("Chafa",
     end
   }
 )
+
+vim.api.nvim_create_user_command("Align",
+  function(args)
+    -- vim.fn.setreg('"', "02f#100i 30|dwj")
+    -- 0 回到一開始
+    -- 2f# 找第二個#
+    -- 100i 輸入100個空白
+    --  ESC 離開insert
+    -- 30| 跳到第30欄
+    -- dw 刪除多餘的空白
+    -- j 往下到下一列
+    local config = utils.cmd.get_cmp_config(args.fargs)
+
+    for _, require_key in ipairs({ "findSepExpr", "alignCol" }) do
+      if not config[require_key] then
+        vim.api.nvim_echo({
+          { '⚠️ missing para: ', "Normal" },
+          { require_key, '@label' },
+          { "\n", 'Normal' },
+          { "Example:\n", 'Normal' },
+          { "'<,'>Align findSepExpr=02f# alignCol=30", '@label' },
+        }, true, {})
+        return
+      end
+    end
+
+    local autoSaveState = require("config.autocmd").autoSave
+    if autoSaveState then
+      require("config.autocmd").autoSave = false
+    end
+
+    local alignCol = tonumber(config["alignCol"]) or 0
+
+    if alignCol < 1 then
+      error("alignCol must >= 1")
+    end
+
+    if config["showTick"] == "1" then
+      local cur_line = vim.api.nvim_win_get_cursor(0)[1]
+      local spaces = string.rep(" ", alignCol - 1)
+      local new_line_content = spaces .. "I" .. spaces -- 創建新行內容：N 個空格 + "I" + N 個空格
+      -- -- 在當前行的上方插入一行
+      vim.api.nvim_buf_set_lines(0, cur_line - 1, cur_line - 1, false, { new_line_content })
+      -- vim.cmd("normal! OIgccV<End>:'<,'>right 120") -- 沒用
+      -- vim.cmd(string.format("normal! %dGgcc", cur_line)) -- 這也不能變成註解
+    end
+
+    local fillWidth = (tonumber(config["fillWidth"]) or 100) + tonumber(config["alignCol"]) -- 至少要大於alignCol
+    for _ = 0, args.line2 - args.line1 do
+      -- vim.cmd(string.format("normal! 02f#100i 30|dwj"))
+      vim.cmd(string.format("normal! %s%di %d|dwj",
+        config["findSepExpr"],
+        fillWidth,
+        tonumber(config["alignCol"])
+      ))
+    end
+    if autoSaveState then
+      require("config.autocmd").autoSave = true
+    end
+  end,
+  {
+    desc = "Align to the specified char",
+    nargs = "+",
+    range = true,
+    complete = function(arg_lead, cmd_line)
+      local comps = {}
+      local argc = #(vim.split(cmd_line, '%s+')) - 1
+      local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+
+      -- 使得已經輸入過的選項，不會再出現
+      local exist_comps = {}
+      if argc > 1 then
+        for _, key in ipairs(vim.split(cmd_line, '%s+')) do
+          local k, _ = key:match('^(.-)=(.*)$')
+          if k then
+            exist_comps[k .. "="] = true
+          end
+        end
+      end
+
+      if not prefix then
+        suffix = arg_lead
+        prefix = ''
+      end
+
+      local need_add_prefix = true
+      if argc == 0 or not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end,
+          { 'findSepExpr=', 'alignCol=', 'showTick=' }
+        )
+        need_add_prefix = false
+      elseif prefix == "findSepExpr" then
+        comps = {
+          "0f#",
+          "02f#",
+        }
+      elseif prefix == "alignCol" then
+        comps = {
+          "20",
+          "30",
+          "50",
+        }
+      elseif prefix == "showTick" then
+        comps = {
+          "1",
+          "0",
+        }
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or suffix
+      return vim.tbl_filter(function(item) return item:match(input) end, comps)
+    end
+  }
+)
+
 return commands
