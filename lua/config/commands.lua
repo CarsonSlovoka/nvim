@@ -3890,7 +3890,7 @@ vim.api.nvim_create_user_command("Align",
     -- j 往下到下一列
     local config = utils.cmd.get_cmp_config(args.fargs)
 
-    for _, require_key in ipairs({ "findSepExpr", "alignCol" }) do
+    for _, require_key in ipairs({ "findSepExpr" }) do
       if not config[require_key] then
         vim.api.nvim_echo({
           { '⚠️ missing para: ', "Normal" },
@@ -3908,10 +3908,15 @@ vim.api.nvim_create_user_command("Align",
       require("config.autocmd").autoSave = false
     end
 
-    local alignCol = tonumber(config["alignCol"]) or 0
+    --local cur_col = vim.fn.col('.') -- vim.api.nvim_win_get_cursor(0)[2] -- :echo col('.') -- vim.fn.col('.') -- 這些都等價
+
+    local alignCol = tonumber(config["alignCol"] or vim.fn.col('.')) -- IMPORTANT:  必需要下到上來選取時vim.fn.col('.')才會有用
+
 
     if alignCol < 1 then
       error("alignCol must >= 1")
+    elseif alignCol == 1 then
+      vim.notify("Please consider selecting from bottom to top in visual mode", vim.log.levels.WARN)
     end
 
     if config["showTick"] == "1" then
@@ -3924,13 +3929,13 @@ vim.api.nvim_create_user_command("Align",
       -- vim.cmd(string.format("normal! %dGgcc", cur_line)) -- 這也不能變成註解
     end
 
-    local fillWidth = (tonumber(config["fillWidth"]) or 100) + tonumber(config["alignCol"]) -- 至少要大於alignCol
+    local fillWidth = (tonumber(config["fillWidth"]) or 100) + alignCol -- 至少要大於alignCol
     for _ = 0, args.line2 - args.line1 do
       -- vim.cmd(string.format("normal! 02f#100i 30|dwj"))
       vim.cmd(string.format("normal! %s%di %d|dwj",
         config["findSepExpr"],
         fillWidth,
-        tonumber(config["alignCol"])
+        alignCol
       ))
     end
     if autoSaveState then
