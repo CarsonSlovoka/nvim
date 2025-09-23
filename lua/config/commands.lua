@@ -3621,6 +3621,7 @@ vim.api.nvim_create_user_command("Rg",
         { text = ':Rg word -i                                 " ignore-case' },
         { text = ':Rg --files ~/.config/nvim                  " 也可以找檔案' },
         { text = ':Rg --files . wd=~/.config/nvim             " 同上(路徑較乾淨)' },
+        { text = ':Rg --files . wd=~/.config/nvim -uu         " ignore-file, findHidden (-.) 即:忽略gitignore, 顯示隱藏檔案. 第三個u是binary時可用' },
       }, 'a')
       -- vim.cmd("copen | cbo | 4cp") -- 要真的enter之後才會在最後一個項目，此時cp才會有用
       vim.cmd("copen | cbo")
