@@ -4050,6 +4050,11 @@ vim.api.nvim_create_user_command("Column",
     )
     -- vim.fn.setreg('a', cmd)
     vim.api.nvim_input(cmd)
+    vim.fn.setqflist({
+      {
+        text = string.format("'<,'>!column -t -s'%s' -o' '", sep),
+      },
+    }, 'a')
   end,
   {
     desc = "固定欄寬. '<,'>!column -t -s',' -o' | '",
