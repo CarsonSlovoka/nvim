@@ -145,4 +145,19 @@ function M.get_cmp_config(fargs, update)
   return config
 end
 
+--- 得到已經輸入過的選項, 之後可以篩選，使得已經輸入過的選項不會再出現
+---@param cmd_line string
+---@return table
+function M.get_exist_comps(cmd_line)
+  -- 使得已經輸入過的選項，不會再出現
+  local exist_comps = {}
+  for _, key in ipairs(vim.split(cmd_line, '%s+')) do
+    local k, _ = key:match('^(.-)=(.*)$')
+    if k then
+      exist_comps[k .. "="] = true
+    end
+  end
+  return exist_comps
+end
+
 return M

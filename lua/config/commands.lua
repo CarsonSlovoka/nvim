@@ -3833,16 +3833,7 @@ vim.api.nvim_create_user_command("Chafa",
         end
       end
 
-      -- 使得已經輸入過的選項，不會再出現
-      local exist_comps = {}
-      if argc > 2 then
-        for _, key in ipairs(vim.split(cmd_line, '%s+')) do
-          local k, _ = key:match('^(.-)=(.*)$')
-          if k then
-            exist_comps[k .. "="] = true
-          end
-        end
-      end
+      local exist_comps = argc > 2 and utils.cmd.get_exist_comps(cmd_line) or {}
 
       if not prefix then
         suffix = arg_lead
@@ -3958,16 +3949,7 @@ vim.api.nvim_create_user_command("Align",
       local argc = #(vim.split(cmd_line, '%s+')) - 1
       local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
 
-      -- 使得已經輸入過的選項，不會再出現
-      local exist_comps = {}
-      if argc > 1 then
-        for _, key in ipairs(vim.split(cmd_line, '%s+')) do
-          local k, _ = key:match('^(.-)=(.*)$')
-          if k then
-            exist_comps[k .. "="] = true
-          end
-        end
-      end
+      local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
 
       if not prefix then
         suffix = arg_lead
