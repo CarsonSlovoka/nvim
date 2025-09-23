@@ -3614,8 +3614,8 @@ vim.api.nvim_create_user_command("Rg",
       vim.fn.setqflist({
         { text = ':Rg search_word                                " 預設會用git_root來當成工作目錄，在開始找內文' },
         { text = ':Rg search_word init.lua                       " 在init.lua之中，找關鍵字' },
-        { text = ':Rg search_word main.go -i workDir=~/project/  " 可以使用workDir來指定工作目錄' },
-        { text = ':Rg search_word main.go -i workDir=.' },
+        { text = ':Rg search_word main.go -i wd=~/project/       " 可以使用wd來指定工作目錄' },
+        { text = ':Rg search_word main.go -i wd=.' },
         { text = ':Rg type -i -g *.sh -g *.toml                  " 找sh, toml的檔案' },
         { text = ':Rg word -i                                    " ignore-case' },
       }, 'a')
@@ -3623,19 +3623,20 @@ vim.api.nvim_create_user_command("Rg",
       vim.cmd("copen | cbo")
       return
     end
+
     local opts = utils.cmd.get_cmp_config(args.fargs, true)
 
-    if opts["workDir"] then
+    if opts["wd"] and opts["wd"] ~= "<git_root>" then
       -- 以下這些都可行
       -- :lua print(vim.fn.fnamemodify("~/.config/nvim/lua/config/commands.lua", ":p"))
       -- :lua print(vim.fn.fnamemodify(".", ":p"))
       -- :lua print(vim.fn.fnamemodify("../..", ":p"))
-      vim.cmd("cd " .. vim.fn.fnamemodify(opts["workDir"], ":p"))
+      vim.cmd("cd " .. vim.fn.fnamemodify(opts["wd"], ":p"))
     else
       vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
 
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
-      if vim.v.shell_error == 0 and (opts["cdToGitRoot"] or "1") == "1" then
+      if vim.v.shell_error == 0 then
         vim.cmd("cd " .. git_root)
       end
     end
@@ -3701,21 +3702,20 @@ vim.api.nvim_create_user_command("Rg",
       if not arg_lead:match('=') then
         comps = vim.tbl_filter(
           function(item) return not exist_comps[item] end,
-          { 'cdToGitRoot=', 'workDir=' }
+          { 'wd=' }
         )
         need_add_prefix = false
-      elseif prefix == "cdToGitRoot" then
-        comps = {
-          "1",
-        }
-      elseif prefix == "workDir" then
+      elseif prefix == "wd" then
         local all_files = vim.fn.getcompletion(vim.fn.expand(suffix), "file")
-        comps = vim.tbl_filter(
-          function(filepath)
-            return vim.fn.isdirectory(filepath) == 1
-          end,
-          all_files
-        )
+        comps = {
+          "<git_root>",
+          unpack(vim.tbl_filter(
+            function(filepath)
+              return vim.fn.isdirectory(filepath) == 1
+            end,
+            all_files
+          ))
+        }
       end
       if need_add_prefix then
         for i, comp in ipairs(comps) do
