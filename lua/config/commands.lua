@@ -3610,6 +3610,19 @@ vim.api.nvim_create_user_command("Gitfiles",
 
 vim.api.nvim_create_user_command("Rg",
   function(args)
+    if args.fargs[1] == "-h" then
+      vim.fn.setqflist({
+        { text = ':Rg search_word                                " 預設會用git_root來當成工作目錄，在開始找內文' },
+        { text = ':Rg search_word init.lua                       " 在init.lua之中，找關鍵字' },
+        { text = ':Rg search_word main.go -i workDir=~/project/  " 可以使用workDir來指定工作目錄' },
+        { text = ':Rg search_word main.go -i workDir=.' },
+        { text = ':Rg type -i -g *.sh -g *.toml                  " 找sh, toml的檔案' },
+        { text = ':Rg word -i                                    " ignore-case' },
+      }, 'a')
+      -- vim.cmd("copen | cbo | 4cp") -- 要真的enter之後才會在最後一個項目，此時cp才會有用
+      vim.cmd("copen | cbo")
+      return
+    end
     local opts = utils.cmd.get_cmp_config(args.fargs, true)
 
     if opts["workDir"] then
