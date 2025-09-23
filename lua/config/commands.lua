@@ -3612,12 +3612,15 @@ vim.api.nvim_create_user_command("Rg",
   function(args)
     if args.fargs[1] == "-h" then
       vim.fn.setqflist({
-        { text = ':Rg search_word                                " 預設會用git_root來當成工作目錄，在開始找內文' },
-        { text = ':Rg search_word init.lua                       " 在init.lua之中，找關鍵字' },
-        { text = ':Rg search_word main.go -i wd=~/project/       " 可以使用wd來指定工作目錄' },
-        { text = ':Rg search_word main.go -i wd=.' },
-        { text = ':Rg type -i -g *.sh -g *.toml                  " 找sh, toml的檔案' },
-        { text = ':Rg word -i                                    " ignore-case' },
+        { text = ':Rg search_word                             " 預設會用git_root來當成工作目錄，在開始找內文' },
+        { text = ':Rg search_word init.lua                    " 在init.lua之中，找關鍵字' },
+        { text = ':Rg require ~/.config/nvim/init.lua         " 可以直接指定工作目錄' },
+        { text = ':Rg require init.lua wd=~/.config/nvim      " 可以使用wd來指定工作目錄 (好處是出來的內容路徑會比較乾淨)' },
+        { text = ':Rg search_word main.go wd=.' },
+        { text = ':Rg type -i -g *.sh -g *.toml               " 找sh, toml的檔案' },
+        { text = ':Rg word -i                                 " ignore-case' },
+        { text = ':Rg --files ~/.config/nvim                  " 也可以找檔案' },
+        { text = ':Rg --files . wd=~/.config/nvim             " 同上(路徑較乾淨)' },
       }, 'a')
       -- vim.cmd("copen | cbo | 4cp") -- 要真的enter之後才會在最後一個項目，此時cp才會有用
       vim.cmd("copen | cbo")
@@ -3655,7 +3658,8 @@ vim.api.nvim_create_user_command("Rg",
       [[--color 'list-border:#669966,list-label:#99cc99' ]],
       [[--color 'input-border:#996666,input-label:#ffcccc' ]],
       [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
-      [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]],
+      -- [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- 👈 用這樣會導致當rg使用工作路徑時會有重複的問題
+      [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
       [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
       [[--bind "alt-p:preview-up,alt-n:preview-down"]],
     }
@@ -3679,6 +3683,10 @@ vim.api.nvim_create_user_command("Rg",
           else
             vim.cmd("e +" .. lnum .. " " .. filepath)
           end
+          vim.api.nvim_buf_delete(buf, { force = true })
+        elseif vim.uv.fs_stat(lines[1]) then
+          -- 此情況可能是用--files找檔案會發生
+          vim.cmd("e " .. lines[1])
           vim.api.nvim_buf_delete(buf, { force = true })
         end
       end,
