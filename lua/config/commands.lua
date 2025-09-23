@@ -4079,22 +4079,4 @@ vim.api.nvim_create_user_command("Column",
   }
 )
 
-local function prefill_column_format()
-  -- 檢查是否在視覺模式
-  local mode = vim.api.nvim_get_mode().mode
-  local range = ''
-  if mode == 'v' or mode == 'V' or mode == '' then
-    range = "'<,'>"
-  end
-
-  -- 預填的 Vim 替換命令
-  local cmd = range .. 's/\\v([^,]*)/\\=printf("%-10s", submatch(1))'
-
-  -- 將命令填入命令行，但不執行
-  vim.api.nvim_input(':' .. cmd .. '<Left>')
-end
-
--- 註冊自定義命令
-vim.api.nvim_create_user_command('PrefillColumnFormat', prefill_column_format, {})
-
 return commands
