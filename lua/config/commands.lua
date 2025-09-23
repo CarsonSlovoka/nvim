@@ -3612,11 +3612,19 @@ vim.api.nvim_create_user_command("Rg",
   function(args)
     local opts = utils.cmd.get_cmp_config(args.fargs, true)
 
-    vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
+    if opts["workDir"] then
+      -- 以下這些都可行
+      -- :lua print(vim.fn.fnamemodify("~/.config/nvim/lua/config/commands.lua", ":p"))
+      -- :lua print(vim.fn.fnamemodify(".", ":p"))
+      -- :lua print(vim.fn.fnamemodify("../..", ":p"))
+      vim.cmd("cd " .. vim.fn.fnamemodify(opts["workDir"], ":p"))
+    else
+      vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
 
-    local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
-    if vim.v.shell_error == 0 and (opts["cdToGitRoot"] or "1") == "1" then
-      vim.cmd("cd " .. git_root)
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error == 0 and (opts["cdToGitRoot"] or "1") == "1" then
+        vim.cmd("cd " .. git_root)
+      end
     end
 
     vim.cmd("tabnew | setlocal buftype=nofile")
@@ -3650,9 +3658,12 @@ vim.api.nvim_create_user_command("Rg",
         -- if lines[1]:match("^.+:%d+:%d+:.*$") -- path/to/file.txt:1234:45:some content
         local filepath, lnum, col, content = lines[1]:match("^(.+):(%d+):(%d+):(.*)$")
         if filepath and lnum then
-          vim.cmd("e " .. filepath)
           if col then
-            vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col or 1) - 1 })
+            vim.cmd("e " .. filepath)
+            vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) - 1 })
+            -- lua vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) - 1 })
+          else
+            vim.cmd("e +" .. lnum .. " " .. filepath)
           end
           vim.api.nvim_buf_delete(buf, { force = true })
         end
@@ -3670,10 +3681,36 @@ vim.api.nvim_create_user_command("Rg",
   {
     desc = [[rg | fzf --preview 'batcat' ...]],
     nargs = "+",
-    complete = function()
-      return {
-        "cdToGitRoot=1"
-      }
+    complete = function(arg_lead, cmd_line)
+      local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
+      local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
+      local need_add_prefix = true
+      if not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end,
+          { 'cdToGitRoot=', 'workDir=' }
+        )
+        need_add_prefix = false
+      elseif prefix == "cdToGitRoot" then
+        comps = {
+          "1",
+        }
+      elseif prefix == "workDir" then
+        local all_files = vim.fn.getcompletion(vim.fn.expand(suffix), "file")
+        comps = vim.tbl_filter(
+          function(filepath)
+            return vim.fn.isdirectory(filepath) == 1
+          end,
+          all_files
+        )
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
+      return vim.tbl_filter(function(item) return item:match(input) end, comps)
     end
   }
 )
