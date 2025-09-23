@@ -4009,7 +4009,14 @@ vim.api.nvim_create_user_command("Column",
     end
     submatchs = string.sub(submatchs, 1, #submatchs - 2) -- 移除最後的 ` ,`
 
-    local s = string.rep("%-s ", count + 1)
+
+    local config = utils.cmd.get_cmp_config(args.fargs)
+    local widths = vim.split(config["widths"] or "", ",")
+    local out_sep = config["out_sep"] and config["out_sep"] .. " " or ""
+    local s = ""
+    for i = 1, count + 1 do
+      s = s .. string.format("%%-%ss %s", tostring(widths[i] or ""), out_sep)
+    end
     s = string.sub(s, 1, #s - 1) -- 移除最後的 ` `
 
     -- local cmd = string.format([[:'<,'>s/\v%s/\=printf("%s", %s)]], -- 沒有辦法輸出'<,'>因此，只能用列號來取代
@@ -4031,8 +4038,43 @@ vim.api.nvim_create_user_command("Column",
     desc = "固定欄寬. '<,'>!column -t -s',' -o' | '",
     nargs = "+",
     range = true,
-    complete = function()
-      return { ",", "|" }
+    complete = function(arg_lead, cmd_line)
+      local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
+      local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
+
+      if argc == 1 then
+        return { ",", "|" }
+      end
+      local need_add_prefix = true
+      if not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end,
+          { 'out_sep=', 'widths=' }
+        )
+        need_add_prefix = false
+      elseif prefix == "out_sep" then
+        comps = {
+          ",",
+          "|",
+        }
+      elseif prefix == "widths" then
+        -- TODO: 如果要自動抓，需要由cmd_line抓出輸入的sep
+        -- local cur_line_text = vim.api.nvim_get_current_line()
+        -- local _, count = cur_line_text:gsub(sep, "")
+        -- 每一欄的寬
+        comps = {
+          "10,20",
+          "10,5,30",
+          "10,5,30,...",
+        }
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
+      return vim.tbl_filter(function(item) return item:match(input) end, comps)
     end
   }
 )
