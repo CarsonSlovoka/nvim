@@ -3608,6 +3608,77 @@ vim.api.nvim_create_user_command("Gitfiles",
   }
 )
 
+vim.api.nvim_create_user_command("Rg",
+  function(args)
+    local opts = utils.cmd.get_cmp_config(args.fargs, true)
+
+    vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
+
+    local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+    if vim.v.shell_error == 0 and (opts["cdToGitRoot"] or "1") == "1" then
+      vim.cmd("cd " .. git_root)
+    end
+
+    vim.cmd("tabnew | setlocal buftype=nofile")
+
+    local cmd = {
+      "rg --vimgrep " .. table.concat(args.fargs, " ") .. " | ",
+      [[fzf -d ':' --preview-window 'right:+{2}']],
+      [[--preview 'batcat --color=always --style=numbers --highlight-line {2} {1}']],
+      "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]],
+      [[--bind 'focus:+transform-header:file --brief {1} || echo "No file selected"' ]],
+      [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
+      [[--color 'border:#aaaaaa,label:#cccccc' ]],
+      [[--color 'preview-border:#9999cc,preview-label:#ccccff' ]],
+      [[--color 'list-border:#669966,list-label:#99cc99' ]],
+      [[--color 'input-border:#996666,input-label:#ffcccc' ]],
+      [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
+      [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]],
+      [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
+      [[--bind "alt-p:preview-up,alt-n:preview-down"]],
+    }
+
+    local cmd_str = table.concat(cmd, " ")
+    local buf = vim.api.nvim_get_current_buf()
+    local job_id = vim.fn.jobstart(cmd_str, {
+      on_exit = function(_, exit_code)
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        lines = vim.tbl_filter(function() return lines ~= "" end, lines)
+        if not lines[1] then
+          return
+        end
+        -- if lines[1]:match("^.+:%d+:%d+:.*$") -- path/to/file.txt:1234:45:some content
+        local filepath, lnum, col, content = lines[1]:match("^(.+):(%d+):(%d+):(.*)$")
+        if filepath and lnum then
+          vim.cmd("e " .. filepath)
+          if col then
+            vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col or 1) - 1 })
+          end
+          vim.api.nvim_buf_delete(buf, { force = true })
+        end
+      end,
+      term = true
+    })
+    if job_id <= 0 then
+      vim.notify("Failed to start terminal", vim.log.levels.ERROR)
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
+    end
+
+    vim.cmd("startinsert")
+  end,
+  {
+    desc = [[rg | fzf --preview 'batcat' ...]],
+    nargs = "+",
+    complete = function()
+      return {
+        "cdToGitRoot=1"
+      }
+    end
+  }
+)
+
+
 vim.api.nvim_create_user_command("PrintUcdblock",
   function(args)
     local config = utils.cmd.get_cmp_config(args.fargs)
