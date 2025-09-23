@@ -3835,10 +3835,6 @@ vim.api.nvim_create_user_command("Chafa",
 
       local exist_comps = argc > 2 and utils.cmd.get_exist_comps(cmd_line) or {}
 
-      if not prefix then
-        suffix = arg_lead
-        prefix = ''
-      end
       local need_add_prefix = true
       if argc == 0 or not arg_lead:match('=') then
         comps = vim.tbl_filter(
@@ -3863,7 +3859,7 @@ vim.api.nvim_create_user_command("Chafa",
           comps[i] = prefix .. "=" .. comp
         end
       end
-      local input = need_add_prefix and prefix .. "=" .. suffix or suffix
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
       return vim.tbl_filter(function(item) return item:match(input) end, comps) -- 改用match比較自由
     end
   }
@@ -3945,16 +3941,9 @@ vim.api.nvim_create_user_command("Align",
     nargs = "+",
     range = true,
     complete = function(arg_lead, cmd_line)
-      local comps = {}
-      local argc = #(vim.split(cmd_line, '%s+')) - 1
-      local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+      local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
 
       local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
-
-      if not prefix then
-        suffix = arg_lead
-        prefix = ''
-      end
 
       local need_add_prefix = true
       if argc == 0 or not arg_lead:match('=') then
@@ -3985,7 +3974,7 @@ vim.api.nvim_create_user_command("Align",
           comps[i] = prefix .. "=" .. comp
         end
       end
-      local input = need_add_prefix and prefix .. "=" .. suffix or suffix
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
       return vim.tbl_filter(function(item) return item:match(input) end, comps)
     end
   }

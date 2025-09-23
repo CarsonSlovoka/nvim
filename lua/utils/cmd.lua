@@ -145,6 +145,20 @@ function M.get_cmp_config(fargs, update)
   return config
 end
 
+---@param arg_lead string
+---@param cmd_line string
+---@return table   comps
+---@return number  argc
+---@return string  prefix
+---@return string  suffix
+function M.init_complete(arg_lead, cmd_line)
+  local comps = {}
+  local argc = #(vim.split(cmd_line, '%s+')) - 1
+  local prefix, suffix = arg_lead:match('^(.-)=(.*)$')
+
+  return comps, argc, prefix, suffix
+end
+
 --- 得到已經輸入過的選項, 之後可以篩選，使得已經輸入過的選項不會再出現
 ---@param cmd_line string
 ---@return table
