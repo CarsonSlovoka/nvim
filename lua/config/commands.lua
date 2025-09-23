@@ -4009,4 +4009,74 @@ vim.api.nvim_create_user_command("Align",
   }
 )
 
+
+vim.api.nvim_create_user_command("Column",
+  function(args)
+    local sep = args.fargs[1]
+    -- vim.fn.setreg('a', [[ :'<,'>s/\v([^,]*)/\=printf("%-10s", submatch(1)) ]]) -- 這可行，但是還是要主動使用這個暫存器
+    local lines = utils.range.get_selected_text()
+    if #lines == 0 then
+      return
+    end
+
+    local range = ""
+    if args.range ~= 0 then
+      local start = vim.api.nvim_buf_get_mark(0, "<")[1]
+      local finish = vim.api.nvim_buf_get_mark(0, ">")[1]
+      range = start .. "," .. finish
+    end
+
+    local header = lines[1] -- 以第一列為主
+    local _, count = header:gsub(sep, "")
+
+    local groups = string.rep(string.format("([^%s].*)%s", sep, sep), count + 1) -- 2個sep表示有3欄
+    groups = string.sub(groups, 1, #groups - 1)                                  -- 移除最後的sep
+
+    local submatchs = ""
+    for i = 1, count + 1 do
+      submatchs = submatchs .. string.format([[submatch(%d), ]], i)
+    end
+    submatchs = string.sub(submatchs, 1, #submatchs - 2) -- 移除最後的 ` ,`
+
+    local s = string.rep("%-s ", count + 1)
+    s = string.sub(s, 1, #s - 1) -- 移除最後的 ` `
+
+    -- local cmd = string.format([[:'<,'>s/\v%s/\=printf("%s", %s)]], -- 沒有辦法輸出'<,'>因此，只能用列號來取代
+    local cmd = string.format([[:%ss/\v%s/\=printf("%s", %s)]],
+      range,
+      groups,
+      s,
+      submatchs
+    )
+    -- vim.fn.setreg('a', cmd)
+    vim.api.nvim_input(cmd)
+  end,
+  {
+    desc = "固定欄寬. '<,'>!column -t -s',' -o' | '",
+    nargs = "+",
+    range = true,
+    complete = function()
+      return { ",", "|" }
+    end
+  }
+)
+
+local function prefill_column_format()
+  -- 檢查是否在視覺模式
+  local mode = vim.api.nvim_get_mode().mode
+  local range = ''
+  if mode == 'v' or mode == 'V' or mode == '' then
+    range = "'<,'>"
+  end
+
+  -- 預填的 Vim 替換命令
+  local cmd = range .. 's/\\v([^,]*)/\\=printf("%-10s", submatch(1))'
+
+  -- 將命令填入命令行，但不執行
+  vim.api.nvim_input(':' .. cmd .. '<Left>')
+end
+
+-- 註冊自定義命令
+vim.api.nvim_create_user_command('PrefillColumnFormat', prefill_column_format, {})
+
 return commands
