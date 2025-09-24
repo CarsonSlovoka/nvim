@@ -339,8 +339,16 @@ map({ 'n', 'v' }, '<leader>gf',
 
 map({ 'n', 'v' }, 'gi',
   function()
-    if vim.fn.executable("chafa") == 0 then
-      vim.notify("chafa not found. sudo apt install chafa", vim.log.levels.WARN)
+    local exe = ""
+    for _, cmd in ipairs({ "swayimg", "chafa" }) do
+      if vim.fn.executable(cmd) == 1 then
+        exe = cmd
+        break
+      end
+    end
+
+    if exe == "" then
+      vim.notify("preview tool not found.\nsudo apt install swayimg\nor\nsudo apt install chafa", vim.log.levels.WARN)
       return
     end
 
@@ -354,11 +362,14 @@ map({ 'n', 'v' }, 'gi',
       img_path = utils.range.get_selected_text()[1]
       vim.api.nvim_input("<esc>")
     end
-
-    vim.cmd("Chafa " .. img_path)
+    if exe == "swayimg" then
+      vim.cmd("!swayimg " .. img_path)
+    else
+      vim.cmd("Chafa " .. img_path)
+    end
   end,
   {
-    desc = "使用chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
+    desc = "使用swayimg 或 chafa來檢視圖片(適用於foot所開啟的nvim中的終端機)",
   }
 )
 
