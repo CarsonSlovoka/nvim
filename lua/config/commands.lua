@@ -370,10 +370,6 @@ function commands.setup()
       end
     end
 
-    -- print(outputPath)
-    -- print(quality)
-    -- if 1 then return end
-
     -- 確保輸出目錄存在
     local outputDir = vim.fn.fnamemodify(outputPath, ":h")
     if vim.fn.isdirectory(outputDir) == 0 then
@@ -382,16 +378,52 @@ function commands.setup()
 
     -- 直接透過管道，將剪貼簿的 PNG 內容透過 cwebp 轉換成 Webp 並保存
     local cmd = string.format('wl-paste --type image/png | cwebp -q %d -o "%s" -- -', quality, outputPath)
+    -- swayimg: https://github.com/artemsen/swayimg
+    local preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
     vim.fn.setqflist({
-      {
-        text = cmd,
-      },
+      { text = cmd },
+      { text = preview_img_cmd },
     }, 'a')
-    local result = os.execute(cmd)
-    if result == 0 then
-      print("Webp 圖片保存成功: " .. vim.fn.fnamemodify(outputPath, ":p"))
-    else
-      print("轉換為 Webp 圖片失敗")
+    -- local result = os.execute(cmd) -- 用os.execute有可能會執行失敗
+    -- if result == 0 then print("ok") end
+
+    vim.cmd("tabnew | setlocal buftype=nofile")
+    local buf = vim.api.nvim_get_current_buf()
+
+    local job_id = vim.fn.jobstart(
+    -- 以下這樣不行，要把它當成字串，中間用;分隔
+    -- { cmd1, cmd2, cmd3}
+      table.concat(
+        {
+          cmd,
+          "echo -e '\n\n🟧 file'",
+          "file " .. outputPath,
+          "echo '🟧 ls'",
+          "ls -lh " .. outputPath,
+          "echo -e '\n\n'",
+          preview_img_cmd,
+        },
+        ";"
+      ),
+      {
+        on_exit = function(_, _, _) -- job_id, exit_code, event_type
+          -- 如果term中的訊息不需要別的處理，就不用抓取, 不關閉視窗即可
+          -- local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+          -- lines = vim.tbl_filter(function() return lines ~= "" end, lines)
+          -- vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines) -- term中是不可修改的，所以這樣會錯
+          -- vim.api.nvim_buf_delete(buf, { force = true }) -- 就不主動關了，讓使用者自己看輸出的訊息
+          -- if exit_code == 0 then
+          --   vim.api.nvim_chan_send(job_id, "file " .. outputPath) -- can't send close chan
+          --   vim.api.nvim_chan_send(job_id, "ls -lh " .. outputPath)
+          -- end
+        end,
+        term = true
+      }
+    )
+    if job_id <= 0 then
+      vim.notify("Failed to start terminal", vim.log.levels.ERROR)
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
     end
   end, {
     nargs = "*",
