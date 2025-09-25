@@ -4241,4 +4241,86 @@ vim.api.nvim_create_user_command("Column",
   }
 )
 
+vim.api.nvim_create_user_command("PrintUnicodes",
+  function(args)
+    local opts        = utils.cmd.get_cmp_config(args.fargs, true)
+
+    local script_path = require("py").get_script_path("print_unicodes.py")
+    local fontpath    = args.fargs[1]
+    if not vim.uv.fs_stat(fontpath) then
+      vim.notify("The fontpath doesn't exist", vim.log.levels.ERROR)
+      return
+    end
+    local col          = opts["col"] or 10
+
+    local cmd          = { "python3", script_path,
+      fontpath,
+      "--col", col,
+    }
+    local output_lines = {}
+    local job_id       = vim.fn.jobstart(table.concat(cmd, " "), {
+      stdout_buffered = true, -- 緩衝 stdout, 直到 job 完成 (需實作on_stdout)
+      on_stdout = function(_, data, _)
+        if not data then
+          return
+        end
+        for _, line in ipairs(data) do
+          if line ~= "" then
+            local txt = string.gsub(line, "\n", "")
+            table.insert(output_lines, txt) -- 在nvim_buf_set_lines中的每一列裡面不可以在有\n
+          end
+        end
+      end,
+      on_exit = function(_, code, _)
+        if code ~= 0 then
+          vim.notify(
+            "exit code: " .. code .. "\n" ..
+            table.concat(output_lines, ""), vim.log.levels.ERROR)
+          return
+        end
+        -- local buf          = vim.api.nvim_get_current_buf()
+        -- vim.api.nvim_buf_set_lines(buf, -1, -1, false, output_lines) -- 在最後一列插入
+        -- local lnum = vim.fn.line('.')
+        -- vim.api.nvim_buf_set_lines(buf, lnum, -1, false, output_lines) -- 這會取代掉之後所有的文本
+        -- vim.fn.appendbufline(buf, lnum, table.concat(output_lines, "\n")) -- 只能一列
+        -- vim.api.nvim_buf_set_lines(buf, lnum, lnum + #output_lines - 1, false, output_lines)
+        -- 👆 使用nivm_put會比較簡單
+        vim.api.nvim_put(output_lines, "l", false, true) -- after: false等同P, true: p ; 最後follow, 為true時會將游標放到文本後
+      end
+    })
+    if job_id <= 0 then
+      vim.notify("Failed to start job:\n" .. vim.inspect(cmd), vim.log.levels.ERROR)
+    end
+  end,
+  {
+    desc = "Print out all unicode codes for the specified font file",
+    nargs = "+",
+    complete = function(arg_lead, cmd_line)
+      local argc = #(vim.split(cmd_line, "%s+")) - 1
+      if argc == 1 then
+        local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+        local regex_video = vim.regex([[\c\.\(ttf\|otf\|ttc\|woff\|woff2\)$]])
+        local cmp_files = {}
+        for _, file in ipairs(all_files) do
+          if vim.uv.fs_stat(file).type == "directory" then
+            table.insert(cmp_files, file)
+          else
+            if regex_video:match_str(file) then
+              table.insert(cmp_files, file)
+            end
+          end
+        end
+        return utils.table.sort_files_first(cmp_files)
+      end
+      if argc == 2 then
+        return {
+          "col=10",
+          "col=20",
+          "col=60",
+        }
+      end
+    end
+  }
+)
+
 return commands
