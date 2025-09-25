@@ -1292,7 +1292,7 @@ local function install_telescope()
 
   -- 搜索已打開的 buffer
   -- :help telescope.builtin.buffers
-  vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "可以找到最近開啟的buffer" })
+  -- vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "可以找到最近開啟的buffer" })
 
   -- 搜索幫助文檔
   -- 記得要將plugin相關的doc加入才行
@@ -1546,6 +1546,7 @@ local function install_fzf_lua()
       },
     },
   })
+  vim.keymap.set("n", "<leader>fb", require("fzf-lua").buffers, { desc = "可以找到最近開啟的buffer. support: Fuzzy Search" })
 end
 
 
