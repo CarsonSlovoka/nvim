@@ -1497,24 +1497,6 @@ local function install_telescope()
       end
     end
   })
-
-  vim.api.nvim_create_user_command("Gitst", function()
-    require("telescope.builtin").git_status()
-  end, {
-    desc = "git status"
-  })
-
-  vim.keymap.set('n', '<leader>st',
-    function()
-      local cur_dir = vim.fn.expand("%:p:h")
-      vim.cmd("cd " .. cur_dir)
-      -- require("telescope.builtin").git_status()
-      require("fzf-lua").git_status()
-    end,
-    {
-      desc = "git status"
-    }
-  )
 end
 
 
@@ -1546,6 +1528,17 @@ local function install_fzf_lua()
       },
     },
   })
+  vim.keymap.set('n', '<leader>st',
+    function()
+      local cur_dir = vim.fn.expand("%:p:h")
+      vim.cmd("cd " .. cur_dir)
+      -- require("telescope.builtin").git_status()
+      require("fzf-lua").git_status()
+    end,
+    {
+      desc = "git status"
+    }
+  )
   vim.keymap.set("n", "<leader>fb", require("fzf-lua").buffers, { desc = "可以找到最近開啟的buffer. support: Fuzzy Search" })
 end
 
