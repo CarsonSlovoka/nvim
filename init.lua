@@ -1519,6 +1519,10 @@ end
 
 
 local function install_fzf_lua()
+  if not pcall(require, "fzf-lua") then
+    vim.notify("Failed to load fzf-lua", vim.log.levels.ERROR)
+    return
+  end
   -- https://github.com/ibhagwan/fzf-lua
   -- :checkhealth fzf_lua
   require("fzf-lua").setup({
