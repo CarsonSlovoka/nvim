@@ -1533,13 +1533,19 @@ local function install_fzf_lua()
       local cur_dir = vim.fn.expand("%:p:h")
       vim.cmd("cd " .. cur_dir)
       -- require("telescope.builtin").git_status()
-      require("fzf-lua").git_status()
+      require("fzf-lua").git_status({ resume = true })
     end,
     {
       desc = "git status"
     }
   )
-  vim.keymap.set("n", "<leader>fb", require("fzf-lua").buffers, { desc = "可以找到最近開啟的buffer. support: Fuzzy Search" })
+  vim.keymap.set("n", "<leader>fb", function()
+      require("fzf-lua").buffers({ resume = true })
+    end,
+    {
+      desc = "可以找到最近開啟的buffer. support: Fuzzy Search"
+    }
+  )
 end
 
 
