@@ -363,7 +363,7 @@ map({ 'n', 'v' }, 'gi',
       vim.api.nvim_input("<esc>")
     end
     if exe == "swayimg" then
-      vim.cmd("!swayimg " .. img_path)
+      vim.cmd("!swayimg " .. img_path .. " & ") -- 記得補上 & 使之後還可以繼續操作
     else
       vim.cmd("Chafa " .. img_path)
     end
