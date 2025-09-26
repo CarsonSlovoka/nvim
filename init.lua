@@ -1527,6 +1527,15 @@ local function install_fzf_lua()
         ['<C-t>'] = 'toggle-preview', -- 用 Ctrl+T 來 toggle 預覽視窗（隱藏/顯示）
       },
     },
+    buffers = {
+      winopts = {
+        preview = {
+          vertical = "down:50%", -- preview 顯示在下方，高度 50%（可調整）
+          -- border = "rounded",    -- 邊框樣式（可選）
+          layout = "vertical",   -- 確保使用垂直佈局 👈 這個才是將preview, 放在下方的關鍵
+        },
+      },
+    }
   })
   vim.keymap.set('n', '<leader>st',
     function()
@@ -1541,6 +1550,7 @@ local function install_fzf_lua()
   )
   vim.keymap.set("n", "<leader>fb", function()
       require("fzf-lua").buffers({ resume = true })
+      -- vim.api.nvim_input("<F5>") -- ~~toggle-preview-cw buffer的檔案路徑會比較長,所以將preview改到下方~~ 這可行，但是很取巧，直接對buffers.winopts設定是比較好的做法
     end,
     {
       desc = "可以找到最近開啟的buffer. support: Fuzzy Search"
