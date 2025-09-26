@@ -1528,6 +1528,15 @@ local function install_fzf_lua()
       },
     },
     buffers = {
+      actions = {
+        -- ["alt-d"] = require("fzf-lua.actions").buf_del, -- 刪除 buffer, 但之後離開視窗了
+        ["alt-d"] = function(selected, opts) -- 使其可以像require("telescope.builtin").buffers那樣也可以用alt-d來刪除
+          require("fzf-lua.actions").buf_del(selected, opts)
+
+          -- 再重新載入 buffer 清單，保持 fzf 視窗不關閉
+          require("fzf-lua").buffers({ fzf_opts = { ["--no-clear"] = "" }, resume = true })
+        end
+      },
       winopts = {
         preview = {
           vertical = "down:50%", -- preview 顯示在下方，高度 50%（可調整）
