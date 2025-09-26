@@ -7,7 +7,10 @@ local M = {
   callback = function(module) end
 }
 local create_autocmd = vim.api.nvim_create_autocmd
+
+--- FzfLua autocmds 配合fuzzy search很容易找到自動命令來自何處
 local groupName = {
+  autoSave = "carson.autoSave",
   editorconfig = "carson.editorconfig",
   highlightHexColor = "carson.highlightHexColor",
   highlightSpecial = "highlightSpecial",
@@ -67,7 +70,7 @@ function M.setup(opts)
 
   -- 設定 autocmd，當離開 buffer 時自動存檔
   vim.api.nvim_create_autocmd('BufLeave', {
-    -- group = 'AutoSaveOnBufferLeave',
+    group = groupName.autoSave,
     pattern = '*',
     callback = function()
       -- 檢查 buffer 是否已修改且可寫
@@ -89,6 +92,7 @@ function M.setup(opts)
     {
       pattern = "*",
       -- command="silent write"
+      group = groupName.autoSave,
       callback = function()
         if not M.autoSave then
           return
