@@ -3590,6 +3590,7 @@ vim.api.nvim_create_user_command("Gitfiles",
       [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- echo結果, 也將結果複製到剪貼簿
       [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                           -- 透過 ctrl-/ 可以切換
       [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                   -- alt:{p,n} 可以控制preview up, down
+      [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],                                 -- 複製但不離開(不加abort), 如果沒有用silent畫面會閃
     }
 
     -- 使用 termopen 開啟一個互動式 terminal
@@ -3695,6 +3696,7 @@ vim.api.nvim_create_user_command("Rg",
       [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
       [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
       [[--bind "alt-p:preview-up,alt-n:preview-down"]],
+      [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
     }
 
     local cmd_str = table.concat(cmd, " ")
