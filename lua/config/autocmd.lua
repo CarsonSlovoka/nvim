@@ -851,7 +851,19 @@ function M.setup(opts)
       local max_filesize = 3 * 1024 * 1024 -- 3MB
 
       if stat and stat.size > max_filesize then
-        vim.opt_local.foldmethod = "manual" -- 這個很關鍵！ 如果一開始是indent等到載入後再改成manual就來不急了，所以要在Read之前就要設定
+        -- TODO: 已知問題，會遇到錯誤: E201: *ReadPre autocommands must not change current buffer 不過似乎不會有其它不良的影響
+        -- vim.cmd("tabnew | setlocal buftype=nofile noswapfile")
+        local buf = vim.api.nvim_get_current_buf()
+
+        vim.fn.jobstart("vi -n " .. file, { -- -n no swap
+          term = true,
+          on_exit = function()
+            vim.api.nvim_buf_delete(buf, { force = true })
+          end
+        })
+
+        -- 👇 就算用manual有的時候，還是很慢，乾脆用vi來開
+        -- vim.opt_local.foldmethod = "manual" -- 這個很關鍵！ 如果一開始是indent等到載入後再改成manual就來不急了，所以要在Read之前就要設定
 
         -- 剩下的真的有需要可以手動執行
         -- vim.cmd("syntax off")
