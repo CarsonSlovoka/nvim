@@ -55,73 +55,119 @@ function M.setup(opts)
       expr = true,
     }
   )
+
+  local last_insert_time = 0 -- 用於延遲存檔用, 如果中途有在編輯就不會存檔
+  vim.api.nvim_create_autocmd("InsertEnter", {
+    pattern = "*",
+    callback = function()
+      last_insert_time = vim.fn.reltimefloat(vim.fn.reltime())
+      -- print("last_insert_time 已更新: ", last_insert_time)
+    end,
+  })
+
+  -- 設定 autocmd，當離開 buffer 時自動存檔
+  vim.api.nvim_create_autocmd('BufLeave', {
+    -- group = 'AutoSaveOnBufferLeave',
+    pattern = '*',
+    callback = function()
+      -- 檢查 buffer 是否已修改且可寫
+      if vim.bo.modified and vim.bo.modifiable and vim.bo.buftype == '' then
+        vim.cmd('write')
+        vim.notify(
+          string.format("%s Buffer %q saved before leaving.", os.date("%Y-%m-%d %H:%M:%S"), vim.fn.bufname()),
+          vim.log.levels.INFO
+        )
+      end
+    end,
+  })
+
   create_autocmd(
     {
       -- "TextChanged", -- 如果用x, ce, undo, redo...也會觸發 -- 不要新增，否則redo會因為儲檔後無法復原
       "InsertLeave",
     },
     {
-
       pattern = "*",
       -- command="silent write"
       callback = function()
         if not M.autoSave then
           return
         end
+
+        local buf = vim.api.nvim_get_current_buf() -- 避免中途會切換到其它的檔案, 記錄Leave時的buf
         local filename = vim.fn.expand("%:t")
-        if filename == "" then
-          -- 表示當前的檔案可能是No Name，也就是臨時建出來尚未決定名稱的檔案
-          return
-        end
+        local cur_file_path = vim.fn.expand("%")   -- 當前文件路徑
 
-        if not vim.api.nvim_get_option_value("modifiable", { buf = 0 }) then -- 這是能不能編輯，至於是不是readonly不能用這個判斷，有可能是可以編輯，但是為readonly(不能儲)
-          -- 不可編輯 (但是否唯讀然未知)
-          return
-        end
+        -- 使用 vim.defer_fn 延遲 2.5 秒執行
+        vim.defer_fn(function()
+          local cur_time = vim.fn.reltimefloat(vim.fn.reltime())
+          if cur_time - last_insert_time >= 2.5 then -- 如果這2.5秒內又進入編輯，就不會觸發保存，如此就可以避免立即儲檔的不便
+            -- print(cur_time, last_insert_time)
 
-        -- :lua print(vim.bo[vim.api.nvim_get_current_buf()].readonly)
-        -- local bufnr = vim.api.nvim_get_current_buf()
-        -- if vim.bo[bufnr].readonly then -- vim.bo.readonly 如果只需要判斷當前的buf，則如此即可
-        if vim.bo.readonly then
-          -- 唯讀檔也不動作
-          return
-        end
+            if filename == "" then
+              -- 表示當前的檔案可能是No Name，也就是臨時建出來尚未決定名稱的檔案
+              return
+            end
 
-        -- 獲取當前緩衝區的 buftype
-        -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
-        -- local buftype = vim.api.nvim_buf_get_option(0, "buftype"  )
-        local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
+            if not vim.api.nvim_get_option_value("modifiable", { buf = buf }) then -- 這是能不能編輯，至於是不是readonly不能用這個判斷，有可能是可以編輯，但是為readonly(不能儲)
+              -- 不可編輯 (但是否唯讀然未知)
+              return
+            end
 
-        -- 當 buftype 為空時才執行保存: 你可以嘗試用telescope的輸入視窗用insert，此時的buftype是prompt就不是空的
-        if buftype == "" and
-            vim.bo.modified -- 可以曉得是否真的有異動
-        then
-          if M.autoReformat and vim.bo.filetype == "python" then
-            vim.cmd("FmtPython --reload=0")
-            vim.defer_fn(function()
-              vim.cmd("silent e")
-            end, 50) -- 要等到InsertLeave才能重載，不然會有錯
-            return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+            -- :lua print(vim.bo[vim.api.nvim_get_current_buf()].readonly)
+            -- local bufnr = vim.api.nvim_get_current_buf()
+            -- if vim.bo[bufnr].readonly then -- vim.bo.readonly 如果只需要判斷當前的buf，則如此即可
+            if vim.bo.readonly then
+              -- 唯讀檔也不動作
+              return
+            end
+
+            -- 獲取當前緩衝區的 buftype
+            -- 因為只有 `buftype` 為空的緩衝區才可以執行 `:write` 命令。如果 `buftype` 為其它值（如 `nofile`、`help`、`prompt` 等），應該跳過保存操作
+            -- local buftype = vim.api.nvim_buf_get_option(0, "buftype"  )
+            local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
+
+            -- 當 buftype 為空時才執行保存: 你可以嘗試用telescope的輸入視窗用insert，此時的buftype是prompt就不是空的
+            if buftype == "" and
+                vim.bo.modified -- 可以曉得是否真的有異動
+            then
+              -- ~~-- 理論上換到其它地方還是可以保存，但目前先用提醒的方式就好(反正如果最後沒有保存nvim還是會要求要動作)~~ 目前已經新增BufLeave, 因此不需要此判斷了
+              -- if cur_file_path ~= vim.fn.expand("%") then
+              --   vim.api.nvim_echo({
+              --     { "⚠️ 檔案尚未保存: ", "Normal" },
+              --     { cur_file_path, "@label" },
+              --   }, true, {})
+              --   return
+              -- end
+
+              if M.autoReformat and vim.bo.filetype == "python" then
+                vim.cmd("FmtPython --reload=0")
+                vim.defer_fn(function()
+                  vim.cmd("silent e")
+                end, 50) -- 要等到InsertLeave才能重載，不然會有錯
+                return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+              end
+
+              -- 先手動觸發 BufWritePre 自動命令 (去除多餘的空白、格式化、保存tag等等)
+              vim.api.nvim_exec_autocmds("BufWritePre", {
+                pattern = cur_file_path
+              })
+
+              vim.cmd("silent write") -- 如果文件是被外部工具改變這時候用write就會被尋問是否要載入
+              vim.notify(
+                string.format("%s %s saved.", os.date("%Y-%m-%d %H:%M:%S"), cur_file_path),
+                vim.log.levels.INFO
+              )
+              -- vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
+              vim.api.nvim_input("i<ESC>m^") -- 直接再執行m^來加入最後使用i的位置 -- ⚠️ 其它的command如果跑出來i可能是此導致
+
+              -- elseif not vim.bo.modified then
+              --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
+              -- else
+              --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
+            end
           end
-
-          -- 先手動觸發 BufWritePre 自動命令 (去除多餘的空白、格式化、保存tag等等)
-          vim.api.nvim_exec_autocmds("BufWritePre", {
-            pattern = vim.fn.expand("%") -- 當前文件路徑
-          })
-
-          vim.cmd("silent write") -- 如果文件是被外部工具改變這時候用write就會被尋問是否要載入
-          vim.notify(
-            string.format("%s %s saved.", os.date("%Y-%m-%d %H:%M:%S"), vim.fn.expand('%')),
-            vim.log.levels.INFO
-          )
-          -- vim.api.nvim_input("i<ESC>") -- 手動觸發再離開，為了讓`^標籤可以不被lsp格式化影響
-          vim.api.nvim_input("i<ESC>m^") -- 直接再執行m^來加入最後使用i的位置 -- ⚠️ 其它的command如果跑出來i可能是此導致
-
-          -- elseif not vim.bo.modified then
-          --  vim.notify("未檢測到變更，跳過保存", vim.log.levels.DEBUG)
-          -- else
-          --  vim.notify(string.format("跳過保存，因為 buftype 為 '%s'", buftype), vim.log.levels.WARN)
-        end
+        end, 2500)
       end,
     }
   )
