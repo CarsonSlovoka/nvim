@@ -334,13 +334,29 @@ function commands.setup()
 
       -- 使用 ws-paste 來保存
       local cmd = 'wl-paste --type image/png > "' .. outputPath .. '"'
+      local preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
       vim.fn.setloclist(0, { { text = cmd }, }, 'a')
-      local result = os.execute(cmd)
+      -- local result = os.execute(cmd) -- 改用jobstart
 
-      if result == 0 then
-        print("圖片保存成功: " .. outputPath)
-      else
+      vim.cmd("tabnew | setlocal buftype=nofile")
+      local buf = vim.api.nvim_get_current_buf()
+      if vim.fn.jobstart(
+            table.concat(
+              {
+                cmd,
+                "echo -e '\n\n🟧 file'",
+                "file " .. outputPath,
+                "echo '🟧 ls'",
+                "ls -lh " .. outputPath,
+                "echo -e '\n\n'",
+                preview_img_cmd,
+              },
+              ";"
+            ), { term = true }) <= 0 then
         print("圖片保存失敗, see location list :lopen")
+        vim.api.nvim_buf_delete(buf, { force = true })
+      else
+        print("圖片保存成功: " .. outputPath)
       end
     end,
     {
