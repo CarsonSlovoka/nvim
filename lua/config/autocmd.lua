@@ -144,12 +144,14 @@ function M.setup(opts)
               --   return
               -- end
 
-              if M.autoReformat and vim.bo.filetype == "python" then
-                vim.cmd("FmtPython --reload=0")
-                vim.defer_fn(function()
-                  vim.cmd("silent e")
-                end, 50) -- 要等到InsertLeave才能重載，不然會有錯
-                return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+              if M.autoReformat then
+                if vim.bo.filetype == "python" then
+                  vim.cmd("FmtPython --reload=0")
+                  vim.defer_fn(function()
+                    vim.cmd("silent e")
+                  end, 50) -- 要等到InsertLeave才能重載，不然會有錯
+                  return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+                end
               end
 
               -- 先手動觸發 BufWritePre 自動命令 (去除多餘的空白、格式化、保存tag等等)
@@ -567,26 +569,27 @@ function M.setup(opts)
       desc = "格式化和去除結尾多餘的space, tab",
       pattern = "*",
       callback = function()
-        local has_formatter = M.autoReformat
-            and vim.bo.filetype == "python" -- 如果是python用外部工具來格式化
-            and vim.bo.filetype ~= "sql"
+        local auto_fmt = M.autoReformat
+            and not (
+              vim.bo.filetype == "python" -- 如果是python用外部工具來格式化
+              or vim.bo.filetype == "sql" -- sql 如果用它的lsp 會遇到錯誤: SQLComplete:The dbext plugin must be loaded for dynamic SQL completion 因此就不使用
+              or vim.bo.filetype == "xml"
+            )
 
-        -- sql 如果用它的lsp 會遇到錯誤: SQLComplete:The dbext plugin must be loaded for dynamic SQL completion 因此就不使用
-        if M.autoReformat and vim.bo.filetype ~= "sql" then
+        local support_lsp = false
+        if auto_fmt then
           -- 檢查是否有LSP客戶端附加到當前的緩衝區
           local clients = vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() })
-          if not has_formatter then
-            for _, client in ipairs(clients) do
-              -- 也就檢查是否有支持格式化的功能
-              if client:supports_method("textDocument/formatting") then
-                has_formatter = true
-                break
-              end
+          for _, client in ipairs(clients) do
+            -- 也就檢查是否有支持格式化的功能
+            if client:supports_method("textDocument/formatting") then
+              support_lsp = true
+              break
             end
           end
 
           -- lsp格式化 和 保存標籤
-          if has_formatter and vim.bo.filetype ~= "python" then                         -- 這部份是保存標籤，而由於python是用外部工具來格式化，保存標籤的這段不適用它
+          if support_lsp then                                                           -- 這部份是保存標籤，而由於python是用外部工具來格式化，保存標籤的這段不適用它
             -- 保存當前所有用戶定義的標記 (a-z, A-Z)
             local marks = vim.fn.getmarklist('%')                                       -- 獲取當前緩衝區的標籤 -- 這個只會保存小寫的內容a-Z
             for char in string.gmatch("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^.", ".") do -- 大寫的用這樣來取得
@@ -636,7 +639,7 @@ function M.setup(opts)
           end
         end
 
-        if not has_formatter or vim.bo.filetype == "sh" then
+        if not auto_fmt or not support_lsp or vim.bo.filetype == "sh" then
           -- 如果有格式化，多餘的空白，應該都會被除掉，所以這個動作只需要在沒有格式化的文件使用即可
           -- 其實就是使用vim的取代%s/.../...
           -- \s\+  \s+ 任意空白字符(空格, 制表符等)一個或多個
