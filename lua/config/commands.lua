@@ -3671,6 +3671,8 @@ vim.api.nvim_create_user_command("Rg",
         { text = ':Rg --files ~/.config/nvim                  " 也可以找檔案' },
         { text = ':Rg --files . wd=~/.config/nvim             " 同上(路徑較乾淨)' },
         { text = ':Rg --files . wd=~/.config/nvim -uu         " ignore-file, findHidden (-.) 即:忽略gitignore, 顯示隱藏檔案. 第三個u是binary時可用' },
+        { text = ':Rg --files . wd=/usr/share/icons/          " 找圖標, 圖檔(svg, png)' },
+        { text = ':Rg -g *.png --files . wd=/usr/share/icons/ " 找系統圖標檔: png' },
       }, 'a')
       -- vim.cmd("copen | cbo | 4cp") -- 要真的enter之後才會在最後一個項目，此時cp才會有用
       vim.cmd("copen | cbo")
@@ -3730,10 +3732,10 @@ vim.api.nvim_create_user_command("Rg",
         [[--color 'list-border:#669966,list-label:#99cc99' ]],
         [[--color 'input-border:#996666,input-label:#ffcccc' ]],
         [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
-        [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- echo結果, 也將結果複製到剪貼簿
-        [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                           -- 透過 ctrl-/ 可以切換
-        [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                   -- alt:{p,n} 可以控制preview up, down
-        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],                                 -- 複製但不離開(不加abort), 如果沒有用silent畫面會閃
+        [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
+        [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
+        [[--bind "alt-p:preview-up,alt-n:preview-down"]],
+        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
       }
     else
       cmd = {
@@ -3765,6 +3767,13 @@ vim.api.nvim_create_user_command("Rg",
         if not lines[1] then
           return
         end
+
+        if is_files then
+          -- 直接是完整的路徑不用像--vimgrep去拆
+          vim.cmd("e " .. lines[1])
+          return
+        end
+
         -- if lines[1]:match("^.+:%d+:%d+:.*$") -- path/to/file.txt:1234:45:some content
         local filepath, lnum, col, content = lines[1]:match("^(.+):(%d+):(%d+):(.*)$")
         if filepath and lnum then
