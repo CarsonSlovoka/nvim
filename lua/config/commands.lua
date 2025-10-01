@@ -3696,24 +3696,65 @@ vim.api.nvim_create_user_command("Rg",
 
     vim.cmd("tabnew | setlocal buftype=nofile")
 
-    local cmd = {
-      "rg --vimgrep " .. table.concat(args.fargs, " ") .. " | ",
-      [[fzf -d ':' --preview-window 'right:+{2}']],
-      [[--preview 'batcat --color=always --style=numbers --highlight-line {2} {1}']],
-      "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]],
-      [[--bind 'focus:+transform-header:file --brief {1} || echo "No file selected"' ]],
-      [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
-      [[--color 'border:#aaaaaa,label:#cccccc' ]],
-      [[--color 'preview-border:#9999cc,preview-label:#ccccff' ]],
-      [[--color 'list-border:#669966,list-label:#99cc99' ]],
-      [[--color 'input-border:#996666,input-label:#ffcccc' ]],
-      [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
-      -- [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- 👈 用這樣會導致當rg使用工作路徑時會有重複的問題
-      [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
-      [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
-      [[--bind "alt-p:preview-up,alt-n:preview-down"]],
-      [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
-    }
+    local is_files = false
+    for _, para in ipairs(args.fargs) do
+      if para == "--files" then
+        is_files = true
+        break
+      end
+    end
+
+    local cmd = {}
+    if is_files then
+      -- 會使用fzf-preview.sh https://github.com/junegunn/fzf/blob/0e67c5aa7a7c98bc9c8b0f8bed23579136db54da/bin/fzf-preview.sh#L1-L86
+      -- 如此如果檔案是圖片，可以看到該內容
+
+      local preview_cmd
+      local fzf_preview_path = vim.fn.expand(vim.fn.getenv("FZF_PREVIEW_SH_PATH"))
+      if fzf_preview_path ~= vim.NIL and vim.fn.filereadable(fzf_preview_path) == 1 then
+        preview_cmd = string.format([[--preview "%s {}"]], fzf_preview_path)
+      elseif vim.fn.filereadable(vim.fn.expand("~/fzf/bin/fzf-preview.sh")) == 1 then
+        preview_cmd = string.format([[--preview "%s {}"]], vim.fn.expand("~/fzf/bin/fzf-preview.sh"))
+      else
+        preview_cmd = [[--preview "batcat --color=always --style=numbers {}"]]
+      end
+      cmd = {
+        "rg " .. table.concat(args.fargs, " ") .. " | ",
+        "fzf --style full",
+        preview_cmd,
+        "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]], -- Previewing
+        [[--bind 'focus:+transform-header:file --brief {} || echo "No file selected"' ]],
+        [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
+        [[--color 'border:#aaaaaa,label:#cccccc' ]],
+        [[--color 'preview-border:#9999cc,preview-label:#ccccff' ]],
+        [[--color 'list-border:#669966,list-label:#99cc99' ]],
+        [[--color 'input-border:#996666,input-label:#ffcccc' ]],
+        [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
+        [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- echo結果, 也將結果複製到剪貼簿
+        [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                           -- 透過 ctrl-/ 可以切換
+        [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                   -- alt:{p,n} 可以控制preview up, down
+        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],                                 -- 複製但不離開(不加abort), 如果沒有用silent畫面會閃
+      }
+    else
+      cmd = {
+        "rg --vimgrep " .. table.concat(args.fargs, " ") .. " | ",
+        [[fzf -d ':' --preview-window 'right:+{2}']],
+        [[--preview 'batcat --color=always --style=numbers --highlight-line {2} {1}']],
+        "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]],
+        [[--bind 'focus:+transform-header:file --brief {1} || echo "No file selected"' ]],
+        [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
+        [[--color 'border:#aaaaaa,label:#cccccc' ]],
+        [[--color 'preview-border:#9999cc,preview-label:#ccccff' ]],
+        [[--color 'list-border:#669966,list-label:#99cc99' ]],
+        [[--color 'input-border:#996666,input-label:#ffcccc' ]],
+        [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
+        -- [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- 👈 用這樣會導致當rg使用工作路徑時會有重複的問題
+        [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
+        [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
+        [[--bind "alt-p:preview-up,alt-n:preview-down"]],
+        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
+      }
+    end
 
     local cmd_str = table.concat(cmd, " ")
     local buf = vim.api.nvim_get_current_buf()
