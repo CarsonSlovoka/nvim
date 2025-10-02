@@ -552,10 +552,27 @@ local function setup_visual()
     '<leader><F5>',
     -- [[:lua ExecuteSelection()<CR>]],
     function()
+      local cmd = nil
+      if utils.table.contains({ "dosini", "sh", "lua" }, vim.bo.filetype) then
+        -- 對於只要選取一列的情況下，忽略最前面的 `#` 方便執行註解的指令
+        local selected_lines = utils.range.get_selected_text()
+        if #selected_lines == 1 then
+          cmd = table.concat(selected_lines, " ")
+          cmd = string.gsub(cmd, "^%s*(.-)%s*$", "%1") -- 去除前後空白
+          local first_char = string.sub(cmd, 1, 1)
+          if first_char == "#" then
+            cmd = string.sub(cmd, 2)
+          end
+        end
+      end
+
       local org_wd = vim.fn.getcwd()
       vim.cmd("cd %:h")
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true) -- 先離開visual模式，否則它會認為是在visual中運作，這會等到esc之後才會動作，導致你可能認為要按第二次才會觸發
-      vim.schedule(exec.ExecuteSelection)                                                          -- 並且使用 schedule 確保在模式更新後執行
+      -- vim.schedule(exec.ExecuteSelection)                                                          -- 並且使用 schedule 確保在模式更新後執行
+      vim.schedule(function()
+        exec.ExecuteSelection(cmd)
+      end)
       vim.cmd("cd " .. org_wd)
     end,
     { desc = "執行選中項目" }
