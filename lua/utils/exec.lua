@@ -81,6 +81,9 @@ function exec.ExecuteSelection(cmd)
   -- vim.fn.jobstart("sh -c " .. command, -- WARN: command要用''包起來不然執行的指令會不完整！
   -- vim.cmd("tabnew | setlocal buftype=nofile")
   -- vim.fn.jobstart(string.format("sh -c %q", command), -- 這個多列的情況有的會有問題
+
+  local stdout_msg = ""
+  local stderr_msg = ""
   vim.fn.jobstart(string.format("sh -c '\n%s\n'", command),
     {
       -- term = true, -- 如果用term，只要前面先用tabnew之後的stdout, stderr都可以直接在終端輸出，不需要再自己處理，只是最後會需要再按一次Enter來結束, 不過也是可以在on_exit時用nvim_buf_delete來刪除，但是輸出的訊息就會來不急看
@@ -92,30 +95,46 @@ function exec.ExecuteSelection(cmd)
         if #data == 0 or (#data == 1 and data[1] == "") then
           return
         end
-        vim.api.nvim_echo({
-          { "stdout\n",               "@label" },
-          { table.concat(data, "\n"), "Normal" }, -- TIP: 輸出有\n, 會換行
-        }, false, {})
+
+        -- -- 統一輸出
+        -- vim.api.nvim_echo({
+        --   { "stdout\n",               "@label" },
+        --   { table.concat(data, "\n"), "Normal" }, -- TIP: 輸出有\n, 會換行
+        -- }, false, {})
+
+        stdout_msg = table.concat(data, "\n")
       end,
       on_stderr = function(_, data, _)
         if #data == 0 or (#data == 1 and data[1] == "") then
           return
         end
-        vim.api.nvim_echo({
-          { "stderr\n",               "@label" },
-          -- { "❌ " .. table.concat(data, "\n"), "Normal" }, -- 不見得stderr就是有問題，有的程式會有stdout, stderr都會輸出
-          { table.concat(data, "\n"), "Normal" },
-        }, false, {})
+        -- vim.api.nvim_echo({
+        --   { "stderr\n",               "@label" },
+        --   -- { "❌ " .. table.concat(data, "\n"), "Normal" }, -- 不見得stderr就是有問題，有的程式會有stdout, stderr都會輸出
+        --   { table.concat(data, "\n"), "Normal" },
+        -- }, false, {})
+
+        stderr_msg = table.concat(data, "\n")
       end,
 
       -- -- 就算定義了on_stdout, on_stderr, 還是可以再處理on_exit, 但覺得不太需要
-      -- on_exit = function(id, code, signal)
-      --   if code ~= 0 then
-      --     print("執行失敗，錯誤代碼:", code, "信號:", signal, id)
-      --   else
-      --     print("執行成功！")
-      --   end
-      -- end,
+      on_exit = function(id, code, signal)
+        -- if code ~= 0 then
+        --   print("執行失敗，錯誤代碼:", code, "信號:", signal, id)
+        -- else
+        --   print("執行成功！")
+        -- end
+        local out_msg = {}
+        if stdout_msg ~= "" then
+          table.insert(out_msg, { "stdout\n", "@label" })
+          table.insert(out_msg, { stdout_msg .. "\n", "Normal" })
+        end
+        if stderr_msg ~= "" then
+          table.insert(out_msg, { "stderr\n", "@label" })
+          table.insert(out_msg, { stderr_msg .. "\n", "Normal" })
+        end
+        vim.api.nvim_echo(out_msg, false, {})
+      end,
     })
 end
 
