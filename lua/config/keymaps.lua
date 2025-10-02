@@ -550,7 +550,6 @@ local function setup_visual()
 
   map('x',
     '<leader><F5>',
-    --  echo "hello"
     -- [[:lua ExecuteSelection()<CR>]],
     function()
       local org_wd = vim.fn.getcwd()
