@@ -3687,8 +3687,8 @@ vim.api.nvim_create_user_command("Rg",
       -- :lua print(vim.fn.fnamemodify(".", ":p"))
       -- :lua print(vim.fn.fnamemodify("../..", ":p"))
       vim.cmd("cd " .. vim.fn.fnamemodify(opts["wd"], ":p"))
-    else
-      vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
+    elseif vim.api.nvim_buf_get_name(0) ~= '' then -- 避免有No Name的情況，沒有辦法cd %:h
+      vim.cmd("cd %:h")                            -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
 
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
       if vim.v.shell_error == 0 then
