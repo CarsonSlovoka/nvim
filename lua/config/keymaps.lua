@@ -363,7 +363,9 @@ map({ 'n', 'v' }, 'gi',
       vim.api.nvim_input("<esc>")
     end
     if exe == "swayimg" then
-      vim.cmd("!swayimg " .. img_path .. " & ") -- 記得補上 & 使之後還可以繼續操作
+      -- ~/.config/swayimg/config 中可以設定預設的配置，例如: info.show=no, general.overlay=yes
+      -- vim.cmd("!swayimg " .. img_path .. " & ")   -- 記得補上 & 使之後還可以繼續操作
+      vim.fn.system("swayimg " .. img_path .. " & ") -- 使用vim.fn.system不會有訊息 `Press Enter ot type command to continue` (因為它不互動) 因此回來之後可以少按下Enter
     else
       vim.cmd("Chafa " .. img_path)
     end
