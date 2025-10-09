@@ -4391,4 +4391,141 @@ vim.api.nvim_create_user_command("PrintUnicodes",
   }
 )
 
+local function get_font_map()
+  local font_map = {}
+  -- 執行 fc-list 命令
+  local handle = io.popen('fc-list : file family ')
+  if handle == nil then
+    return {}
+  end
+  -- fc-list : family style file spacing -- 可以有這四個, 序順是固定的(即: 某個屬性如果有它一定是排在某個位置，與輸入的順序無關)
+  local output = handle:read("*a")
+  handle:close()
+
+  -- 解析輸出，每行以冒號分隔，順序分別為 family style file spacing
+  for line in output:gmatch("[^\r\n]+") do
+    local parts = {}
+    local j = 1
+    for part in line:gmatch("[^:]+") do
+      parts[j] = part:gsub("^%s*(.-)%s*$", "%1") -- 去除前後空格
+      j = j + 1
+    end
+    if #parts >= 2 and parts[1] ~= "" then
+      local filepath = parts[1]
+      local family = parts[2]
+      if not font_map[filepath] then
+        font_map[filepath] = family
+      end
+    end
+  end
+  return font_map
+end
+
+vim.api.nvim_create_user_command("ViewWithFont", function(args)
+    local config = utils.cmd.get_cmp_config(args.fargs)
+
+    if config["familyname"] == nil and config["fontpath"] == nil then
+      vim.notify("need familyname or fontpath", vim.log.levels.WARN)
+      return
+    end
+
+    local familyname = config["familyname"] or get_font_map()[config["fontpath"]]
+
+    if familyname == nil then
+      vim.notify("Can't find the corresponding familyname.", vim.log.levels.WARN)
+      return
+    end
+
+    familyname = vim.split(familyname, ",")[1] -- 會給多個familyname 每一個都可當成查找的對像, 例如: "全字庫說文解字,EBAS,䕂䅓,ꗾ꙲깷뮡ꓥ룑꙲:size=52"
+    -- CAUTION: 全放也是可以，但是後面的size就會沒有作用了
+
+    -- local fontpath = vim.fn.fnamemodify(config["fontpath"], ":p"):gsub("-", "\\-") -- foot的字型路徑有 - 要變成 \- 才可以
+    local size = tonumber(config["size"]) or 32
+    local src = config["src"] or vim.fn.expand("%:p")
+    local line_height = config["line_height"] or 24
+
+    local cmd = string.format([[foot --font="%s:size=%d" --override=main.line-height=%d bash -c 'nvim %s ']],
+      familyname, size, line_height, src)
+
+    vim.fn.setqflist({ { text = cmd }, }, 'a')
+
+    -- vim.cmd("!" .. cmd .. ) -- 這會互動
+    -- vim.fn.system(cmd) -- 這需要等待結束
+    vim.fn.jobstart(cmd) -- 非同步作業
+  end,
+  {
+    desc = "Use the specified font file for the specified document (require: fc-list)",
+    nargs = "+",
+    complete = function(arg_lead, cmd_line)
+      local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
+      local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
+      local need_add_prefix = true
+      if not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end,
+          {
+            'familyname=',
+            'src=',
+            'fontpath=', -- foot只能是安裝的字型，只吃familyname
+            'size=',
+            'line_height=',
+          }
+        )
+        need_add_prefix = false
+      elseif prefix == "familyname" then
+        comps = {}
+        for _, familyname in pairs(get_font_map()) do
+          table.insert(comps, familyname)
+        end
+      elseif prefix == "src" then
+        comps = {
+          vim.fn.expand("%"),
+          unpack(vim.fn.getcompletion(arg_lead, "file"))
+        }
+      elseif prefix == "fontpath" then
+        comps = {}
+        -- 只能是已安裝的路徑
+        -- local opentype_extensions = { "%.ttf$", "%.otf$", "%.ttc$", "%.woff$", "%.woff2$" }
+        -- local all_files = vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+        -- comps = {}
+        -- for _, file in ipairs(all_files) do
+        --   for _, ext in ipairs(opentype_extensions) do
+        --     if string.lower(file):match(ext) or
+        --         vim.fn.isdirectory(file) == 1 -- 目錄 (要是真實存在的目錄才會是1)
+        --     then
+        --       table.insert(comps, file)
+        --       break
+        --     end
+        --   end
+        -- end
+
+        for fontpath, _ in pairs(get_font_map()) do
+          table.insert(comps, fontpath)
+        end
+      elseif prefix == "size" then
+        comps = {
+          12,
+          24,
+          48,
+          96,
+        }
+      elseif prefix == "line_height" then
+        comps = {
+          24,
+          48,
+        }
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
+      return vim.tbl_filter(function(item) return item:match(input) end, comps)
+    end
+  }
+)
+
+-- print(vim.inspect(get_font_map()))
+
 return commands
