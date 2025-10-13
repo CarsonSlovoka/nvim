@@ -34,18 +34,12 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
   dap_configurations = {
     -- https://github.com/leoluz/nvim-dap-go/blob/8763ced35b19c8dc526e04a70ab07c34e11ad064/lua/dap-go.lua#L103-L165
     {
-      -- Must be "go" or it will be ignored by the plugin
-      type = "go",
-      name = "Attach remote",
-      mode = "remote",
-      request = "attach",
-    },
-    {
       type = "go",
       name = "Debug Package (Arguments)",
       request = "launch",
       program = "${fileDirname}",
       args = require("dap-go").get_arguments, -- -workDir=img/2025
+      outputMode = "remote",                  -- IMPORTANT: 有這個 :DapUIrepl 才能看到fmt, log 等相關的輸出
     },
     {
       type = "go",
@@ -54,6 +48,7 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       program = "${fileDirname}",
       args = require("dap-go").get_arguments,         -- -workDir=img/2025
       buildFlags = require("dap-go").get_build_flags, -- -tags=xxx -- -tags=foo,bar
+      outputMode = "remote",
     },
     {
       type = "go",
@@ -64,6 +59,7 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       -- args 可以用來設定指定要執行的test就可以不用全部都執從: -test.run=^TestXXx  -- -test.run=Test_myXXX
       -- args = require("dap-go").get_arguments, -- 可行，但是提示詞只有Args
       args = get_test_arguments,
+      outputMode = "remote",
     },
     {
       type = "go",
@@ -73,6 +69,7 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       program = "./${relativeFileDirname}",
       args = get_test_arguments,
       buildFlags = get_build_flags,
+      outputMode = "remote",
     },
   },
   -- delve configurations
