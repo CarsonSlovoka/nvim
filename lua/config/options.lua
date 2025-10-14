@@ -127,6 +127,8 @@ function options.setup()
 
       ttx = "ttx",
 
+      ksy = "yaml",    -- https://github.com/kaitai-io/kaitai_struct
+
       tape = "elixir", -- https://github.com/charmbracelet/vhs/blob/517bcda0fa/.gitattributes#L5
 
       birdfont = function()
