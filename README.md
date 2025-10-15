@@ -962,11 +962,57 @@ git clone https://github.com/mfussenegger/nvim-dap-python.git ~/.config/nvim/pac
 ```
 
 
-##### lua [one-small-step-for-vimkind](https://github.com/jbyuki/one-small-step-for-vimkind)
+##### lua
+
+分為兩個版本:
+
+- one-small-step-for-vimkind: 這是attact在nvim下
+- local-lua-debugger-vscode: 這個以呼叫外部的lua執行檔，例如: lua5.1, lua5.2, ..., lua5.4
+
+###### [one-small-step-for-vimkind](https://github.com/jbyuki/one-small-step-for-vimkind)
 
 ```sh
 git clone https://github.com/jbyuki/one-small-step-for-vimkind.git ~/.config/nvim/pack/debug/start/one-small-step-for-vimkind
 ```
+
+###### [local-lua-debugger-vscode](https://github.com/tomblind/local-lua-debugger-vscode)
+
+> [!TIP]
+> 這個項目不是nvim的插件，所以不需要安裝到pack下也可以
+
+```sh
+git clone https://github.com/tomblind/local-lua-debugger-vscode.git ~/.local/share/nvim/lsp_servers/local-lua-debugger-vscode
+cd ~/.local/share/nvim/lsp_servers/local-lua-debugger-vscode
+git checkout d51ee290 # version bump to 0.3.3 # Date: 2022-04-03 (日) 17:46:07 -0600
+npm install
+# npm audit fix
+npm audit fix --force # xml2js  <0.5.0
+npm audit fix --force # markdown-it  <12.3.2
+```
+
+開啟
+
+[package.json](~/.local/share/nvim/lsp_servers/local-lua-debugger-vscode/package.json)
+
+```jsonc
+{
+  // ... 原有內容 ...
+  "overrides": { // 👈 新增這一段
+    "xml2js": "^0.6.2"
+  }
+}
+```
+
+```sh
+
+npm audit fix --force
+# found 0 vulnerabilities # 如果看到結尾是這樣就可以install了
+npm install
+npm run bundle # 為 package.json 中的 scripts 的內容之一
+```
+
+做完之後相關的[ts](~/.local/share/nvim/lsp_servers/local-lua-debugger-vscode/extension/debugAdapter.ts)檔案，就會生成出[js](~/.local/share/nvim/lsp_servers/local-lua-debugger-vscode/extension/debugAdapter.js)的版本
+
 
 ## view
 

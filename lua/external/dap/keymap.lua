@@ -1,12 +1,13 @@
 local dap = require("dap")
 
 vim.keymap.set("n", "<F5>", function()
+    dap.continue() -- 首次出現的選單要靠執行這個
+
     if vim.o.filetype == "lua" and not require "osv".is_running() then
       require 'osv'.launch()
       require 'osv'.run_this()
       return -- 不需要再執行dap.continue()
     end
-    dap.continue()
   end,
   { desc = "Start/Continue Debugging" }
 )
