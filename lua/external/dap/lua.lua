@@ -5,6 +5,11 @@ require("dap").adapters.nlua = function(callback, config)
   -- lua require'osv'.stop() -- 結束launch
   -- lua require'osv'.run_this()
   -- lua print(require "osv".is_running()) -- launch()之後就是true了
+  if vim.o.filetype == "lua" and not require "osv".is_running() then
+    -- 如果還沒跑起，直接幫忙啟動
+    require 'osv'.launch()
+    require 'osv'.run_this()
+  end
   callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
 end
 
