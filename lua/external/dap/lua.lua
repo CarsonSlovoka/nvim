@@ -29,14 +29,14 @@ require("dap").adapters.local_lua = {
   end,
 }
 
-require("dap").configurations.lua = {
-  {
-    type = 'nlua',
-    request = 'attach',
-    name = "Attach to running Neovim instance", -- 是nvim的環境，如果是其它的lua, 例如lua5.3, 這種它的require路徑不同
-  },
-  {
-    name = 'Current file (lua 5.4)',
+--- @param lua_cmd string
+--- @param args boolean?
+local function get_local_cmd_item(lua_cmd, args)
+  local item = {
+    name = string.format('Current file %s (%s)',
+      args and "with args" or "",
+      lua_cmd
+    ),
     type = 'local_lua',
     request = 'launch',
     cwd = '${workspaceFolder}',
@@ -47,5 +47,22 @@ require("dap").configurations.lua = {
     stopOnEntry = false,
     scriptRoots = { "${workspaceFolder}" }, -- 可選：指定模組搜尋路徑，避免 require 路徑問題
     -- args = {},
+  }
+  if args then
+    item.args = require("dap-go").get_arguments
+  end
+  return item
+end
+
+
+require("dap").configurations.lua = {
+  {
+    type = 'nlua',
+    request = 'attach',
+    name = "Attach to running Neovim instance", -- 是nvim的環境，如果是其它的lua, 例如lua5.3, 這種它的require路徑不同
   },
+  get_local_cmd_item("lua5.1"),
+  get_local_cmd_item("lua5.1", true),
+  get_local_cmd_item("lua5.4"),
+  get_local_cmd_item("lua5.4", true),
 }
