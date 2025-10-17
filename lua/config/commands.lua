@@ -2563,8 +2563,11 @@ function commands.setup()
             vim.cmd("!thunar " .. vim.fn.fnamemodify(output_path, ":h") .. " & ")
           end
 
-          -- 順便也自動播放該檔案
-          vim.ui.open(output_path) -- 用系統預設的工具來開啟檔案
+          if vim.fn.executable('vlc') == 1 then
+            vim.fn.system("vlc " .. output_path)
+          else
+            vim.ui.open(output_path) -- 用系統預設的工具來開啟檔案
+          end
         end,
       })
     end,
