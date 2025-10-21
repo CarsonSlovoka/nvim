@@ -574,16 +574,18 @@ windows: 可以到此[頁面](https://github.com/llvm/llvm-project/releases)，�
 ```sh
 # 下載並且放到自己想要的目錄
 VERSION='3.15.0' # 查看版本: https://github.com/LuaLS/lua-language-server/releases
-wget https://github.com/LuaLS/lua-language-server/releases/download/$VERSION/lua-language-server-$VERSION-linux-x64.tar.gz
+ARCH=linux-x64
+ARCH=linux-arm64
+wget https://github.com/LuaLS/lua-language-server/releases/download/$VERSION/lua-language-server-$VERSION-$ARCH.tar.gz
 du -hs *.tar.gz
-# 3.7M lua-language-server-$VERSION-linux-x64.tar.gz
+# 3.7M lua-language-server-$VERSION-$ARCH.tar.gz
 mkdir -pv ~/lua-language-server/ # 依照個人喜號設定，我是選擇放到家目錄下
-mv -v lua-language-server-$VERSION-linux-x64.tar.gz ~/lua-language-server/
+mv -v lua-language-server-$VERSION-$ARCH.tar.gz ~/lua-language-server/
 
 # 解壓縮
 cd ~/lua-language-server/
-tar -xzvf lua-language-server-$VERSION-linux-x64.tar.gz # 於此目錄解壓縮，它不會在有多餘的目錄，直接會把檔案展開於此目錄
-rm -v lua-language-server-$VERSION-linux-x64.tar.gz
+tar -xzvf lua-language-server-$VERSION-$ARCH.tar.gz # 於此目錄解壓縮，它不會在有多餘的目錄，直接會把檔案展開於此目錄
+rm -v lua-language-server-$VERSION-$ARCH.tar.gz
 ls -l ~/lua-language-server/bin/lua-language-server # 此檔案為執行檔
 
 # 連立連結
