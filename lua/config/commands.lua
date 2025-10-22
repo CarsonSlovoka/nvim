@@ -365,6 +365,70 @@ function commands.setup()
     }
   )
 
+  --- 這樣保存的svg大小不會比存成webp來得小
+  vim.api.nvim_create_user_command("SaveSVG", function(args)
+      if vim.fn.executable("vtracer") == 0 then
+        vim.api.nvim_echo({
+          { "❌ `vtracer` not exists\n install from: ", "Normal" },
+          { "https://github.com/visioncortex/vtracer", "@label" },
+        }, true, {})
+        return
+      end
+      local outputPath = ""
+      local timestamp = os.date("%Y-%m-%d_%H-%M-%S")
+      if #args.fargs > 0 then
+        outputPath = args.fargs[1]
+      else
+        local saveDir = vim.fn.expand("%:p:h")
+        outputPath = path.join(saveDir, timestamp .. ".svg")
+      end
+
+      local tmpFilePath = "/tmp/" .. timestamp .. ".png"
+
+      -- 確保輸出的目錄存在
+      local outputDir = vim.fn.fnamemodify(outputPath, ":h")
+      if vim.fn.isdirectory(outputDir) == 0 then
+        vim.fn.mkdir(outputDir, "p")
+      end
+
+      -- 使用 ws-paste 來保存
+      local cmd = 'wl-paste --type image/png > "' .. tmpFilePath .. '"'
+      local cmd2 = string.format('vtracer --input %s --output %s', tmpFilePath, outputPath)
+      local preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
+      vim.fn.setloclist(0, {
+        { text = cmd },
+        { text = cmd2 },
+      }, 'a')
+
+      vim.cmd("tabnew | setlocal buftype=nofile")
+      local buf = vim.api.nvim_get_current_buf()
+      if vim.fn.jobstart(
+            table.concat(
+              {
+                cmd,
+                cmd2,
+                "echo -e '\n\n🟧 file'",
+                "file " .. outputPath,
+                "echo '🟧 ls'",
+                "ls -lh " .. outputPath,
+                "echo -e '\n\n'",
+                "rm " .. tmpFilePath,
+                preview_img_cmd,
+              },
+              ";"
+            ), { term = true }) <= 0 then
+        print("圖片保存失敗, see location list :lopen")
+        vim.api.nvim_buf_delete(buf, { force = true })
+      else
+        print("圖片保存成功: " .. outputPath)
+      end
+    end,
+    {
+      nargs = "?",
+      desc = "保存剪貼簿的圖片(需要有: vtracer)"
+    }
+  )
+
   vim.api.nvim_create_user_command("SaveWebp", function(args)
     local outputPath = ""
     -- print(vim.inspect(args))
