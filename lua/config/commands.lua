@@ -11,6 +11,8 @@ vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- �
 
 local commands = {}
 
+local BAT_EXE_NAME = vim.uv.os_uname().sysname == "Darwin" and "bat" or "batcat"
+
 local function openCurrentDirWithFoot()
   local current_file_path = vim.fn.expand("%:p:h") -- 獲取當前文件所在的目錄
   if current_file_path ~= "" then
@@ -3598,9 +3600,8 @@ vim.api.nvim_create_user_command("Clear",
   }
 )
 
-vim.api.nvim_create_user_command("Gitfiles",
-  -- NOTE: 有關於: nvim自動開啟終端機，並且能補獲所有stdout的內容，可參考: https://gist.github.com/CarsonSlovoka/e228da4f10f61e448f3bbba953b0e638
-  function(args)
+vim.api.nvim_create_user_command("Gitfiles", function(args)
+    --- NOTE: 有關於: nvim自動開啟終端機，並且能補獲所有stdout的內容，可參考: https://gist.github.com/CarsonSlovoka/e228da4f10f61e448f3bbba953b0e638
     local config = utils.cmd.get_cmp_config(args.fargs)
 
     vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
@@ -3632,7 +3633,7 @@ vim.api.nvim_create_user_command("Gitfiles",
     elseif vim.fn.filereadable(vim.fn.expand("~/fzf/bin/fzf-preview.sh")) == 1 then
       preview_cmd = string.format([[--preview "%s {}"]], vim.fn.expand("~/fzf/bin/fzf-preview.sh"))
     else
-      preview_cmd = [[--preview "batcat --color=always --style=numbers {}"]]
+      preview_cmd = string.format([[--preview "%s --color=always --style=numbers {}"]], BAT_EXE_NAME)
     end
 
     -- CAUTION: 以下是用於輸入，但是用於 vim.fn.jobstart 之前 不能有 \ 出現，要所有的內容都變一行
@@ -3714,7 +3715,7 @@ vim.api.nvim_create_user_command("Gitfiles",
     -- 可以考慮cd回原本的工作目錄
   end,
   {
-    desc = [[搜尋git commit過的檔案 git ls-files | fzf --preview "batcat ..."]],
+    desc = string.format([[搜尋git commit過的檔案 git ls-files | fzf --preview "%s ..."]], BAT_EXE_NAME),
     nargs = "?",
     complete = function()
       return {
@@ -3724,8 +3725,7 @@ vim.api.nvim_create_user_command("Gitfiles",
   }
 )
 
-vim.api.nvim_create_user_command("Rg",
-  function(args)
+vim.api.nvim_create_user_command("Rg", function(args)
     if args.fargs[1] == "-h" then
       vim.fn.setqflist({
         { text = ':Rg search_word                             " 預設會用git_root來當成工作目錄，在開始找內文' },
@@ -3785,7 +3785,7 @@ vim.api.nvim_create_user_command("Rg",
       elseif vim.fn.filereadable(vim.fn.expand("~/fzf/bin/fzf-preview.sh")) == 1 then
         preview_cmd = string.format([[--preview "%s {}"]], vim.fn.expand("~/fzf/bin/fzf-preview.sh"))
       else
-        preview_cmd = [[--preview "batcat --color=always --style=numbers {}"]]
+        preview_cmd = string.format([[--preview "%s --color=always --style=numbers {}"]], BAT_EXE_NAME)
       end
       cmd = {
         "rg " .. table.concat(args.fargs, " ") .. " | ",
@@ -3808,7 +3808,7 @@ vim.api.nvim_create_user_command("Rg",
       cmd = {
         "rg --vimgrep " .. table.concat(args.fargs, " ") .. " | ",
         [[fzf -d ':' --preview-window 'right:+{2}']],
-        [[--preview 'batcat --color=always --style=numbers --highlight-line {2} {1}']],
+        string.format([[--preview '%s --color=always --style=numbers --highlight-line {2} {1}']], BAT_EXE_NAME),
         "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]],
         [[--bind 'focus:+transform-header:file --brief {1} || echo "No file selected"' ]],
         [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
