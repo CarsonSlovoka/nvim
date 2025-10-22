@@ -1893,6 +1893,7 @@ local function install_nvim_dap()
   require("external.dap.opentype")
   require("external.dap.lua")
   require("external.dap.swift")
+  require("external.dap.dart")
 
   require("external.dap.ttx")
 
@@ -1956,7 +1957,7 @@ local function install_flutter_tools()
       enabled = true
     },
     debugger = {
-      -- debug的步驟:
+      -- debug的步驟: 以下可參考: lua/external/dap/dart.lua
       -- 1. 先使用 :FlutterRun 來選擇對應的device,
       -- 2. 在 main.dart 使用 :lua require("dap").continue() 也可以用 :DapContinue (此內容已經被加到F5)
       --    2.1 選擇 launch flutter 或 connect flutter 都可以
