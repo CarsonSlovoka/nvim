@@ -15,3 +15,4 @@ bookmarks/
 # 此內容可以寫自己的自定義
 lua/my-customize.lua
 
+.DS_Store
