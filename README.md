@@ -574,8 +574,10 @@ windows: 可以到此[頁面](https://github.com/llvm/llvm-project/releases)，�
 ```sh
 # 下載並且放到自己想要的目錄
 VERSION='3.15.0' # 查看版本: https://github.com/LuaLS/lua-language-server/releases
+uname -m # 查看arch
 ARCH=linux-x64
 ARCH=linux-arm64
+ARCH=darwin-arm64
 wget https://github.com/LuaLS/lua-language-server/releases/download/$VERSION/lua-language-server-$VERSION-$ARCH.tar.gz
 du -hs *.tar.gz
 # 3.7M lua-language-server-$VERSION-$ARCH.tar.gz
@@ -590,9 +592,12 @@ ls -l ~/lua-language-server/bin/lua-language-server # 此檔案為執行檔
 
 # 連立連結
 sudo ln -s ~/lua-language-server/bin/lua-language-server /usr/bin/
+ls -l /usr/bin/lua-language-server
+
+# Warn: 在mac上, 除非禁用SIP不然建立連結時候會遇到: `Operation not permitted` 的錯誤, 所以可以考慮直接新增環境變數
+echo 'export PATH="$PATH:$HOME/lua-language-server/bin"' >> ~/.zshrc
 
 # 確認
-ls -l /usr/bin/lua-language-server
 lua-language-server --version
 ```
 
