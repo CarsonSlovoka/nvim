@@ -340,15 +340,25 @@ map({ 'n', 'v' }, '<leader>gf',
 map({ 'n', 'v' }, 'gi',
   function()
     local exe = ""
-    for _, cmd in ipairs({ "swayimg", "chafa" }) do
-      if vim.fn.executable(cmd) == 1 then
-        exe = cmd
-        break
+    if vim.uv.os_uname().sysname == "Linux" then
+      for _, cmd in ipairs({ "swayimg", "chafa" }) do
+        if vim.fn.executable(cmd) == 1 then
+          exe = cmd
+          break
+        end
       end
-    end
 
-    if exe == "" then
-      vim.notify("preview tool not found.\nsudo apt install swayimg\nor\nsudo apt install chafa", vim.log.levels.WARN)
+      if exe == "" then
+        vim.notify("preview tool not found.\nsudo apt install swayimg\nor\nsudo apt install chafa", vim.log.levels.WARN)
+        return
+      end
+    elseif vim.uv.os_uname().sysname == "Darwin" then
+      exe = "open -a Preview"
+    else
+      vim.api.nvim_echo({
+        { "❌ unsupport platform ", "Normal" },
+        { vim.uv.os_uname().sysname, "@label" },
+      }, false, {})
       return
     end
 
@@ -362,12 +372,12 @@ map({ 'n', 'v' }, 'gi',
       img_path = utils.range.get_selected_text()[1]
       vim.api.nvim_input("<esc>")
     end
-    if exe == "swayimg" then
+    if exe ~= "chafa" then
       -- ~/.config/swayimg/config 中可以設定預設的配置，例如: info.show=no, general.overlay=yes
       -- vim.cmd("!swayimg " .. img_path .. " & ")   -- 記得補上 & 使之後還可以繼續操作
-      vim.fn.system("swayimg " .. img_path .. " & ") -- 使用vim.fn.system不會有訊息 `Press Enter ot type command to continue` (因為它不互動) 因此回來之後可以少按下Enter
+      vim.fn.system(exe .. " " .. img_path .. " & ") -- 使用vim.fn.system不會有訊息 `Press Enter ot type command to continue` (因為它不互動) 因此回來之後可以少按下Enter
     else
-      vim.cmd("Chafa " .. img_path)
+      vim.cmd("Chafa " .. img_path)                  -- 這是自定義的 :Chafa 指令
     end
   end,
   {
