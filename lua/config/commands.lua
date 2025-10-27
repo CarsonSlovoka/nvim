@@ -459,9 +459,22 @@ function commands.setup()
     end
 
     -- 直接透過管道，將剪貼簿的 PNG 內容透過 cwebp 轉換成 Webp 並保存
-    local cmd = string.format('wl-paste --type image/png | cwebp -q %d -o "%s" -- -', quality, outputPath)
+
+    local paste_image_from_clipboard_cmd
+    local preview_img_cmd
+    if vim.uv.os_uname().sysname == "Darwin" then
+      paste_image_from_clipboard_cmd = [[osascript -e "get the clipboard as «class PNGf»" | sed "s/«data PNGf//; s/»//" | xxd -r -p ]]
+      preview_img_cmd = "open -a Preview " .. outputPath
+    else
+      paste_image_from_clipboard_cmd = "wl-paste --type image/png"
+      -- wayland
+      preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
+    end
+    local cmd = string.format('%s | cwebp -q %d -o "%s" -- -',
+      paste_image_from_clipboard_cmd,
+      quality, outputPath)
     -- swayimg: https://github.com/artemsen/swayimg
-    local preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
+    -- open -a Preview img/NoCursorCaptureAlert.webp
     vim.fn.setqflist({
       { text = cmd },
       { text = preview_img_cmd },
