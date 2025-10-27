@@ -468,13 +468,12 @@ function commands.setup()
     else
       paste_image_from_clipboard_cmd = "wl-paste --type image/png"
       -- wayland
+      -- swayimg: https://github.com/artemsen/swayimg
       preview_img_cmd = (vim.fn.executable('swayimg') == 1 and "swayimg" or "firefox") .. " " .. outputPath
     end
     local cmd = string.format('%s | cwebp -q %d -o "%s" -- -',
       paste_image_from_clipboard_cmd,
       quality, outputPath)
-    -- swayimg: https://github.com/artemsen/swayimg
-    -- open -a Preview img/NoCursorCaptureAlert.webp
     vim.fn.setqflist({
       { text = cmd },
       { text = preview_img_cmd },
