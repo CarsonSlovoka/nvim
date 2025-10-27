@@ -100,16 +100,16 @@ function M.setup(opts)
       { text = " [Quit]", highlight = "StartupInfo" }
     },
     {
-      { text = ",bk",                highlight = "StartupMenu" },
-      { text = "   [open bookmark]", highlight = "StartupInfo" }
+      { text = vim.g.mapleader .. "bk", highlight = "StartupMenu" },
+      { text = "   [open bookmark]",    highlight = "StartupInfo" }
     },
     {
-      { text = ",t",                  highlight = "StartupMenu" },
-      { text = "    [nvimTree open]", highlight = "StartupInfo" }
+      { text = vim.g.mapleader .. "t", highlight = "StartupMenu" },
+      { text = "    [nvimTree open]",  highlight = "StartupInfo" }
     },
     {
-      { text = ",cd",             highlight = "StartupMenu" },
-      { text = "   [change dir]", highlight = "StartupInfo" } },
+      { text = vim.g.mapleader .. "cd", highlight = "StartupMenu" },
+      { text = "   [change dir]",       highlight = "StartupInfo" } },
 
     { { text = "", highlight = nil } },
 
