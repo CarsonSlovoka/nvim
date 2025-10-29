@@ -72,7 +72,15 @@ prettier -v
 tee ~/.prettierrc << EOF
 {
   "semi": false,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": "*.jxa",
+      "options": {
+        "parser": "babel"
+      }
+    }
+  ]
 }
 EOF
 # Note: 如果想要更改，還是可以在專案中再新增 .prettierrc 會用最先抓到的當成設定檔

@@ -155,7 +155,9 @@ function M.setup(opts)
                   if vim.fn.executable("prettier") == 0 then
                     vim.notify("Unable to format xml, missing formatting tool: `prettier`", vim.log.levels.WARN)
                   else
-                    local cmd = "!prettier -w " .. cur_file_path
+                    -- Tip: 對於附檔名不是js的檔案，可以用--parser來告知: `prettier -w my.jxa --parser babel` 也可以寫在 prettierrc 用 overrides 的方式
+                    -- ❌ ~~prettier -w my.jxa --parser javascript~~ 新的版本, 用的是babel
+                    local cmd = string.format("!prettier -w %s --parser babel", cur_file_path)
                     vim.cmd(cmd)
                     vim.cmd("e!")
                     vim.api.nvim_echo({
