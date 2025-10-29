@@ -151,6 +151,19 @@ function M.setup(opts)
                     vim.cmd("silent e")
                   end, 50) -- 要等到InsertLeave才能重載，不然會有錯
                   return   -- 它是透過外部工具來格式化，會有reload，沒辦法保存tag，所以不需要後續動作
+                elseif vim.bo.filetype == 'javascript' then
+                  if vim.fn.executable("prettier") == 0 then
+                    vim.notify("Unable to format xml, missing formatting tool: `prettier`", vim.log.levels.WARN)
+                  else
+                    local cmd = "!prettier -w " .. cur_file_path
+                    vim.cmd(cmd)
+                    vim.cmd("e!")
+                    vim.api.nvim_echo({
+                      { os.date("%Y-%m-%d %H:%M:%S") .. " do format with command: ", "Normal" },
+                      { cmd,                                                         "@label" },
+                    }, false, {})
+                  end
+                  return
                 elseif vim.bo.filetype == 'xml' then
                   if vim.fn.executable("xmlstarlet") == 0 then
                     vim.notify("Unable to format xml, missing formatting tool: `xmlstarlet`", vim.log.levels.WARN)

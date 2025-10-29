@@ -66,6 +66,16 @@ echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設
 # (可選) 為了javascript的lsp
 sudo npm install -g typescript-language-server typescript
 typescript-language-server -V
+sudo npm install -g prettier # 可以格式化
+prettier -v
+# 3.6.2
+tee ~/.prettierrc << EOF
+{
+  "semi": false,
+  "endOfLine": "lf"
+}
+EOF
+# Note: 如果想要更改，還是可以在專案中再新增 .prettierrc 會用最先抓到的當成設定檔
 
 # (可選) 安裝sqls
 # https://github.com/sqls-server/sqls
