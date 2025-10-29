@@ -119,9 +119,10 @@ function options.setup()
   vim.opt.foldlevel = 2                           -- 💡 這個很有用！表示從第幾層後就可以摺疊，如果是0就是全部摺疊, 可以隨時用:set foldlevel?來觀察目前設定的數值
 
   -- filetype.add 可以等同用autocmd: https://github.com/CarsonSlovoka/nvim/blob/9f43fb676491df176ed4551a50e77e3ea704261e/lua/config/autocmd.lua#L209-L219
-  vim.filetype.add({ -- :help vim.filetype
-    extension = {    -- 這個是指，如果檔案的附檔名為key, 就將它的filetype設定為value
+  vim.filetype.add({      -- :help vim.filetype
+    extension = {         -- 這個是指，如果檔案的附檔名為key, 就將它的filetype設定為value
       gs = "javascript",
+      jxa = "javascript", -- JavaScript for Automation (JXA) scripts on macOS
       strings = "strings",
       gotmpl = "gotmpl",
       gohtml = "gotmpl",
