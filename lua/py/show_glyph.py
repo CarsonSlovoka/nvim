@@ -25,7 +25,7 @@ from freetype.ft_enums.ft_curve_tags import (
     FT_Curve_Tag_Cubic,
     FT_Curve_Tag_On,
 )
-from PIL import Image
+from PIL import Image # pip install pillow==12.0.0
 
 parser = argparse.ArgumentParser(description="glyph information")
 parser.add_argument("font_path", type=str, help="opentype fontpath")
@@ -286,7 +286,7 @@ HTML_TEMPLATE = """
   strokeColorInput.on("input", function() {
     svg.select("g").attr("stroke", this.value)
   })
-  
+
 
   // Parse data-idx filter
   function parseIdxFilter(input) {
