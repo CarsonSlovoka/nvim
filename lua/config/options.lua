@@ -127,6 +127,8 @@ function options.setup()
       gotmpl = "gotmpl",
       gohtml = "gotmpl",
 
+      ttc = "opentype",
+
       ttx = "ttx",
 
       ksy = "yaml",    -- https://github.com/kaitai-io/kaitai_struct

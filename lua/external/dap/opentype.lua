@@ -194,11 +194,32 @@ import io
 import sys
 
 from fontTools.misc.xmlWriter import XMLWriter
-from fontTools.ttLib import TTFont
-
-font = TTFont("%s")
+from fontTools.ttLib import TTCollection, TTFont
+from pathlib import Path
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+
+font_path = "%s"
+ext = Path(font_path).suffix.lower()
+
+if ext == ".ttc":
+    ttc = TTCollection(font_path)
+    print(f"🟧 len font: {len(ttc.fonts)}")
+
+    print("🟧 familyName, subFamilyName in each font:")
+    for i, font in enumerate(ttc.fonts):
+        name_table = font["name"]
+        for nr in name_table.names:
+            info = f"[{i}] ({nr.platformID}.{nr.platEncID}.{nr.langID}.{nr.nameID})"
+            if nr.nameID == 1:
+                print(f"{info} FamilyName: {str(nr)}")
+            elif nr.nameID == 2:
+                print(f"{info} subFamilyName: {str(nr)}")
+    print("⚠️ show the first font only")
+    font = ttc.fonts[0]
+else:
+  font = TTFont(font_path)
+
 writer = XMLWriter(sys.stdout, newlinestr="\n")
 font._saveXML(writer)
 ]], fontpath)
