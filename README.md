@@ -646,6 +646,7 @@ ls -l /usr/lib/node_modules/vscode-langservers-extracted/bin/
 #### swift
 
 ```sh
+# https://github.com/swiftlang/swiftly
 # 安裝swiftly
 curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz && \
   tar zxf swiftly-$(uname -m).tar.gz && \
@@ -665,9 +666,28 @@ if [[ ":\$PATH:" != *":\$SWIFTLY_BIN_DIR:"* ]]; then
 fi
 EOF
 
+
+mac os
+```sh
+curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg && \
+    installer -pkg swiftly.pkg -target CurrentUserHomeDirectory && \
+    ~/.swiftly/bin/swiftly init --quiet-shell-followup && \
+    . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" && \
+    hash -r
+echo "source \$HOME/.swiftly/env.sh" >> ~/.zshrc
+rm -v swiftly.pkg
+swiftly --version
+# 1.1.0
+```
+
+
 # 取得codelldb (debug用)
 mkdir -v ~/codelldb
-wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix -O ~/codelldb/codelldb.zip # 52.34M
+# https://github.com/vadimcn/codelldb/releases/
+
+```sh
+wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix    -O ~/codelldb/codelldb.zip # 52.34M
+wget https://github.com/vadimcn/codelldb/releases/download/v1.11.8/codelldb-darwin-arm64.vsix -O ~/codelldb/codelldb.zip
 unzip ~/codelldb/codelldb.zip -d ~/codelldb/
 rm -v ~/codelldb/codelldb.zip
 ```
