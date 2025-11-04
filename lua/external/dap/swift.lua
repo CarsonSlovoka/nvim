@@ -1,5 +1,28 @@
 local dap = require("dap")
 
+local codelldb_args = {
+  "--port", "${port}",
+}
+if vim.uv.os_uname().sysname == "Linux" then
+  -- "--liblldb", vim.fn.expand("~/codelldb/extension/lldb/lib/liblldb.so"), ❌ 放這個會有問題
+  --   file ~/codelldb/extension/lldb/lib/liblldb.so
+  --     ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, stripped 👈 這是一個stripped的版本，所以一些調式的資訊都已經移除，所以會不能用
+  --
+  --  https://www.swift.org/install/linux/ 安裝完Swiftly, 如果都用預設的路徑就會有檔案: ~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0
+  -- "--liblldb", vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0"), -- 可以用這個指令去找so的位置 `fd -t f -HI liblldb.so ~`
+  --
+  -- "--liblldb", vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so"),     -- 放連結也可以
+  --   file ~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0
+  --     ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, not stripped 👈 是 not stripped的版本，所有debug可以用
+  -- WARN: --liblldb 一定要給，不然會遇到錯誤: Exception: Could not find type system for language swift: TypeSystem for language swift doesn't exist
+
+  table.insert(codelldb_args, "--liblldb")
+  table.insert(codelldb_args, vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0"))
+  -- 可以用這個指令去找so的位置 `fd -t f -HI liblldb.so ~`
+end
+
+
+
 dap.adapters.codelldb = {
   type = "server",  -- "server" 表示連接 TCP 伺服器
   host = "127.0.0.1",
@@ -12,20 +35,7 @@ dap.adapters.codelldb = {
     -- unzip ~/codelldb
     command = vim.fn.expand("~/codelldb/extension/adapter/codelldb"),
     port = "${port}",
-    args = {
-      "--port", "${port}",
-
-      -- "--liblldb", vim.fn.expand("~/codelldb/extension/lldb/lib/liblldb.so"), ❌ 放這個會有問題
-      --   file ~/codelldb/extension/lldb/lib/liblldb.so
-      --     ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, stripped 👈 這是一個stripped的版本，所以一些調式的資訊都已經移除，所以會不能用
-      --
-      --  https://www.swift.org/install/linux/ 安裝完Swiftly, 如果都用預設的路徑就會有檔案: ~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0
-      "--liblldb", vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0"), -- 可以用這個指令去找so的位置 `fd -t f -HI liblldb.so ~`
-      -- "--liblldb", vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so"),     -- 放連結也可以
-      --   file ~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0
-      --     ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, not stripped 👈 是 not stripped的版本，所有debug可以用
-      -- WARN: --liblldb 一定要給，不然會遇到錯誤: Exception: Could not find type system for language swift: TypeSystem for language swift doesn't exist
-    },
+    args = codelldb_args,
   },
   name = "codelldb",
 }
