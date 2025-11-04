@@ -565,7 +565,7 @@ local function setup_visual()
     -- [[:lua ExecuteSelection()<CR>]],
     function()
       local cmd = nil
-      if utils.table.contains({ "dosini", "sh", "lua" }, vim.bo.filetype) then
+      if utils.table.contains({ "dosini", "sh", "lua", "zsh" }, vim.bo.filetype) then
         -- 對於只要選取一列的情況下，忽略最前面的 `#` 方便執行註解的指令
         local selected_lines = utils.range.get_selected_text()
         if #selected_lines == 1 then
