@@ -84,61 +84,66 @@ if vim.uv.os_uname().sysname == "Darwin" then
 end
 
 -- https://github.com/vadimcn/codelldb/blob/dd0687c/MANUAL.md#starting-a-new-debug-session
-dap.configurations.swift = {
-  {
-    type = "codelldb",
-    name = "Debug Swift (codelldb)",
-    request = "launch",
-    program = function()
-      return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-    end,
-    cwd = "${workspaceFolder}",
-    stopOnEntry = false, -- 進入時不自動暫停
-    args = {},           -- 運行參數
-  },
-  {
-    type = "codelldb",
-    name = "Debug Swift (Arguments) (codelldb)",
-    request = "launch",
-    program = function()
-      -- swift build --configuration debug
-      -- /path/to/project/.build/debug/executableTarget.name
-      return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-    end,
-    cwd = "${workspaceFolder}",
-    stopOnEntry = false,
-    args = require("dap-go").get_arguments,
-  },
-  -- 附加到運行中程序（用於模擬器或裝置）👈 沒試過
-  {
-    type = "codelldb",
-    name = "Attach to process (codelldb)",
-    request = "attach",
-    pid = require("dap.utils").pick_process, -- 選擇 PID
-    cwd = "${workspaceFolder}",
-    stopOnEntry = false,
-  },
-
-  {
-    type = 'lldb_dap',
-    name = '(lldb-dap) Launch Swift',
-    request = 'launch',
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false, -- 進入時是否停在 main
-    args = {},           -- function() return vim.fn.input('Args: ')
-  },
-  {
-    type = 'lldb_dap',
-    name = '(lldb-dap) Launch Swift (Arguments)',
-    request = 'launch',
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    args = require("dap-go").get_arguments,
+if vim.uv.os_uname().sysname == "Darwin" then
+  dap.configurations.swift = {
+    {
+      type = 'lldb_dap',
+      name = 'Launch Swift',
+      request = 'launch',
+      program = function()
+        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+      end,
+      cwd = '${workspaceFolder}',
+      stopOnEntry = false, -- 進入時是否停在 main
+      args = {},           -- function() return vim.fn.input('Args: ')
+    },
+    {
+      type = 'lldb_dap',
+      name = 'Launch Swift (Arguments)',
+      request = 'launch',
+      program = function()
+        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+      end,
+      cwd = '${workspaceFolder}',
+      stopOnEntry = false,
+      args = require("dap-go").get_arguments,
+    }
   }
-}
+else
+  -- 在mac上也能用 codelldb 但是啟動之後，查看變數，可能都會有問題，會報怨:  TypeSystem for language swift doesn't exist
+  dap.configurations.swift = {
+    {
+      type = "codelldb",
+      name = "Debug Swift (codelldb)",
+      request = "launch",
+      program = function()
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+      end,
+      cwd = "${workspaceFolder}",
+      stopOnEntry = false, -- 進入時不自動暫停
+      args = {},           -- 運行參數
+    },
+    {
+      type = "codelldb",
+      name = "Debug Swift (Arguments) (codelldb)",
+      request = "launch",
+      program = function()
+        -- swift build --configuration debug
+        -- /path/to/project/.build/debug/executableTarget.name
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+      end,
+      cwd = "${workspaceFolder}",
+      stopOnEntry = false,
+      args = require("dap-go").get_arguments,
+    },
+    -- 附加到運行中程序（用於模擬器或裝置）👈 沒試過
+    {
+      type = "codelldb",
+      name = "Attach to process (codelldb)",
+      request = "attach",
+      pid = require("dap.utils").pick_process, -- 選擇 PID
+      cwd = "${workspaceFolder}",
+      stopOnEntry = false,
+    },
+  }
+end
