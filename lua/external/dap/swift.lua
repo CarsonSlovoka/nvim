@@ -19,9 +19,11 @@ if vim.uv.os_uname().sysname == "Linux" then
   table.insert(codelldb_args, "--liblldb")
   table.insert(codelldb_args, vim.fn.expand("~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0"))
   -- 可以用這個指令去找so的位置 `fd -t f -HI liblldb.so ~`
+elseif vim.uv.os_uname().sysname == "Darwin" then
+  -- 以下內容都沒用，如果是用mac，不需要裝codelldb, 與swiftly, 都使用xcode所提供的工具，即可對swift來debug
+  -- table.insert(codelldb_args, "--liblldb")
+  -- table.insert(codelldb_args, vim.fn.expand("~/codelldb/extension/lldb/lib/liblldb.dylib"))
 end
-
-
 
 dap.adapters.codelldb = {
   type = "server",  -- "server" 表示連接 TCP 伺服器
@@ -40,7 +42,7 @@ dap.adapters.codelldb = {
   name = "codelldb",
 }
 
--- -- 以下沒用, 不論env是否有設定都不能成功
+-- 以下沒用, 不論env是否有設定都不能成功
 -- dap.adapters.lldb = {
 --   type = 'executable',
 --   -- https://www.swift.org/install/linux/ 安裝完Swiftly就會有lldb這個工具了
@@ -53,6 +55,33 @@ dap.adapters.codelldb = {
 --   },
 -- }
 
+if vim.uv.os_uname().sysname == "Darwin" then
+  -- Tip: xcrun 是安裝XCode之後會有的工具
+  -- xcrun --version
+  --  xcrun version 72.
+
+  -- Tip: 查找工具路徑: `xcrun --find swiftc`
+  -- /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc
+
+  -- Tip: 可以使用此指令找出SDK的路徑: `xcrun --show-sdk-path`
+
+  -- Tip: 顯示當前的xcode版本: `xcrun --show-sdk-version`
+
+  -- Tip:
+  -- 使用指令 `xcrun lldb` 進入後輸入:
+  -- settings set target.language swift
+  -- quit
+  -- 若無錯誤，即支援Swift, 否則就需要比較新版的Xcode
+
+  local lldb_dap_path = vim.fn.trim(vim.fn.system("xcrun -f lldb-dap"))
+  -- /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/lldb-dap
+  dap.adapters.lldb_dap = {
+    name = 'lldb_dap',
+    type = 'executable',
+    command = lldb_dap_path,
+    args = {},
+  }
+end
 
 -- https://github.com/vadimcn/codelldb/blob/dd0687c/MANUAL.md#starting-a-new-debug-session
 dap.configurations.swift = {
@@ -90,33 +119,26 @@ dap.configurations.swift = {
     stopOnEntry = false,
   },
 
-  -- 以下 lldb 不建議用, 會失敗 (而用 codelldb 確定可行)
-  -- {
-  --   type = 'lldb',
-  --   name = 'Launch Swift',
-  --   request = 'launch',
-  --   program = function()
-  --     return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-  --   end,
-  --   cwd = '${workspaceFolder}',
-  --   stopOnEntry = false, -- 進入時是否停在 main
-  --   args = {},           -- function() return vim.fn.input('Args: ')
-  -- },
-  -- {
-  --   type = 'lldb',
-  --   name = 'Launch Swift (Arguments)',
-  --   request = 'launch',
-  --   program = function()
-  --     return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-  --   end,
-  --   cwd = '${workspaceFolder}',
-  --   stopOnEntry = false,
-  --   args = require("dap-go").get_arguments,
-  -- },
-  -- {
-  --   type = 'lldb',
-  --   name = 'Attach to process',
-  --   request = 'attach',
-  --   pid = require('dap.utils').pick_process,
-  -- },
+  {
+    type = 'lldb_dap',
+    name = '(lldb-dap) Launch Swift',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false, -- 進入時是否停在 main
+    args = {},           -- function() return vim.fn.input('Args: ')
+  },
+  {
+    type = 'lldb_dap',
+    name = '(lldb-dap) Launch Swift (Arguments)',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    args = require("dap-go").get_arguments,
+  }
 }

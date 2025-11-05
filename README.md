@@ -666,7 +666,7 @@ if [[ ":\$PATH:" != *":\$SWIFTLY_BIN_DIR:"* ]]; then
 fi
 EOF
 
-
+Caution: Xcode/Command Line Tools (CLT) 已经包含了 {swift, swiftc, swift build}等工具，可以不需要再裝swiftly
 mac os
 ```sh
 curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg && \
@@ -678,19 +678,34 @@ echo "source \$HOME/.swiftly/env.sh" >> ~/.zshrc
 rm -v swiftly.pkg
 swiftly --version
 # 1.1.0
+
+# 解除安裝:
+rm -rfv ~/.swiftly
+# 更新: ~/.zshrc
+which swift
+which swiftc
+# /usr/bin/swiftc  # 看到的就會是/usr/bin的位置, 而不是來至於swiftly
 ```
 
 
 # 取得codelldb (debug用)
 mkdir -v ~/codelldb
-# https://github.com/vadimcn/codelldb/releases/
+
+> https://github.com/vadimcn/codelldb/releases/
 
 ```sh
 wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix    -O ~/codelldb/codelldb.zip # 52.34M
 wget https://github.com/vadimcn/codelldb/releases/download/v1.11.8/codelldb-darwin-arm64.vsix -O ~/codelldb/codelldb.zip
 unzip ~/codelldb/codelldb.zip -d ~/codelldb/
+du -hs ~/codelldb/
+# 164M
 rm -v ~/codelldb/codelldb.zip
 ```
+
+> [!IMPORTANT]
+> 在mac上不需要安裝codelldb, 使用xcode的工具就可以debug了
+>
+> `rm -rfv ~/codelldb/`
 
 ## motion
 
