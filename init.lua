@@ -90,6 +90,8 @@ if vim.uv.os_uname().sysname == "Linux" then
   require("config.input").fcitx.setup(
     "fcitx5-remote" -- which fcitx5-remote
   )
+elseif vim.uv.os_uname().sysname == "Darwin" then
+  require("config.input").sim.setup()
 end
 
 local function install_nvimTreesitter()

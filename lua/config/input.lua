@@ -118,6 +118,79 @@ function Fcitx.setup(cmd)
   -- print("setup fcitx success")
 end
 
+local Sim = {
+  cmd = "sim"
+}
+
+function Sim.setup()
+  if vim.fn.executable(Sim.cmd) ~= 1 then
+    vim.api.nvim_echo({
+      { "❌ `sim` not exists\n install from: ", "Normal" },
+      { "https://github.com/CarsonSlovoka/sim", "@label" },
+    }, true, {})
+    return
+  end
+  local group_name = "set-input-method"
+  vim.api.nvim_create_augroup(group_name, { clear = true })
+  vim.api.nvim_create_autocmd("InsertLeave", {
+    group = group_name,
+    pattern = "*",
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "insert leave: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("TermOpen", {
+    group = group_name,
+    pattern = "*",
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "term open: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("TermEnter", {
+    group = group_name,
+    pattern = "*",
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "term enter: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("TermLeave", {
+    group = group_name,
+    pattern = "*",
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "term leave: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("CmdlineEnter", {
+    group = group_name,
+    pattern = "[/\\?]", -- 搜尋的時候`/`, `?`
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "start search: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("CmdlineEnter", {
+    group = group_name,
+    pattern = "[:]", -- 打指令的時候，也切換成英文
+    callback = function()
+      vim.fn.system("sim com.apple.keylayout.ABC")
+    end,
+    desc = "enter cmd: change input method to ABC"
+  })
+  vim.api.nvim_create_autocmd("CmdlineLeave", {
+    group = group_name,
+    pattern = "[/\\?]",
+    callback = function()
+      Fcitx.InActiveFcitx()
+    end,
+    desc = "leave search: InActiveFcitx"
+  })
+end
+
 return {
-  fcitx = Fcitx
+  fcitx = Fcitx,
+  sim = Sim,
 }
