@@ -31,7 +31,16 @@ local function Test_get_cmp_config()
   return true
 end
 
+local function Test_get_cmp_config__attachment()
+  local fargs = { "arg1", "id=abc", "file=/path/file1", "file=/path/file2", "file=file3" }
+  local opt = utils.cmd.get_cmp_config(fargs)
+  -- print(vim.inspect(opt))
+  return opt["id"] == "abc" and
+      #opt["file"] == 3 and
+      opt["file"][3] == "/path/file1" and opt["file"][2] == "/path/file2" and opt["file"][1] == "file3" -- 順序可能會不同
+end
 
 t.RunTest({
-  { fn = Test_get_cmp_config, name = "Test_get_cmp_config" },
+  { fn = Test_get_cmp_config,             name = "Test_get_cmp_config" },
+  { fn = Test_get_cmp_config__attachment, name = "Test_get_cmp_config__attachment" },
 }, arg[1])

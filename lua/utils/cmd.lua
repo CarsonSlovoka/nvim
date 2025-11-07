@@ -127,6 +127,7 @@ end
 ---
 ---@param fargs string[]
 ---@param update boolean?
+---@notes 請注意！如果有重複key, 會變成table, 且table裡的排序會是相反的
 function M.get_cmp_config(fargs, update)
   update = update or false
 
@@ -136,7 +137,19 @@ function M.get_cmp_config(fargs, update)
     local arg = fargs[i]
     local key, value = arg:match('^(.-)=(.*)$')
     if key then
-      config[key] = value
+      local old = config[key]
+      if old == nil then
+        -- 首次出現
+        config[key] = value
+      elseif type(old) ~= "table" then
+        -- 再次出現，將它轉成array
+        config[key] = { old, value }
+      else
+        -- 第三次後, 都直接附加
+        -- print(vim.inspect(old), value)
+        table.insert(old, value)
+        -- Warn: 因為i是倒序的, 所以table出來的結果排序也是倒的
+      end
       if update then
         table.remove(fargs, i) -- 移除匹配的項目
       end
