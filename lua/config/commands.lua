@@ -463,7 +463,8 @@ function commands.setup()
     local paste_image_from_clipboard_cmd
     local preview_img_cmd
     if vim.uv.os_uname().sysname == "Darwin" then
-      paste_image_from_clipboard_cmd = [[osascript -e "get the clipboard as «class PNGf»" | sed "s/«data PNGf//; s/»//" | xxd -r -p ]]
+      paste_image_from_clipboard_cmd =
+      [[osascript -e "get the clipboard as «class PNGf»" | sed "s/«data PNGf//; s/»//" | xxd -r -p ]]
       preview_img_cmd = "open -a Preview " .. outputPath
     else
       paste_image_from_clipboard_cmd = "wl-paste --type image/png"
