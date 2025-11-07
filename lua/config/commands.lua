@@ -4605,6 +4605,112 @@ vim.api.nvim_create_user_command("ViewWithFont", function(args)
     end
   }
 )
+vim.api.nvim_create_user_command("LmsChat", function(args)
+    local config = utils.cmd.get_cmp_config(args.fargs)
+    local mode = config.mode or "append"
+    local model = config.model
+    if not model then
+      vim.api.nvim_echo({
+        { "❌ `model` not found\n", "Normal" },
+        { ":Lms model=", "@label" },
+      }, true, {})
+      return
+    end
+
+    local lines = utils.range.get_selected_text()
+    local content = table.concat(lines, "\n")
+    -- local result = "aaa\nbbb\nccdasdf" -- debug時可用
+    local result = utils.lmstudio.chat(model, content, { port = config.port or "1234", debug = config.debug == "1" })
+    if not result then
+      vim.notify("nil result", vim.log.levels.INFO)
+      return
+    end
+
+    local result_table = {}
+
+    if mode == "append" then
+      -- 在前面多新增兩個空列方便區別
+      result_table = {
+        "", "",
+        unpack(vim.split(result, "\n", { trimempty = false })) -- trimempty false 保留最後的空行
+      }
+    else
+      result_table = vim.split(result, "\n", { trimempty = false })
+    end
+
+    -- vim.api.nvim_buf_set_lines(0, 0, -1, true, vim.split(result, "\n")) -- 整份文件重寫
+
+    -- local cur_line = vim.api.nvim_win_get_cursor(0)[1]
+    -- vim.api.nvim_buf_set_lines(0, cur_line - 1, cur_line - 1, false, result_table) -- 在當前行的上方插入結果
+
+    -- 取得選取區域的行號（1‑index）
+    local start_line = vim.fn.line("'<") -- 起始行號
+    local end_line   = vim.fn.line("'>") -- 結束行號（包含）
+
+    -- 把 1‑index 轉成 0‑index
+    start_line       = start_line - 1
+
+    -- 如果是反向選取（上往下 vs 下往上），要交換
+    if start_line > end_line then
+      start_line, end_line = end_line, start_line
+    end
+
+    if config.mode == "replace" then
+      vim.api.nvim_buf_set_lines(0, start_line, end_line, false, result_table)
+    else -- append
+      -- Tip: nvim_put 有個缺點，如果是選取多列，put的結果會放在中間, 可以先用 nvim_win_set_cursor 移動到想追加的地方再使用`nvim_put`即可
+      vim.api.nvim_win_set_cursor(0, { end_line, 0 })
+
+      -- vim.api.nvim_put(result_table, "l", false, true) -- after: false等同P, true: p ; 最後follow, 為true時會將游標放到文本後
+      -- vim.api.nvim_put(result_table, "b", true, true) -- b可以用在區塊選取(C-V時用)
+      vim.api.nvim_put(result_table, "l", true, true) -- 輸出放在尋問的下方
+    end
+  end,
+  {
+    desc = "與在本機啟動的lmstudio服務器互動",
+    nargs = "+",
+    range = true,
+    complete = function(arg_lead, cmd_line)
+      local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
+      local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
+      local need_add_prefix = true
+      if not arg_lead:match('=') then
+        comps = vim.tbl_filter(
+          function(item) return not exist_comps[item] end,
+          {
+            'model=',
+            'mode=',
+
+            'port=',
+            'debug=',
+          }
+        )
+        need_add_prefix = false
+      elseif prefix == "model" then
+        comps = {
+          "openai/gpt-oss-20b",
+          "qwen/qwen3-vl-8b",
+        }
+      elseif prefix == "mode" then
+        comps = {
+          "append", -- default
+          "replace",
+        }
+      elseif prefix == "port" then
+        comps = { "1234" }
+      elseif prefix == "debug" then
+        comps = { "1" }
+      end
+      if need_add_prefix then
+        for i, comp in ipairs(comps) do
+          comps[i] = prefix .. "=" .. comp
+        end
+      end
+      local input = need_add_prefix and prefix .. "=" .. suffix or arg_lead
+      return vim.tbl_filter(function(item) return item:match(input) end, comps)
+    end
+  }
+)
 
 -- print(vim.inspect(get_font_map()))
 

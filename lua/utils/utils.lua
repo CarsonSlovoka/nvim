@@ -7,6 +7,7 @@ return {
   encoding = require "utils.encoding",
   flag = require "utils.flag",
   http = require "utils.http",
+  lmstudio = require "utils.lmstudio",
   os = require "utils.os",
   range = require "utils.range",
   sway = require "utils.sway",
