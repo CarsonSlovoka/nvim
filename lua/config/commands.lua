@@ -4606,6 +4606,8 @@ vim.api.nvim_create_user_command("ViewWithFont", function(args)
   }
 )
 vim.api.nvim_create_user_command("LmsChat", function(args)
+    -- 首版: `git log -1 -p 4dd0a674 | pbcopy`
+
     local config = utils.cmd.get_cmp_config(args.fargs)
     local mode = config.mode or "append"
     local model = config.model
@@ -4620,7 +4622,11 @@ vim.api.nvim_create_user_command("LmsChat", function(args)
     local lines = utils.range.get_selected_text()
     local content = table.concat(lines, "\n")
     -- local result = "aaa\nbbb\nccdasdf" -- debug時可用
-    local result = utils.lmstudio.chat(model, content, { port = config.port or "1234", debug = config.debug == "1" })
+    local result = utils.lmstudio.chat(model, content, {
+      -- attachments = config["attachments"],
+      port  = config.port or "1234",
+      debug = config.debug == "1"
+    })
     if not result then
       vim.notify("nil result", vim.log.levels.INFO)
       return
@@ -4673,6 +4679,8 @@ vim.api.nvim_create_user_command("LmsChat", function(args)
     complete = function(arg_lead, cmd_line)
       local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
       local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
+      -- exist_comps["attachments="] = nil -- 此項允許重複輸入
+
       local need_add_prefix = true
       if not arg_lead:match('=') then
         comps = vim.tbl_filter(
@@ -4680,6 +4688,8 @@ vim.api.nvim_create_user_command("LmsChat", function(args)
           {
             'model=',
             'mode=',
+
+            -- 'attachments=',
 
             'port=',
             'debug=',
@@ -4700,6 +4710,9 @@ vim.api.nvim_create_user_command("LmsChat", function(args)
         comps = { "1234" }
       elseif prefix == "debug" then
         comps = { "1" }
+        -- elseif prefix == "attachments" then
+        --   -- 只列出檔案(只有一層)，忽略資料夾
+        --   comps = vim.fn.globpath(".", "*", false, true)
       end
       if need_add_prefix then
         for i, comp in ipairs(comps) do
