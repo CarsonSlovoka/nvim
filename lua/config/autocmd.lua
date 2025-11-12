@@ -723,7 +723,7 @@ function M.setup(opts)
         "css", "scss", "sass",
         "lua",
         "vue",
-        "sh",
+        "sh", "zsh",
         "dart",
       },
       callback = function()
