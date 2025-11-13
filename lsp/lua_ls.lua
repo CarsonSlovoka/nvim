@@ -11,6 +11,17 @@
 ---
 --- The default `cmd` assumes that the `lua-language-server` binary can be found in `$PATH`.
 
+local library = {
+  vim.env.VIMRUNTIME,
+  -- Depending on the usage, you might want to add additional paths
+  -- here.
+  -- '${3rd}/luv/library'
+  -- '${3rd}/busted/library'
+}
+
+if vim.uv.os_uname().sysname == "Darwin" then
+  table.insert(library, '/Applications/Hammerspoon.app/Contents/Resources/extensions/hs/')
+end
 
 vim.lsp.config('lua_ls', {
   on_init = function(client)
@@ -38,13 +49,7 @@ vim.lsp.config('lua_ls', {
       -- Make the server aware of Neovim runtime files
       workspace = {
         checkThirdParty = false,
-        library = {
-          vim.env.VIMRUNTIME
-          -- Depending on the usage, you might want to add additional paths
-          -- here.
-          -- '${3rd}/luv/library'
-          -- '${3rd}/busted/library'
-        }
+        library = library,
         -- Or pull in all of 'runtimepath'.
         -- NOTE: this is a lot slower and will cause issues when working on
         -- your own configuration.
