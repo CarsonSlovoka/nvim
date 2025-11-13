@@ -331,6 +331,7 @@ function M.setup(opts)
           { name = "FIXME",      fg = "#F8F6F4", bg = "#EA6890", pattern = " \\?\\<F[Ii][Xx][Mm][Ee]\\>:\\? \\?" },
           { name = "TIP",        fg = "#323225", bg = "#99CC00", pattern = " \\?\\<T[Ii][Pp][Ss]\\?\\>:\\? \\?" },
           { name = "IMPORTANT",  fg = "#F1F2E6", bg = "#FF00FF", pattern = " \\?\\<I[Mm][Pp][Oo][Rr][Tt][Aa][Nn][Tt]\\>:\\? \\?" },
+          { name = "ERROR",      fg = "#F1F2E6", bg = "#FF0000", pattern = " \\?\\<E[Rr][Rr]\\([Oo][Rr]\\)\\?\\>:\\? \\?" },
           { name = "CAUTION",    fg = "#F1F2E6", bg = "#FF0000", pattern = " \\?\\<C[Aa][Uu][Tt][Ii][Oo][Nn]\\>:\\? \\?" },
           { name = "DEPRECATED", fg = "#FFFFFF", bg = "#696969", pattern = "\\<D[Ee][Pp][Rr][Ee][Cc][Aa][Tt][Ee][Dd]\\>" },
           {
