@@ -35,6 +35,18 @@ require('dap-python').setup(
 -- vim.fn.expand("~/.pyenv/shims/python3") -- 預設會自己抓
 ) -- https://github.com/mfussenegger/nvim-dap-python/blob/34282820bb713b9a5fdb120ae8dd85c2b3f49b51/README.md?plain=1#L62-L142
 
+
+local PYTHONPATH = "/usr/local/lib/python3.13/site-packages/"
+if vim.uv.os_uname().sysname == "Darwin" then
+  -- fd fontforge.so -t f $(brew --prefix fontforge)
+  -- export PYTHONPATH="$(brew --prefix fontforge)/lib/python3.14/site-packages/"
+  local prefix = io.popen("brew --prefix fontforge"):read("*l")
+  if prefix then
+    PYTHONPATH = prefix .. "/lib/python3.14/site-packages/"
+  end
+  -- Todo: 無效，可能要透過fontforge -script的方式來啟動
+end
+
 -- 如果都倚靠day-python在windows上可能還是會遇到: command `python3` of adapter `python` exited with 9009. Run :DapShowLog to open logs
 -- 所以還是要自己設定
 dap.adapters.python = {
@@ -99,7 +111,9 @@ for _, config in ipairs({
     env = {
       -- find /usr/local -name "fontforge*.so"
       -- /usr/local/lib/python3.13/site-packages/fontforge.so
-      PYTHONPATH = '/usr/local/lib/python3.13/site-packages/' -- 將fontforge.so的目錄提供給PYTHONPATH即可
+      -- /opt/homebrew/opt/fontforge/lib/python3.14/site-packages/fontforge.so
+      -- PYTHONPATH = '/usr/local/lib/python3.13/site-packages/', -- 將fontforge.so的目錄提供給PYTHONPATH即可
+      PYTHONPATH = PYTHONPATH,
 
       -- 給以下的沒用
       -- fd -t f fontforge /
