@@ -566,6 +566,40 @@ emoji_data.G.OS = {
   }
 }
 
+emoji_data.G.Keyboard = {
+  alias = { "keyboard", "key" },
+  items = {
+    {
+      "⇧",
+      {
+        "shift"
+      }
+    },
+    {
+      "⌘",
+      {
+        "cmd",
+        "window",
+        "start",
+      }
+    },
+    {
+      "⌥",
+      {
+        "option",
+        "alt",
+      }
+    },
+    {
+      "⌃",
+      {
+        "ctrl",
+        "control",
+      }
+    },
+  }
+}
+
 
 emoji_data.G.mood = {
   alias = { "mood", "feeling" },
