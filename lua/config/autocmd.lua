@@ -773,16 +773,26 @@ function M.setup(opts)
     },
     {
       group = groupName.conceal,
-      -- pattern = { -- 用在FileType事件有用，其它的用e去篩選
-      --   "json", "jsonc"
-      -- },
+      pattern = { -- 用在FileType事件有用，其它的用e去篩選 -- Note: 如果是Syntax事件，pattern也會有用
+        "json", "jsonc"
+      },
       callback = function(e)
         -- print(vim.inspect(e))
-        local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
-        if ext ~= "json" and ext ~= "jsonc" then
-          return
-        end
-        vim.cmd([[syntax match jsonEndCommon /,$/ conceal]]) -- 將結尾的,隱藏
+
+        -- local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
+        -- if ext ~= "json" and ext ~= "jsonc" then
+        --   return
+        -- end
+
+        -- 👇 以下無效了，可能被ensure_installed的項目影響到了
+        -- vim.cmd("silent! syntax clear jsonEndCommon") -- 如果怕有重覆可以清除, 但不是無法使用的問題所在
+        -- vim.cmd([[syntax match jsonEndCommon /,$/ conceal]])
+
+        -- vim.cmd在autocommand回呼執行時，還沒到buffer就緒的階段
+        -- 因此使用schedule讓它安排到下一個event-loop, 如此Syntax可以確定已經載入完畢，再次執行就可以成功了
+        vim.schedule(function()
+          vim.cmd([[syntax match jsonEndCommon /,$/ conceal]]) -- 將結尾的,隱藏
+        end)
       end,
       desc = "conceal ,$ for filetype={json, jsonc}"
     }
