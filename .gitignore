@@ -16,3 +16,6 @@ bookmarks/
 lua/my-customize.lua
 
 .DS_Store
+.aider*
+!.aiderignore
+!.aider.conf.yml

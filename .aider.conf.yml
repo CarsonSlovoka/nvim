@@ -1,0 +1,5 @@
+read:
+#   - ~/nvim.preset.md
+
+# file:
+#   - lua/config/autocmd.lua
