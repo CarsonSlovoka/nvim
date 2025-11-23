@@ -798,6 +798,34 @@ function M.setup(opts)
     }
   )
 
+  create_autocmd('FileType', {
+    pattern = 'xml',
+    callback = function()
+      vim.wo.conceallevel = 2
+      vim.schedule(function()
+        -- vim.cmd([[syntax match XmlQuote /="\zs[^"]*\ze"/ conceal]]) -- 隱藏屬性值
+        -- vim.cmd([[syntax match XmlQuoteStart /=\zs"\ze/ conceal ]])
+        -- vim.cmd([[syntax match XmlQuoteEnd /="[^"]*\zs"\ze/ conceal ]])
+        -- vim.cmd([[syntax match XmlQuoteEnd /[^"]*\zs"\ze/ conceal ]])
+        -- vim.cmd([[syntax match XmlQuoteStart /="/ conceal cchar=✅ ]])
+        -- vim.cmd([[syntax match XmlQuoteEnd /=\zs"\ze[^"]*\zs"\ze/ conceal ]]) -- 只會有最後一個zs ze的效果
+        -- vim.cmd([[syntax match XmlQuoteStart /[a-zA-Z]*=\zs"\ze[^"]*"/ conceal ]])
+        -- vim.cmd([[syntax match XmlQuoteEnd /="[^"]*\zs"\ze/ conceal]])
+        -- 當 XmlQuoteStart, XmlQuoteEnd 都有時，只會 XmlQuotesStart有用
+
+        vim.cmd([[syntax match XmlQuote /"/ conceal ]]) -- 直接隱藏所有的分號，缺點是註解的內容也會被影響
+        vim.api.nvim_echo({
+          { "❗ \n", "Normal" },
+          { "\"", "@label" },
+          { " 已經被自動隱藏\n", "Normal" },
+          { "使用: \n", "Normal" },
+          { ":syntax clear", "@label" },
+          { "可以取消", "Normal" },
+        }, false, {})
+      end)
+    end,
+  })
+
   create_autocmd("TermOpen",
     {
       callback = function()
