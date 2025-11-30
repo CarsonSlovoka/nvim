@@ -4,6 +4,7 @@ return {
   buf = require "utils.buf",
   cmd = require "utils.cmd",
   complete = require "utils.complete",
+  dap = require "utils.dap",
   encoding = require "utils.encoding",
   flag = require "utils.flag",
   http = require "utils.http",
