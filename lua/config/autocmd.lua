@@ -773,7 +773,7 @@ function M.setup(opts)
     },
     {
       group = groupName.conceal,
-      pattern = { -- 用在FileType事件有用，其它的用e去篩選 -- Note: 如果是Syntax事件，pattern也會有用
+      pattern = { -- 用在FileType事件有用，其它的用e去篩選 -- Note: 如果是Syntax事件，pattern也會有用, 但必須定義group才可以！
         "json", "jsonc"
       },
       callback = function(e)
@@ -798,8 +798,9 @@ function M.setup(opts)
     }
   )
 
-  create_autocmd('FileType', {
-    pattern = 'xml',
+  create_autocmd({ 'Syntax' }, {
+    group = groupName.conceal,
+    pattern = { 'xml' },
     callback = function()
       vim.wo.conceallevel = 2
       vim.schedule(function()
