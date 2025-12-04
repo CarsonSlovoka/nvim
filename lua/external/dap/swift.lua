@@ -25,35 +25,38 @@ elseif vim.uv.os_uname().sysname == "Darwin" then
   -- table.insert(codelldb_args, vim.fn.expand("~/codelldb/extension/lldb/lib/liblldb.dylib"))
 end
 
-dap.adapters.codelldb = {
-  type = "server",  -- "server" 表示連接 TCP 伺服器
-  host = "127.0.0.1",
-  port = "${port}", -- 會自動使用隨機端口
-  executable = {
-    -- https://github.com/vadimcn/codelldb/releases
-    -- 在releases的頁面下載對應平台的vsix, 然後可以重新命名為zip,然後解壓
-    -- wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix -O ~/codelldb/codelldb.zip
-    -- cd ~/codelldb
-    -- unzip ~/codelldb
-    command = vim.fn.expand("~/codelldb/extension/adapter/codelldb"),
-    port = "${port}",
-    args = codelldb_args,
-  },
-  name = "codelldb",
-}
 
--- 以下沒用, 不論env是否有設定都不能成功
--- dap.adapters.lldb = {
---   type = 'executable',
---   -- https://www.swift.org/install/linux/ 安裝完Swiftly就會有lldb這個工具了
---   command = vim.fn.expand("~/.local/share/swiftly/bin/lldb"),
---   name = 'lldb',
---   args = {},
---   env = {
---     PATH = vim.fn.getenv('PATH') .. ':' .. vim.fn.expand('~/.local/share/swiftly/bin'),
---     LLDB_CUSTOM_Lldb = vim.fn.expand('~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0'),
---   },
--- }
+if vim.uv.os_uname().sysname == "Linux" then
+  dap.adapters.codelldb = {
+    type = "server",  -- "server" 表示連接 TCP 伺服器
+    host = "127.0.0.1",
+    port = "${port}", -- 會自動使用隨機端口
+    executable = {
+      -- https://github.com/vadimcn/codelldb/releases
+      -- 在releases的頁面下載對應平台的vsix, 然後可以重新命名為zip,然後解壓
+      -- wget https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-linux-x64.vsix -O ~/codelldb/codelldb.zip
+      -- cd ~/codelldb
+      -- unzip ~/codelldb
+      command = vim.fn.expand("~/codelldb/extension/adapter/codelldb"),
+      port = "${port}",
+      args = codelldb_args,
+    },
+    name = "codelldb",
+  }
+
+  -- 以下沒用, 不論env是否有設定都不能成功
+  -- dap.adapters.lldb = {
+  --   type = 'executable',
+  --   -- https://www.swift.org/install/linux/ 安裝完Swiftly就會有lldb這個工具了
+  --   command = vim.fn.expand("~/.local/share/swiftly/bin/lldb"),
+  --   name = 'lldb',
+  --   args = {},
+  --   env = {
+  --     PATH = vim.fn.getenv('PATH') .. ':' .. vim.fn.expand('~/.local/share/swiftly/bin'),
+  --     LLDB_CUSTOM_Lldb = vim.fn.expand('~/.local/share/swiftly/toolchains/6.1.2/usr/lib/liblldb.so.17.0.0'),
+  --   },
+  -- }
+end
 
 if vim.uv.os_uname().sysname == "Darwin" then
   -- Tip: xcrun 是安裝XCode之後會有的工具
