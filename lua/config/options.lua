@@ -28,6 +28,8 @@ function options.setup()
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
   vim.g.mapleader = "\\"
 
+  vim.opt.scrolloff = 999 -- 距離當前畫面的頂部或者底部還有多少列的時候，可以進行scroll的動作 (預設是0, 也就是游標一定要移動到最下面才能捲動), 999讓其在畫面中間，也就是只要j, k動一定會連帶往下或往上移
+
   -- :set history?
   vim.opt.history = 10000 -- 10000預設
   -- 查看某一個類別的history
