@@ -665,9 +665,11 @@ if [[ ":\$PATH:" != *":\$SWIFTLY_BIN_DIR:"* ]]; then
     export PATH="\$SWIFTLY_BIN_DIR:\$PATH"
 fi
 EOF
+```
 
 Caution: Xcode/Command Line Tools (CLT) 已经包含了 {swift, swiftc, swift build}等工具，可以不需要再裝swiftly
 mac os
+
 ```sh
 curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg && \
     installer -pkg swiftly.pkg -target CurrentUserHomeDirectory && \
@@ -688,7 +690,7 @@ which swiftc
 ```
 
 
-# 取得codelldb (debug用)
+##### 取得codelldb (debug用)
 mkdir -v ~/codelldb
 
 > https://github.com/vadimcn/codelldb/releases/
