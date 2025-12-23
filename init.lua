@@ -1890,12 +1890,12 @@ local function install_nvim_dap()
     command = "echo", -- 找一個不重要的指令, 為了通過require("dap")而已 -- 這個工具在 Linux / macOS / Windows shell 都有
   }
 
-  require("external.dap.python")
   require("external.dap._tutorial") -- 教學測試用
-  require("external.dap.opentype")
-  require("external.dap.lua")
-  require("external.dap.swift")
   require("external.dap.dart")
+  require("external.dap.lua")
+  require("external.dap.opentype")
+  require("external.dap.python")
+  require("external.dap.swift")
 
   require("external.dap.ttx")
 
