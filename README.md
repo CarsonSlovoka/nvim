@@ -191,6 +191,8 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── nvim-dap-python               -- ✅ debug adapter: python ( 3428282 )
 │   │         ├── one-small-step-for-vimkind    -- ✅ debug adapter: lua ( 330049a )
 │   │         └── nvim-dap-go                   -- ✅ debug adapter: go ( 8763ced )
+│   ├── ios/start/
+│   │         └── ~~xcodebuild.nvim~~           -- swift debug相關 (就算要debug swift的專案) e0d54db
 │   │
 │   ├── tools/start/
 │   │         ├── image.nvim                    -- ✅ 使用kitty終端機，能在markdown文件直接看到圖片 ( v1.4.0 446a8a5c )
@@ -205,6 +207,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── sqls.nvim          -- ( d1bc542 )
 │   │
 │   └── utils/start/                 -- ✅ 常用函數包裝
+│             ├── ~~nui.nvim~~       -- xcodebuild 需要 de74099
 │             └── plenary.nvim       -- ✅ require('plenary.path'):new("~/init.lua").{exists(), is_dir())... (v1.1.4... 2d9b0617)
 │
 ├── ftplugin/                        -- ✅ 依據附檔名才會載入的插件
@@ -709,6 +712,37 @@ rm -v ~/codelldb/codelldb.zip
 >
 > `rm -rfv ~/codelldb/`
 
+## ios
+
+```bash
+mkdir -pv ~/.config/nvim/pack/ios/start
+```
+
+### ~~xcodebuild.nvim~~
+
+> [!IMPORTANT] 可以不需要安裝, 自己手動打命令就好
+
+```sh
+git clone https://github.com/wojciech-kulik/xcodebuild.nvim.git ~/.config/nvim/pack/ios/start/xcodebuild.nvim
+cd ~/.config/nvim/pack/ios/start/xcodebuild.nvim
+make install
+# https://github.com/wojciech-kulik/xcodebuild.nvim/blob/e0d54db14ae87ac1cc205e31de5923565a33882c/Makefile#L34-L37
+# 成功後會看到類似以下的訊息👇
+# pipx install pymobiledevice3 --quiet
+#   installed package pymobiledevice3 7.0.5, installed using Python 3.14.2
+#   These apps are now globally available
+#     - pymobiledevice3
+# done! ✨ 🌟 ✨
+
+
+# https://github.com/wojciech-kulik/xcodebuild.nvim/wiki/Neovim-Configuration
+brew install xcode-build-server
+xcode-build-server config -project <xcodeproj> -scheme <scheme>
+
+# :checkhealth xcodebuild
+# :help xcodebuild.remote-debugger
+```
+
 ## motion
 
 ```bash
@@ -867,6 +901,15 @@ tests.describe('basic tests', function()
     assert.are.same(2 + 2, 4)
   end)
 end)
+```
+
+
+### nui.nvim
+
+[xcodebuild](https://github.com/wojciech-kulik/xcodebuild.nvim/wiki#2-install-plugin)需要用到此插件
+
+```sh
+git clone https://github.com/MunifTanjim/nui.nvim.git ~/.config/nvim/pack/utils/start/nui.nvim
 ```
 
 ## search

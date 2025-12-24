@@ -2330,6 +2330,44 @@ local function install_live_preview()
   require('livepreview.config').set()
 end
 
+local function install_xcodebuild()
+  -- 此插件，我覺得不需要裝，它做了很多功能，但是都可以透過手動自己來執行
+  -- 而且就算要debug: 可完全透過: `xcrun lldb-dap` 用attach的方式即可
+  if not pcall(require, "xcodebuild") then
+    return
+  end
+
+  -- ~/.config/nvim/lua/external/dap/swift.lua
+  -- require("dap").adapters.lldb_dap = {
+  --   name = 'lldb_dap',
+  --   type = 'executable',
+  --   command = '/usr/bin/xcrun',
+  --   args = { 'lldb-dap' },
+  -- }
+
+  -- `:lua require("xcodebuild.integrations.dap").build_and_debug()` 這個抓的好像就直接用 dap.configurations 的第一個項目，不曉得要怎麼換
+
+  require("xcodebuild").setup({
+    -- put some options here or leave it empty to use default settings
+    -- https://github.com/wojciech-kulik/xcodebuild.nvim/wiki/Configuration#-default-config
+    codelldb = {
+      enabled = false,     -- enable codelldb dap adapter for Swift debugging
+      port = 13000,        -- port used by codelldb adapter
+      codelldb_path = nil, -- path to codelldb binary, REQUIRED, example: "/Users/xyz/tools/codelldb/extension/adapter/codelldb"
+
+
+      lldb_lib_path = "/Applications/Xcode_26.0.1.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB", -- 👈 CAUTION: 這個要自己換掉
+    },
+
+    -- :help xcodebuild.remote-debugger
+    integrations = {
+      pymobiledevice = {
+        enabled = true,
+      },
+    }
+  })
+end
+
 local installs = {
   {
     name = "registers",
@@ -2438,6 +2476,7 @@ local installs = {
   { name = "image.nvim",        fn = install_image,          delay = 5 },
   { name = "csvview.nvim",      fn = install_csvview,        delay = 5 },
   { name = "live-preview.nvim", fn = install_live_preview,   delay = 5 },
+  { name = "xcodebuild.nvim",   fn = install_xcodebuild,     delay = 5 },
   {
     name = "global-func",
     fn = function()
