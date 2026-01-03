@@ -68,5 +68,43 @@ for _, filetype in ipairs({
     --   protocol = "ws", -- 換這個也是失敗
     --   sourceMaps = true,
     -- },
+    {
+      name = "Launch Deno File",
+      type = "pwa-node",
+      request = "launch",
+      -- Use "deno" as the runtime executable
+      runtimeExecutable = "deno",
+      -- Use --inspect-brk to pause execution until the debugger attaches
+      runtimeArgs = { "run", "--inspect-brk", "--allow-all" }, -- Add necessary permissions like --allow-all
+      program = "${file}",
+      cwd = "${workspaceFolder}",
+      sourceMaps = true,
+      protocol = "ws",         -- Deno uses the V8 inspector protocol via WebSockets
+      attachSimplePort = 9229, -- Default Deno inspect port
+    },
+    {
+      name = "Launch Deno File (input cwd:)",
+      type = "pwa-node",
+      request = "launch",
+      -- Use "deno" as the runtime executable
+      runtimeExecutable = "deno",
+      -- Use --inspect-brk to pause execution until the debugger attaches
+      runtimeArgs = { "run", "--inspect-brk", "--allow-all" }, -- Add necessary permissions like --allow-all
+      program = "${file}",
+      cwd = function() return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file") end,
+      sourceMaps = true,
+      protocol = "ws",         -- Deno uses the V8 inspector protocol via WebSockets
+      attachSimplePort = 9229, -- Default Deno inspect port
+    },
+    {
+      name = "Launch Deno Test File",
+      type = 'pwa-node',
+      request = 'launch',
+      runtimeExecutable = "deno",
+      runtimeArgs = { "test", "--inspect-brk", "--allow-all" }, -- 只用--inspect會無效
+      program = "${file}",
+      cwd = "${workspaceFolder}",
+      attachSimplePort = 9229,
+    },
   }
 end
