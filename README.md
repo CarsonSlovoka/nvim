@@ -85,6 +85,18 @@ tee ~/.prettierrc << EOF
 EOF
 # Note: 如果想要更改，還是可以在專案中再新增 .prettierrc 會用最先抓到的當成設定檔
 
+
+# deno fmt 配置: 沒有預設的全域設定，只能在各別的專案中調整
+# https://docs.deno.com/runtime/fundamentals/linting_and_formatting/
+# https://docs.deno.com/runtime/fundamentals/configuration/#formatting
+# tee path/to/deno.json << EOF
+# {
+#   "fmt": {
+#     "semiColons": false
+#   }
+# }
+# EOF
+
 # (可選) 安裝sqls
 # https://github.com/sqls-server/sqls
 go install github.com/sqls-server/sqls@latest

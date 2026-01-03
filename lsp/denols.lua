@@ -70,6 +70,7 @@ return {
   cmd = { 'deno', 'lsp' },
   cmd_env = { NO_COLOR = true },
   filetypes = {
+    -- 這些filetype也都會被deno fmt格式化
     'javascript',
     'javascriptreact',
     'javascript.jsx',
