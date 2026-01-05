@@ -176,7 +176,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.14.0  321bc615)
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
-│   │          ├── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (v0.1.8... a4ed825)
+│   │          ├── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (3333a52 2025-12-31)
 │   │          └── fzf-lua.nvim      -- ✅ 與 telescope.nvim 類似，但是速度更快 ( fd244f2 )
 │   │
 │   ├── theme/start/                 -- ✅ 主題相關
