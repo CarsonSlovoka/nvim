@@ -103,9 +103,13 @@ local function install_nvimTreesitter()
 
   ---@type table
   local parser_list = require("nvim-treesitter.parsers").get_parser_configs()
-  -- https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L60-L83
+  -- ~~https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L60-L83~~
+  -- 目前沒有辦法再透過這樣的方式(get_parser_configs)來裝, 因為現行的它在程式中是直接調用，導致: `local parsers = require('nvim-treesitter.parsers')` 得到的內容都是固定的
+  -- https://github.com/nvim-treesitter/nvim-treesitter/blob/99dfc5acefd7728cec4ad0d0a6a9720f2c2896ff/lua/nvim-treesitter/config.lua#L139-L151
+  -- 👇 目前以下已無效果
   parser_list.strings = { -- :TSInstall strings -- 如果反悔可以用 :TSUninstall strings 來解除
     install_info = {
+      revision = '62ee9e1f538df04a178be7090a1428101481d714',
       url = "https://github.com/CarsonSlovoka/tree-sitter-strings",
       -- url = vim.fn.expand("~/tree_sitter_strings"), -- 本機的一直沒有嘗試成功🤔
       files = { "src/parser.c" },
@@ -143,10 +147,15 @@ local function install_nvimTreesitter()
 
   -- 💡 如果只是要syntax的突顯，預設nvim就已經有很多種格式，不再需要特別安裝: https://github.com/neovim/neovim/tree/af6b3d6/runtime/syntax
   -- 💡 如果是markdown的codeblock要有突顯，才需要考慮 nvim-treesitter.parsers 安裝, 因為它會有多定義出來的highlight
-  -- 💡 已存在的第三方parser參考: https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L69-L2764
+  -- 💡 已存在的第三方parser參考:
+  --    - ~~舊版: https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/lua/nvim-treesitter/parsers.lua#L69-L2764~~
+  --    - 新版(有新增該版本的雜湊值): https://github.com/nvim-treesitter/nvim-treesitter/blob/99dfc5acefd7728cec4ad0d0a6a9720f2c2896ff/lua/nvim-treesitter/parsers.lua#L1-L2693
+  -- Caution: ensure_installed已經不可用: https://github.com/nvim-treesitter/nvim-treesitter/blob/99dfc5acefd7728cec4ad0d0a6a9720f2c2896ff/README.md?plain=1#L59-L69
   m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
-      -- :TSModuleInfo 也可以找有哪些內容能裝
+      -- ~~:TSModuleInfo 也可以找有哪些內容能裝~~ 已經沒有作用
+      -- :TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff
+      -- :TSInstall all # 👈 Warn: 不要用這個，會裝所有可以裝的項目，會太多
       "bash",
       "lua",
 

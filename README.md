@@ -152,9 +152,9 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 ├── doc/                             -- ✅ nvim的幫助文檔(可用:help找尋關聯tag)
 ├── pack/                            -- 🔹 git rev-parse --short HEAD | wl-copy 🔹 git branch -v
 │   ├── syntax/start/
-│   │          ├── nvim-treesitter/             -- ✅ 語法高亮 (v0.9.3... 096babe)
+│   │          ├── nvim-treesitter              -- ✅ 語法高亮 (99dfc5a 2026-01-04)
 │   │          ├── nvim-treesitter-context      -- ✅ 頂端凍結函數名 (v1.0.0... 59f318a)
-│   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (ad8f0a47)
+│   │          └── nvim-treesitter-textobjects  -- ✅ visual下的選取, 移動(function, class), 參數交換 (需要先裝nvim-treesitter以及lsp之後才能有效使用) (28a3494 2026-01-02)
 │   │
 │   ├── lsp/start/                   -- ✅ language server protocol
 │   │       │
@@ -305,7 +305,18 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 
 ```yaml
 # 更新
-:TSUpdate
+:TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff
+:TSUninstall  lua sql gotmpl # 目前這幾個會有問題, 所以先移除
+# ~~:TSUpdate~~
+```
+
+
+[tree-sitter-cli安裝](https://github.com/tree-sitter/tree-sitter/blob/17e3c7a5c56527a179fa6e37ce7ee934493e5047/crates/cli/README.md?plain=1#L12-L24)
+
+```sh
+# ❌ ERROR tree-sitter-cli not found
+npm install -g tree-sitter-cli  # 裝完，終端機整個關閉重啟，就不會再看到以上的錯誤，而是以下內容
+# ✅ OK tree-sitter-cli 0.26.3 (/opt/homebrew/bin/tree-sitter)
 ```
 
 ### [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context)
