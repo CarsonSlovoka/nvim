@@ -305,7 +305,7 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 
 ```yaml
 # 更新
-:TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff
+:TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff html latex yaml
 :TSUninstall  lua sql gotmpl # 目前這幾個會有問題, 所以先移除
 # ~~:TSUpdate~~
 ```

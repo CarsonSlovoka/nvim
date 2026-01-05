@@ -154,7 +154,7 @@ local function install_nvimTreesitter()
   m.setup {              -- pack/syntax/start/nvim-treesitter/lua/configs.lua
     ensure_installed = { -- 寫在這邊的項目就不需要再用 :TSInstall 去裝，它會自動裝
       -- ~~:TSModuleInfo 也可以找有哪些內容能裝~~ 已經沒有作用
-      -- :TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff
+      -- :TSInstall bash lua go gotmpl python xml json jsonc markdown markdown_inline dart elixir sql diff html latex yaml
       -- :TSInstall all # 👈 Warn: 不要用這個，會裝所有可以裝的項目，會太多
       "bash",
       "lua",
@@ -182,6 +182,10 @@ local function install_nvimTreesitter()
       "sql",    -- 獲得比較好的highlight
 
       "diff",   -- gitdiff: https://github.com/the-mikedavis/tree-sitter-diff  (目前前面不可以有多的空白)
+
+      "html",
+      "latex",
+      "yaml"
     },
     sync_install = false,
     auto_install = false,
@@ -1707,7 +1711,13 @@ local function install_renderMarkdown()
     vim.notify("Failed to load render-markdown", vim.log.levels.ERROR)
     return
   end
-  m.setup({})
+  -- m.setup({})
+  m.setup({
+    -- 預設就是true, 除非不想要TSInstall它們，也不想要看到警告，才需要考慮將其設定為false
+    -- html = { enabled = true },
+    -- latex = { enabled = false }, -- ⚠️ WARNING none installed: { "utftex", "latex2text" } => brew install utftex  就可解決
+    -- yaml = { enabled = true },
+  })
 
   -- vim.api.nvim_create_user_command("RenderMarkdownToggle",
   --   function()
