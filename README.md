@@ -162,7 +162,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │
 │   ├── git/start/                   -- ✅ git
 │   │       │
-│   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v1.0.0...  5582fbd)
+│   │       └── gitsigns.nvim/       -- ✅ 編輯的時候，可以看到git上的異動(新增, 刪除, 修改...) (v2.0.0...  6bd2949 2026-01-01)
 │   │
 │   ├── motion/start/                -- ✅ 移動相關 2b68ddc
 │   │          ├── leap.nvim         -- ✅ 用兩鍵的方式來移動，預設觸發鍵為s (f19d435 2025-12-04)
