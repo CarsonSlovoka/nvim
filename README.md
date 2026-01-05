@@ -197,7 +197,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │            └── ~~atq.nvim~~        -- ⚠  通知提醒 ( 396ed33 ) -- 不需要用到插件，寫一個簡單的command即可完成: https://github.com/CarsonSlovoka/nvim/blob/62f78b8b2f506b1b4a3eff6006b0fcbbcf06c890/lua/config/commands.lua#L1142-L1223
 │   │
 │   ├── debug/start/                            -- ✅ debug相關套件集
-│   │         ├── nvim-dap                      -- ✅ 一個協議用於neovim上debug等相關事宜(需要再找每一個語言的debug adapter) (v0.10.0... 7aade9e) https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/
+│   │         ├── nvim-dap                      -- ✅ 一個協議用於neovim上debug等相關事宜(需要再找每一個語言的debug adapter) (03e83f1  2026-01-04) https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/
 │   │         ├── nvim-dap-ui                   -- ✅ 取得 require"dapui" (v4.0.0... bc81f8d)
 │   │         ├── nvim-nio                      -- ✅ 此為nvim-dap-ui需要用到的插件 (v1.10.1 21f5324)
 │   │         ├── nvim-dap-python               -- ✅ debug adapter: python ( 3428282 )
