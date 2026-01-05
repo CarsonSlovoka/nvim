@@ -189,7 +189,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── flutter-tools.nvim     -- ✅ 主要用的語言是dart, 而flutter是一個框架, flutter-tools.nvim能提供其lsp與dap相關設定 (v1.14.0... 8fa438f)
 │   │
 │   ├── other/start/                     -- ✅ 未分類
-│   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (v8.1.1... a020c88)
+│   │         ├── render-markdown.nvim   -- ✅ 將markdown渲染的比較好看 (da6a7b2 2026-01-03)
 │   │         ├── lualine.nvim           -- ✅ statusbar (47f91c4 2025-11-23)
 │   │         └── indent-blankline.nvim  -- ✅ 簡稱為ibl 幫你找出括號配對等等 (v3.8.6 259357f) 考慮到非所有程式都很複雜，因此如果有需要請用指令 :Ibl 去開啟
 │   │

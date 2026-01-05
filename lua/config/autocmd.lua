@@ -1049,6 +1049,15 @@ function M.setup(opts)
   })
 
 
+  -- render-markdown.nvim 在(da6a7b2 2026-01-03)開始，需要自己寫autocmd來觸發才會有效果 https://github.com/MeanderingProgrammer/render-markdown.nvim/blob/da6a7b25471ab23824f3429225973186eb0b62d2/tests/minimal_init.lua#L33-L39
+  vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('Highlighter', {}),
+    pattern = 'markdown',
+    callback = function(args)
+      vim.treesitter.start(args.buf)
+    end,
+  })
+
   if opts.callback then
     opts.callback(M)
   end
