@@ -12,6 +12,7 @@ vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- �
 local commands = {}
 
 local BAT_EXE_NAME = vim.uv.os_uname().sysname == "Darwin" and "bat" or "batcat"
+local COPY_EXE = vim.uv.os_uname().sysname == "Darwin" and "pbcopy" or "wl-copy"
 
 local function openCurrentDirWithFoot()
   local current_file_path = vim.fn.expand("%:p:h") -- 獲取當前文件所在的目錄
@@ -3684,10 +3685,10 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
       [[--color 'list-border:#669966,list-label:#99cc99' ]],
       [[--color 'input-border:#996666,input-label:#ffcccc' ]],
       [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
-      [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- echo結果, 也將結果複製到剪貼簿
-      [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                           -- 透過 ctrl-/ 可以切換
-      [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                   -- alt:{p,n} 可以控制preview up, down
-      [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],                                 -- 複製但不離開(不加abort), 如果沒有用silent畫面會閃
+      string.format([[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | %s )+abort" ]], COPY_EXE), -- echo結果, 也將結果複製到剪貼簿
+      [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],                                               -- 透過 ctrl-/ 可以切換
+      [[--bind "alt-p:preview-up,alt-n:preview-down"]],                                                       -- alt:{p,n} 可以控制preview up, down
+      string.format([[--bind 'ctrl-y:execute-silent(%s <<< {})']], COPY_EXE),                                 -- 複製但不離開(不加abort), 如果沒有用silent畫面會閃
     }
 
     -- 使用 termopen 開啟一個互動式 terminal
@@ -3812,10 +3813,10 @@ vim.api.nvim_create_user_command("Rg", function(args)
         [[--color 'list-border:#669966,list-label:#99cc99' ]],
         [[--color 'input-border:#996666,input-label:#ffcccc' ]],
         [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
-        [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
+        string.format([[--bind "enter:execute(echo "{}" && echo "{}" | %s )+abort" ]], COPY_EXE),
         [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
         [[--bind "alt-p:preview-up,alt-n:preview-down"]],
-        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
+        string.format([[--bind 'ctrl-y:execute-silent(%s <<< {})']], COPY_EXE),
       }
     else
       cmd = {
@@ -3831,10 +3832,10 @@ vim.api.nvim_create_user_command("Rg", function(args)
         [[--color 'input-border:#996666,input-label:#ffcccc' ]],
         [[--color 'header-border:#6699cc,header-label:#99ccff' ]],
         -- [[--bind "enter:execute(echo "$(pwd)/{}" && echo "$(pwd)/{}" | wl-copy )+abort" ]], -- 👈 用這樣會導致當rg使用工作路徑時會有重複的問題
-        [[--bind "enter:execute(echo "{}" && echo "{}" | wl-copy )+abort" ]],
+        string.format([[--bind "enter:execute(echo "{}" && echo "{}" | %s )+abort" ]], COPY_EXE),
         [[--bind 'ctrl-/:change-preview-window(down|hidden|)' ]],
         [[--bind "alt-p:preview-up,alt-n:preview-down"]],
-        [[--bind 'ctrl-y:execute-silent(wl-copy <<< {})']],
+        string.format([[--bind 'ctrl-y:execute-silent(%s <<< {})']], COPY_EXE),
       }
     end
 
