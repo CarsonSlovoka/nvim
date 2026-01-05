@@ -1040,7 +1040,9 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd('TextYankPost', {
     group = groupName.highlight,
     callback = function()
-      vim.highlight.on_yank({
+      -- vim.highlight is deprecated. Feature will be removed in Nvim 2.0.0
+      -- vim.highlight.on_yank({
+      vim.hl.on_yank({
         higroup = 'IncSearch',
         timeout = 700,
       })
