@@ -524,7 +524,9 @@ local function install_leap()
     vim.notify("Failed to load leap", vim.log.levels.ERROR)
     return
   end
-  require('leap').set_default_mappings()
+  -- require('leap').set_default_mappings() -- deprecated: `:help leap-mappings`
+  vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap)')
+  vim.keymap.set('n', 'S', '<Plug>(leap-from-window)')
 end
 
 local function install_gitsigns()
