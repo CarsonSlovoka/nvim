@@ -315,7 +315,7 @@ git clone https://github.com/nvim-treesitter/nvim-treesitter.git ~/.config/nvim/
 
 ```sh
 # ❌ ERROR tree-sitter-cli not found
-npm install -g tree-sitter-cli  # 裝完，終端機整個關閉重啟，就不會再看到以上的錯誤，而是以下內容
+sudo npm install -g tree-sitter-cli  # 裝完，終端機整個關閉重啟，就不會再看到以上的錯誤，而是以下內容
 # ✅ OK tree-sitter-cli 0.26.3 (/opt/homebrew/bin/tree-sitter)
 ```
 
