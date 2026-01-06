@@ -3370,7 +3370,20 @@ function commands.setup()
       else
         target = vim.fn.expand("%:p:h:t")
       end
-      vim.cmd("!foot yazi " .. target .. " & ")
+      if vim.uv.os_uname().sysname == "Linux" then
+        vim.cmd("!foot yazi " .. target .. " & ")
+        -- open -na /Applications/Ghostty.app --args -e yazi
+      elseif vim.uv.os_uname().sysname == "Darwin" then
+        -- 如果在nvim中的終端機如ghostty, 也可以用yazi, 不過看到的圖片類似用Sixel graphics的方式，要單獨在ghostty不進入nvim才會正常
+        -- Tip: 也可以先複製工作目錄，再用New Window的方式來啟動yazi
+
+        target = vim.fn.expand("%:p:h")
+        -- vim.cmd("!open -na /Applications/Ghostty.app --args -e yazi " .. target) -- 可行
+        vim.cmd("!open -na /Applications/kitty.app --args -e yazi " .. target) -- 也行
+      else
+        -- 不確定windows能不能
+        vim.cmd("!kitty yazi " .. target .. " & ")
+      end
     end,
     {
       desc = "!foot yazi fileOrDir",
