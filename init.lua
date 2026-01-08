@@ -610,17 +610,22 @@ local function install_gitsigns()
       -- Navigation
       map('n', ']c', function()
         if vim.wo.diff then
-          vim.cmd.normal({ ']c', bang = true })
+          -- 例如在: gitsigns.diffthis 的視窗開啟時 (<leader>hd)
+          vim.cmd.normal({ vim.v.count1 .. ']c', bang = true })
         else
-          plugin.nav_hunk('next')
+          -- Warn: 用以下方式，有的跳轉是不對的
+          -- for _ = 1, vim.v.count1 do
+          --   plugin.nav_hunk('next')
+          -- end
+          plugin.nav_hunk('next', { count = vim.v.count1 })
         end
       end, { desc = '(git)往下找到異動處' })
 
       map('n', '[c', function()
         if vim.wo.diff then
-          vim.cmd.normal({ '[c', bang = true })
+          vim.cmd.normal({ vim.v.count1 .. '[c', bang = true })
         else
-          plugin.nav_hunk('prev')
+          plugin.nav_hunk('prev', { count = vim.v.count1 })
         end
       end, { desc = '(git)往上找到個異動處' })
 
