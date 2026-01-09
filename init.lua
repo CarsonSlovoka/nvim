@@ -537,7 +537,10 @@ local function install_leap()
     vim.notify("Failed to load leap", vim.log.levels.ERROR)
     return
   end
-  -- require('leap').set_default_mappings() -- deprecated: `:help leap-mappings`
+  require('leap').setup({
+    case_sensitive = false, -- 第一鍵不區分大小寫, 第二個按鍵還是會分
+  })
+
   vim.keymap.set({ 'n', 'x', 'o' }, 's', '<Plug>(leap)')
   vim.keymap.set('n', 'S', '<Plug>(leap-from-window)')
 end
