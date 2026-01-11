@@ -15,8 +15,15 @@ local function get_test_arguments()
 end
 
 local function get_build_flags()
-  print("-tags=xxx -tags=foo,bar")
-  return require("dap-go").get_arguments()
+  -- return require("dap-go").get_arguments() -- prompt的提示都是Args, 而不是tags, 容易搞混
+
+  return coroutine.create(function(dap_run_co)
+    local args = {}
+    vim.ui.input({ prompt = "-tags=xxx -tags=foo,bar: " }, function(input)
+      args = vim.split(input or "", " ")
+      coroutine.resume(dap_run_co, args)
+    end)
+  end)
 end
 
 
