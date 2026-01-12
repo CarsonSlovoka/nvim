@@ -3228,6 +3228,7 @@ function commands.setup()
       -- print(string.format(new_fmt, unpack(new_values))) -- 可行，但是如果有錯，是用系統的錯誤
       if ok then
         print(result)
+        vim.fn.setreg('"', result) -- 保存在 " 使得有辦法貼上
       else
         vim.notify(string.format("Format error: %s | fmt: %s %s [確認format如果有個是否有短少\\]", result,
             new_fmt, table.concat(new_values, " ")),
