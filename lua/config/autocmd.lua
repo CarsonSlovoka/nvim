@@ -597,6 +597,11 @@ function M.setup(opts)
       desc = "格式化和去除結尾多餘的space, tab",
       pattern = "*",
       callback = function()
+        -- 對於不可修改的檔案，就不做操作，不然嘗試修改會被報錯, 例如: :copen 中想用:w 寫到其它地方就會有問題
+        if not vim.bo.modifiable then
+          return
+        end
+
         local auto_fmt = M.autoReformat
             and not (
               vim.bo.filetype == "python" -- 如果是python用外部工具來格式化
