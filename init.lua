@@ -795,10 +795,12 @@ local function install_nvim_tree()
       local path
       if args.range == 0 then
         if #args.args > 0 then
-          local params = vim.split(args.args, " ")
-          path = params[1]
+          path = args.fargs[1]
         else
-          path = "~"
+          path = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+          if vim.v.shell_error ~= 0 then
+            path = "~"
+          end
         end
       else
         -- range
