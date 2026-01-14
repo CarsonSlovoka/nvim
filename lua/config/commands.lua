@@ -3259,6 +3259,61 @@ function commands.setup()
       end
     }
   )
+
+  vim.api.nvim_create_user_command("WhichFlag",
+    function(args)
+      local num = tonumber(args.fargs[1])
+      if num < 0 then
+        vim.notify("Negative numbers are not supported", vim.log.levels.ERROR)
+        return
+      end
+
+      -- 獲取進位制參數，默認為 10
+      local base = tonumber(args.fargs[2]) or 10
+      if base ~= 2 and base ~= 8 and base ~= 10 and base ~= 16 then
+        vim.notify("Base must be 2, 8, 10, or 16", vim.log.levels.ERROR)
+        return
+      end
+
+      local flags = {}
+      local bit = 0
+      while num > 0 do
+        if num % 2 == 1 then
+          local flag_value = 2 ^ bit
+          -- 根據進位制格式化輸出
+          if base == 2 then
+            -- table.insert(flags, string.format("0b%s", string.format("%b", flag_value))) -- invalid option '%b' to 'format'
+            table.insert(flags, string.format("0b%s", to_binary(flag_value)))
+          elseif base == 8 then
+            table.insert(flags, string.format("0o%o", flag_value))
+          elseif base == 16 then
+            table.insert(flags, string.format("0x%X", flag_value))
+          else
+            table.insert(flags, flag_value)
+          end
+        end
+
+        num = math.floor(num / 2)
+        bit = bit + 1
+      end
+      local msg = vim.inspect(flags)
+      print(msg)
+      vim.fn.setreg('"', msg)
+    end,
+    {
+      desc = "know which flags are lit",
+      nargs = "+",
+      complete = function(_, cmd_line)
+        local argc = #(vim.split(cmd_line, '%s+')) - 1
+        if argc == 1 then
+          return { "33" }
+        elseif argc == 2 then
+          return { "2", "8", "10", "16" }
+        end
+      end
+    }
+  )
+
   vim.api.nvim_create_user_command("NewTmp",
     function(args)
       -- buftype=nofile 可以寫入但不能儲檔
