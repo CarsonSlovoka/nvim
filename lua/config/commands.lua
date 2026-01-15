@@ -1589,6 +1589,55 @@ function commands.setup()
   )
 
   -- 舊版參考: `git show 56ea05b7:./commands.lua | bat -l lua -P -r 1591,1714` (這個沒什麼用，直接開term打指令比較直接)
+  vim.api.nvim_create_user_command('Gitlog', function(args)
+    if args.fargs[1] == "-h" then
+      cmdUtils.showHelpAtQuickFix({
+        -- git log -L1594,1599:commands.lua -w --ignore-blank-lines --no-patch
+        ':Gitlog -2 20b7508f',
+        ':Gitlog -2 ',
+        ':Gitlog -2 -p',
+        ':Gitlog -2 -p -U3', -- 上下文長度
+        [[:'<,'>Gitlog -2]],
+        [[:'<,'>Gitlog -2 -w]],
+        [[:'<,'>Gitlog -2 -w -b]], -- -b --ignore-blank-lines
+      })
+      return
+    end
+    vim.cmd("cd %:h") -- 先切換到當前該檔案的目錄
+
+    -- 檢查是否在 git 倉庫中
+    local _ = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+    if vim.v.shell_error ~= 0 then
+      vim.notify('Not in a git repository', vim.log.levels.ERROR)
+      return
+    end
+
+    local line_range = ""
+    if args.range ~= 0 then
+      local start_line = vim.fn.line("'<")
+      local end_line = vim.fn.line("'>")
+      line_range = string.format("-L%d,%d:", start_line, end_line)
+    end
+
+    local filename = vim.fn.expand("%:t")
+
+    local git_args = args.args or ''
+    -- Note: 如果用 git log -2 commands.lua 那麼-2必須在檔案之前，所以將可選參數往前放
+    local cmd = string.format('git log %s %s%s', git_args, line_range, filename)
+
+    -- 在新的 terminal buffer 中執行命令
+    vim.cmd('topleft new')
+    -- vim.cmd('botright new')
+    -- vim.cmd('vertical new')
+    -- vim.cmd("term " .. cmd) -- 可行，但是如果想利用這個結果，再去修改，就沒有辦法，之後按下enter就離開了
+    vim.cmd("term")
+    vim.cmd("startinsert")
+    vim.api.nvim_input(cmd .. "<CR>")
+  end, {
+    range = true,
+    nargs = '*',
+    desc = 'Run git log -L on selected lines'
+  })
 
   vim.api.nvim_create_user_command("QFAdd",
     function(args)
