@@ -785,7 +785,8 @@ local function install_nvim_tree()
   local nvim_treeAPI = require "nvim-tree.api"
   vim.keymap.set("n", "<A-t>", function()
       local cur_file_path = vim.fn.expand("%:p")
-      vim.cmd("tabnew " .. cur_file_path)
+      -- 也可以考慮用 <C-W>T  把目前視窗「搬」到新 tab (原本視窗會消失)
+      vim.cmd("tabnew " .. cur_file_path) -- 會保留原本視窗，新 tab 顯示相同 buffer
     end,
     { desc = "在新的頁籤開啟當前的文件" }
   )

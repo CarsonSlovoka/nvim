@@ -1632,6 +1632,8 @@ function commands.setup()
     -- vim.cmd("term " .. cmd) -- 可行，但是如果想利用這個結果，再去修改，就沒有辦法，之後按下enter就離開了
     vim.cmd("term")
     vim.cmd("startinsert")
+    -- vim.api.nvim_input([[echo -e '\033[37m可以使用\033[0m \033[42m<C-W>T\033[0m \033[37m將視窗移動到新的Tab\033[0m']] .. "<CR>") -- < > 會出不來
+    vim.api.nvim_input([[echo -e '\033[37m可以使用\033[0m \033[42m\x3cC-W\x3eT\033[0m \033[37m將視窗移動到新的Tab\033[0m']] .. "<CR>")
     vim.api.nvim_input(cmd .. "<CR>")
   end, {
     range = true,
