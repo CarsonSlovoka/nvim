@@ -176,6 +176,7 @@ local function install_nvimTreesitter()
       -- "strings" -- ~/.config/nvim/pack/syntax/start/nvim-treesitter/parser/strings.so 會在此地方產生相關的so文件
 
       "dart",
+      "swift",
 
       "elixir", -- 可用在vhs的demo.tap上: https://github.com/charmbracelet/vhs/blob/517bcda0faf416728bcf6b7fe489eb0e2469d9b5/README.md?plain=1#L719-L737
 
@@ -231,6 +232,8 @@ local function install_nvimTreesitterTextobjects()
     vim.notify("Failed to load nvim-treesitter-textobjects", vim.log.levels.WARN)
     return
   end
+
+  -- Important: 只要使用的時候，有報錯，例如: `Parser could not be created for buffer 81 and language "swift"` 那麼就使用 :TSInstall swift 即可解決
 
   -- https://github.com/nvim-treesitter/nvim-treesitter-textobjects/blob/baa6b4ec28c8be5e4a96f9b1b6ae9db85ec422f8/README.md?plain=1#L43-L163
   require("nvim-treesitter-textobjects").setup {
