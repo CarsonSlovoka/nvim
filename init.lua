@@ -1961,6 +1961,7 @@ local function install_nvim_dap()
   require("external.dap.python")
   require("external.dap.swift")
   require("external.dap.javascript")
+  require("external.dap.rust")
 
   require("external.dap.ttx")
 

@@ -1065,6 +1065,19 @@ function M.setup(opts)
     end,
   })
 
+  -- 啟動 rust-analyzer
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "rust",
+    callback = function()
+      -- `rustup component add rust-analyzer`
+      vim.lsp.start({
+        name = "rust-analyzer",
+        cmd = { "rust-analyzer" },
+        root_dir = vim.fs.dirname(vim.fs.find({ "Cargo.toml" }, { upward = true })[1]),
+      })
+    end,
+  })
+
   if opts.callback then
     opts.callback(M)
   end

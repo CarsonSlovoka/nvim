@@ -735,6 +735,24 @@ rm -v ~/codelldb/codelldb.zip
 >
 > `rm -rfv ~/codelldb/`
 
+#### rust
+
+```sh
+# 🟧 lsp
+rustup component add rust-analyzer
+rust-analyzer --version
+# rust-analyzer 1.92.0 (ded5c06c 2025-12-08)
+
+
+# 🟧 codelldb (為了debug)
+mkdir -pv ~/codelldb
+# https://github.com/vadimcn/codelldb/releases/download/
+wget https://github.com/vadimcn/codelldb/releases/download/v1.12.1/codelldb-darwin-arm64.vsix -O ~/codelldb/codelldb.zip
+cd ~/codelldb
+unzip ~/codelldb
+```
+
+
 ## ios
 
 ```bash
