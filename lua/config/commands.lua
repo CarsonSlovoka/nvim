@@ -1641,6 +1641,30 @@ function commands.setup()
     desc = 'Run git log -L on selected lines'
   })
 
+  vim.api.nvim_create_user_command('Comm', function(args)
+    if #args.fargs ~= 2 then
+      vim.api.nvim_echo({ { ':Comm file1 file2', "@ERROR" }, }, false, {})
+      return
+    end
+    vim.cmd('topleft new')
+    vim.cmd("term")
+    vim.cmd("startinsert")
+
+    local cmd = string.format([[comm -3 <lt>(sort %s) <lt>(sort %s)<CR>]],
+      vim.fn.shellescape(args.fargs[1]),
+      vim.fn.shellescape(args.fargs[2])
+    )
+    -- vim.api.nvim_input("cmd -3 <(sort file1) <(sort file2)<CR>") -- ❌ < 會輸出不了，要用<lt>
+    -- vim.api.nvim_input("cmd -3 <lt>(sort file1) <lt>(sort file2)<CR>")
+    vim.api.nvim_input(cmd)
+  end, {
+    nargs = '*',
+    desc = 'comm – select or reject lines common to two files',
+    complete = function(arg_lead)
+      return vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+    end
+  })
+
   vim.api.nvim_create_user_command("QFAdd",
     function(args)
       local text = ""
