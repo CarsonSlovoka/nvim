@@ -1593,6 +1593,7 @@ function commands.setup()
     if args.fargs[1] == "-h" then
       cmdUtils.showHelpAtQuickFix({
         -- git log -L1594,1599:commands.lua -w --ignore-blank-lines --no-patch
+        ':Gitlog -2 20b7508f --name-only --oneline',
         ':Gitlog -2 20b7508f',
         ':Gitlog -2 ',
         ':Gitlog -2 -p',
@@ -1623,7 +1624,13 @@ function commands.setup()
 
     local git_args = args.args or ''
     -- Note: 如果用 git log -2 commands.lua 那麼-2必須在檔案之前，所以將可選參數往前放
-    local cmd = string.format('git log %s %s%s', git_args, line_range, filename)
+    local cmd = string.format('git log %s %s%s', git_args, line_range, filename) -- 如果用--name-only不能用這種行式
+    for _, arg in ipairs(args.fargs) do
+      if arg == "--name-only" then
+        cmd = string.format('git log %s', git_args) -- 可以考慮加--oneline
+        break
+      end
+    end
 
     -- 在新的 terminal buffer 中執行命令
     vim.cmd('topleft new')
