@@ -1658,8 +1658,8 @@ function commands.setup()
     vim.cmd("startinsert")
 
     local cmd = string.format([[comm -3 <lt>(sort %s) <lt>(sort %s)<CR>]],
-      vim.fn.shellescape(args.fargs[1]),
-      vim.fn.shellescape(args.fargs[2])
+      vim.fn.shellescape(vim.fn.expand(args.fargs[1])),
+      vim.fn.shellescape(vim.fn.expand(args.fargs[2]))
     )
     -- vim.api.nvim_input("cmd -3 <(sort file1) <(sort file2)<CR>") -- ❌ < 會輸出不了，要用<lt>
     -- vim.api.nvim_input("cmd -3 <lt>(sort file1) <lt>(sort file2)<CR>")
