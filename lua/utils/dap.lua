@@ -2,7 +2,7 @@ local M = {}
 
 ---@param prompt string
 ---@return function
-function M.get_test_arguments_with_prompt(prompt)
+function M.input_arguments(prompt)
   return function()
     return coroutine.create(
       function(dap_run_co)

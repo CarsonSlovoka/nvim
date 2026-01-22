@@ -85,12 +85,10 @@ for _, config in ipairs({
     name = "python -m unittest my_test.TestClass",
     module = 'unittest', -- 👈 這個是單元測試的關鍵
     -- args = require("dap-go").get_arguments,
-    args = utils.dap.get_test_arguments_with_prompt(
+    args = utils.dap.input_arguments(
     -- python -m unittest my_test  # 對整份文件測試, my_test.py
     -- python -m unittest my_test.TestUnitest  # 僅測試class TestUnitest
-      "Args: {my_test.TestClass  " ..
-      "my_test  " ..
-      "}:"
+      "Args: {my_test.TestClass  my_test}:"
     ),
     justMyCode = false,
   },
