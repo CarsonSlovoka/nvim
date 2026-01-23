@@ -1,5 +1,6 @@
 local dap = require('dap')
 local dapui = require('dapui')
+local utils = require("utils.utils")
 
 dap.adapters.codelldb = {
   type = 'server',
@@ -106,13 +107,24 @@ end
 
 dap.configurations.rust = {
   {
-    name = "Launch",
+    name = "Debug (input: exe_path)",
     type = "codelldb",
     request = "launch",
     program = function()
       -- return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
       return vim.fn.input('Path to executable: ', get_rust_executable(), 'file')
     end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+  {
+    name = "Debug (input: exe_path, args)",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', get_rust_executable(), 'file')
+    end,
+    args = utils.dap.input_arguments(":"),
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
   },
