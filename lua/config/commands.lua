@@ -1686,6 +1686,40 @@ function commands.setup()
     end
   })
 
+  vim.api.nvim_create_user_command('Rustrun', function(args)
+    -- Note: 也有一個 :RustRun 的指令，但是它是print的方式，而不是額外開一個term
+    -- 我們這個額外開一個term，可以方便修改會額外加上一些命令
+
+    local rspath = vim.fn.expand(args.fargs[1])
+    local basename = vim.fn.fnamemodify(rspath, ':t:r')
+
+    vim.cmd('topleft new')
+    vim.cmd("term")
+
+    -- local cargo_exist = vim.fs.root(0, 'Cargo.toml') -- Tip: 這個會往上找，直到找到有Cargo.toml (前面的0表示找到有git目錄就停)
+    -- if cargo_exist then
+    --   vim.cmd("startinsert")
+    --   vim.api.nvim_input([[cargo run<CR>]])
+    --   return
+    -- end
+
+    -- 單檔模式
+    local cmd = string.format('rustc -g %s -o %s && ./%s', -- 編譯後直接運行
+      vim.fn.shellescape(rspath),
+      vim.fn.shellescape(basename),
+      vim.fn.shellescape(basename)
+    )
+    -- vim.fn.feedkeys('i' .. cmd .. '<CR>', 'n')
+    vim.cmd("startinsert")
+    vim.api.nvim_input(string.format([[%s <CR>]], cmd))
+  end, {
+    nargs = 1,
+    desc = 'rustc -g my.rs && ./my',
+    complete = function(arg_lead)
+      return vim.fn.getcompletion(vim.fn.expand(arg_lead), "file")
+    end
+  })
+
   vim.api.nvim_create_user_command("QFAdd",
     function(args)
       local text = ""
