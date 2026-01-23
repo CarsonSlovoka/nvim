@@ -1672,6 +1672,20 @@ function commands.setup()
     end
   })
 
+  vim.api.nvim_create_user_command('RustExplain', function(args)
+    local err_code = args.fargs[1]
+    vim.cmd('topleft new')
+    vim.cmd("term")
+    vim.cmd("startinsert")
+    vim.api.nvim_input(string.format([[rustc --explain %s | bat -l rust -P <CR>]], err_code))
+  end, {
+    nargs = 1,
+    desc = 'rustc --explain E0308 | bat -l rust -P',
+    complete = function()
+      return { "E0308" }
+    end
+  })
+
   vim.api.nvim_create_user_command("QFAdd",
     function(args)
       local text = ""
