@@ -1696,8 +1696,8 @@ function commands.setup()
     vim.cmd('topleft new')
     vim.cmd("term")
 
-    -- local cargo_exist = vim.fs.root(0, 'Cargo.toml') -- Tip: 這個會往上找，直到找到有Cargo.toml (前面的0表示找到有git目錄就停)
-    -- if cargo_exist then
+    -- local cargo_path = vim.fs.root(0, 'Cargo.toml') -- Tip: 這個會往上找，直到找到有Cargo.toml
+    -- if cargo_path then
     --   vim.cmd("startinsert")
     --   vim.api.nvim_input([[cargo run<CR>]])
     --   return
