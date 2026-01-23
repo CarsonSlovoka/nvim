@@ -107,6 +107,19 @@ end
 
 dap.configurations.rust = {
   {
+    name = "rustc -g and run (for simple single file)",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      local filepath = vim.fn.expand("%")
+      local exe_path = vim.fn.expand("%:r") -- 如果沒有用rustc -o 指定名稱，出來的執行檔名稱和原來的rs一樣，只是沒有附檔名
+      vim.cmd("!rustc -g " .. filepath)     -- Important 要debug一定要加上-g, 也就是`-C debuginfo=2`才能，不然會直接執行完，也進不去任何的中斷點
+      return vim.fn.input('Path to executable: ', exe_path, 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+  {
     name = "Debug (input: exe_path)",
     type = "codelldb",
     request = "launch",
