@@ -337,6 +337,19 @@ map({ 'n', 'v' }, '<leader>gf',
   }
 )
 
+map({ 'n', 'v' }, 'gF', function()
+    local git_path = vim.fs.root(0, '.git')
+    if git_path then
+      vim.cmd("cd " .. git_path)
+    end
+    return "gf"
+  end,
+  {
+    desc = "Jump using the git directory as the working directory",
+    expr = true,
+  }
+)
+
 map({ 'n', 'v' }, 'gi',
   function()
     local exe = ""
