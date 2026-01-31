@@ -9,6 +9,8 @@ vim.api.nvim_set_hl(0, "@property.jsonc", { link = "@tag" })
 vim.api.nvim_set_hl(0, "sqlkeyword", { link = "Statement" })
 vim.api.nvim_set_hl(0, "@operator.sql", { link = "sqlOperator" })
 
+vim.api.nvim_set_hl(0, "Search", { bg = "#e8d67c" })
+
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
   if opts then
