@@ -4830,6 +4830,49 @@ vim.api.nvim_create_user_command("LmsChat", function(args)
   }
 )
 
+vim.api.nvim_create_user_command("CsvToMarkdownTable", function(args)
+  local config = utils.cmd.get_cmp_config(args.fargs)
+  local sep = config.sep or "\t"
+  local clipboard_content
+  local after = true
+  if args.range ~= 0 then
+    clipboard_content = table.concat(utils.range.get_selected_text(), "\n")
+    after = false -- 直接置換range的內容, 等同P
+  else
+    clipboard_content = vim.fn.getreg("+")
+  end
+
+  local markdown_tbl = {}
+  local split_by_newline_pattern = "[^\n]+"
+  local match_text_between_bars_pattern = "[^|]+"
+
+  local is_header = true
+  for line in clipboard_content:gmatch(split_by_newline_pattern) do
+    line = string.format("| %s |", line:gsub(sep, " | "))
+    markdown_tbl[#markdown_tbl + 1] = line
+    if is_header then
+      local separator = line:gsub(match_text_between_bars_pattern, "---")
+      markdown_tbl[#markdown_tbl + 1] = separator
+      is_header = false
+    end
+  end
+  vim.api.nvim_put(markdown_tbl, "l", after, true)
+end, {
+  desc = "Convert csv to markdown table",
+  range = true,
+  nargs = "?",
+  complete = function(_, cmd_line)
+    local argc = #(vim.split(cmd_line, "%s+")) - 1
+    print(argc)
+    if argc == 1 then
+      return {
+        "sep=\t",
+        "sep=,",
+      }
+    end
+  end
+})
+
 -- print(vim.inspect(get_font_map()))
 
 return commands
