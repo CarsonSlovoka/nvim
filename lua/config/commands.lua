@@ -3667,13 +3667,41 @@ end, {
 
 vim.api.nvim_create_user_command("CloneSession", function(args)
   local session_path = args.fargs[1] or "~/mySession.vim"
+  session_path = vim.fn.fnameescape(session_path)
   vim.cmd("mksession! " .. session_path)
-  vim.cmd(string.format("!foot nvim -S %s &", session_path))
+  vim.notify("The session has been saved and opened in a new terminal: " .. session_path, vim.log.levels.INFO)
+
+  local cmd = "nvim -S " .. session_path
+  -- vim.cmd(string.format("!foot nvim -S %s &", session_path))
+  vim.fn.setreg('+', cmd) -- 直接將要啟動的指令保存在剪貼簿
+
+  local term = vim.env.TERM or "unknown"
+  local launchers = {
+    foot = function()
+      vim.fn.system({ "foot", cmd, "&" })
+    end,
+
+    -- 不太曉得其它終端機的做法
+    -- ["xterm-kitty"] = function() end,
+    -- wezterm = function() end,
+    -- alacritty = function() end,
+    -- ["xterm-ghostty"] = function() end,
+
+    _default = function() end,
+  }
+
+  local handler = launchers[term] or launchers._default
+  handler()
+  vim.api.nvim_echo({
+    { 'You can open a new terminal and paste the contents of the clipboard: ', "Normal" },
+    { cmd,                                                                     'YellowBold' },
+  }
+  , true, {})
 end, {
-  desc = "mksession ~/mySession.vim",
+  desc = "mksession! ~/mySession.vim",
   nargs = "?",
   complete = function()
-    return "~/mySession.vim"
+    return { "~/mySession.vim" }
   end
 })
 
