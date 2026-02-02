@@ -337,7 +337,8 @@ map({ 'n', 'v' }, '<leader>gf',
   }
 )
 
-map({ 'n', 'v' }, 'gF', function()
+map({ 'n', 'v' }, '<leader>gF', function()
+    -- Note: gF 預設已經有定義, 和gf不同的是，它可以跳到指定的列(欄沒有)，例如: ./README.md:5:2   gf只會跳到該文字(會考慮最後一次的位置), 而gF會跳到第5行
     local git_path = vim.fs.root(0, '.git')
     if git_path then
       vim.cmd("cd " .. git_path)
