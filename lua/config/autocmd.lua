@@ -73,7 +73,10 @@ function M.setup(opts)
     group = groupName.autoSave,
     pattern = '*',
     callback = function()
-      -- 檢查 buffer 是否已修改且可寫
+      if vim.fn.bufname() == '' then
+        -- 例如透過 CTRL-W_n 則不觸發
+        return
+      end
       if vim.bo.modified and vim.bo.modifiable and vim.bo.buftype == '' then
         vim.cmd('write')
         vim.notify(
