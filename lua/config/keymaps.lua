@@ -396,15 +396,50 @@ map({ 'n', 'v' }, 'gi',
 
 local function setup_normal()
   map('n', -- normal mode
-    '<leader>cwd',
+    '<leader>Y',
     function()
       local abs_path = vim.fn.expand(("%:p"))
-      print("✅ Copied " .. abs_path .. " to system clipboard!")
-      return ':let @+=expand("%:p")<CR>' -- % 表示當前的文件名, :p (轉成絕對路徑)
+      local filename = vim.fn.expand(("%:t"))
+
+      -- 定義選項
+      local options = {
+        abs_path,
+        filename
+      }
+      local git_rel_path = vim.fn.systemlist("git ls-files --full-name " .. vim.fn.shellescape(abs_path))[1]
+      if vim.v.shell_error == 0 then
+        table.insert(options, git_rel_path)
+      end
+
+      vim.ui.select(options,
+        {
+          prompt = "Choose path format to copy:",
+          format_item = function(item)
+            local m = {
+              [abs_path] = "Absolute Path: ",
+              [filename] = "Filename: ",
+              [git_rel_path] = "Git Relative Path: ",
+            }
+            return m[item] and m[item] .. item or item
+          end
+        },
+        function(choice)
+          if not choice then
+            return
+          end
+
+          vim.fn.setreg("+", choice)
+          vim.api.nvim_echo({
+            { "✅ Copied: ", "Normal" },
+            { choice, "@label" },
+          }, false, {})
+        end
+      )
+      -- return ':let @+=expand("%:p")<CR>' -- % 表示當前的文件名, :p (轉成絕對路徑)
     end,
     {
-      desc = "複製文件的絕對路徑",
-      expr = true,
+      desc = "copy the filepath",
+      -- expr = true,
     }
   )
 
