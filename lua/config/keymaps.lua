@@ -19,13 +19,8 @@ end
 
 
 -- 系統剪貼簿相關
-map("n", "<leader>y", '"+y', { desc = "複製到系統剪貼簿" })
-map("v", "<leader>y", '"+y', { desc = "複製到系統剪貼簿" })
-map("n", "<leader>Y", '"+Y', { desc = "複製到系統剪貼簿" })
-
-map("n", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
-map("v", "<leader>d", '"+d', { desc = "剪下的內容也會保留在系統剪貼簿" })
-map("n", "<leader>D", '"+D', { desc = "剪下的內容也會保留在系統剪貼簿" })
+map({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+map({ "n", "v" }, "<leader>d", '"+d', { desc = "The cut content will also be retained in the system clipboard" })
 
 -- map("i", "<C-h>", '<C-o>b', { desc = "<C-Left>" }) -- 用C-o的效果不好
 map({ "i", "v" }, "<C-h>", '<C-Left>', { desc = "<C-Left>" })
