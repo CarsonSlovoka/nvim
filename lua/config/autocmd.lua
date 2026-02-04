@@ -1099,7 +1099,10 @@ local function cf_preview(opts, preview_ns, preview_buf)
     local col = 0
     while col < #line do
       local start, finish = regex:match_str(line:sub(col + 1))
-      if not start then break end
+      if not start or finish == 0 then break end
+      if finish <= start then
+        break
+      end
       -- Adjust for substring offset
       start = start + col
       finish = finish + col
