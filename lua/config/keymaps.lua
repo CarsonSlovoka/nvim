@@ -20,6 +20,21 @@ end
 
 -- 系統剪貼簿相關
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+map({ "v" }, "<leader>+y", function()
+    -- https://stackoverflow.com/a/6303919/9935654
+    -- :help :let.=
+    vim.cmd([[normal! ""y]]) -- 先複製選取的內容
+    vim.cmd([[let @+ .= @"]])
+  end,
+  { desc = "Append selected content to the system clipboard" }
+)
+map({ "v" }, "<leader>+Y", function()
+    vim.cmd([[normal! ""y]])
+    -- vim.cmd([[let @+ .= @" .. '\n']]) -- 這不行
+    vim.cmd([[let @+ .= @" . "\n"]])
+  end,
+  { desc = "Append selected content + \n to the system clipboard" }
+)
 map({ "n", "v" }, "<leader>d", '"+d', { desc = "The cut content will also be retained in the system clipboard" })
 
 -- map("i", "<C-h>", '<C-o>b', { desc = "<C-Left>" }) -- 用C-o的效果不好
