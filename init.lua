@@ -69,7 +69,12 @@ require("config.autocmd").setup({
     vim.api.nvim_create_user_command(
       "SetAutoSave",
       function(args)
-        m.autoSave = args.fargs[1] == "1"
+        if args.fargs[1] == "-" then
+          -- toggle
+          m.autoSave = not m.autoSave
+        else
+          m.autoSave = args.fargs[1] == "1"
+        end
         vim.notify("autoSave: " .. vim.inspect(m.autoSave), vim.log.levels.INFO)
       end,
       {
@@ -77,10 +82,21 @@ require("config.autocmd").setup({
         complete = function() -- complete 不能直接回傳一個table，一定要用一個function來包裝
           return {
             "1",
-            "0"
+            "0",
+            "-",
           }
         end,
         desc = "enable autoSave"
+      }
+    )
+
+    vim.keymap.set({ "n" }, "<C-s>",
+      function()
+        vim.cmd("SetAutoSave -")
+      end,
+      {
+        -- 自動保存，在頻繁編輯下，一離開insert就保存可能會造成負擔，所以讓其可以被容易切換
+        desc = "toggle autosave"
       }
     )
   end
