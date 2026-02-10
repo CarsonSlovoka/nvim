@@ -3786,8 +3786,10 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
     -- )
     local cmd = {
       "git ls-files --exclude-standard --cached |",
-      "fzf --style full",
+      -- "fzf --style full",
+      "fzf --style full --multi",
       preview_cmd,
+      [[--bind 'ctrl-q:select-all+accept']],                                                -- 如此ctrl+q可以輸出所有的項目, 需要配合fzf --multi
       "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]], -- Previewing
       [[--bind 'focus:+transform-header:file --brief {} || echo "No file selected"' ]],
       [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
@@ -3810,6 +3812,20 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
       on_exit = function(_, exit_code)
         -- 當 terminal 退出時，提取 buffer 內容
         local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        -- print(vim.inspect(lines))
+        for _, filepath in ipairs(lines) do
+          if vim.fn.filereadable(filepath) == 1 then
+            vim.fn.setqflist(
+              {
+                {
+                  filename = filepath, -- 真實要跳轉的路徑
+                  text = filepath,     -- 顯示的名稱
+                },
+              },
+              'a'
+            )
+          end
+        end
         lines = vim.tbl_filter(function() return lines ~= "" end, lines) -- 忽略空行
 
         -- 打開選擇的檔案
