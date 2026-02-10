@@ -3882,6 +3882,7 @@ vim.api.nvim_create_user_command("Rg", function(args)
         { text = ':Rg --files . wd=~/.config/nvim -uu         " ignore-file, findHidden (-.) 即:忽略gitignore, 顯示隱藏檔案. 第三個u是binary時可用' },
         { text = ':Rg --files . wd=/usr/share/icons/          " 找圖標, 圖檔(svg, png)' },
         { text = ':Rg -g *.png --files . wd=/usr/share/icons/ " 找系統圖標檔: png' },
+        { text = ':Rg -g **/*.sh --files                      " 如果只有用*.sh只能當前的目錄，不會找子目錄' },
       }, 'a')
       -- vim.cmd("copen | cbo | 4cp") -- 要真的enter之後才會在最後一個項目，此時cp才會有用
       vim.cmd("copen | cbo")
