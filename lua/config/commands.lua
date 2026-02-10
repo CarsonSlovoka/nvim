@@ -3734,8 +3734,15 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
     if cd_git_root == "1" then
       vim.cmd("cd " .. git_root)
     end
-    -- vim.cmd("tabnew | setlocal buftype=nofile | term") -- 👈 如果後面用的是 vim.fn.jobstart 且指定了 term = true, 就先當於是如此
-    vim.cmd("tabnew | setlocal buftype=nofile")
+
+    local tabnew = config["tab"] or "1"
+    if tabnew == "1" then
+      -- vim.cmd("tabnew | setlocal buftype=nofile | term") -- 👈 如果後面用的是 vim.fn.jobstart 且指定了 term = true, 就先當於是如此
+      vim.cmd("tabnew | setlocal buftype=nofile")
+    else
+      -- new 會分割一個視窗, enew會用當前的視窗
+      vim.cmd("enew | setlocal buftype=nofile")
+    end
 
     local git_dirname = vim.fs.basename(vim.fn.fnamemodify(git_root, ":r"))
     vim.cmd("file search git files:" .. git_dirname)
@@ -3834,10 +3841,11 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
   end,
   {
     desc = string.format([[搜尋git commit過的檔案 git ls-files | fzf --preview "%s ..."]], BAT_EXE_NAME),
-    nargs = "?",
+    nargs = "*",
     complete = function()
       return {
-        "cdToGitRoot=1"
+        "tab=0", -- 在新的tab開啟, 否則在當前的window開啟
+        "cdToGitRoot=1",
       }
     end
   }
