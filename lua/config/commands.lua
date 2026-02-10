@@ -3932,8 +3932,9 @@ vim.api.nvim_create_user_command("Rg", function(args)
       end
       cmd = {
         "rg " .. table.concat(args.fargs, " ") .. " | ",
-        "fzf --style full",
+        "fzf --style full --multi",
         preview_cmd,
+        [[--bind 'ctrl-q:select-all+accept']],                                                -- 需要fzf有--multi才可用
         "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]], -- Previewing
         [[--bind 'focus:+transform-header:file --brief {} || echo "No file selected"' ]],
         [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
@@ -3950,8 +3951,9 @@ vim.api.nvim_create_user_command("Rg", function(args)
     else
       cmd = {
         "rg --vimgrep " .. table.concat(args.fargs, " ") .. " | ",
-        [[fzf -d ':' --preview-window 'right:+{2}']],
+        [[fzf -d ':' --preview-window 'right:+{2}' --multi]],
         string.format([[--preview '%s --color=always --style=numbers --highlight-line {2} {1}']], BAT_EXE_NAME),
+        [[--bind 'ctrl-q:select-all+accept']], -- 如此ctrl+q可以輸出所有的項目, 需要配合fzf --multi
         "--bind 'focus:transform-preview-label:[[ -n {} ]] " .. [[ && printf " [%s] " {}' ]],
         [[--bind 'focus:+transform-header:file --brief {1} || echo "No file selected"' ]],
         [[--bind 'ctrl-r:change-list-label( Reloading the list )+reload(sleep 2; git ls-files)' ]],
@@ -3979,13 +3981,41 @@ vim.api.nvim_create_user_command("Rg", function(args)
         end
 
         if is_files then
+          -- 沒有lnum, col
+          for _, filepath in ipairs(lines) do
+            if vim.fn.filereadable(filepath) == 1 then
+              -- vim.fn.setqflist({ { filename = filepath:gsub("||", "") } }, 'a') -- 其實可以不需要置換到，如果是 `:e ~/.config/nvim/init.lua||` 後面的||可以不需要拿掉，也可以跳轉，只是不好看
+              vim.fn.setqflist({ { filename = filepath } }, 'a') -- 奇怪的事置換掉了，但是qflist中還是會看到 || 所以乾脆不gsub
+            end
+          end
           -- 直接是完整的路徑不用像--vimgrep去拆
           vim.cmd("e " .. lines[1])
           return
         end
 
+        -- 將所有內容加到qflist之中
+        for i in ipairs(lines) do
+          -- local filepath, lnum, col = lines[i]:match("^(.+):(%d+):(%d+):(.*)$") -- 可行，但是診斷會有: Undefined field `match`
+          local filepath, lnum, col = tostring(lines[i]):match("^(.+):(%d+):(%d+):(.*)$")
+
+          if vim.fn.filereadable(filepath) == 1 then
+            vim.fn.setqflist(
+              {
+                {
+                  filename = filepath,
+                  lnum = lnum or 1,
+                  col = col or 1,
+                }
+              },
+              'a'
+            )
+          end
+        end
+
+
+        -- 用最後一筆當成要跳轉的對像
         -- if lines[1]:match("^.+:%d+:%d+:.*$") -- path/to/file.txt:1234:45:some content
-        local filepath, lnum, col, content = lines[1]:match("^(.+):(%d+):(%d+):(.*)$")
+        local filepath, lnum, col = tostring(lines[1]):match("^(.+):(%d+):(%d+):(.*)$")
         if filepath and lnum then
           if col then
             vim.cmd("e " .. filepath)
