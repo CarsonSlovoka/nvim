@@ -83,8 +83,8 @@ function options.setup()
   -- swapfile 用途: 突然中斷時能復原
   vim.o.swapfile = false -- 預設 true 如果有用autocmd來自動儲檔，應該是用不太到swapfile, 但如果是用ssh來連線編輯，會建議打開，畢竟比較可能因為網路問題而突然中斷
 
-  -- vim.opt.hlsearch = true   -- 等同 :set hls
-  vim.opt.hlsearch = false -- 等同 :nohls -- 我認為不需要特別標示，而且如果高亮往往在結束搜尋的時候，還要自己在用:nohls有點麻煩
+  -- vim.opt.hlsearch = true   -- 等同 :set hls  若要關閉 :set nohls
+  vim.opt.hlsearch = true -- :noh (:nohlsearch) 可以在結束搜尋時不要高亮
 
 
   -- vim.opt.incsearch = false  -- :set noincsearch

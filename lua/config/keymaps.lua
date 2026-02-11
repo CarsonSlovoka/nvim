@@ -17,6 +17,7 @@ local function set_mark(label)
   vim.fn.sign_place(sign_id, group, "MarkPin" .. label, vim.fn.bufnr(), { lnum = line })
 end
 
+map({ "n", "v" }, "<leader>/", ':noh<CR>', { desc = ":nohlsearch" })
 
 -- 系統剪貼簿相關
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
