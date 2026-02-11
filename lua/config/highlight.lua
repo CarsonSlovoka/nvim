@@ -9,7 +9,7 @@ vim.api.nvim_set_hl(0, "@property.jsonc", { link = "@tag" })
 vim.api.nvim_set_hl(0, "sqlkeyword", { link = "Statement" })
 vim.api.nvim_set_hl(0, "@operator.sql", { link = "sqlOperator" })
 
-vim.api.nvim_set_hl(0, "Search", { bg = "#e8d67c", fg = "#000000" })
+vim.api.nvim_set_hl(0, "Search", { bg = "#ff520d", fg = "#ffffff", bold = true, italic = true }) -- 改變顏色時要考慮: CursorColumn, CursorLine等顏色, 以及鼠標該字詞(hover)時的高亮
 
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
