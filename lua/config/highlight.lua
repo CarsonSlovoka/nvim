@@ -11,6 +11,8 @@ vim.api.nvim_set_hl(0, "@operator.sql", { link = "sqlOperator" })
 
 vim.api.nvim_set_hl(0, "Search", { bg = "#ff520d", fg = "#ffffff", bold = true, italic = true }) -- 改變顏色時要考慮: CursorColumn, CursorLine等顏色, 以及鼠標該字詞(hover)時的高亮
 
+vim.api.nvim_set_hl(0, "Visual", { bg = "#78120d", fg = "#ffffff" })
+
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
   if opts then
