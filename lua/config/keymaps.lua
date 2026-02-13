@@ -434,8 +434,10 @@ local function setup_normal()
             local m = {
               [abs_path] = "Absolute Path: ",
               [filename] = "Filename: ",
-              [git_rel_path] = "Git Relative Path: ",
             }
+            if git_rel_path then
+              m[git_rel_path] = "Git Relative Path: "
+            end
             return m[item] and m[item] .. item or item
           end
         },
