@@ -434,20 +434,26 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("SaveWebp", function(args)
     local outputPath = ""
-    -- print(vim.inspect(args))
-    if #args.fargs > 0 then
-      outputPath = args.fargs[1]
+
+    local startIndex = 2
+    if args.range ~= 0 then
+      outputPath = table.concat(utils.range.get_selected_text(), "")
+      startIndex = 1
     else
-      -- 根據時間戳生成輸出檔案名稱
-      local timestamp = os.date("%Y-%m-%d_%H-%M-%S")
-      local saveDir = vim.fn.expand("%:p:h")
-      outputPath = path.join(saveDir, timestamp .. ".webp")
+      if #args.fargs > 0 then
+        outputPath = args.fargs[1]
+      else
+        -- 根據時間戳生成輸出檔案名稱
+        local timestamp = os.date("%Y-%m-%d_%H-%M-%S")
+        local saveDir = vim.fn.expand("%:p:h")
+        outputPath = path.join(saveDir, timestamp .. ".webp")
+      end
     end
 
     -- 設定預設品質
     local quality = 11
-    if #args.fargs > 1 then
-      local q = tonumber(vim.split(args.fargs[2], "　")[1]) -- 用U+3000全形空白來拆開取得實際要的數值
+    if #args.fargs >= startIndex then
+      local q = tonumber(vim.split(args.fargs[startIndex], "　")[1]) -- 用U+3000全形空白來拆開取得實際要的數值
       if q then
         quality = q
       end
@@ -523,6 +529,7 @@ function commands.setup()
     end
   end, {
     nargs = "*",
+    range = true,                             -- 使得用markdown寫好路徑之後，就可以不用再輸入一次要保存的位置
     complete = function(
         argLead,                              -- 當你打上某些關鍵字後使用tab時，它會記錄你的關鍵字
         cmdLine,                              -- 當前cmdLine上所有字串內容
@@ -530,6 +537,10 @@ function commands.setup()
     )
       local parts = vim.split(cmdLine, "%s+") -- %s 匹配空白、製表符等
       local argc = #parts - 1                 -- 減去命令本身
+      local has_range = cmdLine:match("^'<,'>.*") ~= nil
+      if has_range then
+        argc = argc + 1 -- 直接跳過第一個參數，因為準備將第一個參數用選取的內容來替代
+      end
 
       if argc == 1 then
         -- 種類可以是file, buffer, command, help, tag等
