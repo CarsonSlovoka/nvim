@@ -1079,10 +1079,11 @@ mkdir -pv ~/.config/nvim/pack/debug/start/
 類似於gdb, 不過在go語言上會推薦用go-delve會更好
 
 ```sh
+# Warn: 如果go的版本太新, 而dlv的工具沒有跟上，就會沒辦法debug
 go install github.com/go-delve/delve/cmd/dlv@latest
 dlv version
-# Version: 1.25.0
-# Build: $Id: e323af07680631b9cbdcc9d02e0a37891d12d972
+# Version: 1.26.0
+# Build: $Id: 7fd7302eab8b16d715a94af1b5dfbffc2e1359bc
 ```
 
 
