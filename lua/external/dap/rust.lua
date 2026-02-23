@@ -62,7 +62,7 @@ local function get_rust_executable()
   end
 
   -- 🟧 是否要重新build
-  vim.ui.select(
+  vim.ui.select( -- 其實可以直接重新build, 如果沒有異動, cargo就曉得，不會再build一次
     { "Y", "N" },
     {
       prompt = "rebuild?",
@@ -84,7 +84,7 @@ local function get_rust_executable()
   -- --glob 避免 shell 展開
   local workDir = git_root .. "/target"
   local fd_cmd = string.format(
-    'realpath $(fd -t x -I %s %s | head -n 1)',
+    'realpath $(fd -t x -I %s %s | head -n 1)', -- TODO: 這可能有問題, rust中一個專案也可以有多個 bin 所以其實需要只定要哪一個bin
     crate_name, workDir,
     vim.fn.shellescape(git_root)
   )
