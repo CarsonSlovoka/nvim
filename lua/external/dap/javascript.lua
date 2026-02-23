@@ -89,9 +89,12 @@ for _, filetype in ipairs({
       -- Use "deno" as the runtime executable
       runtimeExecutable = "deno",
       -- Use --inspect-brk to pause execution until the debugger attaches
-      runtimeArgs = { "run", "--inspect-brk", "--allow-all" }, -- Add necessary permissions like --allow-all
+      runtimeArgs = { "run",
+        "--inspect-brk", -- 一定要有
+        "--allow-all"    -- Add necessary permissions like --allow-all
+      },
       program = "${file}",
-      cwd = function() return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file") end,
+      cwd = function() return vim.fn.input("workspaceFolder: ", vim.fn.getcwd() .. "/", "file") end,
       sourceMaps = true,
       protocol = "ws",         -- Deno uses the V8 inspector protocol via WebSockets
       attachSimplePort = 9229, -- Default Deno inspect port
