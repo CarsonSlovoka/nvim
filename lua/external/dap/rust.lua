@@ -141,4 +141,28 @@ dap.configurations.rust = {
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
   },
+  {
+    name = "Debug (input: exe_path [bin])",
+    -- Tip: 如果是有多個bin的情況下: `cargo run --bin my-bin` 可透過這種方式來選擇要執行的程式
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      -- 其實也不一定是在target/debug下，如果是不同的platform, 會是target/<platform>/debug 不過可以用..來往上
+      -- Tip: 如果之前輸入過，可以在command時用Ctrl_F可以開啟歷史記錄來選擇
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+  {
+    name = "Debug (input: exe_path, args [bin])",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
+    end,
+    args = utils.dap.input_arguments(":"),
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
 }
