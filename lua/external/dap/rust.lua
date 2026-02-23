@@ -137,7 +137,7 @@ dap.configurations.rust = {
     program = function()
       return vim.fn.input('Path to executable: ', get_rust_executable(), 'file')
     end,
-    args = utils.dap.input_arguments(":"),
+    args = utils.dap.input_arguments("input arguments:"),
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
   },
@@ -161,7 +161,7 @@ dap.configurations.rust = {
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
     end,
-    args = utils.dap.input_arguments(":"),
+    args = utils.dap.input_arguments("input arguments:"),
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
   },
