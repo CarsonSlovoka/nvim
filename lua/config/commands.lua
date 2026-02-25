@@ -3879,6 +3879,10 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
 )
 
 vim.api.nvim_create_user_command("Rg", function(args)
+    if args.range == 0 and #args.fargs == 0 then
+      vim.notify("Please enter at least the keywords you are looking for.", vim.log.levels.ERROR)
+      return
+    end
     if args.fargs[1] == "-h" then
       vim.fn.setqflist({
         { text = ':Rg search_word                             " 預設會用git_root來當成工作目錄，在開始找內文' },
@@ -3901,6 +3905,11 @@ vim.api.nvim_create_user_command("Rg", function(args)
     end
 
     local opts = utils.cmd.get_cmp_config(args.fargs, true)
+
+    if args.range ~= 0 then
+      local selected_text = table.concat(utils.range.get_selected_text(), "")
+      table.insert(args.fargs, 1, selected_text)
+    end
 
     if opts["wd"] and opts["wd"] ~= "<git_root>" then
       -- 以下這些都可行
@@ -4054,7 +4063,8 @@ vim.api.nvim_create_user_command("Rg", function(args)
   end,
   {
     desc = [[rg | fzf --preview 'batcat' ...]],
-    nargs = "+",
+    range = true,
+    nargs = "*",
     complete = function(arg_lead, cmd_line)
       local comps, argc, prefix, suffix = utils.cmd.init_complete(arg_lead, cmd_line)
       local exist_comps = argc > 1 and utils.cmd.get_exist_comps(cmd_line) or {}
