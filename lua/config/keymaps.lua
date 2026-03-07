@@ -622,8 +622,9 @@ local function setup_visual()
   -- map('v', 'find', '""y/<C-R>"<CR>', -- 先將選中的內容保存到""內，之後在用搜尋去找該項目
   --   { desc = "搜尋當前選中的項目" }) -- 不需要此熱鍵，用*, # 都可以達到此效果, 只是沒有複製到剪貼簿而已
 
+
   map('x',
-    '<leader><F5>',
+    '<leader><F17>', -- <leader><S-F5>
     -- [[:lua ExecuteSelection()<CR>]],
     function()
       local cmd = nil
@@ -650,6 +651,25 @@ local function setup_visual()
       vim.cmd("cd " .. org_wd)
     end,
     { desc = "執行選中項目" }
+  )
+
+  map('x', '<leader><F5>',
+    function()
+      local lines = utils.range.get_selected_text()
+
+      local org_wd = vim.fn.getcwd()
+      vim.cmd("cd %:h")
+
+      vim.cmd('topleft new')
+      vim.cmd("term")
+      vim.cmd("startinsert")
+      for i in ipairs(lines) do
+        vim.api.nvim_input(lines[i] .. "<CR>")
+      end
+
+      vim.cmd("cd " .. org_wd)
+    end,
+    { desc = "Execute the selected item" }
   )
 
   -- 將工作目錄更改為當前檔案的目錄
