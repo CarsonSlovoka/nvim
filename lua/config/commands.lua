@@ -3334,17 +3334,82 @@ function commands.setup()
 
   vim.api.nvim_create_user_command("NewTmp",
     function(args)
-      -- buftype=nofile 可以寫入但不能儲檔
-      local bufname = args.fargs[1] or nil
-      -- vim.cmd(":enew | setlocal bufhidden=wipe buftype=nofile nobuflisted noswapfile")
+      local fargs = vim.split(args.args:gsub("=", " "), " ") -- 因為補全完成都是用-xx=的方式，將=改為空白再拆分，方便之後的shift
+
+      -- 此parse_args類似bash寫function時用的shift的處理方式
+      local opts = {
+        filetype = nil,
+      }
+      local pos_args = {} -- 記錄按位置輸入的參數
+      local i = 1
+      local help = table.concat({
+        "Usage:",
+        ":NewTmp [-t|--filetype] [bufname]",
+      }, "\n")
+      while i <= #fargs do
+        local arg = fargs[i]
+        if arg == "-h" or arg == "--help" then
+          vim.notify(help, vim.log.levels.INFO)
+          return
+        elseif arg == "-t" or arg == "--filetype" then
+          i = i + 1
+          opts.filetype = fargs[i]
+        elseif arg:sub(1, 1) == "-" then
+          vim.notify("Unknown options:" .. arg, vim.log.levels.ERROR)
+          vim.notify(help, vim.log.levels.INFO)
+          return
+        else
+          table.insert(pos_args, arg)
+        end
+        i = i + 1
+      end
+      local bufname = pos_args[1]
+
       vim.cmd(":enew | setlocal buftype=nofile noswapfile")
       if bufname then
         vim.cmd("file " .. bufname)
+      end
+
+      if opts.filetype then
+        vim.cmd("set filetype=" .. opts.filetype)
       end
     end,
     {
       desc = ":enew | setlocal buftype=nofile noswapfile",
       nargs = "?",
+      complete = function(arg_lead)
+        -- 可行，但是每一項的補全不好設計
+        local options = {
+          { "-h", "--help",     nil },
+          { "-t", "--filetype", { "csv", "xml", "json", "..." } },
+        }
+        -- 如果正在輸入以 - 開頭的內容，顯示選項補全
+        if arg_lead:sub(1, 1) == "-" then
+          local matches = {}
+          for _, opt in ipairs(options) do
+            local short_name = opt[1]
+            local long_name = opt[2]
+            local vals = opt[3]
+            if short_name:sub(1, #arg_lead) == arg_lead or
+                long_name:sub(1, #arg_lead) == arg_lead then
+              local key = long_name:sub(1, #arg_lead) == arg_lead and long_name or short_name
+              if vals then
+                for j in ipairs(vals) do
+                  table.insert(matches, key .. "=" .. vals[j])
+                  if arg_lead == "-" then
+                    -- 每一個項目只出現一次，只用第一筆來代表
+                    break
+                  end
+                end
+              else
+                table.insert(matches, key)
+              end
+            end
+          end
+          return matches
+        end
+        return vim.fn.getcompletion(arg_lead, "file")
+      end
     }
   )
 
