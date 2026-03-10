@@ -61,7 +61,7 @@ function M.get_complete(arg_lead, options)
           else
             table.insert(matches, key .. "=" .. vals[j])
           end
-          if lead_key == "-" then
+          if lead_key == "-" or lead_key == "--" then
             -- 每一個項目只出現一次，只用第一筆來代表
             break
           end
