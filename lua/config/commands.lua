@@ -3339,6 +3339,7 @@ function commands.setup()
       -- 此parse_args類似bash寫function時用的shift的處理方式
       local opts = {
         filetype = nil,
+        bufhidden = nil,
       }
       local pos_args = {} -- 記錄按位置輸入的參數
       local i = 1
@@ -3354,6 +3355,9 @@ function commands.setup()
         elseif arg == "-t" or arg == "--filetype" then
           i = i + 1
           opts.filetype = fargs[i]
+        elseif arg == "--bufhidden" then
+          i = i + 1
+          opts.bufhidden = fargs[i]
         elseif arg:sub(1, 1) == "-" then
           vim.notify("Unknown options:" .. arg, vim.log.levels.ERROR)
           vim.notify(help, vim.log.levels.INFO)
@@ -3373,6 +3377,10 @@ function commands.setup()
       if opts.filetype then
         vim.cmd("set filetype=" .. opts.filetype)
       end
+
+      if opts.bufhidden then
+        vim.cmd("set bufhidden=" .. opts.bufhidden)
+      end
     end,
     {
       desc = ":enew | setlocal buftype=nofile noswapfile",
@@ -3380,8 +3388,9 @@ function commands.setup()
       complete = function(arg_lead)
         -- 可行，但是每一項的補全不好設計
         local options = {
-          { "-h", "--help",     nil },
+          { "-h", "--help", nil },
           { "-t", "--filetype", { "c++", "csv", "xml", "json", "markdown", "..." } },
+          { "", "--bufhidden", { "wipe" } } -- 離開後buf也不要記錄
         }
         return utils.flag.get_complete(arg_lead, options) or
             vim.fn.getcompletion(arg_lead, "file")
