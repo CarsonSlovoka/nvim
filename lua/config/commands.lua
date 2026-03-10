@@ -3381,34 +3381,10 @@ function commands.setup()
         -- 可行，但是每一項的補全不好設計
         local options = {
           { "-h", "--help",     nil },
-          { "-t", "--filetype", { "csv", "xml", "json", "..." } },
+          { "-t", "--filetype", { "c++", "csv", "xml", "json", "markdown", "..." } },
         }
-        -- 如果正在輸入以 - 開頭的內容，顯示選項補全
-        if arg_lead:sub(1, 1) == "-" then
-          local matches = {}
-          for _, opt in ipairs(options) do
-            local short_name = opt[1]
-            local long_name = opt[2]
-            local vals = opt[3]
-            if short_name:sub(1, #arg_lead) == arg_lead or
-                long_name:sub(1, #arg_lead) == arg_lead then
-              local key = long_name:sub(1, #arg_lead) == arg_lead and long_name or short_name
-              if vals then
-                for j in ipairs(vals) do
-                  table.insert(matches, key .. "=" .. vals[j])
-                  if arg_lead == "-" then
-                    -- 每一個項目只出現一次，只用第一筆來代表
-                    break
-                  end
-                end
-              else
-                table.insert(matches, key)
-              end
-            end
-          end
-          return matches
-        end
-        return vim.fn.getcompletion(arg_lead, "file")
+        return utils.flag.get_complete(arg_lead, options) or
+            vim.fn.getcompletion(arg_lead, "file")
       end
     }
   )
