@@ -11,6 +11,7 @@ return {
   lmstudio = require "utils.lmstudio",
   os = require "utils.os",
   range = require "utils.range",
+  register = require "utils.register",
   sway = require "utils.sway",
   table = require "utils.table",
   time = require "utils.time",
