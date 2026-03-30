@@ -1683,6 +1683,55 @@ function commands.setup()
     end
   })
 
+  vim.api.nvim_create_user_command('DiffRegs', function(args)
+    if args.fargs[1] == "-h" then
+      cmdUtils.showHelpAtQuickFix({
+        'DiffRegs a b',
+        'DiffRegs a +',
+        'DiffRegs a         -- comp a and "',
+        '💡 可以搭配: `:%sort u`'
+      })
+      return
+    end
+    local left_reg = args.fargs[1]
+    local right_reg = args.fargs[2] or '"'
+
+    local left_content = vim.fn.getreg(left_reg)
+    local right_content = vim.fn.getreg(right_reg)
+
+    vim.cmd('tabnew')
+
+    -- left buffer
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(left_content, '\n'))
+    vim.bo.buftype = 'nofile'
+    vim.bo.buflisted = false
+    vim.bo.swapfile = false
+    vim.cmd('diffthis')
+
+    -- right buffer（垂直分割）
+    vim.cmd('vnew')
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(right_content, '\n'))
+    vim.bo.buftype = 'nofile'
+    vim.bo.buflisted = false
+    vim.bo.swapfile = false
+    vim.cmd('diffthis')
+
+    -- 回到左邊視窗
+    vim.cmd('wincmd h')
+  end, {
+    nargs = '+',
+    desc = 'Diff two registers in new tab',
+    complete = function(arg_lead)
+      local candidates = {}
+      for _, reg in ipairs(utils.register.get_registers()) do
+        if reg:find(arg_lead, 1, true) == 1 then
+          table.insert(candidates, reg)
+        end
+      end
+      return candidates
+    end
+  })
+
   vim.api.nvim_create_user_command('RustExplain', function(args)
     local err_code = args.fargs[1]
     vim.cmd('topleft new')
