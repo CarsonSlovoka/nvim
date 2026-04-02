@@ -1,3 +1,5 @@
+-- Caution: 此腳本已棄用, 保留只為了當成參考
+
 local START_TIME = vim.uv.hrtime() -- 勿調整，用來得知nvim開啟的時間，如果要計算啟動花費時間會有用
 
 -- theme: https://github.com/projekt0n/github-nvim-theme
