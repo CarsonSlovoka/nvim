@@ -19,3 +19,6 @@ lua/my-customize.lua
 .aider*
 !.aiderignore
 !.aider.conf.yml
+
+# nvim-pack-lock.json 👈 這個有必要保留，才會省事
+
