@@ -36,10 +36,82 @@ nvim -V1 -v
 `nvim --version`
 
 ```
-NVIM v0.11.4
-Build type: RelWithDebInfo
-LuaJIT 2.1.1741730670
+NVIM v0.12.0
+Build type: Release
+LuaJIT 2.1.1774896198
 ```
+
+## v0.12.0
+
+0.12.0開始提供內建的插件管理器，當使用
+
+```lua
+vim.pack.add({
+    "https://github.com/nvim-treesitter/nvim-treesitter",
+    "..."
+
+    -- Warn: 裡面可以加上rev, 但是: nvim-pack-lock.json 中可能不會和設定的一樣，所以還是以nvim-pack-lock.json的內容為主，如果有需要調整就去更改它
+})
+```
+
+會自動來下載，並且儲放於目錄: `$XDG_DATA_HOME/nvim/site/pack/core/opt/`
+
+```vim
+:lua print(vim.fn.stdpath('data') .. '/site/pack/core/opt/')
+```
+
+在mac下預設是此位置:
+
+```sh
+~/.local/share/nvim/site/pack/core/opt/<package_name>
+
+rm -rf ~/.local/share/nvim/site/pack/core/opt
+```
+
+
+並且用: [nvim-pack-lock.json](nvim-pack-lock.json) 來記錄版本
+
+
+> [!IMPORTANT] nvim.pack.add只負責生成 nvim-pack-lock.json 而真實的版本控管都是靠 nvim-pack-lock.json 也就是就算 `nvim.pack.add` 當中的rev與json不同時，還是以json的資料為主
+
+
+> [!TIP] 因此如果有新的插件，或者要鎖定插件的版本，只要簡單的用`vim.pack.add()`寫一次套件的下載來源，而真實的版控只要在 nvim-pack-lock.json 寫對
+>
+> 那麼nvim啟動時，如果發現`$XDG_DATA_HOME/nvim/site/pack/core/opt/`目錄中沒有該套件，就會主動依據json中告知的rev去下載到其版本！
+
+
+---
+
+如果動到了`~/.local/share/nvim/site/pack/core/opt/`當中某些插件的版本，又想要還原，可以直接刪除該套件目錄，靠`nvim-pack-lock.json`來重新產生
+
+```sh
+# 也可以整個目錄都刪除，讓所有內容再次依據`nvim-pack-lock.json`來生成
+rm -rf ~/.local/share/nvim/site/pack/core/opt/
+```
+
+### ssh
+
+vim.pack.add 會靠git去下載，如果你用的是ssh的方式且有 passphrase 設定，就會沒辦法下載成功
+
+此時可以考慮先將 passphrase 移除
+
+```sh
+ssh-keygen -p -f ~/.ssh/myPrivateKey  # 重新設定，都留下空白，就等於移除
+# 之後等套件載完了之後，可以再做一次指令，打上原本的密碼，或者一開始就先備份再還原都行
+```
+
+如果還是不行在 `~/.ssh/config` 可以考慮新增此內容
+```sh
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/my_key
+#                 👆 換成你的key
+```
+
+
+接著用`ssh git@github.com`測試，若成功即可
+
 
 # INSTALL carson/nvim
 
