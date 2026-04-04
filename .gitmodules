@@ -89,9 +89,9 @@
 #     path = pack/sdk/start/flutter-tools.nvim
 #     url = https://github.com/nvim-flutter/flutter-tools.nvim
 
-[submodule "sql/sqls.nvim"]
-    path = pack/sql/start/sqls.nvim
-    url = https://github.com/nanotee/sqls.nvim.git
+# [submodule "sql/sqls.nvim"]
+#     path = pack/sql/start/sqls.nvim
+#     url = https://github.com/nanotee/sqls.nvim.git
 
 # [submodule "tools/ccc.nvim"]
 #     path = pack/tools/start/ccc.nvim

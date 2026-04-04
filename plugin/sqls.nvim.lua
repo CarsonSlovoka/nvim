@@ -1,0 +1,5 @@
+--- Usage: `git show -p e3bd569c:README.md | bat -l vim -P -r 1271:1279`
+-- vim.defer_fn(function()
+--   -- "rev": "d1bc5421ef3e8edc5101e37edbb7de6639207a09",
+--   vim.pack.add({ "https://github.com/nanotee/sqls.nvim" })
+-- end, 1000)
