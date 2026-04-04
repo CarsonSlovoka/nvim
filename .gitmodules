@@ -100,9 +100,9 @@
 [submodule "tools/pantran.nvim"]
     path = pack/tools/start/pantran.nvim
     url = https://github.com/potamides/pantran.nvim.git
-[submodule "tools/image.nvim"]
-    path = pack/tools/start/image.nvim
-    url = https://github.com/3rd/image.nvim.git
+# [submodule "tools/image.nvim"]
+#     path = pack/tools/start/image.nvim
+#     url = https://github.com/3rd/image.nvim.git
 [submodule "tools/live-preview.nvim"]
     path = pack/tools/start/live-preview.nvim
     url = https://github.com/brianhuster/live-preview.nvim
