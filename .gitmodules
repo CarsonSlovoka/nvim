@@ -31,9 +31,9 @@
 #     path = pack/icon/start/nvim-web-devicons
 #     url = https://github.com/nvim-tree/nvim-web-devicons.git
 
-[submodule "plenary.nvim"]
-    path = pack/utils/start/plenary.nvim
-    url = https://github.com/nvim-lua/plenary.nvim.git
+# [submodule "plenary.nvim"]
+#     path = pack/utils/start/plenary.nvim
+#     url = https://github.com/nvim-lua/plenary.nvim.git
 
 # search
 # [submodule "telescope.nvim"]
@@ -43,9 +43,9 @@
 #     path = pack/search/start/fzf-lua
 #     url = https://github.com/ibhagwan/fzf-lua
 
-[submodule "github-nvim-theme"]
-    path = pack/theme/start/github-nvim-theme
-    url = https://github.com/projekt0n/github-nvim-theme.git
+# [submodule "github-nvim-theme"]
+#    path = pack/theme/start/github-nvim-theme
+#    url = https://github.com/projekt0n/github-nvim-theme.git
 
 # other
 # [submodule "indent-blankline.nvim"]
