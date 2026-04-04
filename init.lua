@@ -181,8 +181,6 @@ vim.pack.add({
   -- cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua && git branch
   "https://github.com/ibhagwan/fzf-lua",
 
-  "https://github.com/lukas-reineke/indent-blankline.nvim",
-
   -- cd ~/.local/share/nvim/site/pack/core/opt/lualine.nvim && git branch
   "https://github.com/nvim-lualine/lualine.nvim",
 })
@@ -241,56 +239,6 @@ local function install_nvimWebDevicons()
   -- set_default_icon(icon, color, cterm_color)
   -- m.set_default_icon('😃', '#6d8086', 65)
 end
-
-
-local function install_ibl()
-  local ok, m = pcall(require, "ibl") -- pack/other/start/indent-blankline.nvim/lua/ibl
-  if not ok then
-    vim.notify("Failed to load ibl", vim.log.levels.ERROR)
-    return
-  end
-
-  vim.api.nvim_create_user_command("Ibl",
-    function(args)
-      if #args.args == 0 then
-        -- 採用最簡單的配置
-        m.setup()
-      else
-        local highlight = {
-          "RainbowRed",
-          "RainbowYellow",
-          "RainbowBlue",
-          "RainbowOrange",
-          "RainbowGreen",
-          "RainbowViolet",
-          "RainbowCyan",
-        }
-        local hooks = require "ibl.hooks"
-        hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-          vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
-          vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
-          vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
-          vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
-          vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
-          vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
-          vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
-        end)
-
-        m.setup {
-          indent = {
-            highlight = highlight
-          }
-        }
-      end
-    end,
-    {
-      nargs = "?",
-      desc = "setup: indent-blankline.nvim; 有參數會用彩色模式; 不加參數為簡單模式; 開啟之後可以再次使用指令來切換彩色或簡單模式"
-    }
-  )
-end
-
-
 
 local function install_atq()
   local ok, m = pcall(require, "atq")
@@ -884,13 +832,6 @@ local installs = {
     delay = 0
   },
   { name = "nvimWebDevicons",   fn = install_nvimWebDevicons, delay = 0 },
-  {
-    name = "ibl",
-    fn = function()
-      install_ibl()
-    end,
-    delay = 5
-  },
   { name = "cmp_list",          fn = install_cmp_list,        delay = 0 },
   { name = "flutter_tools",     fn = install_flutter_tools,   delay = 5 },
   { name = "create color code", fn = install_ccc,             delay = 0 },
