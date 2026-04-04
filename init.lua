@@ -1,6 +1,6 @@
 local START_TIME = vim.uv.hrtime() -- 勿調整，用來得知nvim開啟的時間，如果要計算啟動花費時間會有用
 
--- theme: https://github.com/projekt0n/github-nvim-theme
+vim.pack.add({ "https://github.com/projekt0n/github-nvim-theme" })
 -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
 vim.cmd('colorscheme github_dark_default') -- 主題要先設定(可以先設定之後再補全它的實作)，不然如果自定義的調整在這之前，又會被此蓋掉
 
