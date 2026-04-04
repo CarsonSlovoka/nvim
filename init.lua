@@ -124,6 +124,7 @@ end
 --   "https://github.com/nvim-treesitter/nvim-treesitter",
 -- })
 
+vim.pack.add({ "https://github.com/nvim-lua/plenary.nvim" }) -- 有些套件需要用到它，所以要先確保它載入
 vim.pack.add({
   -- Important: 確認過下載的內容以 nvim-pack-lock.json 的記錄為主, 所以只要確保該json的內容，再將目錄中的檔案重新刪除，再次啟動就會去下載對應的版本
   --   rm -rf ~/.local/share/nvim/site/pack/core/opt/

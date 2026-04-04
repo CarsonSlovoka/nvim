@@ -64,6 +64,10 @@
       "rev": "330049a237635b7cae8aef4972312e6da513cf91",
       "src": "https://github.com/jbyuki/one-small-step-for-vimkind"
     },
+    "plenary.nvim": {
+      "rev": "2d9b06177a975543726ce5c73fca176cedbffe9d",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
     "render-markdown.nvim": {
       "rev": "c7188a8f9d2953696b6303caccbf39c51fa2c1b1",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
