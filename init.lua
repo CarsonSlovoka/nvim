@@ -378,21 +378,6 @@ local function install_flutter_tools()
   }
 end
 
-
-
-local function install_csvview()
-  local ok, csvview = pcall(require, "csvview")
-  if not ok then
-    vim.notify("Failed to load csvview", vim.log.levels.WARN)
-    return
-  end
-  csvview.setup()
-  -- USAGE:
-  -- :CsvViewEnable
-  -- :CsvViewDisable
-  -- :CsvViewToggle
-end
-
 local function install_xcodebuild()
   -- 此插件，我覺得不需要裝，它做了很多功能，但是都可以透過手動自己來執行
   -- 而且就算要debug: 可完全透過: `xcrun lldb-dap` 用attach的方式即可
@@ -487,7 +472,6 @@ local installs = {
   { name = "nvimWebDevicons", fn = install_nvimWebDevicons, delay = 0 },
 
   { name = "flutter_tools",   fn = install_flutter_tools,   delay = 5 },
-  { name = "csvview.nvim",    fn = install_csvview,         delay = 5 },
   { name = "xcodebuild.nvim", fn = install_xcodebuild,      delay = 5 },
   {
     name = "global-func",
