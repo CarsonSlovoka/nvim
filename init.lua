@@ -400,23 +400,6 @@ local function install_flutter_tools()
   }
 end
 
-local function install_ccc()
-  -- -- vim.opt.termguicolors = true
-
-  local ok, ccc = pcall(require, "ccc")
-  if not ok then
-    vim.notify("Failed to load ccc", vim.log.levels.WARN)
-    return
-  end
-  -- local mapping = ccc.mapping
-
-  ccc.setup({
-    highlighter = {
-      auto_enable = true,
-      lsp = true,
-    },
-  })
-end
 
 local function install_pantran()
   local ok, _ = pcall(require, "pantran")
@@ -835,7 +818,6 @@ local installs = {
   { name = "nvimWebDevicons",   fn = install_nvimWebDevicons, delay = 0 },
   { name = "cmp_list",          fn = install_cmp_list,        delay = 0 },
   { name = "flutter_tools",     fn = install_flutter_tools,   delay = 5 },
-  { name = "create color code", fn = install_ccc,             delay = 0 },
   { name = "pantran.nvim",      fn = install_pantran,         delay = 5 },
   { name = "image.nvim",        fn = install_image,           delay = 5 },
   { name = "csvview.nvim",      fn = install_csvview,         delay = 5 },
