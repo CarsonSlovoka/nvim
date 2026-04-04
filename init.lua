@@ -579,13 +579,12 @@ local installs = {
     end,
     delay = 0
   },
-  { name = "nvimWebDevicons",   fn = install_nvimWebDevicons, delay = 0 },
+  { name = "nvimWebDevicons", fn = install_nvimWebDevicons, delay = 0 },
 
-  { name = "flutter_tools",     fn = install_flutter_tools,   delay = 5 },
-  { name = "pantran.nvim",      fn = install_pantran,         delay = 5 },
-  { name = "csvview.nvim",      fn = install_csvview,         delay = 5 },
-  { name = "live-preview.nvim", fn = install_live_preview,    delay = 5 },
-  { name = "xcodebuild.nvim",   fn = install_xcodebuild,      delay = 5 },
+  { name = "flutter_tools",   fn = install_flutter_tools,   delay = 5 },
+  { name = "pantran.nvim",    fn = install_pantran,         delay = 5 },
+  { name = "csvview.nvim",    fn = install_csvview,         delay = 5 },
+  { name = "xcodebuild.nvim", fn = install_xcodebuild,      delay = 5 },
   {
     name = "global-func",
     fn = function()
