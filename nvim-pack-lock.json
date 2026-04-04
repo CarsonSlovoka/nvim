@@ -20,6 +20,26 @@
       "rev": "47f91c4",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
+    "nvim-dap": {
+      "rev": "03e83f1513264ca694ff35433f361fe993fcb83c",
+      "src": "https://github.com/mfussenegger/nvim-dap"
+    },
+    "nvim-dap-go": {
+      "rev": "8763ced35b19c8dc526e04a70ab07c34e11ad064",
+      "src": "https://github.com/leoluz/nvim-dap-go"
+    },
+    "nvim-dap-python": {
+      "rev": "34282820bb713b9a5fdb120ae8dd85c2b3f49b51",
+      "src": "https://github.com/mfussenegger/nvim-dap-python"
+    },
+    "nvim-dap-ui": {
+      "rev": "73a26abf4941aa27da59820fd6b028ebcdbcf932",
+      "src": "https://github.com/rcarriga/nvim-dap-ui"
+    },
+    "nvim-nio": {
+      "rev": "21f5324bfac14e22ba26553caf69ec76ae8a7662",
+      "src": "https://github.com/nvim-neotest/nvim-nio"
+    },
     "nvim-tree.lua": {
       "rev": "31503ad5d869fca61461d82a9126f62480ecb0ab",
       "src": "https://github.com/nvim-tree/nvim-tree.lua"
@@ -39,6 +59,10 @@
     "nvim-web-devicons": {
       "rev": "d7462543c9e366c0d196c7f67a945eaaf5d99414",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "one-small-step-for-vimkind": {
+      "rev": "330049a237635b7cae8aef4972312e6da513cf91",
+      "src": "https://github.com/jbyuki/one-small-step-for-vimkind"
     },
     "render-markdown.nvim": {
       "rev": "c7188a8f9d2953696b6303caccbf39c51fa2c1b1",
