@@ -1,0 +1,10 @@
+-- Caution: 此插件，可能會需要等待某些完成，執行setup才會有作用，如果直接寫在這邊會沒用
+-- require("nvim-web-devicons").setup {
+--   override_by_filename = {
+--     ["README.md"] = {
+--       icon = "🧙",
+--       color = "#00ff00",
+--       name = "README"
+--     }
+--   },
+-- }

@@ -165,4 +165,27 @@ dap.configurations.rust = {
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
   },
+  {
+    name = "test (input: exe_path [bin])",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      -- 其實test也是和一般的bin一樣，差別只是要去找test所build出來的執行檔位置而已，通常會放在deubg/deps之中
+      -- Tip: 可以透過找尋執行檔(x) 然後再用時間來排序，即可找到test所構建出來的執行檔: `fd . -t x target/debug/deps/ -X ls -lht`
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/deps', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+  {
+    name = "test (input: exe_path, args [bin])",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/deps', 'file')
+    end,
+    args = utils.dap.input_arguments("input arguments:"),
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
 }

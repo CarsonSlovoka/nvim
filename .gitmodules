@@ -1,106 +1,112 @@
 # git submodule update --init --recursive
 # git submodule sync
 
-[submodule "nvim-treesitter"]
-    path = pack/syntax/start/nvim-treesitter
-    url = https://github.com/nvim-treesitter/nvim-treesitter.git
-[submodule "nvim-treesitter-textobjects"]
-    path = pack/syntax/start/nvim-treesitter-textobjects
-    url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
-[submodule "nvim-treesitter-context"]
-    path = pack/syntax/start/nvim-treesitter-context
-    url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
-[submodule "nvim-lspconfig"]
-    path = pack/lsp/start/nvim-lspconfig
-    url = https://github.com/neovim/nvim-lspconfig.git
-[submodule "precognition.nvim"]
-    path = pack/motion/start/precognition.nvim
-    url = https://github.com/tris203/precognition.nvim.git
-[submodule "leap.nvim"]
-    path = pack/motion/start/leap.nvim
-    url = https://github.com/ggandor/leap.nvim.git
-[submodule "gitsigns"]
-    path = pack/git/start/gitsigns.nvim
-    url = https://github.com/lewis6991/gitsigns.nvim.git
-[submodule "nvim-tree.lua"]
-    path = pack/tree/start/nvim-tree.lua
-    url = https://github.com/nvim-tree/nvim-tree.lua.git
-[submodule "nvim-web-devicons"]
-    path = pack/icon/start/nvim-web-devicons
-    url = https://github.com/nvim-tree/nvim-web-devicons.git
+# [submodule "nvim-treesitter"]
+#     path = pack/syntax/start/nvim-treesitter
+#     url = https://github.com/nvim-treesitter/nvim-treesitter.git
+# [submodule "nvim-treesitter-textobjects"]
+#     path = pack/syntax/start/nvim-treesitter-textobjects
+#     url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
+# [submodule "nvim-treesitter-context"]
+#     path = pack/syntax/start/nvim-treesitter-context
+#     url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
+# [submodule "nvim-lspconfig"]
+#     # 這個在後來的版本也用不到的lsp, 頂多複製當中每一個項目的config即可
+#     path = pack/lsp/start/nvim-lspconfig
+#     url = https://github.com/neovim/nvim-lspconfig.git
+# [submodule "precognition.nvim"]
+#     # 如果已經很熟悉nvim，就不需要這個插件了
+#     path = pack/motion/start/precognition.nvim
+#     url = https://github.com/tris203/precognition.nvim.git
+# [submodule "leap.nvim"]
+#     path = pack/motion/start/leap.nvim
+#     url = https://github.com/ggandor/leap.nvim.git
+# [submodule "gitsigns"]
+#     path = pack/git/start/gitsigns.nvim
+#     url = https://github.com/lewis6991/gitsigns.nvim.git
+# [submodule "nvim-tree.lua"]
+#     path = pack/tree/start/nvim-tree.lua
+#     url = https://github.com/nvim-tree/nvim-tree.lua.git
+# [submodule "nvim-web-devicons"]
+#     path = pack/icon/start/nvim-web-devicons
+#     url = https://github.com/nvim-tree/nvim-web-devicons.git
 
-[submodule "plenary.nvim"]
-    path = pack/utils/start/plenary.nvim
-    url = https://github.com/nvim-lua/plenary.nvim.git
+# [submodule "plenary.nvim"]
+#     path = pack/utils/start/plenary.nvim
+#     url = https://github.com/nvim-lua/plenary.nvim.git
 
 # search
-[submodule "telescope.nvim"]
-    path = pack/search/start/telescope.nvim
-    url = https://github.com/nvim-telescope/telescope.nvim.git
-[submodule "fzf-lua.nvim"]
-    path = pack/search/start/fzf-lua
-    url = https://github.com/ibhagwan/fzf-lua
+# [submodule "telescope.nvim"]
+#     path = pack/search/start/telescope.nvim
+#     url = https://github.com/nvim-telescope/telescope.nvim.git
+# [submodule "fzf-lua.nvim"]
+#     path = pack/search/start/fzf-lua
+#     url = https://github.com/ibhagwan/fzf-lua
 
-[submodule "github-nvim-theme"]
-    path = pack/theme/start/github-nvim-theme
-    url = https://github.com/projekt0n/github-nvim-theme.git
+# [submodule "github-nvim-theme"]
+#    path = pack/theme/start/github-nvim-theme
+#    url = https://github.com/projekt0n/github-nvim-theme.git
 
 # other
-[submodule "indent-blankline.nvim"]
-    path = pack/other/start/indent-blankline.nvim
-    url = https://github.com/lukas-reineke/indent-blankline.nvim.git
-[submodule "lualine.nvim"]
-    path = pack/other/start/lualine.nvim
-    url = https://github.com/nvim-lualine/lualine.nvim.git
-[submodule "render-markdown.nvim"]
-    path = pack/other/start/render-markdown.nvim
-    url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
+# [submodule "indent-blankline.nvim"]
+#     path = pack/other/start/indent-blankline.nvim
+#     url = https://github.com/lukas-reineke/indent-blankline.nvim.git
+# [submodule "lualine.nvim"]
+#     path = pack/other/start/lualine.nvim
+#     url = https://github.com/nvim-lualine/lualine.nvim.git
+# [submodule "render-markdown.nvim"]
+#     path = pack/other/start/render-markdown.nvim
+#     url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
 
-[submodule "atq.nvim"]
-    path = pack/schedule/start/atq.nvim
-    url = https://github.com/CarsonSlovoka/atq.nvim.git
-[submodule "cmp.nvim"]
-    path = pack/edit/start/cmp.nvim
-    url = https://github.com/CarsonSlovoka/cmp.nvim.git
-[submodule "debug/nvim-nio"]
-    path = pack/debug/start/nvim-nio
-    url = https://github.com/nvim-neotest/nvim-nio.git
-[submodule "debug/nvim-dap-ui"]
-    path = pack/debug/start/nvim-dap-ui
-    url = https://github.com/rcarriga/nvim-dap-ui.git
-[submodule "debug/nvim-dap-go"]
-    path = pack/debug/start/nvim-dap-go
-    url = https://github.com/leoluz/nvim-dap-go.git
-[submodule "debug/nvim-dap"]
-    path = pack/debug/start/nvim-dap
-    url = https://github.com/mfussenegger/nvim-dap.git
-[submodule "debug/nvim-dap-python"]
-    path = pack/debug/start/nvim-dap-python
-    url = https://github.com/mfussenegger/nvim-dap-python.git
-[submodule "debug/one-small-step-for-vimkind"]
-    path = pack/debug/start/one-small-step-for-vimkind
-    url = https://github.com/jbyuki/one-small-step-for-vimkind.git
-[submodule "debug/flutter-tools.nvim"]
-    path = pack/sdk/start/flutter-tools.nvim
-    url = https://github.com/nvim-flutter/flutter-tools.nvim
+# [submodule "atq.nvim"]
+#     path = pack/schedule/start/atq.nvim
+#     url = https://github.com/CarsonSlovoka/atq.nvim.git
+# [submodule "cmp.nvim"]
+#     path = pack/edit/start/cmp.nvim
+#     url = https://github.com/CarsonSlovoka/cmp.nvim.git
 
-[submodule "sql/sqls.nvim"]
-    path = pack/sql/start/sqls.nvim
-    url = https://github.com/nanotee/sqls.nvim.git
+# Dap
+# [submodule "debug/nvim-nio"]
+#     path = pack/debug/start/nvim-nio
+#     url = https://github.com/nvim-neotest/nvim-nio.git
+# [submodule "debug/nvim-dap-ui"]
+#     path = pack/debug/start/nvim-dap-ui
+#     url = https://github.com/rcarriga/nvim-dap-ui.git
+# [submodule "debug/nvim-dap-go"]
+#     path = pack/debug/start/nvim-dap-go
+#     url = https://github.com/leoluz/nvim-dap-go.git
+# [submodule "debug/nvim-dap"]
+#     path = pack/debug/start/nvim-dap
+#     url = https://github.com/mfussenegger/nvim-dap.git
+# [submodule "debug/nvim-dap-python"]
+#     path = pack/debug/start/nvim-dap-python
+#     url = https://github.com/mfussenegger/nvim-dap-python.git
+# [submodule "debug/one-small-step-for-vimkind"]
+#     path = pack/debug/start/one-small-step-for-vimkind
+#     url = https://github.com/jbyuki/one-small-step-for-vimkind.git
 
-[submodule "tools/ccc.nvim"]
-    path = pack/tools/start/ccc.nvim
-    url = https://github.com/uga-rosa/ccc.nvim.git
-[submodule "tools/pantran.nvim"]
-    path = pack/tools/start/pantran.nvim
-    url = https://github.com/potamides/pantran.nvim.git
-[submodule "tools/image.nvim"]
-    path = pack/tools/start/image.nvim
-    url = https://github.com/3rd/image.nvim.git
-[submodule "tools/live-preview.nvim"]
-    path = pack/tools/start/live-preview.nvim
-    url = https://github.com/brianhuster/live-preview.nvim
+# [submodule "debug/flutter-tools.nvim"]
+#     path = pack/sdk/start/flutter-tools.nvim
+#     url = https://github.com/nvim-flutter/flutter-tools.nvim
 
-[submodule "view/csvview.nvim"]
-    path = pack/view/start/csvview.nvim
-    url = https://github.com/hat0uma/csvview.nvim.git
+# [submodule "sql/sqls.nvim"]
+#     path = pack/sql/start/sqls.nvim
+#     url = https://github.com/nanotee/sqls.nvim.git
+
+# [submodule "tools/ccc.nvim"]
+#     path = pack/tools/start/ccc.nvim
+#     url = https://github.com/uga-rosa/ccc.nvim.git
+
+# [submodule "tools/pantran.nvim"]
+#    path = pack/tools/start/pantran.nvim
+#    url = https://github.com/potamides/pantran.nvim.git
+# [submodule "tools/image.nvim"]
+#     path = pack/tools/start/image.nvim
+#     url = https://github.com/3rd/image.nvim.git
+# [submodule "tools/live-preview.nvim"]
+#     path = pack/tools/start/live-preview.nvim
+#     url = https://github.com/brianhuster/live-preview.nvim
+
+# [submodule "view/csvview.nvim"]
+#     path = pack/view/start/csvview.nvim
+#     url = https://github.com/hat0uma/csvview.nvim.git
