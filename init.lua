@@ -241,28 +241,6 @@ local function install_nvimWebDevicons()
   -- m.set_default_icon('😃', '#6d8086', 65)
 end
 
-local function install_atq()
-  local ok, m = pcall(require, "atq")
-  if not ok then
-    return
-  end
-
-  -- :lua require"atq".help()
-  -- :lua require"atq".add()
-  m.setup()
-
-  --[[
-  vim.keymap.set("n",
-    "<leader>test",
-    function()
-    end,
-    { desc = "test only" }
-  )
-  --]]
-end
-
-
-
 local function install_cmp_list()
   local ok, m = pcall(require, "cmp-list")
   if not ok then
