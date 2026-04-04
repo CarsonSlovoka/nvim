@@ -4,6 +4,10 @@
       "rev": "9d1a256e006decc574789dfc7d628ca11644d4c2",
       "src": "https://github.com/uga-rosa/ccc.nvim"
     },
+    "csvview.nvim": {
+      "rev": "9b483f8aba44d80303c16a2f3783c9de8dbf6021",
+      "src": "https://github.com/hat0uma/csvview.nvim"
+    },
     "fzf-lua": {
       "rev": "fd244f2a6e1e3b1c6fcf0361bc738f362f269ce8",
       "src": "https://github.com/ibhagwan/fzf-lua"

@@ -285,7 +285,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
 │   │
 │   ├── view/start/
-│   │         └── csvview.nvim       -- ✅ 方便查看和編輯csv ( v1.2.0... 22c9450 )
+│   │         └── csvview.nvim       -- ✅ 方便查看和編輯csv ( v1.4.0 9b483f8 )
 │   │
 │   ├── sql/start/                   -- ✅ sql相關
 │   │         └── sqls.nvim          -- ( d1bc542 )

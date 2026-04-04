@@ -107,6 +107,6 @@
 #     path = pack/tools/start/live-preview.nvim
 #     url = https://github.com/brianhuster/live-preview.nvim
 
-[submodule "view/csvview.nvim"]
-    path = pack/view/start/csvview.nvim
-    url = https://github.com/hat0uma/csvview.nvim.git
+# [submodule "view/csvview.nvim"]
+#     path = pack/view/start/csvview.nvim
+#     url = https://github.com/hat0uma/csvview.nvim.git
