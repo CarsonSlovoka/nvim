@@ -488,11 +488,6 @@ local function install_csvview()
   -- :CsvViewToggle
 end
 
-local function install_live_preview()
-  -- :che livepreview 可以看到預設的設定, port預設是5500
-  require('livepreview.config').set()
-end
-
 local function install_xcodebuild()
   -- 此插件，我覺得不需要裝，它做了很多功能，但是都可以透過手動自己來執行
   -- 而且就算要debug: 可完全透過: `xcrun lldb-dap` 用attach的方式即可
@@ -585,7 +580,7 @@ local installs = {
     delay = 0
   },
   { name = "nvimWebDevicons",   fn = install_nvimWebDevicons, delay = 0 },
-  { name = "cmp_list",          fn = install_cmp_list,        delay = 0 },
+
   { name = "flutter_tools",     fn = install_flutter_tools,   delay = 5 },
   { name = "pantran.nvim",      fn = install_pantran,         delay = 5 },
   { name = "csvview.nvim",      fn = install_csvview,         delay = 5 },

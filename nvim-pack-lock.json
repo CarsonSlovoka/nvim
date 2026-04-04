@@ -28,6 +28,10 @@
       "rev": "b960d5038c5c505c52e56a54490f9bbb1f0e6ef6",
       "src": "https://codeberg.org/andyg/leap.nvim"
     },
+    "live-preview.nvim": {
+      "rev": "c1fcf75c5f9c9c01dd392852de44204b60f1b5b1",
+      "src": "https://github.com/brianhuster/live-preview.nvim"
+    },
     "lualine.nvim": {
       "rev": "47f91c416daef12db467145e16bed5bbfe00add8",
       "src": "https://github.com/nvim-lualine/lualine.nvim"

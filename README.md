@@ -281,7 +281,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   ├── tools/start/
 │   │         ├── image.nvim                    -- ✅ 使用kitty終端機，能在markdown文件直接看到圖片 ( v1.4.0 446a8a5c )
 │   │         ├── pantran.nvim                  -- ✅ 翻譯工具, engine: google, deepl, ... ( b87c3ae4 )
-│   │         ├── live-preview.nvim             -- ✅ 即時渲染html, md, svg, ...的結果 v0.9.5... ( 35ddc5a )
+│   │         ├── live-preview.nvim             -- ✅ 即時渲染html, md, svg, ...的結果 2026-03-05 v0.9.6... ( c1fcf75c )
 │   │         └── ccc.nvim                      -- ✅ 取色器 v2.0.3... ( 9d1a256 )
 │   │
 │   ├── view/start/
