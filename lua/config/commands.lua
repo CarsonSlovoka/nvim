@@ -4470,6 +4470,8 @@ vim.api.nvim_create_user_command("Align",
 
     if args.fargs[1] == "-h" then
       cmdUtils.showHelpAtQuickFix({
+        [[:'<,'>Align findSepExpr=0/key alignCol=75]],
+
         -- 以下三種方法都無法呈現CR
         -- [[let @a='0/word\x0d100i 80|dwj']],
         -- [[let @a='0/word\r100i 80|dwj']],
@@ -4544,12 +4546,24 @@ vim.api.nvim_create_user_command("Align",
 
     local fillWidth = (tonumber(config["fillWidth"]) or 100) + alignCol -- 至少要大於alignCol
     for _ = 0, args.line2 - args.line1 do
-      -- vim.cmd(string.format("normal! 02f#100i 30|dwj"))
-      vim.cmd(string.format("normal! %s%di %d|dwj",
-        config["findSepExpr"],
-        fillWidth,
-        alignCol
-      ))
+      -- local prefix, search_part, suffix = config["findSepExpr"]:match("(.-)(/.-[\r\n])(.*)") -- 不曉得\r該怎麼弄，先假設搜尋就是結尾
+      local prefix, search_part = config["findSepExpr"]:match("(.-)(/.-)$")
+      if search_part then
+        -- vim.cmd(string.format("normal! %dG", args.line1 + i)) -- 先跳到指定的行 <== 這不是必要的, vim.fn.search就會從range找起
+        if prefix ~= "" then
+          vim.cmd(string.format("normal! %s", prefix))
+        end
+        -- -- vim.cmd("/word")  -- Caution: 這樣的搜尋是無效的
+        vim.fn.search(search_part:sub(2), "w") -- w 往前, b往後搜
+        vim.cmd(string.format("normal! %di %d|dwj", fillWidth, alignCol))
+      else
+        -- vim.cmd(string.format("normal! 02f#100i 30|dwj")) -- 先找到分隔符`#`, 接著插入100個空白: 100i, ESC離開, 30| 移動到第30欄的位置(:help |), dwj刪除之後的空白
+        vim.cmd(string.format("normal! %s%di %d|dwj",
+          config["findSepExpr"],
+          fillWidth,
+          alignCol
+        ))
+      end
     end
     if autoSaveState then
       require("config.autocmd").autoSave = true
