@@ -189,11 +189,13 @@ function options.setup()
   -- set nolist
   vim.opt.list = true
   vim.opt.listchars = {
-    -- tab = '🡢', -- 之後一定要再給一個空白，不然會錯
+    -- Tip: `set listchars=multispace:\ ,nbsp:␣,tab:\|\ ,trail:·` 預設tab會自動給出當前的設定
+    -- tab = '🡢', -- ~~之後一定要再給一個空白，不然會錯~~ 不一定是要空白 `:help lcs-tab`
     -- tab = '🡢 ', -- Tab 符號
-    tab = '▸ ', -- 用U+25B8替代
+    tab = '| ',       -- ▸ (U+25B8), ␉, -->
+    multispace = ' ', -- ---+  |---+ `set listchars=multispace:---+` 也可以不要，用: `set listchars=multispace:\ ` 這樣就表示用空白
     -- space = '•',
-    trail = '·', -- 行尾多餘的空格
+    trail = '·',      -- 行尾多餘的空格
     -- extends = '>', -- 行末的截斷符顯示為 >
     -- precedes = '<', -- 行首的截斷符顯示為 <
     -- eol = '⏎', -- 行結束位置
