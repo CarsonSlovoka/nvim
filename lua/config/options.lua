@@ -214,6 +214,7 @@ function options.setup()
   -- vim.opt.qftf = function(info) end -- 要改字串才行(此字串為一個function的名稱)
   vim.o.quickfixtextfunc = "{info -> v:lua._G.qftf(info)}"
 
+  vim.o.completeopt = "menu,menuone,noselect" -- noselect要選, 不然太自動補反而不好用
 
   -- conceal 分兩種
   -- 1. 隱藏: syntax match MyName /regex/ conceal 這種方式是藏起來
