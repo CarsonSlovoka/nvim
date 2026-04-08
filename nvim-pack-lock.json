@@ -5,7 +5,7 @@
       "src": "https://github.com/uga-rosa/ccc.nvim"
     },
     "cmp.nvim": {
-      "rev": "a7e6051548a3d05587224050b17b13697a13baf2",
+      "rev": "110fe38f37987b60261cd5a4b199bbae3fcdadaa",
       "src": "https://github.com/CarsonSlovoka/cmp.nvim"
     },
     "csvview.nvim": {
