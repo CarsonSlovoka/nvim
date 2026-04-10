@@ -4618,14 +4618,21 @@ vim.api.nvim_create_user_command("UriEncode",
     if args.range == 0 then
       vim.notify("Please use the range method and choose to execute this command later.", vim.log.levels.ERROR)
     end
+
     local rfc_xxxx = args.fargs[1] or "rfc3986"
     -- local selected_text = table.concat(utils.range.get_selected_text(), "") -- 這個如果是中文的選取，可能會漏.
-    vim.cmd("normal! y") -- 採用先將選取範圍yank, 再從暫存器中得到
-    local selected_text = vim.fn.getreg([["]])
+    -- Warn: 用暫存器的方法也會有問題
+    -- vim.cmd("normal! y") -- 採用先將選取範圍yank, 再從暫存器中得到
+    -- local selected_text = vim.fn.getreg([["]])
+
+    local selected_text = utils.range.get_visual_selection()[1]
 
     local uri = vim.uri_encode(selected_text, rfc_xxxx)
     -- # `:lua print(vim.uri_encode("https://news.google.com/rss/search?q=中文", "rfc3986"))`
-    vim.cmd(string.format("normal! ciw%s", uri))
+    -- vim.cmd(string.format("noa normal! ciw%s", uri)) # 這樣會有問題
+    -- vim.api.nvim_buf_set_text(0, line1 - 1, col1 - 1, line2 - 1, col2, { uri }) # 也會有問題
+
+    vim.cmd(string.format("noa normal! `<v`>c%s", uri)) -- 用`<和`>來找到選取的地方，再做置換
   end, {
     desc = "url encode",
     range = true,

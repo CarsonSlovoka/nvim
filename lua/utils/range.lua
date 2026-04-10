@@ -70,4 +70,11 @@ end
 --   }
 -- )
 
+--- @return string[]
+function M.get_visual_selection()
+  local vstart = vim.fn.getpos("'<")
+  local vend = vim.fn.getpos("'>")
+  return vim.fn.getregion(vstart, vend)
+end
+
 return M
