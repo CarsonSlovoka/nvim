@@ -4613,6 +4613,33 @@ vim.api.nvim_create_user_command("Align",
   }
 )
 
+vim.api.nvim_create_user_command("UriEncode",
+  function(args)
+    if args.range == 0 then
+      vim.notify("Please use the range method and choose to execute this command later.", vim.log.levels.ERROR)
+    end
+    local rfc_xxxx = args.fargs[1] or "rfc3986"
+    -- local selected_text = table.concat(utils.range.get_selected_text(), "") -- 這個如果是中文的選取，可能會漏.
+    vim.cmd("normal! y") -- 採用先將選取範圍yank, 再從暫存器中得到
+    local selected_text = vim.fn.getreg([["]])
+
+    local uri = vim.uri_encode(selected_text, rfc_xxxx)
+    -- # `:lua print(vim.uri_encode("https://news.google.com/rss/search?q=中文", "rfc3986"))`
+    vim.cmd(string.format("normal! ciw%s", uri))
+  end, {
+    desc = "url encode",
+    range = true,
+    nargs = "?",
+    complete = function()
+      return {
+        "rfc2396",
+        "rfc2732",
+        "rfc3986",
+      }
+    end
+  }
+)
+
 
 vim.api.nvim_create_user_command("Column",
   function(args)
