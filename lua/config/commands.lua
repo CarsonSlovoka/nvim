@@ -4647,6 +4647,21 @@ vim.api.nvim_create_user_command("UriEncode",
   }
 )
 
+vim.api.nvim_create_user_command("UriDecode",
+  function(args)
+    if args.range == 0 then
+      vim.notify("Please use the range method and choose to execute this command later.", vim.log.levels.ERROR)
+    end
+    local selected_text = utils.range.get_visual_selection()[1]
+    local org_text = vim.uri_decode(selected_text)
+    vim.cmd(string.format("noa normal! `<v`>c%s", org_text))
+  end, {
+    desc = "url decode",
+    range = true,
+    nargs = 0,
+  }
+)
+
 
 vim.api.nvim_create_user_command("Column",
   function(args)
