@@ -734,10 +734,25 @@ local function setup_insert()
   )
 end
 
+--- 可用於/, <CR>=
+local function setup_cmap()
+  -- vim.keymap.set('c', '<leader>v1', 'test', { expr = true })  -- leader如果是\ 用搜尋的時候，有時候也會用到
+
+  -- 這可行，但是terminal中的輸入無法
+  -- for i = 0, 9 do
+  --   vim.keymap.set({ 'c' }, '<F2>' .. i, function()
+  --     -- local txt = vim.fn.getreg("f", 1, 1)[i + 1]
+  --     -- return string.format("'%s'", txt)
+  --     return string.format('getreg("f", 1, 1)[%d]', i)
+  --   end, { expr = true, desc = [[ getreg("f", 1, 1)[n] ]] })
+  -- end
+end
+
 function keymaps.setup()
   setup_normal()
   setup_visual()
   setup_insert()
+  setup_cmap()
 end
 
 return keymaps

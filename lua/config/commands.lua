@@ -5178,7 +5178,39 @@ vim.api.nvim_create_user_command('Qfa',
         "-h",
       }
     end
-  })
+  }
+)
+
+vim.api.nvim_create_user_command('Rg10',
+  function(args)
+    local lines
+    if args.fargs[1] == nil then
+      lines = vim.fn.getline(args.line1, args.line2)
+    else
+      lines = vim.fn.getreg(args.fargs[1], 1, 1)
+    end
+    for i = 1, #lines do
+      vim.fn.setreg(tostring(i > 9 and 0 or i), lines[i]) -- 10當成0
+      if i >= 10 then
+        break
+      end
+    end
+  end, {
+    desc =
+    "the selected range can be assigned to the register 1-9(10); or the contents of the register can be split into 1-9(10)",
+    nargs = "?",
+    range = true,
+    complete = function(arg_lead)
+      local candidates = {}
+      for _, reg in ipairs(utils.register.get_registers()) do
+        if reg:find(arg_lead, 1, true) == 1 then
+          table.insert(candidates, reg)
+        end
+      end
+      return candidates
+    end
+  }
+)
 
 -- print(vim.inspect(get_font_map()))
 
