@@ -278,6 +278,36 @@ local installs = {
 
   { name = "xcodebuild.nvim", fn = install_xcodebuild,      delay = 5 },
   {
+    name = "_core.ui2",
+    fn = function()
+      --- `:help ui2`
+      --- Warn: 目前為實驗性功能
+      --- 此功能可以直接跳轉到print的訊息, 當成buffer來進入, 能直接在裡面操作. 離開後會自動關閉
+      require('vim._core.ui2').enable({
+        enable = true,
+        msg = {
+          ---@type string|table<string, 'cmd'|'msg'|'pager'> Default message target
+          targets = { "cmd", "msg", "pager" },
+          cmd = {
+            height = 0.5    -- Maximum height while expanded for messages beyond 'cmdheight'.
+          },
+          dialog = {        -- Options related to dialog window.
+            height = 0.5,   -- Maximum height.
+          },
+          msg = {           -- Options related to msg window.
+            height = 0.5,   -- Maximum height.
+            timeout = 4000, -- Time a message is visible in the message window.
+          },
+          pager = {         -- Options related to message window.
+            height = 1,     -- Maximum height.
+          },
+        },
+      })
+    end,
+    delay = 3000 --- Caution: 如果此功能在一開始就導入，將會導致很多插件出現問題
+  },
+
+  {
     name = "global-func",
     fn = function()
       require("global-func") -- 自定義的一些全域函數，可以使用 :=MyGlobalFunc() 的這種方式來調用
