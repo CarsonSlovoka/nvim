@@ -614,6 +614,7 @@ local function setup_normal()
 
   vim.keymap.set({ "n" }, "<C-s>",
     function()
+      -- `git show -p e5321ebd:lua/config/autocmd.lua | bat -l lua -P -r 1163:1185`
       vim.cmd("SetAutoSave -")
     end,
     {
