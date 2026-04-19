@@ -40,64 +40,7 @@ require("config.commands_windows")
 
 require("config.autocmd").setup({
   callback = function(m)
-    vim.api.nvim_create_user_command(
-      "ToggleFMT",
-      function()
-        m.autoReformat = not m.autoReformat
-        vim.notify("autoReformat: " .. vim.inspect(m.autoReformat), vim.log.levels.INFO)
-      end,
-      { desc = "切換自動格式化" }
-    )
-    vim.api.nvim_create_user_command(
-      "SetAutoFmt",
-      function(args)
-        m.autoReformat = args.fargs[1] == "1"
-        vim.notify("autoReformat: " .. vim.inspect(m.autoReformat), vim.log.levels.INFO)
-      end,
-      {
-        nargs = 1,
-        complete = function()
-          return {
-            "1",
-            "0"
-          }
-        end,
-        desc = "enable autoReformat"
-      }
-    )
-    vim.api.nvim_create_user_command(
-      "SetAutoSave",
-      function(args)
-        if args.fargs[1] == "-" then
-          -- toggle
-          m.autoSave = not m.autoSave
-        else
-          m.autoSave = args.fargs[1] == "1"
-        end
-        vim.notify("autoSave: " .. vim.inspect(m.autoSave), vim.log.levels.INFO)
-      end,
-      {
-        nargs = 1,
-        complete = function() -- complete 不能直接回傳一個table，一定要用一個function來包裝
-          return {
-            "1",
-            "0",
-            "-",
-          }
-        end,
-        desc = "enable autoSave"
-      }
-    )
-
-    vim.keymap.set({ "n" }, "<C-s>",
-      function()
-        vim.cmd("SetAutoSave -")
-      end,
-      {
-        -- 自動保存，在頻繁編輯下，一離開insert就保存可能會造成負擔，所以讓其可以被容易切換
-        desc = "toggle autosave"
-      }
-    )
+    -- vim.api.nvim_create_user_command("", function() end, {})
   end
 })
 

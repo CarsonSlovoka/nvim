@@ -1132,4 +1132,56 @@ vim.api.nvim_create_user_command('Cf', cf_execute, {
 })
 
 
+vim.api.nvim_create_user_command(
+  "ToggleFMT",
+  function()
+    M.autoReformat = not M.autoReformat
+    vim.notify("autoReformat: " .. vim.inspect(M.autoReformat), vim.log.levels.INFO)
+  end,
+  { desc = "切換自動格式化" }
+)
+
+
+vim.api.nvim_create_user_command(
+  "SetAutoFmt",
+  function(args)
+    M.autoReformat = args.fargs[1] == "1"
+    vim.notify("autoReformat: " .. vim.inspect(M.autoReformat), vim.log.levels.INFO)
+  end,
+  {
+    nargs = 1,
+    complete = function()
+      return {
+        "1",
+        "0"
+      }
+    end,
+    desc = "enable autoReformat"
+  }
+)
+
+vim.api.nvim_create_user_command(
+  "SetAutoSave",
+  function(args)
+    if args.fargs[1] == "-" then
+      -- toggle
+      M.autoSave = not M.autoSave
+    else
+      M.autoSave = args.fargs[1] == "1"
+    end
+    vim.notify("autoSave: " .. vim.inspect(M.autoSave), vim.log.levels.INFO)
+  end,
+  {
+    nargs = 1,
+    complete = function() -- complete 不能直接回傳一個table，一定要用一個function來包裝
+      return {
+        "1",
+        "0",
+        "-",
+      }
+    end,
+    desc = "enable autoSave"
+  }
+)
+
 return M

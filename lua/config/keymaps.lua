@@ -610,6 +610,17 @@ local function setup_normal()
 
   map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap selection with curly braces { }" })
   map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap with curly braces { }" })
+
+
+  vim.keymap.set({ "n" }, "<C-s>",
+    function()
+      vim.cmd("SetAutoSave -")
+    end,
+    {
+      -- 自動保存，在頻繁編輯下，一離開insert就保存可能會造成負擔，所以讓其可以被容易切換
+      desc = "toggle autosave"
+    }
+  )
 end
 
 local function setup_visual()
