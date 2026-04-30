@@ -5212,6 +5212,18 @@ vim.api.nvim_create_user_command('Rg10',
   }
 )
 
+vim.api.nvim_create_user_command('FmtCurl',
+  function()
+    -- '<,'>s/ -/ \\\r -/g
+    -- vim.cmd("s/ -/ \\\r -/g") 這樣的\r會被轉譯
+    vim.cmd([[s/ -/ \\\r -/g]]) -- 這樣 Lua 不會對 \r 做任何轉義，直接把 \\r 傳給 Vim
+  end, {
+    desc = "Format curl to make it easier to read",
+    nargs = 0,
+    range = true,
+  }
+)
+
 -- print(vim.inspect(get_font_map()))
 
 return commands
