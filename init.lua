@@ -4,8 +4,6 @@ vim.pack.add({ "https://github.com/projekt0n/github-nvim-theme" })
 -- https://github.com/projekt0n/github-nvim-theme/blob/c106c9472154d6b2c74b74565616b877ae8ed31d/README.md?plain=1#L170-L206
 vim.cmd('colorscheme github_dark_default') -- 主題要先設定(可以先設定之後再補全它的實作)，不然如果自定義的調整在這之前，又會被此蓋掉
 
-local completion = require("utils.complete")
-local cmdUtils = require("utils.cmd")
 local utils = require("utils.utils")
 
 local HOME = os.getenv("HOME")
