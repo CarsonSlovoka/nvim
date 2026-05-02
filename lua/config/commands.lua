@@ -5224,6 +5224,38 @@ vim.api.nvim_create_user_command('FmtCurl',
   }
 )
 
+vim.api.nvim_create_user_command("CD",
+  function(args)
+    --- @type string
+    local cur_path
+    if args.range == 0 then
+      if #args.args > 0 then
+        cur_path = args.fargs[1]
+      else
+        cur_path = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+        if vim.v.shell_error ~= 0 then
+          cur_path = "~"
+        end
+      end
+    else
+      -- range
+      cur_path = table.concat(utils.range.get_selected_text(), "")
+    end
+    -- NOTE: 在nvim-tree上做CD的路徑和當前編輯的是不同的工作路徑, 如果有需要可以在nvim-tree: gf 複製絕對路徑後使用CD切換
+    vim.cmd("cd " .. cur_path)
+    if pcall(require, "nvim-tree.api") then
+      require "nvim-tree.api".tree.open({ path = cur_path })
+      require "nvim-tree.api".tree.change_root(cur_path)
+    end
+  end,
+  {
+    nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
+    desc = "Change working directory",
+    range = true,
+  }
+)
+
+
 -- print(vim.inspect(get_font_map()))
 
 return commands

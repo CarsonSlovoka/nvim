@@ -53,39 +53,10 @@ m.setup({
 -- vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
 vim.keymap.set("n", "<leader>t", ":NvimTreeToggle<CR>", { desc = "toggle NvimTree" })
 
-local nvim_treeAPI = require "nvim-tree.api"
 vim.keymap.set("n", "<A-t>", function()
     local cur_file_path = vim.fn.expand("%:p")
     -- 也可以考慮用 <C-W>T  把目前視窗「搬」到新 tab (原本視窗會消失)
     vim.cmd("tabnew " .. cur_file_path) -- 會保留原本視窗，新 tab 顯示相同 buffer
   end,
   { desc = "在新的頁籤開啟當前的文件" }
-)
-vim.api.nvim_create_user_command("CD",
-  function(args)
-    --- @type string
-    local path
-    if args.range == 0 then
-      if #args.args > 0 then
-        path = args.fargs[1]
-      else
-        path = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
-        if vim.v.shell_error ~= 0 then
-          path = "~"
-        end
-      end
-    else
-      -- range
-      path = table.concat(utils.range.get_selected_text(), "")
-    end
-    -- NOTE: 在nvim-tree上做CD的路徑和當前編輯的是不同的工作路徑, 如果有需要可以在nvim-tree: gf 複製絕對路徑後使用CD切換
-    vim.cmd("cd " .. path)
-    nvim_treeAPI.tree.open({ path = path })
-    nvim_treeAPI.tree.change_root(path)
-  end,
-  {
-    nargs = "?", -- 預設為0，不接受參數, 1: 一個, *多個,  ? 沒有或1個,  + 一個或多個
-    desc = "更改工作目錄",
-    range = true,
-  }
 )
