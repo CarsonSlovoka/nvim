@@ -5255,6 +5255,77 @@ vim.api.nvim_create_user_command("CD",
   }
 )
 
+vim.api.nvim_create_user_command('HttpGet',
+  function(args)
+    if args.fargs[1] == "-h" then
+      utils.cmd.showHelpAtQuickFix({
+        '%!curl -s https://api.github.com/repos/neovim/neovim',
+        [[:HttpGet https://api.github.com/repos/neovim/neovim                        寫入到當前的buffer]],
+        [[:HttpGet https://api.github.com/repos/neovim/neovim --outpath=~/temp.json  輸出到指定的檔案]],
+        [[:lua vim.net.request('https://neovim.io/charter/', { outpath = vim.fn.expand('~/temp.html') }) ]],
+        [[%!curl -s https://api.github.com/repos/neovim/neovim]],
+      })
+      return
+    end
+    local url = ""
+    if args.range == 0 then
+      url = args.fargs[1]
+    else
+      url = utils.range.get_visual_selection()[1]
+    end
+    local i = 1
+    local fargs = vim.split(args.args:gsub("=", " "), " ")
+    local opts = {
+      -- Note: 當前兩個都存在，只會寫到outpath, 當前的buffer不會寫
+      -- outpath = 'vision.html', -- 也可以保存在指定的檔案
+      outbuf = 0
+    }
+    while i <= #fargs do
+      local arg = fargs[i]
+      if arg == "--nobuf" then
+        opts.outbuf = nil
+      elseif vim.tbl_contains({ "-o", "--outpath" }, arg) then
+        i = i + 1
+        opts.outpath = vim.fn.expand(fargs[i])
+      end
+      i = i + 1
+    end
+    -- print(url)
+    -- print(vim.inspect(opts))
+    vim.net.request(url, opts)
+  end, {
+    desc = "",
+    range = true,
+    nargs = "*", -- Warn: 如果nargs寫錯寫到了?, 那麼參數最多只會有一個
+    complete = function(arg_lead, cmd_line)
+      local argc = #(vim.split(cmd_line, "%s+")) - 1
+      local is_range = cmd_line:match("^'<,'>.*") ~= nil
+      if is_range then
+        argc = argc + 1
+      end
+      if argc == 1 then
+        return { "https://google.com" }
+      end
+
+      if argc == 0 then
+        return vim.tbl_filter(function(item)
+            return item:match(arg_lead)
+          end,
+          { "--nobuf", "--output=" }
+        )
+      end
+
+      local inputs = vim.split(arg_lead:gsub("=", " "), " ") -- 有辦法區別--key=val
+
+      local options = {
+        { "",   "--nobuf",   nil },
+        { "-o", "--outpath", vim.fn.getcompletion(#inputs > 1 and inputs[2] or ".", "file") },
+      }
+      return utils.flag.get_complete(arg_lead, options)
+    end
+  }
+)
+
 
 -- print(vim.inspect(get_font_map()))
 
