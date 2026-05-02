@@ -88,6 +88,10 @@
       "rev": "40e9d5a6cc3db11b309e39593fc7ac03bb844e38",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
+    "oil.nvim": {
+      "rev": "02ce839a17163e712aa7da43c0ee7c4220271193",
+      "src": "https://github.com/stevearc/oil.nvim"
+    },
     "one-small-step-for-vimkind": {
       "rev": "330049a237635b7cae8aef4972312e6da513cf91",
       "src": "https://github.com/jbyuki/one-small-step-for-vimkind"
