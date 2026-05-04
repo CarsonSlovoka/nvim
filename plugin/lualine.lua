@@ -3,11 +3,25 @@ if not ok then
   vim.notify("Failed to load lualine", vim.log.levels.ERROR)
   return
 end
+
+local function oil_filename()
+  local bufname = vim.api.nvim_buf_get_name(0) -- `:lua print(vim.api.nvim_buf_get_name(0))` oil:///Users/.../
+  if bufname:match("^oil://") then
+    local path = bufname:gsub("^oil://", "")
+    -- return vim.fn.fnamemodify(path, ":~")
+    return vim.fn.fnamemodify(path, ":t") -- 🤔 oil的部份不太理想, 當前好像有問題, 還是先採用: `extensions = { 'oil' }` 的方式
+  end
+  return string.format("%s/%s",           -- 顯示前一層目錄 + 檔名
+    vim.fn.fnamemodify(bufname, ":h:t"), vim.fn.fnamemodify(bufname, ":t"
+    ))
+end
+
 m.setup {
+  extensions = { 'oil' }, -- 如果裝了oil.nvim, 也可以考慮這樣用, 如此lualine會顯示, 但是路徑是顯示全名
   sections = {
     lualine_c = {
       {
-        'filename',
+        'filename',             -- Tip: 預設是 'filename', 也可以用自定義函數: oil_filename
         -- 以下都是預設，其實可以直將path改成4即可
         file_status = true,     -- Displays file status (readonly status, modified status)
         newfile_status = false, -- Display new file status (new file means no write after created)
