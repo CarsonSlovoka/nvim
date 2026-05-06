@@ -10,7 +10,7 @@ require("oil").setup({
     "icon",
     -- "permissions",
     -- "size",
-    -- "mtime",
+    -- "mtime", -- atime, ctime 也可以
   },
   -- Buffer-local options to use for oil buffers
   buf_options = {
@@ -213,3 +213,23 @@ require("oil").setup({
 -- vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" }) -- 只用 - 會和往上移動N行衝突
 vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 -- vim.keymap.set("n", "<leader>e", "<CMD>Oil --float<CR>", { desc = "Oil Float" })
+
+vim.api.nvim_create_user_command("OilColumns", function(args)
+  require("oil").set_columns(args.fargs) -- 當為空時，就什麼都不會有
+end, {
+  desc = "Set Oil additional column information",
+  nargs = "*",
+  complete = function(arg_lead)
+    return vim.tbl_filter(function(item)
+        return item:match(arg_lead)
+      end,
+      { "icon",
+        "permissions",
+        "size",
+        "mtime",
+        "atime",
+        "ctime",
+      }
+    )
+  end
+})
