@@ -65,12 +65,12 @@ require("oil").setup({
     ["<CR>"] = "actions.select",
     -- ["<C-s>"] = { "actions.select", opts = { vertical = true } },
     -- ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
-    ["<C-v>"] = { "actions.select", opts = { vertical = true } }, -- 熱鍵改成和CTRL-W_v, CTRL-W_s相同
+    ["<C-v>"] = { "actions.select", opts = { vertical = true } }, -- 熱鍵改成和CTRL-W_v, CTRL-W_s相同. Tip: 如果想要visual block. 使用CTRL_V (用大寫的V還是可以觸發)
     ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
     ["<C-t>"] = { "actions.select", opts = { tab = true } },
     ["<C-p>"] = "actions.preview", -- 可以做預覽, 之後換每個檔案都可以看到. 再次使用後可以做切換(開關預覽功能)
     ["<C-c>"] = { "actions.close", mode = "n" },
-    ["<C-l>"] = "actions.refresh",
+    ["<C-l>"] = "actions.refresh", -- 當修改了，想回到預設，也可以考慮用這樣的方式
     ["-"] = { "actions.parent", mode = "n" },
     ["_"] = { "actions.open_cwd", mode = "n" },
     ["`"] = { "actions.cd", mode = "n" },
@@ -254,6 +254,8 @@ end, {
         -- 'mtime:%m/%d_%H:%M_(%a)', -- 05/06 15:02 (Wed)
         'mtime:%y/%m/%d_%H:%M',   -- 26/05/06 15:02
         -- 'mtime:%Y/%m/%d_%H:%M', -- 2026/05/06 15:02
+
+        'mtime:%m/%d_%H:%M_(%u) icon', -- 提示可以多個組合
       }
     )
   end
