@@ -214,8 +214,25 @@ require("oil").setup({
 vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 -- vim.keymap.set("n", "<leader>e", "<CMD>Oil --float<CR>", { desc = "Oil Float" })
 
-vim.api.nvim_create_user_command("OilColumns", function(args)
-  require("oil").set_columns(args.fargs) -- 當為空時，就什麼都不會有
+vim.api.nvim_create_user_command("OilColumns", function(opts)
+  local columns = {}
+
+  for _, arg in ipairs(opts.fargs) do
+    -- 處理帶格式的時間欄位： mtime:%Y/%m/%d %H:%M
+    local time_type, time_format = arg:match("^(%a+time):(.+)$")
+
+    if time_type then
+      -- mtime / ctime / atime
+      time_format = string.gsub(time_format, "_", " ")
+      -- table.insert(columns, { "mtime", format = "%Y/%m/%d %H:%M" })
+      table.insert(columns, { time_type, format = time_format })
+    else
+      -- 一般欄位 (icon, permissions, size 等)
+      table.insert(columns, arg)
+    end
+  end
+
+  require("oil").set_columns(columns) -- 當為空時，就什麼都不會有
 end, {
   desc = "Set Oil additional column information",
   nargs = "*",
@@ -229,6 +246,14 @@ end, {
         "mtime",
         "atime",
         "ctime",
+
+        -- 常用台灣時間格式
+        'mtime:%m_%d_%H:%M',      -- 05 06 15:02
+        -- 'mtime:%m/%d_%H:%M',      -- 05/06 15:02
+        'mtime:%m/%d_%H:%M_(%u)', -- 05/06 15:02 (3)
+        -- 'mtime:%m/%d_%H:%M_(%a)', -- 05/06 15:02 (Wed)
+        'mtime:%y/%m/%d_%H:%M',   -- 26/05/06 15:02
+        -- 'mtime:%Y/%m/%d_%H:%M', -- 2026/05/06 15:02
       }
     )
   end
