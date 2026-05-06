@@ -21,6 +21,7 @@ require("oil").setup({
   win_options = {
     wrap = false,
     signcolumn = "no",
+    -- cursorcolumn = true, -- 改為true 可以有垂直的標示. 但是不正確(它可能把icon的距離也算進去了)，所以還是用回default.
     cursorcolumn = false,
     foldcolumn = "0",
     spell = false,
@@ -62,10 +63,12 @@ require("oil").setup({
   keymaps = {
     ["g?"] = { "actions.show_help", mode = "n" },
     ["<CR>"] = "actions.select",
-    ["<C-s>"] = { "actions.select", opts = { vertical = true } },
-    ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
+    -- ["<C-s>"] = { "actions.select", opts = { vertical = true } },
+    -- ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
+    ["<C-v>"] = { "actions.select", opts = { vertical = true } }, -- 熱鍵改成和CTRL-W_v, CTRL-W_s相同
+    ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
     ["<C-t>"] = { "actions.select", opts = { tab = true } },
-    ["<C-p>"] = "actions.preview",
+    ["<C-p>"] = "actions.preview", -- 可以做預覽, 之後換每個檔案都可以看到. 再次使用後可以做切換(開關預覽功能)
     ["<C-c>"] = { "actions.close", mode = "n" },
     ["<C-l>"] = "actions.refresh",
     ["-"] = { "actions.parent", mode = "n" },
@@ -78,7 +81,7 @@ require("oil").setup({
     ["g\\"] = { "actions.toggle_trash", mode = "n" },
   },
   -- Set to false to disable all of the above keymaps
-  use_default_keymaps = true,
+  use_default_keymaps = false, -- Caution: 當有改過就要用成false, 用為true時 keymap還會包含原本oil的預設
   view_options = {
     -- Show files and directories that start with "."
     show_hidden = false,
@@ -138,7 +141,7 @@ require("oil").setup({
     -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
     get_win_title = nil,
     -- preview_split: Split direction: "auto", "left", "right", "above", "below".
-    preview_split = "auto",
+    preview_split = "auto", -- 改了left, right, below 沒看出有差異🤔
     -- This is the config that will be passed to nvim_open_win.
     -- Change values here to customize the layout
     override = function(conf)
