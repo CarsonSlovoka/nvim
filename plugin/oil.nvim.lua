@@ -7,6 +7,7 @@ require("oil").setup({
   -- Id is automatically added at the beginning, and name at the end
   -- See :help oil-columns
   columns = {
+    { "mtime", format = "%m %d %H:%M (%u)" }, -- 可以用format來客製
     "icon",
     -- "permissions",
     -- "size",
@@ -102,8 +103,9 @@ require("oil").setup({
     sort = {
       -- sort order can be "asc" or "desc"
       -- see :help oil-columns to see which columns are sortable
-      { "type", "asc" },
-      { "name", "asc" },
+      { "mtime", "asc" }, -- 最新修改排最後面
+      { "type",  "asc" },
+      { "name",  "asc" },
     },
     -- Customize the highlight group for the file name
     highlight_filename = function(entry, is_hidden, is_link_target, is_link_orphan)
