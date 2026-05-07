@@ -81,7 +81,13 @@ map("n", "?",
 map("n", "<leader>,", '@:', { desc = "Repeat last command-line" }) -- 其實原本就有這個命令了 `:help @:` 先執行一次執令之後，再用@@也可以再次執行上一個指令
 
 map("n", "<leader><leader>t",
-  function() vim.cmd("cd %:h | sp | term") end,
+  function()
+    if vim.bo.filetype == "oil" then
+      vim.cmd("cd " .. require("oil").get_current_dir() .. " | sp | term")
+    else
+      vim.cmd("cd %:h | sp | term")
+    end
+  end,
   { desc = "cd %:h | sp | term" } -- 類似於:Term
 )
 map("n", "<leader>git",
