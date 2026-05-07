@@ -3834,7 +3834,11 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
     --- NOTE: 有關於: nvim自動開啟終端機，並且能補獲所有stdout的內容，可參考: https://gist.github.com/CarsonSlovoka/e228da4f10f61e448f3bbba953b0e638
     local config = utils.cmd.get_cmp_config(args.fargs)
 
-    vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
+    if vim.bo.filetype == "oil" then
+      vim.cmd("cd " .. require("oil").get_current_dir())
+    else
+      vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
+    end
 
     -- 替tab命名
     local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
@@ -4019,7 +4023,11 @@ vim.api.nvim_create_user_command("Rg", function(args)
       -- :lua print(vim.fn.fnamemodify("../..", ":p"))
       vim.cmd("cd " .. vim.fn.fnamemodify(opts["wd"], ":p"))
     elseif vim.api.nvim_buf_get_name(0) ~= '' then -- 避免有No Name的情況，沒有辦法cd %:h
-      vim.cmd("cd %:h")                            -- 先cd到該檔案目錄，執行git後看有沒有git -- 順便當沒有指定 cdToGitRoot 就用當前的檔案目錄當成工作目錄
+      if vim.bo.filetype == "oil" then
+        vim.cmd("cd " .. require("oil").get_current_dir())
+      else
+        vim.cmd("cd %:h") -- 先cd到該檔案目錄，執行git後看有沒有git
+      end
 
       local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
       if vim.v.shell_error == 0 then

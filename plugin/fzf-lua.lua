@@ -41,8 +41,12 @@ require("fzf-lua").setup({
 })
 vim.keymap.set('n', '<leader>st',
   function()
-    local cur_dir = vim.fn.expand("%:p:h")
-    vim.cmd("cd " .. cur_dir)
+    if vim.bo.filetype == "oil" then
+      vim.cmd("cd " .. require("oil").get_current_dir())
+    else
+      vim.cmd("cd %:p:h")
+    end
+
     -- require("telescope.builtin").git_status()
     require("fzf-lua").git_status({ resume = true })
   end,
