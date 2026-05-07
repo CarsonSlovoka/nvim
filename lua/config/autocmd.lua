@@ -822,6 +822,11 @@ function M.setup(opts)
         -- vim.cmd([[syntax match XmlQuoteEnd /="[^"]*\zs"\ze/ conceal]])
         -- 當 XmlQuoteStart, XmlQuoteEnd 都有時，只會 XmlQuotesStart有用
 
+        if vim.bo.filetype == "TelescopePrompt" then
+          -- 在telescope中做: `syntax match XmlQuote /"/ conceal` 沒有意義
+          return
+        end
+
         vim.cmd([[syntax match XmlQuote /"/ conceal ]]) -- 直接隱藏所有的分號，缺點是註解的內容也會被影響
         vim.api.nvim_echo({
           { "❗ \n", "Normal" },
