@@ -690,21 +690,33 @@ local function setup_visual()
 
   -- 將工作目錄更改為當前檔案的目錄
   map("n", "<leader>cd", function()
-    local cur_dir = vim.fn.expand("%:p:h")
+    local cur_dir
+    if vim.bo.filetype == "oil" then
+      cur_dir = require("oil").get_current_dir()
+    else
+      cur_dir = vim.fn.expand("%:p:h")
+    end
     if cur_dir == "" then
-      print("未打開任何檔案")
+      vim.notify("No files opened", vim.log.levels.WARN)
       return
     end
     vim.cmd("cd " .. cur_dir) -- 使用 ':cd' 命令切換目錄
-    print("工作目錄已切換到: " .. cur_dir)
 
     -- 如果 nvim-tree 已加載，更新其根目錄
     local ok, nvim_treeAPI = pcall(require, "nvim-tree.api")
     if ok then
       nvim_treeAPI.tree.change_root(cur_dir) -- 更新 nvim-tree 的根目錄
-      print("nvim-tree 根目錄已更新到: " .. cur_dir)
+      -- vim.notify("nvim-tree and workDir has been switched to: " .. cur_dir, vim.log.levels.INFO)
+      vim.api.nvim_echo({
+        { "nvim-tree and workDir has been switched to: ", "Normal" },
+        { cur_dir,                                        "@label" },
+      }, false, {})
     else
-      print("nvim-tree 未加載")
+      vim.api.nvim_echo({
+        { "The working directory has been switched to: ", "Normal" },
+        { cur_dir,                                        "@label" },
+      }, false, {})
+      vim.notify("`nvim-tree.api` not found", vim.log.levels.ERROR)
     end
   end, { desc = "切換到檔案目錄" })
 
