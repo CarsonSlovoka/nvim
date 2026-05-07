@@ -92,7 +92,11 @@ map("n", "<leader>git",
     end
     -- vim.cmd("cd %:h | tabnew | setlocal buftype=nofile | term lazygit") -- 可行，但是lazygit退出後也不能繼續使用terminal, 並且這樣的方式不是insert是在normal
 
-    vim.cmd("cd %:h") -- 先切換到當前該檔案的目錄
+    if vim.bo.filetype == "oil" then
+      vim.cmd("cd " .. require("oil").get_current_dir())
+    else
+      vim.cmd("cd %:h") -- 先切換到當前該檔案的目錄
+    end
 
     -- 找出它的git根目錄
     local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
