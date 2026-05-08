@@ -78,6 +78,32 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       buildFlags = get_build_flags,
       outputMode = "remote",
     },
+    {
+      -- 例如: `dlv debug --headless --listen=:2345 -- /path/to/goexe arg1 arg2`
+      -- 又或者mcp.json填寫如下，之後發問(會等待)，接著go選擇這種方式(Attach to remote), 即可進入中斷點(之前等待的就會再繼續)
+      -- {
+      --   "mcpServers": {
+      --     "greeter": {
+      --       "command": "dlv",        // dlv --help
+      --       "args": [
+      --         "exec",                // dlv exec --help
+      --         "--headless",          // Run debug server only, in headless mode. Server will accept both JSON-RPC or DAP client connections.
+      --         "--listen=:2345",
+      --         // "--api-version=2",     // 預設就是2
+      --         // "--accept-multiclient", // Allows a headless server to accept multiple client connections via JSON-RPC or DAP.  可以不用加
+      --         "/path/to/goexe"  // 要縮對路徑
+      --       ]
+      --     }
+      --   }
+      -- }
+      type = "go",
+      name = "Attach to remote",
+      request = "attach",
+      mode = "remote",
+      port = 2345, -- 要和 --listen 的 port 一樣
+      host = "127.0.0.1",
+      outputMode = "remote",
+    },
   },
   -- delve configurations
   delve = {
