@@ -127,6 +127,61 @@ map('v', '<C-L>', function()
   }
 )
 
+-- -- map('v', '<C-L>', "dP", { desc = "Link" })
+-- map('v', '<C-L>', function()
+--     -- 以下處理有誤，其實不管怎麼樣用的都是P，只是有問題的是 `## AB`這樣的文本，這種選取完AB後用d會需要p，但是根源的做法用成c就可以解決了
+--     -- vim.cmd('normal! d')                     -- 會保存在 " -- 此模式無法在expr中使用
+--     -- local original_text = vim.fn.getreg('"') -- 使用寄存器獲得選中文本
+--     -- local write_mode = ""
+--     -- if original_text ~= nil and original_text ~= '' then
+--     --   -- local first_char = original_text:sub(1, 1) -- 取得第一個字元
+--     --   -- #first_char -- 都是1
+--     --   -- local first_byte = string.byte(first_char)
+--     --   local first_byte = original_text:byte(1)
+--     --   print(first_byte)
+--     --
+--     --   if first_byte >= 32 and first_byte <= 126 then
+--     --     write_mode = "p"
+--     --   else
+--     --     write_mode = "P"
+--     --   end
+--     -- else
+--     --   vim.notify("Empty content", vim.log.levels.ERROR)
+--     --   return
+--     -- end
+--     --
+--     -- -- 用戶輸入的連結
+--     -- local link = vim.fn.input("Enter the link: ")
+--     -- if link == nil or link == "" then
+--     --   vim.notify("No link entered", vim.log.levels.ERROR)
+--     --   return
+--     -- end
+--     --
+--     -- -- 格式化為 Markdown 標記
+--     -- local markdown_link = string.format("[%s](%s)", original_text, link)
+--     -- -- 將格式化後的內容保存在暫存器 "
+--     -- vim.fn.setreg('"', markdown_link)
+--     --
+--     -- -- 替換選中文本
+--     -- vim.cmd('normal! ' .. write_mode)
+--
+--
+--     require("config.autocmd").autoMarkRange = false -- 避免觸發mark標記，導致input或多了m>
+--     local link = vim.fn.input("Enter the link: ")
+--     require("config.autocmd").autoMarkRange = true
+--     if link == nil or link == "" then
+--       vim.notify("No link entered", vim.log.levels.ERROR)
+--       return
+--     end
+--
+--     return string.format("c[<C-R>\"](%s)<Esc>", link)
+--   end,
+--   {
+--     expr = true,
+--     desc = "insert Link"
+--   }
+-- )
+
 -- Function to create markdown link from visual selection
 local function create_markdown_link()
   -- Get the visual selection
