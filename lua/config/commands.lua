@@ -5315,12 +5315,8 @@ vim.api.nvim_create_user_command('HttpGet',
         return { "https://google.com" }
       end
 
-      if argc == 0 then
-        return vim.tbl_filter(function(item)
-            return item:match(arg_lead)
-          end,
-          { "--nobuf", "--output=" }
-        )
+      if arg_lead == "" then
+        return { "--nobuf", "--outpath=" }
       end
 
       local inputs = vim.split(arg_lead:gsub("=", " "), " ") -- 有辦法區別--key=val
