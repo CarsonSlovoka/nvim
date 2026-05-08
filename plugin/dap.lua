@@ -1,3 +1,5 @@
+local utils = require("utils.utils")
+
 local function load_dapui()
   local dapui = require "dapui" -- https://github.com/rcarriga/nvim-dap-ui
   dapui.setup({
@@ -126,6 +128,36 @@ local function load_external_dap()
     end,
     {
       desc = "Conditional Breakpoint"
+    }
+  )
+  vim.api.nvim_create_user_command("DapListBreakpoints",
+    function(opts)
+      local fargs = vim.split(opts.args:gsub("=", " "), " ")
+      local options = {}
+      for i = 1, #fargs do
+        if vim.tbl_contains({ "-f", "--filter" }, fargs[i]) then
+          i = i + 1
+          options.filter = fargs[i]
+        end
+      end
+      require('dap').list_breakpoints()
+      if options.filter then
+        vim.cmd("Cfilter " .. options.filter)
+      end
+      vim.cmd("copen 5")
+      vim.cmd("noa normal! " .. vim.api.nvim_replace_termcodes("<C-w><C-k>", true, true, true)) -- 回到上層視窗 -- 通常是只要看, 所以不進入qflist
+    end,
+    {
+      desc = "list breakpoints to qflist (support filtering)",
+      nargs = "*",
+      complete = function(arg_lead)
+        if arg_lead == "" then
+          return { "--filter=" }
+        end
+        return utils.flag.get_complete(arg_lead, {
+          { "-f=", "--filter=", nil }
+        })
+      end
     }
   )
   vim.keymap.set("n", "<leader>bc", function()
