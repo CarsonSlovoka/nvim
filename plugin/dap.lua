@@ -115,7 +115,7 @@ local function load_external_dap()
   require("external.dap.keymap")
 
 
-  vim.api.nvim_create_user_command("DapSetBreakpoint",
+  vim.api.nvim_create_user_command("DapSetBreakpoints",
     function()
       vim.ui.input(
         { prompt = "Condition (ex: i == 5 || i == 9 ): " },
