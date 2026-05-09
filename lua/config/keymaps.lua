@@ -771,6 +771,7 @@ local function setup_visual()
       expr = true,
     }
   )
+  map('n', '<leader><leader>l', 'ciW[<C-r>"]()<Left>', { desc = "insert link" })
 end
 
 local function setup_insert()
