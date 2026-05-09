@@ -49,11 +49,50 @@ end
 
 -- 如果都倚靠day-python在windows上可能還是會遇到: command `python3` of adapter `python` exited with 9009. Run :DapShowLog to open logs
 -- 所以還是要自己設定
-dap.adapters.python = {
-  type = 'executable',
-  command = 'python',                -- 確保系統能抓到這個執行檔
-  args = { '-m', 'debugpy.adapter' } -- pip install debugpy
-}
+if vim.uv.os_uname().version:match 'Windows' then -- 若非windows, 就直接用dap-python的設定即可: https://github.com/mfussenegger/nvim-dap-python/blob/261ce649d05bc455a29f9636dc03f8cdaa7e0e2c/lua/dap-python.lua#L218-L274
+  -- Important: 以下dap.adapters這可行，但是更好的方式是寫成function, 可以處理不同的type, 例如executable, remote, ... 的情況
+  -- dap.adapters.python = {
+  --   type = 'executable',
+  --   command = 'python',                -- 確保系統能抓到這個執行檔
+  --   args = { '-m', 'debugpy.adapter' } -- pip install debugpy
+  -- }
+
+  -- `cd ~/.local/share/nvim/site/pack/core/opt/nvim-dap-python/ && git show -p 34282820:lua/dap-python.lua | bat -l lua -P -r 218:262`
+  dap.adapters.python = function(cb, config)
+    local adapter = {}
+    if config.request == 'attach' then
+      local port = (config.connect or config).port
+      local host = (config.connect or config).host or '127.0.0.1'
+      adapter = {
+        type = 'server',
+        port = assert(port, '`connect.port` is required for a python `attach` configuration'),
+        host = host,
+        -- enrich_config = enrich_config, -- 與pythonPath有關
+        options = {
+          source_filetype = 'python',
+        }
+      }
+      cb(adapter)
+      return
+    end
+
+    -- executable
+    adapter = {
+      type = 'executable',
+      command = 'python',                -- 確保系統能抓到這個執行檔. 這邊是主因套件用的是python_path的變數, windows可能會抓不到，所以這邊改成python
+      args = { '-m', 'debugpy.adapter' } -- pip install debugpy
+    }
+    cb(adapter)
+  end
+end
+
+dap.adapters.python_help = function(cb, config)
+  for _, tip in ipairs(config.tips) do
+    print(tip)
+  end
+  vim.fn.setreg('"', config.tips[1]) -- 只複製第一個, 其它的可以當參考
+  -- cb({}) 不cb就不會再往下
+end
 
 -- dap.configurations.python = {} -- 如果想要保留原始的配置，可以用table.insert往後增加
 for _, config in ipairs({
@@ -134,6 +173,33 @@ for _, config in ipairs({
       -- PYTHONPATH = '/usr/lib/python3/dist-packages/'
     },
     -- justMyCode = false, -- 加了這個也沒辦法進入fontforge的py之中，因該是因為它是與C混編的關係
+  },
+  {
+    -- Tip: attach的使用方式，先在終端使用: `python -m debugpy --listen 2345 --wait-for-client my.py`
+    type = 'python',
+    request = 'attach',
+    name = 'Attach to remote',
+    -- args = require("dap-go").get_arguments, -- Note: attach 放參數沒用, 是在執行終端機的python -m debugpy ... 之中這邊要放參數
+    connect = {
+      host = '127.0.0.1',
+      -- port = 2345,
+      port = function()
+        local port = vim.fn.input('Port: ')
+        if port == "" then
+          port = "2345"
+        end
+        return tonumber(port)
+      end,
+    },
+    justMyCode = false,
+  },
+  {
+    type = 'python_help',
+    name = 'Attach to remote -- [help]',
+    tips = {
+      "python -m debugpy --listen 2345 --wait-for-client ${file}",
+      "python -m debugpy --listen 2345 --wait-for-client ${file} arg1 arg2 ...",
+    }
   },
   {
     type = "notepad", -- references an entry in dap.adapters --同時也是該 filetype 才會觸發
