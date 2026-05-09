@@ -762,7 +762,9 @@ local function setup_visual()
   -- )
 
   map('x', '<leader><leader>l', function()
-      return 'c[<C-r>"]()<C-o>h'
+      -- return 'c[<C-r>"]()<C-o>h'
+      return 'c[<C-r>"]()<Left>'
+      -- Note: `:let @b='ciw["]()kl'` # 0x80kl 表示left, ku (up), kr (right), kd (down) 不過這些要用錄的才有效，沒辦法貼
     end,
     {
       desc = "insert link",
