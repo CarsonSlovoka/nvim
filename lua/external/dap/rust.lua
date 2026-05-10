@@ -192,6 +192,6 @@ dap.configurations.rust = {
     name    = "Attach to Process",
     type    = "codelldb",
     request = "attach",
-    pid     = require("dap.utils").pick_process,
+    pid     = require("dap.utils").pick_process, -- 預設用: vim.ui.select 來選擇(不能篩選), 可以考慮用: `require("fzf-lua").register_ui_select()` 來統一更改所有vim.ui.select的行為
   }
 }

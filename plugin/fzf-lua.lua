@@ -39,6 +39,9 @@ require("fzf-lua").setup({
     },
   }
 })
+
+require("fzf-lua").register_ui_select() -- Important: 直接改變預設的動作, 如此才可以做搜尋, 不然預設的select沒有搜尋可以用 -- 相當於 vim.ui.select = xxx 直接更動預設的行為: `cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua/ && git show -p fd244f2a:lua/fzf-lua/providers/ui_select.lua | bat -l lua -P -r 33:47`
+
 vim.keymap.set('n', '<leader>st',
   function()
     if vim.bo.filetype == "oil" then
