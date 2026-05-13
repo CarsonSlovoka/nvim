@@ -473,7 +473,7 @@ local function setup_normal()
 
   map({
       'n', -- 格式化整個內容
-      'x', -- 整列的選取模式, 格式化選取行
+      'x', -- 僅visual.  'v' visual + select  (gh可觸發select)
     }, '<leader>fmt',
     function()
       vim.lsp.buf.format({
