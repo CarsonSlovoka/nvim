@@ -506,6 +506,73 @@ local function setup_normal()
     }
   )
 
+  map({ "n" }, "<leader>f", function()
+      local cur_dir = vim.fn.expand("%:p:h")
+      local ft = vim.bo.filetype
+      local TO_GIT_ROOT = true
+      local items =
+      {
+        { string.format(":e `fd -e %s`", ft),                  TO_GIT_ROOT },
+        { string.format(":e `fd -HI -e %s`", ft),              TO_GIT_ROOT },
+
+        { string.format(":e `fd -e %s`", ft) },
+        { string.format(":e `fd -HI -e %s`", ft) },
+
+        { string.format(":e `fd . -e %s %s`", ft, cur_dir) },
+        { string.format(":e `fd . -HI -e %s %s`", ft, cur_dir) },
+
+        { string.format(":e `fd -t d`", ft) },
+
+        { string.format(":e `rg -l -g '*.%s'`", ft),           TO_GIT_ROOT },
+        { string.format(":e `rg -l -g '*.%s'`", ft) },
+        { string.format(":e `rg -l -uu -g '*.%s'`", ft) },
+      }
+
+      vim.ui.select(
+        items, -- 每一個元素不一定只能字串, 可以是物件，在交由format_item來格式化
+        {
+          prompt = "select:",
+          format_item = function(item)
+            local cd_to_git_root = item[2]
+            local msg = item[1]
+            if cd_to_git_root then
+              local dir
+              if vim.bo.filetype == "oil" then
+                dir = require("oil").get_current_dir()
+              else
+                dir = vim.fn.expand("%:p:h")
+              end
+              vim.cmd("cd " .. dir)
+              local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+              if vim.v.shell_error == 0 then
+                vim.cmd("cd " .. git_root)
+              end
+              msg = "cd <git_root> || " .. msg
+            end
+            return msg
+          end
+        },
+        function(item)
+          if not item then
+            return
+          end
+          -- print(vim.inspect(item))
+
+          local cmd = item[1] ..
+              string.format("<Home>%s ", string.rep("<Right>", 5)) -- 讓游標回到fd的地方，方便輸入
+
+          local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+          vim.fn.feedkeys(keys,
+            "n" -- do not remap keys.
+          )
+        end
+      )
+    end,
+    {
+      desc = "edit file by fd or rg",
+    }
+  )
+
   map({
       'n', -- 格式化整個內容
       'x', -- 僅visual.  'v' visual + select  (gh可觸發select)
