@@ -40,7 +40,10 @@ require("fzf-lua").setup({
   }
 })
 
-require("fzf-lua").register_ui_select() -- Important: 直接改變預設的動作, 如此才可以做搜尋, 不然預設的select沒有搜尋可以用 -- 相當於 vim.ui.select = xxx 直接更動預設的行為: `cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua/ && git show -p fd244f2a:lua/fzf-lua/providers/ui_select.lua | bat -l lua -P -r 33:47`
+-- require("fzf-lua").register_ui_select()   -- Important: 直接改變預設的動作, 如此才可以做搜尋, 不然預設的select沒有搜尋可以用 -- 相當於 vim.ui.select = xxx 直接更動預設的行為: `cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua/ && git show -p fd244f2a:lua/fzf-lua/providers/ui_select.lua | bat -l lua -P -r 33:47`
+-- -- Note: 預設的vim.ui.select很輕量，如果非真得需要篩選，用它還是比較快，所以可以只在有需要用到的地方再加上它就好了
+-- require("fzf-lua").deregister_ui_select() -- 可以還原
+-- Tip: register_ui_select, deregister_ui_select 皆已經被加入到 :FzfLua 的指令之中了
 
 vim.keymap.set('n', '<leader>st',
   function()
