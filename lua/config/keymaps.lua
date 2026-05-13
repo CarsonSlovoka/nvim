@@ -421,9 +421,12 @@ map({ 'n', 'v' }, 'gi',
 )
 
 local function setup_normal()
-  map('n', -- normal mode
+  map({ 'n', 'x' },
     '<leader>Y',
     function()
+      -- local mode = vim.fn.mode()
+      -- local is_range = mode:match("[vV]")
+
       local abs_path = vim.fn.expand(("%:p"))
       local filename = vim.fn.expand(("%:t"))
 
@@ -433,9 +436,35 @@ local function setup_normal()
         filename
       }
       local git_rel_path = vim.fn.systemlist("git ls-files --full-name " .. vim.fn.shellescape(abs_path))[1]
+      local git_show_paths = {}
       if vim.v.shell_error == 0 then
         table.insert(options, git_rel_path)
+
+        -- 以下處理git show -p
+        local sha = vim.fn.systemlist(
+          "git log -n 1 --pretty=format:%H -- "
+          .. vim.fn.shellescape(abs_path) -- 絕對路徑/相對路徑都行
+        )[1]
+
+        local start_line = vim.fn.line("v")
+        local end_line = vim.fn.line(".")
+        if start_line > end_line then
+          start_line, end_line = end_line, start_line
+        end
+
+        for _, cur_sha in ipairs({ sha, string.sub(sha, 1, 8) }) do
+          -- `git show -p 87b3c8cf:./keymaps.lua | bat -l lua -P -r 1:10`
+          local cmd = string.format("git show -p %s:%s" ..
+            "| bat -l %s -P -r %d:%d",
+            cur_sha, git_rel_path,
+            vim.bo.filetype,
+            start_line, end_line
+          )
+          table.insert(git_show_paths, cmd)
+          table.insert(options, cmd)
+        end
       end
+
 
       vim.ui.select(options,
         {
@@ -448,6 +477,12 @@ local function setup_normal()
             if git_rel_path then
               m[git_rel_path] = "Git Relative Path: "
             end
+
+            for _, git_show_path in ipairs(git_show_paths) do
+              -- m[git_show_path] = tostring(i) .. " git show: "
+              m[git_show_path] = ": "
+            end
+
             return m[item] and m[item] .. item or item
           end
         },
