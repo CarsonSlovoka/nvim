@@ -309,10 +309,10 @@ vim.api.nvim_create_user_command("TelescopeConfig", function(args)
   })
 
 -- 我的自定義: search_with_find
-vim.keymap.set("n", "<leader>fr", search_with_find, { desc = "[Find Recent]" })
+-- vim.keymap.set("n", "<leader>fr", search_with_find, { desc = "[Find Recent]" }) -- 不需要，直接在終端機用rg, fd找即可
 
 -- 搜索當前工作目錄下的文件
-vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" })
+-- vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[Find Files]" }) -- 不需要，直接在終端機用rg, fd找即可
 vim.api.nvim_create_user_command("FindFiles", function(args)
   local opt = {}
   opt.cwd = "."
@@ -394,7 +394,7 @@ end, {
 -- end, { desc = "查找指定類型的文件" })
 
 -- 搜索文本
-vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" })
+-- vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[Live Grep]" }) -- 不需要，直接在終端機用rg, fd找即可
 vim.api.nvim_create_user_command("Livegrep", function(args)
   local opt = {}
   if #args.fargs > 0 then
@@ -501,7 +501,7 @@ vim.keymap.set("n",
 -- 搜索幫助文檔
 -- 記得要將plugin相關的doc加入才行
 -- :helptags ~/.config/nvim/pack/GROUP/start/XXX_PLUGIN/doc/
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })
+-- vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[Help Tags]" })  -- `:Telescope help_tags` 可以觸發，不需要特別暫用這個熱鍵
 
 vim.keymap.set("n",
   "<A-f>", -- Alt+f
