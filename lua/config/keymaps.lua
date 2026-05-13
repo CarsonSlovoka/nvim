@@ -455,7 +455,7 @@ local function setup_normal()
         for _, cur_sha in ipairs({ sha, string.sub(sha, 1, 8) }) do
           -- `git show -p 87b3c8cf:./keymaps.lua | bat -l lua -P -r 1:10`
           local cmd = string.format("git show -p %s:%s" ..
-            "| bat -l %s -P -r %d:%d",
+            " | bat -l %s -P -r %d:%d",
             cur_sha, git_rel_path,
             vim.bo.filetype,
             start_line, end_line
