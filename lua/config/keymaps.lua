@@ -446,22 +446,24 @@ local function setup_normal()
           .. vim.fn.shellescape(abs_path) -- 絕對路徑/相對路徑都行
         )[1]
 
-        local start_line = vim.fn.line("v")
-        local end_line = vim.fn.line(".")
-        if start_line > end_line then
-          start_line, end_line = end_line, start_line
-        end
+        if sha then
+          local start_line = vim.fn.line("v")
+          local end_line = vim.fn.line(".")
+          if start_line > end_line then
+            start_line, end_line = end_line, start_line
+          end
 
-        for _, cur_sha in ipairs({ sha, string.sub(sha, 1, 8) }) do
-          -- `git show -p 87b3c8cf:./keymaps.lua | bat -l lua -P -r 1:10`
-          local cmd = string.format("git show -p %s:%s" ..
-            " | bat -l %s -P -r %d:%d",
-            cur_sha, git_rel_path,
-            vim.bo.filetype,
-            start_line, end_line
-          )
-          table.insert(git_show_paths, cmd)
-          table.insert(options, cmd)
+          for _, cur_sha in ipairs({ sha, string.sub(sha, 1, 8) }) do
+            -- `git show -p 87b3c8cf:./keymaps.lua | bat -l lua -P -r 1:10`
+            local cmd = string.format("git show -p %s:%s" ..
+              " | bat -l %s -P -r %d:%d",
+              cur_sha, git_rel_path,
+              vim.bo.filetype,
+              start_line, end_line
+            )
+            table.insert(git_show_paths, cmd)
+            table.insert(options, cmd)
+          end
         end
       end
 
