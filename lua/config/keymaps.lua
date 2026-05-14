@@ -85,7 +85,10 @@ map("n", "<leader><leader>t",
     if vim.bo.filetype == "oil" then
       vim.cmd("cd " .. require("oil").get_current_dir() .. " | sp | term")
     else
-      vim.cmd("cd %:h | sp | term")
+      if (vim.api.nvim_buf_get_name(0) ~= "") then
+        vim.cmd("cd %:h")
+      end
+      vim.cmd("sp | term")
     end
   end,
   { desc = "cd %:h | sp | term" } -- 類似於:Term
