@@ -541,17 +541,6 @@ local function setup_normal()
             local cd_to_git_root = item[2]
             local msg = item[1]
             if cd_to_git_root then
-              local dir
-              if vim.bo.filetype == "oil" then
-                dir = require("oil").get_current_dir()
-              else
-                dir = vim.fn.expand("%:p:h")
-              end
-              vim.cmd("cd " .. dir)
-              local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
-              if vim.v.shell_error == 0 then
-                vim.cmd("cd " .. git_root)
-              end
               msg = "cd <git_root> || " .. msg
             end
             return msg
@@ -561,10 +550,22 @@ local function setup_normal()
           if not item then
             return
           end
-          -- print(vim.inspect(item))
+          local cmd = item[1]
+          local cd_to_git_root = item[2]
 
-          local cmd = item[1] ..
-              string.format("<Home>%s ", string.rep("<Right>", 5)) -- 讓游標回到fd的地方，方便輸入
+          if cd_to_git_root then
+            local dir
+            if vim.bo.filetype == "oil" then
+              dir = require("oil").get_current_dir()
+            else
+              dir = vim.fn.expand("%:p:h")
+            end
+            vim.cmd("cd " .. dir)
+            local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+            if vim.v.shell_error == 0 then
+              vim.cmd("cd " .. git_root)
+            end
+          end
 
           local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
           vim.fn.feedkeys(keys,
