@@ -515,10 +515,17 @@ local function setup_normal()
       local cur_dir = vim.fn.expand("%:p:h")
       local ft = vim.bo.filetype
       local TO_GIT_ROOT = true
+      local NO_MOVE = true
       local items =
       {
-        { string.format(":e `fd -e %s`", ft),                  TO_GIT_ROOT },
-        { string.format(":e `fd -HI -e %s`", ft),              TO_GIT_ROOT },
+        { string.format(":e `git ls-files --full-name '*.'`", ft),        TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files '*.'`", ft),                    false,       NO_MOVE },
+        { string.format(":e `git ls-files --full-name`", ft),             TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files --full-name '*.md'`", ft),      TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files --full-name '*xxx*.lua'`", ft), TO_GIT_ROOT, NO_MOVE },
+
+        { string.format(":e `fd -e %s`", ft),                             TO_GIT_ROOT },
+        { string.format(":e `fd -HI -e %s`", ft),                         TO_GIT_ROOT },
 
         { string.format(":e `fd -e %s`", ft) },
         { string.format(":e `fd -HI -e %s`", ft) },
@@ -528,7 +535,7 @@ local function setup_normal()
 
         { string.format(":e `fd -t d`", ft) },
 
-        { string.format(":e `rg -l -g '*.%s'`", ft),           TO_GIT_ROOT },
+        { string.format(":e `rg -l -g '*.%s'`", ft),                      TO_GIT_ROOT },
         { string.format(":e `rg -l -g '*.%s'`", ft) },
         { string.format(":e `rg -l -uu -g '*.%s'`", ft) },
       }
@@ -552,6 +559,7 @@ local function setup_normal()
           end
           local cmd = item[1]
           local cd_to_git_root = item[2]
+          local no_move = item[3]
 
           if cd_to_git_root then
             local dir
@@ -565,6 +573,10 @@ local function setup_normal()
             if vim.v.shell_error == 0 then
               vim.cmd("cd " .. git_root)
             end
+          end
+
+          if not no_move then
+            cmd = cmd .. string.format("<Home>%s ", string.rep("<Right>", 5)) -- 讓游標回到fd的地方，方便輸入
           end
 
           local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
