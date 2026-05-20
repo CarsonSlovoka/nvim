@@ -5330,6 +5330,78 @@ vim.api.nvim_create_user_command('HttpGet',
   }
 )
 
+vim.api.nvim_create_user_command("GitQF", function(opts)
+    local fargs = vim.split(opts.args:gsub("=", " "), " ")
+    local args = {}
+    local i = 1
+    local options = {
+      action = " ", -- 如果為空，會建立一個新的qflist
+      cd = true,
+    }
+    while i <= #fargs do
+      local arg = fargs[i]
+      if arg == "--no-cd" then
+        options.cd = false
+      elseif vim.tbl_contains({ "-a", "--action" }, arg) then
+        i = i + 1
+        options.action = fargs[i]
+      else
+        table.insert(args, arg)
+      end
+
+      i = i + 1
+    end
+
+    if options.cd then
+      if vim.bo.filetype == "oil" then
+        vim.cmd("cd " .. require("oil").get_current_dir())
+      else
+        vim.cmd("cd %:h")
+      end
+
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error == 0 then
+        vim.cmd("cd " .. git_root)
+      end
+    end
+
+    local cmd = "git ls-files --full-name " .. table.concat(args, " ")
+    local lines = vim.fn.systemlist(cmd)
+
+    vim.fn.setqflist({},
+      options.action, -- 如果為空，會建立一個新的qflist
+      {
+        title = cmd,  --  `:chistory` 會有用
+        lines = lines,
+        efm = "%f",   -- 要給不然沒辦法跳轉
+        -- efm = "%f#%l#%m",
+      }
+    )
+    vim.cmd("copen")
+  end,
+  {
+    nargs = "*",
+    complete = function(arg_lead)
+      if arg_lead:match("^%-") then
+        local options = {
+          { "",   "--no-cd",  nil },
+          { "-a", "--action", { "a", "r", "u", "f" } },
+        }
+        return utils.flag.get_complete(arg_lead, options)
+      end
+      return {
+        "'*.md'",
+        "'*.lua'",
+        "'*keymap*.lua'",
+        "'*keymap*'",
+        "':!:node_modules'", -- 排除
+        "':!:*temp*'",       -- 路徑中有temp的都排除
+        "':!:*.min.js'",
+      }
+    end
+  }
+)
+
 
 -- print(vim.inspect(get_font_map()))
 
