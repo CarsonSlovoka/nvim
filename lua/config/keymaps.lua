@@ -518,14 +518,16 @@ local function setup_normal()
       local NO_MOVE = true
       local items =
       {
-        { string.format(":e `git ls-files --full-name '*.'`", ft),        TO_GIT_ROOT, NO_MOVE },
-        { string.format(":e `git ls-files '*.'`", ft),                    false,       NO_MOVE },
-        { string.format(":e `git ls-files --full-name`", ft),             TO_GIT_ROOT, NO_MOVE },
-        { string.format(":e `git ls-files --full-name '*.md'`", ft),      TO_GIT_ROOT, NO_MOVE },
-        { string.format(":e `git ls-files --full-name '*xxx*.lua'`", ft), TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files --full-name '*.'`", ft),                        TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files '*.'`", ft),                                    false,       NO_MOVE },
+        { string.format(":e `git ls-files --full-name`", ft),                             TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files --full-name '*.md'`", ft),                      TO_GIT_ROOT, NO_MOVE },
+        { string.format(":e `git ls-files --full-name '*xxx*.lua'`", ft),                 TO_GIT_ROOT, NO_MOVE },
 
-        { string.format(":e `fd -e %s`", ft),                             TO_GIT_ROOT },
-        { string.format(":e `fd -HI -e %s`", ft),                         TO_GIT_ROOT },
+        { string.format(":e `git ls-files --full-name '*.md' '*.webp' ':!:*Temp*'`", ft), TO_GIT_ROOT, NO_MOVE }, -- 可以篩選多個不同的附檔名. 並且透過`:!:`的語法還可以做排除
+
+        { string.format(":e `fd -e %s`", ft),                                             TO_GIT_ROOT },
+        { string.format(":e `fd -HI -e %s`", ft),                                         TO_GIT_ROOT },
 
         { string.format(":e `fd -e %s`", ft) },
         { string.format(":e `fd -HI -e %s`", ft) },
@@ -535,7 +537,7 @@ local function setup_normal()
 
         { string.format(":e `fd -t d`", ft) },
 
-        { string.format(":e `rg -l -g '*.%s'`", ft),                      TO_GIT_ROOT },
+        { string.format(":e `rg -l -g '*.%s'`", ft),                                      TO_GIT_ROOT },
         { string.format(":e `rg -l -g '*.%s'`", ft) },
         { string.format(":e `rg -l -uu -g '*.%s'`", ft) },
       }
