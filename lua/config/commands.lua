@@ -1499,31 +1499,32 @@ function commands.setup()
     }
   )
 
-  vim.api.nvim_create_user_command("GitCommit",
-    function()
-      -- :!foot git commit &
-      local terminal = ""
-      if osUtils.IsWindows then
-        vim.notify("not support windows.", vim.log.levels.ERROR)
-        return
-        -- terminal = "start cmd /k "
-        -- :!start cmd /k git show -- 這個可行, 但是如果換成git commit換不行
-      end
-      terminal = os.getenv("TERM") or "" -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
-      vim.cmd("!" .. terminal .. " git commit &")
-      -- local bash_cmd = "exec bash"
-      -- local sep = ";"
-      -- if osUtils.IsWindows then
-      --   bash_cmd = "cmd"
-      --   sep = " & "
-      -- end
-      -- vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd) -- 如果你目前已經在term，這個會蓋掉，雖然可以再透過<C-O>回去，但是點麻煩
-      print("git branch -av") -- 改用成提示，如果有需要可以在自己用msg來查看
-    end,
-    {
-      desc = "git commit; git branch -av",
-    }
-  )
+  -- 用lazygit不太需要這個
+  -- vim.api.nvim_create_user_command("GitCommit",
+  --   function()
+  --     -- :!foot git commit &
+  --     local terminal = ""
+  --     if osUtils.IsWindows then
+  --       vim.notify("not support windows.", vim.log.levels.ERROR)
+  --       return
+  --       -- terminal = "start cmd /k "
+  --       -- :!start cmd /k git show -- 這個可行, 但是如果換成git commit換不行
+  --     end
+  --     terminal = os.getenv("TERM") or "" -- :help term -- 所謂的:echo &term得到的名稱就是來至於TERM這個環境變數
+  --     vim.cmd("!" .. terminal .. " git commit &")
+  --     -- local bash_cmd = "exec bash"
+  --     -- local sep = ";"
+  --     -- if osUtils.IsWindows then
+  --     --   bash_cmd = "cmd"
+  --     --   sep = " & "
+  --     -- end
+  --     -- vim.cmd("term " .. "git branch -av" .. sep .. bash_cmd) -- 如果你目前已經在term，這個會蓋掉，雖然可以再透過<C-O>回去，但是點麻煩
+  --     print("git branch -av") -- 改用成提示，如果有需要可以在自己用msg來查看
+  --   end,
+  --   {
+  --     desc = "git commit; git branch -av",
+  --   }
+  -- )
 
 
   vim.api.nvim_create_user_command("GitShow",
