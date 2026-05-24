@@ -17,7 +17,7 @@
       "src": "https://github.com/nvim-flutter/flutter-tools.nvim"
     },
     "fzf-lua": {
-      "rev": "fd244f2a6e1e3b1c6fcf0361bc738f362f269ce8",
+      "rev": "c8aaa74c97157b2c62bdcfc1e57b15c052dc63ca",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
     "github-nvim-theme": {
