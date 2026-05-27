@@ -15,6 +15,14 @@
 
 # Install neovim
 
+## Mac
+
+```sh
+brew install neovim
+```
+
+## Linux
+
 ```bash
 sudo apt-get install ninja-build gettext cmake unzip curl build-essential
 git clone https://github.com/neovim/neovim.git ~/neovim
@@ -119,23 +127,44 @@ Host github.com
 mkdir -p ~/.config/nvim
 git clone https://github.com/CarsonSlovoka/nvim.git ~/.config/nvim
 cd ~/.config/nvim
-git submodule update --init --recursive
+# ~~git submodule update --init --recursive~~ 在nvim 0.12已不需要
 
-# (可選) 初始化自定義永定書籤 (此檔案如果沒有, 會幫忙生成)
+# 🟧 安裝tree-sitter-cli (透過npm安裝)
+brew install npm
+sudo npm install -g tree-sitter-cli # nvim的tree-sitter-cli需要用到
+
+# 🟧 (可選) sim (input method自動切換)
+git clone https://github.com/CarsonSlovoka/sim.git ~/sim
+cd ~/sim
+swiftc -o sim sim.swift
+./sim -v
+# sudo ln -siv $(realpath sim) /usr/local/bin/sim
+sudo mv -v sim /usr/local/bin/
+cd ~ && rm -rf ~/sim # 安裝完git的目錄就可以不需要了
+sim -v
+
+# 🟧 (可選) dapDebugServer.js
+# 先手動訪問此網站: https://github.com/microsoft/vscode-js-debug/releases 下載
+cd ~
+tar zxf ~/Downloads/js-debug-dap-v1.117.0.tar
+ls -lh ~/js-debug/src/dapDebugServer.js # 確保有這個檔案即可
+rm -v ~/Downloads/js-debug-dap-v1.117.0.tar
+
+# 🟧 (可選) 初始化自定義永定書籤 (此檔案如果沒有, 會幫忙生成)
 echo 'return {
    { name = "Documents", path = "~/Documents" },
    { name = "Downloads", path = "~/Downloads" },
 }' >> ~/.config/nvim/bookmarks/default.lua
 
 
-# (可選) 安裝Nerd Fonts
+# 🟧 (可選) 安裝Nerd Fonts
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip
 unzip FiraCode.zip -d ~/.fonts
 rm -v *.zip
 echo 'font=FiraCodeNerdFontMono-Retina:size=14' >> ~/.config/foot/foot.ini # 設定終端機的字型
 
 
-# (可選) 為了javascript的lsp
+# 🟧 (可選) 為了javascript的lsp
 sudo npm install -g typescript-language-server typescript
 typescript-language-server -V
 sudo npm install -g prettier # 可以格式化
