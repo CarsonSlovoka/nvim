@@ -13,6 +13,9 @@ vim.api.nvim_set_hl(0, "Search", { bg = "#ff520d", fg = "#ffffff", bold = true, 
 
 vim.api.nvim_set_hl(0, "Visual", { bg = "#78120d", fg = "#ffffff" })
 
+-- https://www.canva.com/colors/color-wheel/
+vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { fg = "#faec1c", bg = "#0013ff", bold = true }) -- :help i_CTRL-S
+
 local function set_highlight(name, fg, bg, opts)
   local val = { fg = fg, bg = bg }
   if opts then
