@@ -726,22 +726,29 @@ local function setup_normal()
   -- 🧙 `< 和 `> 是跳到選取範圍的開頭和結尾
   -- map('v', '<leader>"', '<Esc>`<i"<Esc>`>a"<Esc>') 這個會不對，因為先加上開頭的"之後，其實結尾的位置就變了，所以要先加結尾
   map('v', '<leader>"', '<Esc>`>a"<Esc>`<i"<Esc>', { desc = 'Wrap selection with double quotes " "' })
-  map('n', '<leader>"', 'i"<Esc>ea"<Esc>', { desc = 'Wrap with double quotes " "' })
+  -- map('n', '<leader>"', 'i"<Esc>ea"<Esc>', { desc = 'Wrap with double quotes " "' }) " 這種寫法只適合在字頭，如果在詞中間就沒辦法匹配了
+  map('n', '<leader>"', 'viw<Esc>`>a"<Esc>`<i"<Esc>', { desc = 'Wrap with double quotes " "' }) -- 運用viw時，會自動將< >區段寫入到mark來完成
 
   map('v', "<leader>'", "<Esc>`>a'<Esc>`<i'<Esc>", { desc = "Wrap selection with single quotes ' '" })
-  map('n', "<leader>'", "i'<Esc>ea'<Esc>", { desc = "Wrap with single quotes ' '" })
+  -- map('n', "<leader>'", "i'<Esc>ea'<Esc>", { desc = "Wrap with single quotes ' '" })
+  map('n', "<leader>'", "viw<Esc>`>a'<Esc>`<i'<Esc>", { desc = "Wrap with single quotes ' '" })
 
   map('v', '<leader>`', '<Esc>`>a`<Esc>`<i`<Esc>', { desc = "Wrap selection with backticks ` `" })
-  map('n', '<leader>`', 'i`<Esc>ea`<Esc>', { desc = "Wrap with backticks ` `" })
+  -- map('n', '<leader>`', 'i`<Esc>ea`<Esc>', { desc = "Wrap with backticks ` `" })
+  map('n', '<leader>`', 'viw<Esc>`>a`<Esc>`<i`<Esc>', { desc = "Wrap with backticks ` `" })
 
   map('v', '<leader>(', '<Esc>`>a)<Esc>`<i(<Esc>', { desc = "Wrap selection with parentheses ( )" })
-  map('n', '<leader>(', 'i(<Esc>ea)<Esc>', { desc = "Wrap with parentheses ( )" })
+  -- map('n', '<leader>(', 'i(<Esc>ea)<Esc>', { desc = "Wrap with parentheses ( )" })
+  map('n', '<leader>(', 'viw<Esc>`>a)<Esc>`<i(<Esc>', { desc = "Wrap with parentheses ( )" })
+
 
   map('v', '<leader>[', '<Esc>`>a]<Esc>`<i[<Esc>', { desc = "Wrap selection with square brackets [ ]" })
-  map('n', '<leader>[', 'i[<Esc>ea]<Esc>', { desc = "Wrap with square brackets [ ]" })
+  -- map('n', '<leader>[', 'i[<Esc>ea]<Esc>', { desc = "Wrap with square brackets [ ]" })
+  map('n', '<leader>[', 'viw<Esc>`>a]<Esc>`<i[<Esc>', { desc = "Wrap with square brackets [ ]" })
 
   map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap selection with curly braces { }" })
-  map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap with curly braces { }" })
+  -- map('v', '<leader>{', '<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap with curly braces { }" })
+  map('n', '<leader>{', 'viw<Esc>`>a}<Esc>`<i{<Esc>', { desc = "Wrap with curly braces { }" })
 
 
   vim.keymap.set({ "n" }, "<C-s>",
