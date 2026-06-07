@@ -44,6 +44,15 @@ m.setup {
     lualine_x = {
       -- indent settings
       function()
+        local tabstop = vim.opt.tabstop:get()
+        local indent = vim.fn.indent('.') -- " indent('.') 是當前列的縮進是幾個空白. 可以曉得要一口氣縮進多少
+        -- return tonumber(indent) / tonumber(tabstop)
+        if tonumber(indent) % tonumber(tabstop) == 0 then
+          return tonumber(indent) / tonumber(tabstop)
+        end
+        return string.format("%.1f", tonumber(indent) / tonumber(tabstop))
+      end,
+      function()
         local indent_style = vim.opt_local.expandtab:get() and "Space" or "Tab"
         if indent_style == "Space" then
           local indent_size = vim.opt_local.tabstop:get()
