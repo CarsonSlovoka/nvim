@@ -6,19 +6,18 @@ vim.cmd('colorscheme github_dark_default') -- 主題要先設定(可以先設定
 
 local utils = require("utils.utils")
 
-local HOME = os.getenv("HOME")
-
 -- runtimepath
 -- local runtimepath = vim.api.nvim_get_option("runtimepath")
 local runtimepath = vim.api.nvim_get_option_value("runtimepath", {})
 vim.opt.runtimepath = runtimepath .. ",~/.vim,~/.vim/after"
 vim.opt.packpath = vim.opt.runtimepath:get()
 
--- vim
-local vimrcPath = HOME .. "/.vimrc"
-if vim.fn.filereadable(vimrcPath) == 1 then
-  vim.cmd("source " .. vimrcPath)
-end
+-- vim (就算用nvim也可能會在某些情況下選擇用vi來開, 所以不共用他們的設定檔)
+-- local HOME = os.getenv("HOME")
+-- local vimrcPath = HOME .. "/.vimrc"
+-- if vim.fn.filereadable(vimrcPath) == 1 then
+--   vim.cmd("source " .. vimrcPath)
+-- end
 
 -- config
 require("config.sign_define")
