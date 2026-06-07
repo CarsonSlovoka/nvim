@@ -17,7 +17,8 @@ require("fzf-lua").setup({
       -- ['<A-l>'] = 'preview-page-right',
       ['<A-p>'] = 'preview-page-up',
       ['<A-n>'] = 'preview-page-down',
-      ['<C-t>'] = 'toggle-preview', -- 用 Ctrl+T 來 toggle 預覽視窗（隱藏/顯示）
+      ['<C-t>'] = 'toggle-preview',    -- 用 Ctrl+T 來 toggle 預覽視窗（隱藏/顯示）
+      ["<A-f>"] = "toggle-fullscreen", -- 在 `:FzfLua colorschemes`中，方便查看主題顏色
     },
   },
   buffers = {
