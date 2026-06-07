@@ -731,6 +731,7 @@ function M.setup(opts)
         "js", "javascript", "mjs", "ts", "mts",
         "css", "scss", "sass",
         "lua",
+        "vim",
         "vue",
         "sh", "zsh",
         "dart",
