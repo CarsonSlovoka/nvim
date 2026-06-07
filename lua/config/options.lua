@@ -296,20 +296,37 @@ function _G.qftf(info)
   return ret
 end
 
+-- vim.opt.showtabline = 2   -- 永遠顯示 tabline
 function _G.get_tabline() -- 給全局變數
   -- 獲取當前所有標籤頁的名稱
   local s = ""
-  for tabnr = 1, vim.fn.tabpagenr('$') do
-    local winnr = vim.fn.tabpagewinnr(tabnr)
-    -- 獲取當前窗口的 buffer 名稱
-    local buflist = vim.fn.tabpagebuflist(tabnr)[winnr]
-    local bufname = vim.fn.bufname(buflist)
+  local current = vim.fn.tabpagenr()
+  for i = 1, vim.fn.tabpagenr('$') do
+    if i == current then
+      s = s .. "%#TabLineSel#"
+    else
+      s = s .. "%#TabLine#"
+    end
+
+    s = s .. '%' .. i .. 'T'  -- 滑鼠點擊用 (缺少了，滑鼠點擊tab就沒辦法切換！)
+    s = s .. ' ' .. i .. ': ' -- 顯示tab數字
+
+    local winnr = vim.fn.tabpagewinnr(i)
+    local buflist = vim.fn.tabpagebuflist(i)
+    local buf = buflist[winnr]                              -- Lua table下標從1開始, 如果是vim則從0開始
+    local bufname = vim.fn.bufname(buf)
     local bufname_short = vim.fn.fnamemodify(bufname, ":t") -- 僅提取檔名名稱，不包含路徑
 
-    if tabnr == vim.fn.tabpagenr() then
-      s = s .. "%#TabLineSel#" .. " " .. tabnr .. ": " .. bufname_short .. " "
-    else
-      s = s .. "%#TabLine#" .. " " .. tabnr .. ": " .. bufname_short .. " "
+    if bufname_short == "" then
+      bufname_short = "[No Name]"
+    end
+
+    s = s .. bufname_short .. ' '
+
+    -- if vim.bo.modified then  -- 如果用這樣不對，它是看當前的buffer不能適用於tab
+    if vim.fn.getbufvar(buf, '&modified') == 1 then
+      -- 不過當前的+會感覺不太出來，因為寫了autocmd, 在離開的時候會自動保存的關係 `git show -p a53cde3c:lua/config/autocmd.lua | bat -l lua -P -r 72:88`
+      s = s .. '[+] '
     end
   end
   s = s .. "%#TabLineFill#"
