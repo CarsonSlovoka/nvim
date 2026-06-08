@@ -67,5 +67,13 @@ m.setup {
       },
       'fileformat', 'filetype',
     },
+    lualine_y = { -- progress
+      -- function()
+      --   return "Total Lines: " .. vim.api.nvim_buf_line_count(0)
+      -- end
+      "%p%% (%L)" -- 可以直接用vim的表達方式也可
+    },
+    -- lualine_z = { -- location
+    -- }
   }
 }
