@@ -235,6 +235,8 @@ function options.setup()
 
   vim.o.scrollback = 100000        -- Minimum is 1, maximum is 100000. only in terminal buffers. default 10000
 
+  vim.o.synmaxcol = 256
+
   custom_global_options()
 end
 
