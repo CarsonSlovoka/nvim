@@ -89,6 +89,7 @@ map("n", "<leader><leader>t",
         vim.cmd("cd %:h")
       end
       vim.cmd("sp | term")
+      vim.cmd("startinsert")
     end
   end,
   { desc = "cd %:h | sp | term" } -- 類似於:Term
