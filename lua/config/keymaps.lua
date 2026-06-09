@@ -424,6 +424,22 @@ map({ 'n', 'v' }, 'gi',
   }
 )
 
+map({ 'n' }, 'cadde', function()
+    vim.cmd("set efm=%f")
+    if vim.bo.filetype == "oil" then
+      local dir = require("oil").get_current_dir()
+      vim.cmd("lcd " .. dir)
+    else
+      -- vim.cmd("lcd " .. vim.fn.expand("%:p:h")) -- 不cd，並非總是想要到該目錄
+    end
+    return ":caddexpr systemlist('fd ')<Left><Left>" -- 這樣有好處, 用↑找cmd也能找到, 且也好調整為laddexpr或cexpr(建立新的，不覆蓋)、cgetexpr (不jump過去)
+  end,
+  {
+    expr = true,
+    desc = "Add the listed list to qflist"
+  }
+)
+
 local function setup_normal()
   map({ 'n', 'x' },
     '<leader>Y',
