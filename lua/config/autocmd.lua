@@ -326,7 +326,8 @@ function M.setup(opts)
           -- ` \\?` 前面允許有空白
           -- 首字母要求大寫
           -- `:\\? \\?` 最後面可以有`: `或是僅有`:`都行
-          { name = "NOTE",       fg = "#FFFFFF", bg = "#0000FF", pattern = " \\?\\<N[Oo][Tt][Ee]\\>:\\? \\?" },
+          -- https://www.canva.com/colors/color-wheel/
+          { name = "NOTE",       fg = "#FFFFFF", bg = "#00C6FF", pattern = " \\?\\<N[Oo][Tt][Ee]\\>:\\? \\?" },
           { name = "USAGE",      fg = "#FFFFFF", bg = "#179797", pattern = " \\?\\<U[Ss][Aa][Gg][Ee]\\>:\\? \\?" },
           -- { name = "USAGE",      fg = "#060402", bg = "#24EBEB", pattern = " \\?\\<U[Ss][Aa][Gg][Ee]\\>:\\? \\?" },
           { name = "TODO",       fg = "#000000", bg = "#8bb33d", pattern = " \\?\\<T[Oo][Dd][Oo]\\>:\\? \\?" },
