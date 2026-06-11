@@ -5424,6 +5424,49 @@ create_git_list_command("Gitclist", false)
 create_git_list_command("Gitllist", true)
 
 
+vim.api.nvim_create_user_command('Gitstatus', function()
+  local dir = vim.fn.expand('%:p:h')
+  vim.cmd('lcd ' .. vim.fn.fnameescape(dir))
+
+  local output = vim.fn.system('git status -s')
+  if vim.v.shell_error ~= 0 then
+    vim.notify('Not a git repository or git command error', vim.log.levels.WARN)
+    return
+  end
+
+  local ll_list = {}
+
+  for line in vim.gsplit(output, '\n', { plain = true, trimempty = true }) do
+    local parts = vim.split(line, '%s+', { trimempty = true })
+
+    if #parts >= 2 then
+      local file = parts[#parts] -- 最後一個欄位是檔案路徑
+      local status = parts[1]
+
+      -- 過濾掉 deleted 檔案（無法跳轉）
+      if not status:match('^D') then
+        table.insert(ll_list, {
+          filename = file,
+          text = line,
+        })
+      end
+    end
+  end
+
+  if vim.tbl_isempty(ll_list) then
+    vim.notify('No files need to be processed', vim.log.levels.INFO)
+    return
+  end
+
+  vim.fn.setloclist(0, ll_list, 'r') -- 'r' = replace
+  vim.cmd('lopen')
+  vim.cmd('lfirst')                  -- 跳到第一筆
+end, {
+  desc = 'Show git status -s in location list',
+  nargs = 0,
+})
+
+
 -- print(vim.inspect(get_font_map()))
 
 return commands
