@@ -22,6 +22,28 @@ end
 --   :echo win_getid()
 --   :lua print(vim.api.nvim_get_current_win())
 
+
+-- vim上可以這樣自定色彩, nvim沒有這個變數
+-- let g:terminal_ansi_colors = [ '#282c34', ... ]
+-- 但nvim沒這個變數，但是能用 vim.g.terminal_color_ 也能做到
+vim.g.terminal_color_0  = '#282c34'
+vim.g.terminal_color_1  = '#ca1c3d'
+vim.g.terminal_color_2  = '#33df08'
+vim.g.terminal_color_3  = '#ffe200'
+vim.g.terminal_color_4  = '#00c6ff'
+vim.g.terminal_color_5  = '#cf01d5'
+vim.g.terminal_color_6  = '#3edcda'
+vim.g.terminal_color_7  = '#abb2bf'
+
+vim.g.terminal_color_8  = '#5c6370'
+vim.g.terminal_color_9  = '#e06c75'
+vim.g.terminal_color_10 = '#98c379'
+vim.g.terminal_color_11 = '#e5c07b'
+vim.g.terminal_color_12 = '#61afef'
+vim.g.terminal_color_13 = '#c678dd'
+vim.g.terminal_color_14 = '#56b6c2'
+vim.g.terminal_color_15 = '#ffffff'
+
 function options.setup()
   -- vim.o 與 vim.opt 是相同的只是數值的表達方式不同, vim.o是純字串 :help vim.opt
 
