@@ -840,6 +840,16 @@ local function setup_visual()
     { desc = "Execute the selected item" }
   )
 
+  map('x', '<leader>:',
+    function()
+      vim.cmd("lcd %:p:h")
+      vim.cmd("normal! gvy")
+      local selected = vim.fn.getreg('"')
+      vim.fn.execute(selected)
+    end,
+    { desc = "Execute the selected content as cmd" }
+  )
+
   -- 將工作目錄更改為當前檔案的目錄
   map("n", "<leader>cd", function()
     local cur_dir
