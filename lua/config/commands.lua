@@ -3439,9 +3439,12 @@ function commands.setup()
       nargs = "?",
       complete = function(arg_lead)
         -- 可行，但是每一項的補全不好設計
+        -- vim.fn.getcompletion("go", 'filetype') -- 只顯示go開頭的列表
+        local filetypes = vim.fn.getcompletion('', 'filetype')
         local options = {
           { "-h", "--help", nil },
-          { "-t", "--filetype", { "c++", "csv", "xml", "json", "markdown", "..." } },
+          -- { "-t", "--filetype", { "c++", "csv", "xml", "json", "markdown", "..." } },
+          { "-t", "--filetype", filetypes },
           { "", "--bufhidden", { "wipe" } } -- 離開後buf也不要記錄
         }
         return utils.flag.get_complete(arg_lead, options) or
