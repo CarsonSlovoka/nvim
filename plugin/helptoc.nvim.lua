@@ -1,0 +1,11 @@
+-- vim.defer_fn(function()
+--   -- vim.pack.add({ "https://github.com/CarsonSlovoka/helptoc.nvim" })
+--   vim.cmd.packadd("helptoc.nvim") -- 地端開發
+--
+--   require("helptoc").setup()
+--
+--   -- require("helptoc").setup({
+--   --   indent_size = 2,
+--   --   position = "left"
+--   -- })
+-- end, 50)

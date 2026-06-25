@@ -120,6 +120,43 @@ Host github.com
 
 接著用`ssh git@github.com`測試，若成功即可
 
+### 地端plugin開發
+
+```vim
+:help pack-add
+```
+
+當中提到:
+
+`:packadd foodebug`
+
+This searches for `pack/*/opt/foodebug` in 'packpath' and will find
+
+`~/.local/share/nvim/site/pack/foo/opt/foodebug/plugin/debugger.vim` and source it.
+
+
+因此發佈出去的插件是寫在core, `$XDG_DATA_HOME/nvim/site/pack/core/opt` 而地端的
+
+- `$XDG_DATA_HOME/nvim/site/pack/core/opt` : 這是已經發佈出去，透過: `vim.pack.add` 的方式
+- `$XDG_DATA_HOME/nvim/site/pack/mine/opt` : 隨便建一個，例如: `mine` 之後透過 `vim.cmd.packadd` 來加入
+
+> [!CAUTION] 還沒有發佈的，不能直接寫在: `$XDG_DATA_HOME/nvim/site/pack/core/opt` 會讓nvim啟動整個出現問題
+
+地端插件目錄範例:
+
+```bash
+$XDG_DATA_HOME/nvim/site/pack/mine/opt/
+# .
+# └── helptoc.nvim   👈 此為 vim.cmd.packadd 中要填的名稱
+#     ├── LICENSE
+#     └── lua
+#         └── helptoc.lua
+
+# 接著init.lua可以這樣用
+vim.cmd.packadd("helptoc.nvim")
+require("helptoc")
+
+```
 
 # INSTALL carson/nvim
 
