@@ -1,11 +1,26 @@
--- vim.defer_fn(function()
---   -- vim.pack.add({ "https://github.com/CarsonSlovoka/helptoc.nvim" })
---   vim.cmd.packadd("helptoc.nvim") -- 地端開發
---
---   require("helptoc").setup()
---
---   -- require("helptoc").setup({
---   --   indent_size = 2,
---   --   position = "left"
---   -- })
--- end, 50)
+vim.defer_fn(function()
+  vim.pack.add({ "https://github.com/CarsonSlovoka/helptoc.nvim" })
+  -- vim.cmd.packadd("helptoc.nvim") -- 地端開發
+
+  require("helptoc").setup()
+
+  local group = "HelpToc"
+  vim.api.nvim_create_augroup(group, {})
+  vim.api.nvim_create_autocmd("FileType", {
+    group = group,
+    pattern = {
+      "md",
+      "sh", "zsh",
+      "lua"
+    },
+    callback = function()
+      local buf = vim.api.nvim_get_current_buf()
+      vim.keymap.set("n", "<leader>h", "<cmd>Helptoc<CR>", { noremap = true, silent = true, buf = buf })
+    end
+  })
+
+  -- require("helptoc").setup({
+  --   indent_size = 2,
+  --   position = "left"
+  -- })
+end, 50)

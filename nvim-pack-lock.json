@@ -28,6 +28,10 @@
       "rev": "0f00d07c2c3106ba6abd594ac1c17f211141b7b5",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "helptoc.nvim": {
+      "rev": "106e02de5c5cfac550f45c80accfe64a295c4721",
+      "src": "https://github.com/CarsonSlovoka/helptoc.nvim"
+    },
     "image.nvim": {
       "rev": "446a8a5cc7a3eae3185ee0c697732c32a5547a0b",
       "src": "https://github.com/3rd/image.nvim"
