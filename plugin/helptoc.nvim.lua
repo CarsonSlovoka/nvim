@@ -3,6 +3,10 @@ vim.defer_fn(function()
   -- vim.cmd.packadd("helptoc.nvim") -- 地端開發
 
   require("helptoc").setup()
+  -- require("helptoc").setup({
+  --   indent_size = 'auto', -- tree, auto
+  --   position = "right"
+  -- })
 
   local group = "HelpToc"
   vim.api.nvim_create_augroup(group, {})
@@ -18,9 +22,4 @@ vim.defer_fn(function()
       vim.keymap.set("n", "<leader>h", "<cmd>Helptoc<CR>", { noremap = true, silent = true, buf = buf })
     end
   })
-
-  -- require("helptoc").setup({
-  --   indent_size = 2,
-  --   position = "left"
-  -- })
 end, 50)
