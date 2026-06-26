@@ -1,7 +1,7 @@
 local dap = require("dap")
 
 dap.adapters.bash = function(_, config)
-  local script_name = vim.fn.expand("%")
+  local script_name = vim.fn.expand("%:t")
   vim.cmd("lcd %:h")
   if config.range then
     -- vim.cmd("normal! gvy") -- 這是得到前一次選取的範圍，在解除visual下使用會有用

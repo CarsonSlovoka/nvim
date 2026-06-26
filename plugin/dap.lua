@@ -117,6 +117,7 @@ local function load_external_dap()
 
   require("external.dap.keymap")
   require("external.dap.sh")
+  require("external.dap.applescript")
 
 
   vim.api.nvim_create_user_command("DapSetBreakpoints",
