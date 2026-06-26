@@ -9,7 +9,7 @@ vim.defer_fn(function()
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
     pattern = {
-      "md",
+      "markdown",
       "sh", "zsh",
       "lua"
     },
