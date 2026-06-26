@@ -97,7 +97,8 @@ local function load_external_dap()
   require("external.dap.go")
 
   -- dap.configurations.<filetype>
-  --
+
+  -- Note: 👇 其實不需要寫custom, 可以參考: `git show -p 27bd1e2d:lua/external/dap/python.lua | bat -l lua -P -r 89:95 -r 98 -r 196:203 -r 210:212`
   require("dap").adapters.custom = {
     type = 'executable',
     command = "echo", -- 找一個不重要的指令, 為了通過require("dap")而已 -- 這個工具在 Linux / macOS / Windows shell 都有
@@ -115,6 +116,7 @@ local function load_external_dap()
   require("external.dap.ttx")
 
   require("external.dap.keymap")
+  require("external.dap.sh")
 
 
   vim.api.nvim_create_user_command("DapSetBreakpoints",

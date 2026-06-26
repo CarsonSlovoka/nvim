@@ -1,6 +1,6 @@
 local dap = require("dap")
 
-vim.keymap.set("n", "<F5>", function()
+vim.keymap.set({ "n", "v" }, "<F5>", function()
     dap.continue() -- 首次出現的選單要靠執行這個
   end,
   { desc = "Start/Continue Debugging" }
