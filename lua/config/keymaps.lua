@@ -843,7 +843,8 @@ local function setup_visual()
   map('x', '<leader>:',
     function()
       vim.cmd("lcd %:p:h")
-      vim.cmd("normal! gvy")
+      -- vim.cmd("normal! gvy") -- 這會有問題, gv是選到前一次的visual
+      vim.cmd("normal! ygvy") -- 先y使得gv的內容就是當前選取的項目
       local selected = vim.fn.getreg('"')
       vim.fn.execute(selected)
     end,
