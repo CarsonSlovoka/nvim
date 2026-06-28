@@ -2,11 +2,15 @@ vim.defer_fn(function()
   vim.pack.add({ "https://github.com/CarsonSlovoka/helptoc.nvim" })
   -- vim.cmd.packadd("helptoc.nvim") -- 地端開發
 
-  require("helptoc").setup()
-  -- require("helptoc").setup({
-  --   indent_size = 'auto', -- tree, auto
-  --   position = "right"
-  -- })
+  -- require("helptoc").setup()
+  require("helptoc").setup({
+    -- indent_size = 'auto', -- tree, auto
+    -- position = "right"
+    highlight = {
+      -- cursor_line = { link = "@Label" }
+      cursor_line = { bg = vim.g.terminal_color_4 or "#00c6ff", fg = "#003b4f" }
+    }
+  })
 
   local group = "HelpToc"
   vim.api.nvim_create_augroup(group, {})
