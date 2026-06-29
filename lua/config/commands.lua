@@ -5152,13 +5152,13 @@ end, {
   end
 })
 
-vim.api.nvim_create_user_command('Qfa',
+vim.api.nvim_create_user_command('Clistadd',
   function(args)
     if args.fargs[1] == "-h" then
       cmdUtils.showHelpAtQuickFix({
-        [[:'<,'>g/\vya?ml/Qfa]],
-        [[:'<,'>g/\v\~.*ya?ml/Qfa]],
-        [[:'A,'Bg/\vya?ml/Qfa -h]],
+        [[:'<,'>g/\vya?ml/Clistadd]],
+        [[:'<,'>g/\v\~.*ya?ml/Clistadd]],
+        [[:'A,'Bg/\vya?ml/Clistadd -h]],
         [[:10,100g/key/caddexpr expand("%") . ":" . line(".") . ":" . getline(".")]], -- 可行，但是後面要打上太多東西
         [[/\%V]],                                                                     -- 這可以找, 但是沒辦法加到qflist
       })
@@ -5168,7 +5168,7 @@ vim.api.nvim_create_user_command('Qfa',
     local lnum = vim.api.nvim_win_get_cursor(0)[1]
     local text = vim.api.nvim_get_current_line()
 
-    -- 先清沒有用，因為用 :'<,'>g/key/Qfa 實際上會一個匹配項都執行一次此函數, 因此每次都會清除, 如此只會剩下最下一筆而已
+    -- 先清沒有用，因為用 :'<,'>g/key/Clistadd 實際上會一個匹配項都執行一次此函數, 因此每次都會清除, 如此只會剩下最下一筆而已
     -- if args.fargs[1] == "-c" then
     --   -- vim.cmd("cexpr []")
     --   vim.fn.setqflist({}, 'f') -- 用這個也是不行
@@ -5182,7 +5182,7 @@ vim.api.nvim_create_user_command('Qfa',
 
     -- vim.cmd("copen") -- Warn: 這種情況下使用這個會中斷，導致最後只有一筆
   end, {
-    desc = "Can be used for :g//Qfa to add the result to qflist",
+    desc = "Can be used for :g//Clistadd to add the result to qflist",
     nargs = "?",
     range = true,
     complete = function()
