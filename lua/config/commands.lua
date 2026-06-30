@@ -5500,13 +5500,28 @@ end, {
   nargs = 0,
 })
 
-vim.api.nvim_create_user_command('NoStuff', function()
-  local cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw"
+vim.api.nvim_create_user_command('Nostuff', function(opts)
+  local cmd = ""
+  if (opts.fargs[1] or "no") == "no" then
+    cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw ls=0 ch=1"
+  else
+    cmd = "set cursorcolumn cursorline foldenable relativenumber nolazyredraw ls=2 ch=1"
+  end
+  -- Note: ls為laststutus  `:help laststatus`. set laststatus={0, 1, 2(default), 3}
+  -- vim.opt.cmdheight = 0  -- alias: `ch`
+
   -- vim.cmd(cmd) -- 會直接執行
   vim.api.nvim_feedkeys(':' .. cmd, 'n', false) -- 讓使用者自己按下<CR> 如果想要額外調整，可以再自己決定
+
+  -- :lua require('lualine').hide({place={'statusline'}, unhide=false}) -- 隱藏
+  -- :lua require('lualine').hide({place={'statusline'}, unhide=true})  -- 開啟
 end, {
   desc = 'If your nvim is slow, you may consider using these options',
-  nargs = 0,
+  nargs = "?",
+  complete = function(a) -- Note: A(ArgLead), L(CmdLine), P(CursorPos)  -- `:help command-completion-customlist`
+    local cmp_list = { "yes", "no" }
+    return #a > 0 and vim.fn.matchfuzzy(cmp_list, a) or cmp_list
+  end
 })
 
 
