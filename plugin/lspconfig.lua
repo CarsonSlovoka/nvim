@@ -18,8 +18,18 @@ vim.diagnostic.config({
     end,
   },
   underline = true,
+  -- jump = { float = true, }, -- 此寫法已棄用, 在Nvim 0.14將移除
   jump = {
-    float = true,
+    on_jump = function(diagnostic, bufnr)
+      if not diagnostic then
+        return
+      end
+
+      -- `:help vim.lsp.util.open_floating_preview.Opts`
+      vim.diagnostic.open_float({
+        bufnr = bufnr,
+      })
+    end,
   },
 })
 
