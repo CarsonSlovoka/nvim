@@ -3441,11 +3441,15 @@ function commands.setup()
         -- 可行，但是每一項的補全不好設計
         -- vim.fn.getcompletion("go", 'filetype') -- 只顯示go開頭的列表
         local filetypes = vim.fn.getcompletion('', 'filetype')
+        -- table.insert(filetypes, 1, vim.fn.expand("%:e")) -- 附檔名不一定是filetype
+        if vim.bo.filetype then
+          table.insert(filetypes, 1, vim.bo.filetype)
+        end
         local options = {
-          { "-h", "--help", nil },
           -- { "-t", "--filetype", { "c++", "csv", "xml", "json", "markdown", "..." } },
-          { "-t", "--filetype", filetypes },
-          { "", "--bufhidden", { "wipe" } } -- 離開後buf也不要記錄
+          { "-t", "--filetype",  filetypes },
+          { "",   "--bufhidden", { "wipe" } }, -- 離開後buf也不要記錄
+          { "-h", "--help",      nil },
         }
         return utils.flag.get_complete(arg_lead, options) or
             vim.fn.getcompletion(arg_lead, "file")
