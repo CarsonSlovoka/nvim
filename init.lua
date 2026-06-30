@@ -77,14 +77,6 @@ vim.pack.add({
     rev = "7caec274" -- 用這樣更好, 如此version不會在 nvim-pack-lock.json 中出現
   },
   {
-    src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
-    rev = "93d60a47"
-  },
-  {
-    src = "https://github.com/nvim-treesitter/nvim-treesitter-context",
-    rev = "adf4b6b0420b7be6c717ef0ac7993183d6c201b1"
-  },
-  {
     src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
     rev = "c7188a8f9d2953696b6303caccbf39c51fa2c1b1"
   },
@@ -120,9 +112,6 @@ vim.pack.add({
 
   -- cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua && git branch
   "https://github.com/ibhagwan/fzf-lua",
-
-  -- cd ~/.local/share/nvim/site/pack/core/opt/lualine.nvim && git branch
-  "https://github.com/nvim-lualine/lualine.nvim",
 })
 
 local function install_nvimWebDevicons()

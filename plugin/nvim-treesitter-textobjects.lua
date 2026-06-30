@@ -1,3 +1,11 @@
+-- 選取熱鍵相關
+
+vim.pack.add({ "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" })
+
+if not pcall(require, "nvim-treesitter-textobjects") then
+  return
+end
+
 require("nvim-treesitter-textobjects").setup {
   select = {
     -- Automatically jump forward to textobj, similar to targets.vim

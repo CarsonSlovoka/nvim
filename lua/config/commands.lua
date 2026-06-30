@@ -5500,6 +5500,15 @@ end, {
   nargs = 0,
 })
 
+vim.api.nvim_create_user_command('NoStuff', function()
+  local cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw"
+  -- vim.cmd(cmd) -- 會直接執行
+  vim.api.nvim_feedkeys(':' .. cmd, 'n', false) -- 讓使用者自己按下<CR> 如果想要額外調整，可以再自己決定
+end, {
+  desc = 'If your nvim is slow, you may consider using these options',
+  nargs = 0,
+})
+
 
 -- print(vim.inspect(get_font_map()))
 

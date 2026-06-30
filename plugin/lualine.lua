@@ -1,6 +1,8 @@
+vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
+
 local ok, m = pcall(require, "lualine")
 if not ok then
-  vim.notify("Failed to load lualine", vim.log.levels.ERROR)
+  -- vim.notify("Failed to load lualine", vim.log.levels.ERROR)
   return
 end
 
