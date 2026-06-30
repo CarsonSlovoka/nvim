@@ -440,6 +440,24 @@ map({ 'n' }, 'cadde', function()
   }
 )
 
+
+map({ 'n' }, '<leader>v', function()
+    -- Tip: 也可參考: `git show -p 79f1334d:lua/config/commands.lua | bat -l lua -P -r 5503:5525`
+    vim.g.is_simplest_view_mode = vim.g.is_simplest_view_mode or false
+    vim.g.is_simplest_view_mode = not vim.g.is_simplest_view_mode
+    local cmd = ""
+    if vim.g.is_simplest_view_mode then
+      cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw ls=0 ch=0"
+    else
+      cmd = "set cursorcolumn cursorline foldenable relativenumber nolazyredraw ls=2 ch=1"
+    end
+    vim.cmd(cmd)
+  end,
+  {
+    desc = "Whether minimalist visual mode is enabled"
+  }
+)
+
 local function setup_normal()
   map({ 'n', 'x' },
     '<leader>Y',
