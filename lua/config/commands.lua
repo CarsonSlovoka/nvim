@@ -1604,6 +1604,7 @@ function commands.setup()
 
   -- 舊版參考: `git show 56ea05b7:./commands.lua | bat -l lua -P -r 1591,1714` (這個沒什麼用，直接開term打指令比較直接)
   vim.api.nvim_create_user_command('Gitlog', function(args)
+    -- Note: 這只會顯示該文件而已，如果該sha有多個文件提交(只是當中也有包含此文件)，想要看其它的文件這種就不能達成，可以參考: `:GitLogfile`
     if args.fargs[1] == "-h" then
       cmdUtils.showHelpAtQuickFix({
         -- git log -L1594,1599:commands.lua -w --ignore-blank-lines --no-patch
@@ -1663,6 +1664,7 @@ function commands.setup()
   })
 
   vim.api.nvim_create_user_command('Gitaround', function(opts)
+    -- Note: 如果想要針對某幾行，這種沒有辦法做到, 可以參考 `:GitLog`
     if opts.fargs[1] == "-h" then
       cmdUtils.showHelpAtQuickFix({
         ':Gitaround HEAD 2',
@@ -1715,6 +1717,61 @@ function commands.setup()
     nargs = '*',
     --  desc = '打印出某sha下為中心，前後n次的log內容',
     desc = 'Print out the log content n times before and after a certain `sha` is centered',
+  })
+
+  vim.api.nvim_create_user_command('GitLogfile', function(opts)
+    if opts.fargs[1] == "-h" then
+      cmdUtils.showHelpAtQuickFix({
+        [[:'<,'>GitLogfile -3']],
+      })
+      return
+    end
+
+    vim.cmd("lcd %:h")
+
+    local _ = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+    if vim.v.shell_error ~= 0 then
+      vim.notify('Not in a git repository', vim.log.levels.ERROR)
+      return
+    end
+
+    local line_range = ""
+    if opts.range ~= 0 then
+      local start_line = vim.fn.line("'<")
+      local end_line = vim.fn.line("'>")
+      line_range = string.format("-L%d,%d", start_line, end_line)
+    else
+      local line_count = vim.api.nvim_buf_line_count(0)
+      line_range = string.format("-L1,%d", line_count)
+    end
+
+    local n = tonumber(opts.fargs[1]) or nil
+    local filename = vim.fn.expand("%:t")
+
+    local cmd = string.format([[
+    git log %s--no-patch %s:"%s" --format=%%H |
+      while IFS=' ' read sha1; do
+        git show "$sha1"
+      done
+    ]],
+      -- n and "-" .. n .. " " or "",  -- 讓 - 自己輸入
+      n and n .. " " or "",
+      line_range,
+      filename
+    )
+
+    vim.cmd('topleft new | term')
+    vim.cmd("startinsert")
+    vim.api.nvim_input(cmd .. "<CR>")
+  end, {
+    nargs = '?',
+    range = true,
+    --  desc = '找某一個文件其範圍有關的N次提交記錄(有在該sha下的其它檔案也會出來)',
+    desc =
+    'Find N submission records related to the scope of a certain file (files related to the file will be displayed)',
+    complete = function()
+      return { "-3", "-5" } -- 提示輸入
+    end
   })
 
   vim.api.nvim_create_user_command('Comm', function(args)
