@@ -1662,6 +1662,61 @@ function commands.setup()
     desc = 'Run git log -L on selected lines'
   })
 
+  vim.api.nvim_create_user_command('Gitaround', function(opts)
+    if opts.fargs[1] == "-h" then
+      cmdUtils.showHelpAtQuickFix({
+        ':Gitaround HEAD 2',
+        ':Gitaround HEAD 2 -p',
+      })
+      return
+    end
+
+    if #opts.fargs < 2 then
+      vim.notify("args < 2. `:Gitaround HEAD 2`", vim.log.levels.ERROR)
+      return
+    end
+
+    vim.cmd("lcd %:h")
+
+    local _ = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+    if vim.v.shell_error ~= 0 then
+      vim.notify('Not in a git repository', vim.log.levels.ERROR)
+      return
+    end
+    local sha = opts.fargs[1]
+    local n = tonumber(opts.fargs[2]) + 1 -- 這樣才會是真得抓n個，不然是抓n-1個
+
+    local sha_end = vim.fn.systemlist(
+      string.format('git log --format="%%H" %s^..HEAD | tail "-%d" | head -n 1',
+        sha, n
+      )
+    )[1]
+
+    local cmd = string.format('git log %s~%d..%s', sha, n, sha_end)
+    for _, arg in ipairs(vim.list_slice(opts.fargs, 3, #opts.fargs)) do
+      -- 加這其它參數，例如-p (patch) 顯示修補的資訊
+      cmd = cmd .. " " .. arg
+    end
+
+    vim.cmd('topleft new')
+    vim.cmd("term")
+    vim.cmd("startinsert")
+    vim.api.nvim_input(cmd .. "<CR>")
+    -- 以下不需要再輸入，因為是用startinsert的方式，所以執行的指令，可以在最前面看到
+    -- vim.api.nvim_input(string.format([[
+    --   echo -e "
+    -- \x1b[37morg cmd:\x1b[0m
+    -- \x1b[32m
+    -- %s
+    -- \x1b[0m
+    --   "
+    --   ]] .. "<CR>", cmd))
+  end, {
+    nargs = '*',
+    --  desc = '打印出某sha下為中心，前後n次的log內容',
+    desc = 'Print out the log content n times before and after a certain `sha` is centered',
+  })
+
   vim.api.nvim_create_user_command('Comm', function(args)
     if #args.fargs ~= 2 then
       vim.api.nvim_echo({ { ':Comm file1 file2', "@ERROR" }, }, false, {})
