@@ -18,6 +18,10 @@ vim.defer_fn(function()
     --   kind_icon = true,
     -- symbol_highlight = true,
     -- }
+
+    -- lsp_kinds = {
+    --   vim.lsp.protocol.SymbolKind.Function,
+    -- }
   })
 
   -- local group = "HelpToc"

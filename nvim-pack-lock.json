@@ -29,7 +29,7 @@
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "helptoc.nvim": {
-      "rev": "9f838f2755c03e1a965944dcd6ad5991813ff9ae",
+      "rev": "73b7800f4a93b74bda487a2ab3318dd40aa48760",
       "src": "https://github.com/CarsonSlovoka/helptoc.nvim"
     },
     "image.nvim": {
