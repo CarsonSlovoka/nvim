@@ -90,6 +90,74 @@ function M.check_output_dir(dir_path)
   end
 end
 
+---@param path string
+---@return boolean
+function M.copy_file_to_clipboard(path)
+  path = vim.fn.fnamemodify(path, ":p")
+
+  if vim.fn.filereadable(path) ~= 1 and vim.fn.isdirectory(path) ~= 1 then
+    vim.notify("File not found: " .. path, vim.log.levels.ERROR)
+    return false
+  end
+
+  -- macOS: copy as Finder file object
+  if vim.fn.has("macunix") == 1 then
+    local statement = string.format([[tell application "Finder" to set the clipboard to (POSIX file "%s")]], path)
+    local result = vim.system({
+      "osascript", "-e", statement,
+    }, { text = true }):wait()
+    if result.code ~= 0 then
+      vim.notify(result.stderr or "Failed to copy file", vim.log.levels.ERROR)
+      return false
+    end
+
+    return true
+  end
+
+  -- Linux: GNOME/Nautilus-compatible file clipboard format (Note: 尚未驗證)
+  local sysname = (vim.uv or vim.loop).os_uname().sysname
+  if sysname == "Linux" then
+    local uri = vim.uri_from_fname(path)
+    local data = "copy\n" .. uri .. "\n"
+    local mime = "x-special/gnome-copied-files"
+
+    if vim.fn.executable("wl-copy") == 1 then
+      vim.system({
+        "wl-copy",
+        "--type",
+        mime,
+      }, {
+        stdin = data,
+        text = true,
+      })
+      return true
+    end
+
+    if vim.fn.executable("xclip") == 1 then
+      vim.system({
+        "xclip",
+        "-selection",
+        "clipboard",
+        "-target",
+        mime,
+      }, {
+        stdin = data,
+        text = true,
+      })
+      return true
+    end
+
+    vim.notify(
+      "Need wl-copy or xclip. On Ubuntu: sudo apt install wl-clipboard xclip",
+      vim.log.levels.ERROR
+    )
+    return false
+  end
+
+  vim.notify("Copy file object is only implemented for macOS/Linux", vim.log.levels.ERROR)
+  return false
+end
+
 M.IsWindows = isWindows()
 
 return M

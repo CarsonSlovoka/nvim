@@ -469,10 +469,13 @@ local function setup_normal()
       local filename = vim.fn.expand(("%:t"))
 
       -- 定義選項
+      local KEY_COPY_FILE = "__copy_current_file_as_file__"
       local options = {
         abs_path,
-        filename
+        filename,
+        KEY_COPY_FILE,
       }
+
       local git_rel_path = vim.fn.systemlist("git ls-files --full-name " .. vim.fn.shellescape(abs_path))[1]
       local git_show_paths = {}
       if vim.v.shell_error == 0 then
@@ -505,7 +508,6 @@ local function setup_normal()
         end
       end
 
-
       vim.ui.select(options,
         {
           prompt = "Choose path format to copy:",
@@ -523,11 +525,25 @@ local function setup_normal()
               m[git_show_path] = ": "
             end
 
+            if item == KEY_COPY_FILE then
+              return string.format("File Object (for paste to social media): 📄 (%s)", abs_path)
+            end
+
             return m[item] and m[item] .. item or item
           end
         },
-        function(choice)
+        function(choice) -- callback
           if not choice then
+            return
+          end
+
+          if choice == KEY_COPY_FILE then
+            if utils.os.copy_file_to_clipboard(abs_path) then
+              vim.api.nvim_echo({
+                { "✅ Copied file object: ", "Normal" },
+                { abs_path, "@label" },
+              }, false, {})
+            end
             return
           end
 
