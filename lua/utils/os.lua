@@ -117,41 +117,47 @@ function M.copy_file_to_clipboard(path)
   -- Linux: GNOME/Nautilus-compatible file clipboard format (Note: 尚未驗證)
   local sysname = (vim.uv or vim.loop).os_uname().sysname
   if sysname == "Linux" then
+    -- Note: 目前只做wayland, 不管x11
     local uri = vim.uri_from_fname(path)
-    local data = "copy\n" .. uri .. "\n"
-    local mime = "x-special/gnome-copied-files"
+    local data = uri .. "\r\n"
 
-    if vim.fn.executable("wl-copy") == 1 then
-      vim.system({
-        "wl-copy",
-        "--type",
-        mime,
-      }, {
-        stdin = data,
-        text = true,
-      })
-      return true
+    if vim.fn.executable("wl-copy") ~= 1 then
+      vim.notify(
+        "Need wl-copy or xclip. On Ubuntu: sudo apt install wl-clipboard xclip",
+        vim.log.levels.ERROR
+      )
+      return false
     end
 
-    if vim.fn.executable("xclip") == 1 then
-      vim.system({
-        "xclip",
-        "-selection",
-        "clipboard",
-        "-target",
-        mime,
-      }, {
-        stdin = data,
-        text = true,
-      })
-      return true
-    end
+    -- bash 測試
+    -- FILE="./os.lua"
+    -- URI="$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).resolve().as_uri())' "$FILE")"
+    -- echo "$URI" -- # file:///path/to/os.lua
+    -- echo "$XDG_SESSION_TYPE"  -- wayland
+    -- printf '%s\r\n' "$URI" | wl-copy --type text/uri-list
 
-    vim.notify(
-      "Need wl-copy or xclip. On Ubuntu: sudo apt install wl-clipboard xclip",
-      vim.log.levels.ERROR
-    )
-    return false
+    -- Warn: 這種情況用wait會卡住不動. 要用callback的方式
+    -- local result = vim.system(
+    --   { "wl-copy", "--type", "text/uri-list", },
+    --   { stdin = data, text = true, }
+    -- ):wait()
+
+    vim.system({
+      "wl-copy",
+      "--type",
+      "text/uri-list",
+    }, {
+      stdin = data,
+      text = true,
+    }, function(result)
+      if result.code ~= 0 then
+        vim.schedule(function()
+          vim.notify(result.stderr or "Failed to copy file URI", vim.log.levels.ERROR)
+        end)
+      end
+    end)
+
+    return true
   end
 
   vim.notify("Copy file object is only implemented for macOS/Linux", vim.log.levels.ERROR)
