@@ -1,4 +1,5 @@
 local dap = require("dap")
+local utils = require("utils.utils")
 
 
 ---@class PerlRunConfig
@@ -6,20 +7,6 @@ local dap = require("dap")
 ---@field name string
 ---@field args? string[]|fun():string[]
 
----@param config PerlRunConfig
-local function get_args(config)
-  local args = config.args or {}
-
-  if type(args) == "function" then
-    args = args()
-  end
-
-  if type(args) == "string" then
-    args = vim.split(args, "%s+", { trimempty = true })
-  end
-
-  return args
-end
 
 dap.adapters.perl = function(_, config)
   local script_name = vim.fn.expand("%:t")
@@ -30,7 +17,7 @@ dap.adapters.perl = function(_, config)
   vim.cmd("topleft new")
 
   local cmd = { "perl", script_name }
-  vim.list_extend(cmd, get_args(config))
+  vim.list_extend(cmd, utils.dap.get_args(config))
 
   -- 這可行，但是執行完就會離開
   -- vim.fn.jobstart(cmd, {
