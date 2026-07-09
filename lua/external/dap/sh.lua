@@ -1,6 +1,15 @@
 local dap = require("dap")
+local utils = require("utils.utils")
+
+---@class ShRunConfig
+---@field type "bash"
+---@field name string
+---@field range boolean
+---@field args? string[]|fun():string[]
 
 dap.adapters.bash = function(_, config)
+  ---@cast config ShRunConfig
+
   local script_name = vim.fn.expand("%:t")
   vim.cmd("lcd %:h")
   if config.range then
@@ -18,20 +27,31 @@ dap.adapters.bash = function(_, config)
     return
   end
 
-  vim.api.nvim_input(string.format([[%s <CR>]], "bash " .. script_name))
+  local cmd = { "bash", script_name }
+  vim.list_extend(cmd, utils.dap.get_args(config))
+  vim.api.nvim_input(string.format([[%s <CR>]], table.concat(cmd, " ")))
 end
 
 dap.configurations.sh = {} -- filetype: sh 時會套用此設定
 for _, config in ipairs({
   {
     type = "bash",
-    name = "run current file",
+    name = "▶️    run current file",
   },
   {
     type = "bash",
-    name = "run selection",
+    name = "▶️... run current file with args",
+    args = function()
+      local input = vim.fn.input("args: ")
+      return vim.split(input, "%s+", { trimempty = true, })
+    end,
+  },
+  {
+    type = "bash",
+    name = "▶️< > run selection",
     range = true,
   }
 }) do
+  ---@cast config ShRunConfig
   table.insert(dap.configurations.sh, config)
 end
