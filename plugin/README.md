@@ -1,5 +1,14 @@
 在此目錄的lua都會被自動執行
 
+# Plugin
+
+## 載入時機
+
+當使用 `nvim -u my_init.lua -l myscript.lua` 時
+
+其實都會載入`~/.config/nvim/plugin/`目錄中的內容，不過會先載入-u的init才會開始陸續plugin的內容
+
+因此如果是一些平常-l使都不會用到的插件，建議不要寫在此目錄中，或者用`vim.g`的方式，判別有設定才會載入之類的
 
 ## Debug
 

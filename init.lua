@@ -63,37 +63,33 @@ end
 --   "https://github.com/nvim-treesitter/nvim-treesitter",
 -- })
 
-vim.pack.add({ "https://github.com/nvim-lua/plenary.nvim" }) -- 有些套件需要用到它，所以要先確保它載入
+
+-- Note: 如果使用 `nvim -u /path/to/my_init.lua -l script.lua` 的方式, 此時就不會用這個init.lua. 但是在`~/.config/nvim/plugin`的都還是會執行，所以建議寫在裡面會比較好
+-- vim.pack.add({ "https://github.com/nvim-lua/plenary.nvim" }) -- 有些套件需要用到它，所以要先確保它載入 => -- Tip: 寫在: ~/.config/nvim/plugin 的項目，確實都會比 init.lua 還要晚載入(都寫print就會曉得誰先載入)
 vim.pack.add({
   -- Important: 確認過下載的內容以 nvim-pack-lock.json 的記錄為主, 所以只要確保該json的內容，再將目錄中的檔案重新刪除，再次啟動就會去下載對應的版本
   --   rm -rf ~/.local/share/nvim/site/pack/core/opt/
   --   ~~mkdir -v ~/.local/share/nvim/site/pack/core/opt~~ opt的目錄，如果有需要會主動創建，不需要自己建立
 
-  -- 👇 如果還有其它複雜設定，可以考慮寫在 plugin/ 目錄之中
-  {
-    src = "https://github.com/nvim-treesitter/nvim-treesitter",
-    -- version = "7caec274fd19c12b55902a5b795100d21531391f",
-    -- version = "da8bf82a", -- 這樣也可以, 但是這樣實際上是在nvim-pack-lock.json中的version會生成，並且rev也會再帶出.
-    rev = "7caec274" -- 用這樣更好, 如此version不會在 nvim-pack-lock.json 中出現
-  },
+  -- -- 👇 如果還有其它複雜設定，可以考慮寫在 plugin/ 目錄之中
+  -- {
+  --   src = "https://github.com/nvim-treesitter/nvim-treesitter",
+  --   -- version = "7caec274fd19c12b55902a5b795100d21531391f",
+  --   -- version = "da8bf82a", -- 這樣也可以, 但是這樣實際上是在nvim-pack-lock.json中的version會生成，並且rev也會再帶出.
+  --   rev = "7caec274" -- 用這樣更好, 如此version不會在 nvim-pack-lock.json 中出現
+  -- },
   {
     src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
     rev = "c7188a8f9d2953696b6303caccbf39c51fa2c1b1"
   },
-  {
-    -- cd ~/.local/share/nvim/site/pack/core/opt/gitsigns.nvim && git log
-    src = "https://github.com/lewis6991/gitsigns.nvim",
-    -- rev = "6bd2949" -- clone下來的可能是倉庫的主分支，用rev有時候無效
-    rev = "0f00d07c2c3106ba6abd594ac1c17f211141b7b5",
-  },
-  {
-    -- cd ~/.local/share/nvim/site/pack/core/opt/leap.nvim && git log
-    -- leap. nvim: the repository has been moved to Codeberg.
-    -- src = "https://github.com/ggandor/leap.nvim", 👈 這個會得到已經更換至codeberg的警告
-    src = "https://codeberg.org/andyg/leap.nvim",
-    -- rev = "f19d435" -- ❌ 2025-12-04 轉移到codeberg之後，這個節點不見了
-    rev = "b960d5038c5c505c52e56a54490f9bbb1f0e6ef6", -- 2026-03-31 (Tue) 14:08:01 +0200
-  },
+  -- {
+  --   -- cd ~/.local/share/nvim/site/pack/core/opt/leap.nvim && git log
+  --   -- leap. nvim: the repository has been moved to Codeberg.
+  --   -- src = "https://github.com/ggandor/leap.nvim", 👈 這個會得到已經更換至codeberg的警告
+  --   src = "https://codeberg.org/andyg/leap.nvim",
+  --   -- rev = "f19d435" -- ❌ 2025-12-04 轉移到codeberg之後，這個節點不見了
+  --   rev = "b960d5038c5c505c52e56a54490f9bbb1f0e6ef6", -- 2026-03-31 (Tue) 14:08:01 +0200
+  -- },
   {
     -- cd ~/.local/share/nvim/site/pack/core/opt/nvim-web-devicons && git log
     src = "https://github.com/nvim-tree/nvim-web-devicons",
@@ -101,18 +97,13 @@ vim.pack.add({
     --  57dfa94  2025-04-07 (Mon) +0200
     rev = "d7462543c9e366c0d196c7f67a945eaaf5d99414" -- 2026-03-11 (Wed) chore: update pre-commit hooks (#624)
   },
-  {
-    -- cd ~/.local/share/nvim/site/pack/core/opt/nvim-tree.lua && git log
-    src = "https://github.com/nvim-tree/nvim-tree.lua",
-    rev = "31503ad5d869fca61461d82a9126f62480ecb0ab" -- 2026-04-01 (Wed) feat!: drop support for Nvim 0.11
-  },
-
-  -- cd ~/.local/share/nvim/site/pack/core/opt/telescope.nvim && git log
-  "https://github.com/nvim-telescope/telescope.nvim", -- 反正rev的內容還是看 nvim-pack-lock.json 所以就不再這邊再寫rev
-
-  -- cd ~/.local/share/nvim/site/pack/core/opt/fzf-lua && git branch
-  "https://github.com/ibhagwan/fzf-lua",
 })
+
+
+-- 底下這些都是nvim -l 比較不需要用到的插件，用變數來掌管是否要載入
+vim.g.__load__plugin_nvim_plugins__ = true -- plugin/nvim.plugins.lua
+-- nvim -u ~/test.lua --cmd ":lua vim.g.__load__plugin_nvim_plugins__ = true"    #   👈 如果真的想要載入，也可以用以下的方法. 或者寫在-u中的檔案也行
+vim.g.__load__plugin_lualine__ = true
 
 local function install_nvimWebDevicons()
   -- Caution: 有順序性不能將此設定寫在plugin之中

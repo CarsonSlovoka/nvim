@@ -98,6 +98,27 @@ rm -rf ~/.local/share/nvim/site/pack/core/opt/
 ```
 
 > [!TIP] 其實也可以使用: `:lua vim.pack.del({ "pluginName" })` 的方式，執行後該目錄也會被刪除
+
+---
+
+
+`:packadd`: 找尋: `pack/*/opt/{name}` 來載入該插件, 例如:
+
+```lua
+local opt_dir = vim.fn.stdpath("data") .. "/site/pack/core/opt"
+for name, type in vim.fs.dir(opt_dir) do
+  if type == "directory" then
+    vim.cmd.packadd(vim.fn.fnameescape(name))
+  end
+end
+```
+
+```sh
+fd . -d1 -t d ~/.local/share/nvim/site/pack/*/opt
+```
+
+> [!NOTE] 而`vim.pack.add()`則是從URL來安裝
+
 ### ssh
 
 vim.pack.add 會靠git去下載，如果你用的是ssh的方式且有 passphrase 設定，就會沒辦法下載成功

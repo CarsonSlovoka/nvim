@@ -1,3 +1,7 @@
+if not vim.g.__load__plugin_lualine__ then
+  return
+end
+
 vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
 
 local ok, m = pcall(require, "lualine")

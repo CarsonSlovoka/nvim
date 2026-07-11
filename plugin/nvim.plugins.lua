@@ -1,5 +1,9 @@
 -- 這些內建plugin比較後面在載入, 讓一開始啟動比較快
 
+if not vim.g.__load__plugin_nvim_plugins__ then
+  return
+end
+
 -- :help plugins.txt
 vim.defer_fn(function()
   vim.cmd("packadd nvim.difftool") -- :DiffTool {left_file} {right_file}  就不需要用兩次 :diffthis

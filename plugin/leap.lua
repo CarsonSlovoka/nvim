@@ -1,3 +1,5 @@
+vim.pack.add({ "https://codeberg.org/andyg/leap.nvim" })
+
 vim.go.ignorecase = true
 require('leap').setup({
   -- cd pack/motion/start/leap.nvim && git show f19d4359:lua/leap/main.lua | bat -l lua -P -r 79:83

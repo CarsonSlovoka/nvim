@@ -1,5 +1,7 @@
 -- https://github.com/ibhagwan/fzf-lua
 -- :checkhealth fzf_lua
+--
+vim.pack.add({ "https://github.com/ibhagwan/fzf-lua" })
 require("fzf-lua").setup({
   winopts = {
     row = 10,

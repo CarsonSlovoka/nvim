@@ -1,6 +1,7 @@
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
 
+vim.pack.add({ "https://github.com/nvim-telescope/telescope.nvim" })
 local _, m = pcall(require, "telescope")
 
 
