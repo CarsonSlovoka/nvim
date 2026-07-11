@@ -97,6 +97,7 @@ rm -rf ~/.local/share/nvim/site/pack/core/opt
 rm -rf ~/.local/share/nvim/site/pack/core/opt/
 ```
 
+> [!TIP] 其實也可以使用: `:lua vim.pack.del({ "pluginName" })` 的方式，執行後該目錄也會被刪除
 ### ssh
 
 vim.pack.add 會靠git去下載，如果你用的是ssh的方式且有 passphrase 設定，就會沒辦法下載成功
