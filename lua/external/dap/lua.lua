@@ -1,4 +1,7 @@
-require("dap").adapters.nlua = function(callback, config)
+local dap = require("dap")
+local utils = require("utils.utils")
+
+dap.adapters.nlua = function(callback, config)
   -- 可以直接用
   -- lua require"osv".launch({port = 8086}) <-- 不建議用，就執行用launch()之後接run_this即可
   -- lua require'osv'.launch() -- 如果沒有port預設會隨便生成一個
@@ -13,7 +16,7 @@ require("dap").adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
 end
 
-require("dap").adapters.local_lua = {
+dap.adapters.local_lua = {
   type = "executable",
   command = "node",
   -- local-lua-debugger-vscode取得
@@ -54,8 +57,40 @@ local function get_local_cmd_item(lua_cmd, args)
   return item
 end
 
+require("dap").adapters.nvim = function(_, config)
+  local script_name = vim.fn.expand("%:t")
+  vim.cmd("lcd %:h")
+
+  vim.cmd("topleft new | term")
+  vim.cmd("startinsert")
+
+  local cmd = { "nvim",
+    "", "", -- 此為-u的保留
+    "-l", script_name }
+  local args = utils.dap.get_args(config)
+  for index, name in ipairs(args) do
+    if name == "-u" then
+      -- -u init.lua 這個需要加在-l之前才可以
+      cmd[2] = "-u"
+      cmd[3] = args[index + 1]
+      args[index] = "" -- 清空
+      args[index + 1] = ""
+      break
+    end
+  end
+  vim.list_extend(cmd, args)
+  vim.api.nvim_input(string.format([[%s <CR>]], table.concat(cmd, " ")))
+end
 
 require("dap").configurations.lua = {
+  {
+    type = "nvim",
+    name = "▶️... nvim -l % with args",
+    args = function()
+      local input = vim.fn.input("args: ")
+      return vim.split(input, "%s+", { trimempty = true, })
+    end,
+  },
   {
     type = 'nlua',
     request = 'attach',
