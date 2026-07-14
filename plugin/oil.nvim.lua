@@ -66,7 +66,7 @@ require("oil").setup({
     ["<CR>"] = "actions.select",
     -- ["<C-s>"] = { "actions.select", opts = { vertical = true } },
     -- ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
-    ["<C-v>"] = { "actions.select", opts = { vertical = true } }, -- 熱鍵改成和CTRL-W_v, CTRL-W_s相同. Tip: 如果想要visual block. 使用CTRL_V (用大寫的V還是可以觸發)
+    ["<C-v>"] = { "actions.select", opts = { vertical = true }, mode = "n" }, -- 熱鍵改成和CTRL-W_v, CTRL-W_s相同. Tip: 如果想要visual block. 可以切換到visual模式再使用<C-v>即可
     ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
     ["<C-t>"] = { "actions.select", opts = { tab = true } },
     ["<C-p>"] = "actions.preview", -- 可以做預覽, 之後換每個檔案都可以看到. 再次使用後可以做切換(開關預覽功能)
