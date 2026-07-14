@@ -912,6 +912,30 @@ cd ~/codelldb
 unzip ~/codelldb
 ```
 
+#### ~~lisp~~
+
+> [!WARNING] 如果只是為了寫emacs相關的el腳本，不建議裝.
+>
+> emacs**本身就有解析lisp的能力**, 不需要再額外裝插件. 只有在一些額外的語言, emacs才要像nvim那樣也裝額外的插件來輔助，才能抓到定義
+
+
+[clojure-lsp](https://github.com/clojure-lsp/clojure-lsp) 安裝引導:
+
+> https://clojure-lsp.io/installation/
+
+mac裝法
+
+```sh
+brew remove clojure-lsp # if you have old clojure-lsp installed via brew
+brew install clojure-lsp/brew/clojure-lsp-native
+which clojure-lsp
+# /opt/homebrew/bin/clojure-lsp
+clojure-lsp --version
+# clojure-lsp 2026.07.06-14.34.19
+# clj-kondo 2026.05.26-SNAPSHOT
+```
+
+> [!NOTE] 這樣裝完並不能解析: `~/.emacs.d/init.el` clojure有指定的目錄結構和相關檔案，要符合後lsp才會啟動
 
 ## ios
 

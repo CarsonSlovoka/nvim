@@ -130,6 +130,7 @@ vim.api.nvim_create_user_command(
   }
 )
 
+-- Note: lsp.enable的項目名稱對應 `fd . -d1 ../lsp/ -a`, 而當中的lua回傳值要是table, 正確來說為: `@type vim.lsp.Config`
 vim.lsp.enable({
   'pyright',
   'gopls',
@@ -147,7 +148,9 @@ vim.lsp.enable({
   -- "sqls",      -- 用處其實不高，可以考慮移除
   "sourcekit", -- swift
 
-  "denols"     -- deno
+  "denols",    -- deno
+
+  -- "clojure_lsp", -- lisp
 })
 
 -- vim.lsp.config('svelte',

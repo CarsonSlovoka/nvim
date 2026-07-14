@@ -32,6 +32,7 @@ local parsers = {
   "lua",
   "go", "gotmpl",
   "python",
+  -- "commonlisp", -- `:TSInstallFromGrammar commonlisp`  -- Warn: 需要brew install node先, 但效果不好. 所以不用
 
   "xml",
   "css",
