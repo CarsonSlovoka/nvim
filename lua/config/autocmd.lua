@@ -1191,4 +1191,20 @@ vim.api.nvim_create_user_command(
   }
 )
 
+vim.api.nvim_create_autocmd({ "BufWritePre" },
+  {
+    -- buf = buf,
+    desc = "call equalprg for fmt",
+    callback = function()
+      if not M.autoReformat then
+        return
+      end
+      if vim.bo.equalprg and vim.bo.equalprg ~= "" then
+        print("auto fmt from vim.bo.equalprg")
+        vim.cmd('normal! m"gg=G`"`') -- 先在原本的地方做標籤，gg=G之後再回到原本的標籤位置
+      end
+    end
+  }
+)
+
 return M
