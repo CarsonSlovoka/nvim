@@ -105,6 +105,7 @@ local function load_external_dap()
   }
 
   require("external.dap._tutorial") -- 教學測試用
+  require("external.dap.terminal")
   require("external.dap.dart")
   require("external.dap.lua")
   require("external.dap.opentype")

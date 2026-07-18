@@ -97,6 +97,17 @@ end
 -- dap.configurations.python = {} -- 如果想要保留原始的配置，可以用table.insert往後增加
 for _, config in ipairs({
   {
+    type = "terminal",
+    exe = "python",
+    name = "[term] python <file>",
+  },
+  {
+    type = "terminal",
+    exe = "python",
+    name = "[term] python <file> [args]",
+    args = utils.dap.ask_args,
+  },
+  {
     type = "python",
     request = 'launch',
     name = "python3 <file>",

@@ -19,6 +19,13 @@ function M.input_arguments(prompt)
   end
 end
 
+---@param prompt string?
+---@return string[]
+function M.ask_args(prompt)
+  local input = vim.fn.input(prompt or "args: ")
+  return vim.split(input, "%s+", { trimempty = true, })
+end
+
 ---@return string[]
 function M.get_args(config)
   local args = config.args or {}
