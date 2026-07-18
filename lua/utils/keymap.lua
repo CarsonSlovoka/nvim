@@ -8,7 +8,7 @@ function M.keymap(mode, key, cmd, opts)
   -- opts.remap = true  -- 往下映射
   -- opts.remap = false -- 不再往下傳 (預設)
 
-  opts.silent = opts.silent ~= nil and opts.silent or true
+  opts.silent = opts.silent ~= false -- default: true
   vim.keymap.set(mode, key, cmd, opts)
 end
 
