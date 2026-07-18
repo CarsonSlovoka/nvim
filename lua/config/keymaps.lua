@@ -48,6 +48,13 @@ map("i", "<A-j>", '<Down>', { desc = "move down" })
 map("i", "<A-k>", '<Up>', { desc = "move up" }) -- 避免和C-K digraphs 重複到
 map("i", "<A-l>", '<Right>', { desc = "move right" })
 
+-- if vim.env.TERM_PROGRAM ~= "Apple_Terminal" then
+-- 將<S-CR>與<M-CR>都加上，能用的就能用，不能用也沒差
+-- end
+map("i", "<S-CR>", "<C-o>O", { desc = "Insert a new line above" }) -- Tip: <S-CR>有的終端機沒有支持 `:lua print(vim.fn.keytrans(vim.fn.getcharstr()))` 接著按下熱鍵就能看到熱鍵名稱了
+-- Note: 👆 目前mac的Terminal沒也沒支持改鍵: `printf '\033[13;2u' | pbcopy` 主要是<CR>找不到
+map("i", "<M-CR>", "<C-o>O", { desc = "Insert a new line above" })
+
 map("t", "<leader><leader>c",
   function() vim.cmd("Clear") end, -- git log -1 65a8fba -L3491,+11:commands.lua
   { desc = "Clears the terminal's screen and can no longer use scrollback to find the previous input", }
