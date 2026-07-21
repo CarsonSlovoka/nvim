@@ -1,3 +1,7 @@
+if not vim.g.__load__plugin_telescope__ then
+  return
+end
+
 local completion = require("utils.complete")
 local cmdUtils = require("utils.cmd")
 

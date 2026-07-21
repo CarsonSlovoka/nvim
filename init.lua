@@ -104,6 +104,7 @@ vim.pack.add({
 vim.g.__load__plugin_nvim_plugins__ = true -- plugin/nvim.plugins.lua
 -- nvim -u ~/test.lua --cmd ":lua vim.g.__load__plugin_nvim_plugins__ = true"    #   👈 如果真的想要載入，也可以用以下的方法. 或者寫在-u中的檔案也行
 vim.g.__load__plugin_lualine__ = true
+vim.g.__load__plugin_telescope__ = true
 
 local function install_nvimWebDevicons()
   -- Caution: 有順序性不能將此設定寫在plugin之中
