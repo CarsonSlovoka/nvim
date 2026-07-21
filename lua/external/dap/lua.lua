@@ -66,17 +66,32 @@ require("dap").adapters.nvim = function(_, config)
 
   local cmd = { "nvim",
     "", "", -- 此為-u的保留
-    "-l", script_name }
+    "", "", -- -l", script_name,
+  }
+  local lua_found = false
+  local u_found = false
   local args = utils.dap.get_args(config)
   for index, name in ipairs(args) do
-    if name == "-u" then
-      -- -u init.lua 這個需要加在-l之前才可以
-      cmd[2] = "-u"
-      cmd[3] = args[index + 1]
+    if name == "-u" or name == "-l" then
+      if name == "-u" then
+        cmd[2] = "-u"
+        cmd[3] = args[index + 1]
+        u_found = true
+      else
+        cmd[4] = "-l"
+        cmd[5] = args[index + 1]
+        lua_found = true
+      end
       args[index] = "" -- 清空
       args[index + 1] = ""
-      break
+      if u_found and lua_found then
+        break
+      end
     end
+  end
+  if not lua_found then
+    cmd[4] = "-l"
+    cmd[5] = script_name
   end
   vim.list_extend(cmd, args)
   vim.api.nvim_input(string.format([[%s <CR>]], table.concat(cmd, " ")))
