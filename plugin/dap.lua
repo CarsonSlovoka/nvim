@@ -122,6 +122,8 @@ local function load_external_dap()
   require("external.dap.html")
   require("external.dap.applescript")
 
+  require("external.dap.oil")
+
 
   vim.api.nvim_create_user_command("DapSetBreakpoints",
     function()
