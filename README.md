@@ -361,7 +361,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │         ├── nvim-dap-ui                   -- ✅ 取得 require"dapui" (v4.0.0... bc81f8d)
 │   │         ├── nvim-nio                      -- ✅ 此為nvim-dap-ui需要用到的插件 (v1.10.1 21f5324)
 │   │         ├── nvim-dap-python               -- ✅ debug adapter: python ( 3428282 )
-│   │         ├── one-small-step-for-vimkind    -- ✅ debug adapter: lua ( 330049a )
+│   │         ├── one-small-step-for-vimkind    -- ✅ debug adapter: lua ( 330049a ) (require("osv"))
 │   │         └── nvim-dap-go                   -- ✅ debug adapter: go ( 8763ced )
 │   ├── ios/start/
 │   │         └── ~~xcodebuild.nvim~~           -- swift debug相關 (就算要debug swift的專案) e0d54db
@@ -1310,6 +1310,30 @@ git clone https://github.com/mfussenegger/nvim-dap-python.git ~/.config/nvim/pac
 ```sh
 git clone https://github.com/jbyuki/one-small-step-for-vimkind.git ~/.config/nvim/pack/debug/start/one-small-step-for-vimkind
 ```
+
+簡單的dubug教學
+
+1. 寫一個測試腳本
+    ```lua
+    -- ~/temp.lua
+
+    print(vim.inspect(_G.arg))
+    local function add(a, b)
+      local result = a + b
+      return result
+    end
+
+    local value = add(tonumber(_G.arg[1] or 123), 20)
+    print("result: ", value)
+    ```
+2. 用nvim打開此文件
+3. 按F5    先選擇: `launch server` (之後終端機會執行後等待)
+    - 可以打上參數，例如:
+        - `-u init.lua 85 para2` (-u 不是必須給的，如果沒有額外要載入的初始化腳本，則可以略忽)
+        - `85 para2`
+4. (可選) 加入想要的中斷點 (F9 (dap.toggle_breakpoint))
+5. 再按F5,  選擇: `Attach to running Neovim instance.`: 成功之後即可開始debug
+
 
 ###### [local-lua-debugger-vscode](https://github.com/tomblind/local-lua-debugger-vscode)
 

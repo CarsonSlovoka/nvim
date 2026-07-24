@@ -97,7 +97,7 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "one-small-step-for-vimkind": {
-      "rev": "330049a237635b7cae8aef4972312e6da513cf91",
+      "rev": "1af6ffb9b5229a856e8090fa2f690e0931a5aace",
       "src": "https://github.com/jbyuki/one-small-step-for-vimkind"
     },
     "pantran.nvim": {

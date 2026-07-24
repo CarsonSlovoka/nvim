@@ -180,7 +180,7 @@ vim.defer_fn(function()
     "https://github.com/rcarriga/nvim-dap-ui",
     "https://github.com/nvim-neotest/nvim-nio",
     "https://github.com/mfussenegger/nvim-dap-python",
-    "https://github.com/jbyuki/one-small-step-for-vimkind",
+    "https://github.com/jbyuki/one-small-step-for-vimkind", -- require("osv") 會用到
     "https://github.com/leoluz/nvim-dap-go",
   })
   load_dapui()
