@@ -76,7 +76,7 @@ m.setup({
         ["<C-h>"] = actions.preview_scrolling_left,
         ["<C-l>"] = actions.preview_scrolling_right,
 
-        ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽
+        -- ["<C-p>"] = require('telescope.actions.layout').toggle_preview, -- 切換預覽. 這個預設可以往上選(move_selection_previous). 換成其它熱鍵不好. 如果要toggle_preview還是可以切換到n去使用
         ["<C-x>"] = function(
         -- prompt_bufnr
         )
