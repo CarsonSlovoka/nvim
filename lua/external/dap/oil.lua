@@ -13,7 +13,9 @@ dap.configurations.oil = {
   {
     type = "none", -- 如果少了，或者type找不到定義會得到錯誤: `Config references missing adapter `nil` ...`
     name = "📁 Copy the absolute path of the directory to the clipboard",
-    function()
+    -- my_attr = function () return {} end, -- 反回一個array, 也可以config曉得此屬性
+    -- cb = function () return function () end end, -- 如果真得想要回傳函數可以讓回傳值是函數.
+    function() -- dap.configurations 如果發現是函數會直接執行
       local path = require("oil").get_current_dir()
       copy_path(path)
     end
