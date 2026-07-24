@@ -11,7 +11,7 @@ end
 
 dap.configurations.oil = {
   {
-    type = "none",
+    type = "none", -- 如果少了，或者type找不到定義會得到錯誤: `Config references missing adapter `nil` ...`
     name = "📁 Copy the absolute path of the directory to the clipboard",
     function()
       local path = require("oil").get_current_dir()
