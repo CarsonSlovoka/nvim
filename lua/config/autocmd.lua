@@ -690,7 +690,10 @@ function M.setup(opts)
 
   local predefined_extensions = {
     -- 以下內容定義在vim.filetype.add({...})之中
-    birdfont = true
+    birdfont = true,
+  }
+  local predefined_fileteyp = {
+    gdscript = true,
   }
 
   create_autocmd(
@@ -705,7 +708,7 @@ function M.setup(opts)
           vim.o.fileformat = "unix"
         end
         local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
-        if predefined_extensions[ext] then
+        if predefined_extensions[ext] or predefined_fileteyp[vim.bo.filetype] then
           return
         end
         vim.opt_local.expandtab = true -- 使用空白代替Tab :set et?  -- :set expandtab -- :set et
