@@ -9,6 +9,13 @@ local function copy_path(path)
   }, false, {})
 end
 
+local function oil_get_selected_path()
+  vim.cmd("normal! viWy")
+  local basename = vim.fn.getreg('"')
+  local dir_path = require("oil").get_current_dir()
+  return dir_path .. basename
+end
+
 dap.configurations.oil = {
   {
     type = "none", -- 如果少了，或者type找不到定義會得到錯誤: `Config references missing adapter `nil` ...`
@@ -25,9 +32,17 @@ dap.configurations.oil = {
     name = "📄 Copy the absolute path of the file to the clipboard",
     function()
       vim.cmd("normal! viWy")
-      local basename = vim.fn.getreg('"')
-      local dir_path = require("oil").get_current_dir()
-      copy_path(dir_path .. basename)
+      copy_path(oil_get_selected_path())
     end
   },
+  {
+    type = "none",
+    name = "open (Run System)",
+    function()
+      local _, err = vim.ui.open(oil_get_selected_path())
+      if err then
+        vim.notify("❌ Unable to open file: " .. err, vim.log.levels.ERROR)
+      end
+    end
+  }
 }
