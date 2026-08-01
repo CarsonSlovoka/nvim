@@ -5615,9 +5615,9 @@ end, {
 vim.api.nvim_create_user_command('Nostuff', function(opts)
   local cmd = ""
   if (opts.fargs[1] or "no") == "no" then
-    cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw ls=0 ch=1"
+    cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw   showtabline=0 ls=0 ch=1"
   else
-    cmd = "set cursorcolumn cursorline foldenable relativenumber nolazyredraw ls=2 ch=1"
+    cmd = "set cursorcolumn   cursorline   foldenable   relativenumber   nolazyredraw showtabline=1 ls=2 ch=1"
   end
   -- Note: ls為laststutus  `:help laststatus`. set laststatus={0, 1, 2(default), 3}
   -- vim.opt.cmdheight = 0  -- alias: `ch`
