@@ -119,6 +119,7 @@ local function load_external_dap()
 
   require("external.dap.keymap")
   require("external.dap.sh")
+  require("external.dap.zsh")
   require("external.dap.perl")
   require("external.dap.html")
   require("external.dap.applescript")
