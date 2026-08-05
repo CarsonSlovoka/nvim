@@ -115,6 +115,10 @@
     "telescope.nvim": {
       "rev": "3333a52ff548ba0a68af6d8da1e54f9cd96e9179",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
+    },
+    "testing.nvim": {
+      "rev": "5f519dcc16233638ce9d49c35588cb9391e35982",
+      "src": "https://github.com/CarsonSlovoka/testing.nvim"
     }
   }
 }
