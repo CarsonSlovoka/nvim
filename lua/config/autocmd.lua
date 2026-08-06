@@ -694,7 +694,7 @@ function M.setup(opts)
   }
 
   -- 在 `nvim -u NORC -l` 的情況下其它地方的lua檔案不會自動載入, 但是NORC可以載 plugin/, ftplugin/, after/ 下的內容都還會有用
-  local predefined_fileteyp = {
+  local predefined_filetype = {
     gdscript = true,
     make = true,
   }
@@ -713,7 +713,7 @@ function M.setup(opts)
           vim.o.fileformat = "unix"
         end
         local ext = string.lower(vim.fn.fnamemodify(e.file, ":e"))
-        if predefined_extensions[ext] or predefined_fileteyp[vim.bo.filetype] then
+        if predefined_extensions[ext] or predefined_filetype[vim.bo.filetype] then
           return
         end
         vim.opt_local.expandtab = true -- 使用空白代替Tab :set et?  -- :set expandtab -- :set et
