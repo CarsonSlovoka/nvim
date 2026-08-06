@@ -1,0 +1,59 @@
+-- Important: 以下都不需要自己寫, nvim 中都常用的filetype, 都有預設的 ftplugin
+-- https://github.com/neovim/neovim/blob/master/runtime/ftplugin/make.vim
+-- 如果是用brew來安裝nvim，可能是在以下的位置: /opt/homebrew/Cellar/neovim/0.12.2/share/nvim/runtime/ftplugin/make.vim
+
+-- -- 以下可以抓事件的更動, 但是在使用nvim下手動執行command時才有用，抓不到以前的設定
+-- -- local group = vim.api.nvim_create_augroup("DebugExpandtab", {
+-- --   clear = true,
+-- -- })
+-- --
+-- -- vim.api.nvim_create_autocmd("OptionSet", {
+-- --   group = group,
+-- --   pattern = "expandtab",
+-- --   callback = function()
+-- --     local result = vim.api.nvim_exec2(
+-- --       "verbose setlocal expandtab?",
+-- --       { output = true }
+-- --     ).output
+-- --
+-- --     vim.notify(
+-- --       table.concat({
+-- --         "🔍 expandtab 被修改",
+-- --         "file: " .. vim.api.nvim_buf_get_name(0),
+-- --         "old: " .. tostring(vim.v.option_old),
+-- --         "new: " .. tostring(vim.v.option_new),
+-- --         "scope: " .. tostring(vim.v.option_type),
+-- --         "command: " .. tostring(vim.v.option_command),
+-- --         "",
+-- --         result,
+-- --       }, "\n"),
+-- --       vim.log.levels.WARN
+-- --     )
+-- --   end,
+-- -- })
+--
+-- -- :verbose setlocal expandtab?
+-- vim.bo.expandtab = false -- Tab
+-- vim.bo.tabstop = 4
+-- vim.bo.softtabstop = 4
+-- vim.bo.shiftwidth = 4
+--
+--
+-- vim.bo.fileformat = "unix"
+-- vim.bo.fileencoding = "utf-8"
+--
+--
+-- -- 如果設定的值被覆蓋，就只能依靠event再蓋回去，不過最好是找出是誰覆蓋的
+-- -- vim.api.nvim_create_autocmd({ "BufEnter" }, {
+-- --   buffer = 0,                -- 0 means the current active buffer
+-- --   callback = function()
+-- --     vim.bo.expandtab = false -- Tab
+-- --     vim.bo.tabstop = 4
+-- --     vim.bo.softtabstop = 4
+-- --     vim.bo.shiftwidth = 4
+-- --
+-- --
+-- --     vim.bo.fileformat = "unix"
+-- --     vim.bo.fileencoding = "utf-8"
+-- --   end,
+-- -- })

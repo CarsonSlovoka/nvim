@@ -692,16 +692,21 @@ function M.setup(opts)
     -- 以下內容定義在vim.filetype.add({...})之中
     birdfont = true,
   }
+
+  -- 在 `nvim -u NORC -l` 的情況下其它地方的lua檔案不會自動載入, 但是NORC可以載 plugin/, ftplugin/, after/ 下的內容都還會有用
   local predefined_fileteyp = {
     gdscript = true,
+    make = true,
   }
 
   create_autocmd(
     "FileType",
     {
+      -- TODO: nvim 中都常用的filetype, 都有預設的 ftplugin  https://github.com/neovim/neovim/blob/master/runtime/ftplugin/make.vim 所以可以考慮不要再寫
+      -- 如果是用brew來安裝nvim，可能是在以下的位置: /opt/homebrew/Cellar/neovim/0.12.2/share/nvim/runtime/ftplugin/make.vim
+
       group = groupName.editorconfig,
       pattern = "*", -- :set ft?
-
       callback = function(e)
         if not vim.bo.readonly and vim.o.fileformat ~= "unix" then
           print(string.format("set fileformat from `%s` to `unix`", vim.o.fileformat)) -- 提示使用者有被自動轉換，使其如果不滿意還可以自己再轉回去

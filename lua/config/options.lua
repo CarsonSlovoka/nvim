@@ -47,6 +47,8 @@ vim.g.terminal_color_15 = '#ffffff'
 function options.setup()
   -- vim.o 與 vim.opt 是相同的只是數值的表達方式不同, vim.o是純字串 :help vim.opt
 
+  -- vim.g.editorconfig = false -- 禁用 .editorconfig
+
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
   vim.g.mapleader = "\\"
 

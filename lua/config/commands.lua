@@ -5636,6 +5636,50 @@ end, {
   end
 })
 
+vim.api.nvim_create_user_command("WhoSetOption", function(opts)
+  local info = vim.api.nvim_get_option_info2(opts.fargs[1], {
+    buf = 0,
+  })
+
+  local result = {
+    value = vim.bo.expandtab,
+    buffer = vim.api.nvim_buf_get_name(0),
+    filetype = vim.bo.filetype,
+    option_info = info,
+  }
+
+  if info.last_set_sid and info.last_set_sid > 0 then
+    result.script_info = vim.fn.getscriptinfo({
+      sid = info.last_set_sid,
+    })
+    vim.cmd("edit " .. result.script_info[1].name)
+  end
+
+  vim.print(result)
+end, {
+  desc = "🔍 顯示設定 某可選項 的來源. 類似: `:verbose setlocal xxx?`",
+  nargs = 1,
+  complete = "option",
+})
+
+
+vim.api.nvim_create_user_command("FindConfig", function(opts)
+  local results = vim.fs.find(opts.fargs[1], {
+    upward = true,
+    path = vim.fn.expand("%:p:h"),
+  })
+  print(vim.inspect(results))
+
+  vim.cmd("edit " .. results[1]) -- 直接開啟編輯
+end, {
+  desc = "Find the location of a file",
+  nargs = 1,
+  complete = function(arg_lead)
+    local cmp_list = { ".editorconfig", ".gitconfig" }
+    return #arg_lead > 0 and vim.fn.matchfuzzy(cmp_list, arg_lead) or cmp_list
+  end
+})
+
 
 -- print(vim.inspect(get_font_map()))
 
