@@ -391,7 +391,7 @@ function bookmark.show()
         local selection = action_state.get_selected_entry()
         if selection and selection.value then
           local bk = selection.value
-          print("select " .. bk.name)
+          -- print("select " .. bk.name)
           bookmark.update(bk.name, { atime = os.time() })
 
           -- 打開檔案並跳轉到行號（若行號存在）
