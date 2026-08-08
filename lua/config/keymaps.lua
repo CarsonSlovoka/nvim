@@ -132,6 +132,13 @@ map("n", "<leader>git",
   end,
   { desc = "cd %:h | tabnew | setlocal buftype=nofile | term lazygit -sm half" }
 )
+map("n", "<leader>Gf", function()
+    vim.cmd("Gitfiles") -- `git show -p f62ce64e:lua/config/commands.lua | bat -l lua -P -r 3953:4104`
+  end,
+  {
+    desc = 'git ls-files | fzf --preview "..."'
+  }
+)
 
 map("n", "<leader>ql", function()
   -- local current_qf_idx = vim.fn.getqflist({ id = 0, idx = 1 }).idx -- 這個得到的都是1
