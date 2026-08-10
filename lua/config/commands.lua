@@ -34,6 +34,14 @@ local function openCurrentDirWithFoot()
   end
 end
 
+---@return string
+local function oil_get_selected_path()
+  vim.cmd("normal! viWy")
+  local basename = vim.fn.getreg('"')
+  local dir_path = require("oil").get_current_dir()
+  return dir_path .. basename
+end
+
 
 --- 這個指令比較麻煩，因為還會牽扯到自動完成的事件，所以包裝在此函數
 local function create_user_command_jumps_to_qf_list()
@@ -4099,6 +4107,55 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
         "tab=0", -- 在新的tab開啟, 否則在當前的window開啟
         "cdToGitRoot=1",
       }
+    end
+  }
+)
+
+vim.api.nvim_create_user_command("Gitshafile", function(args)
+    local config = utils.cmd.get_cmp_config(args.fargs)
+    local sha = args.fargs[1] or "HEAD"
+    local diff_mode = config.diff == "1"
+    local cur_basename
+    local filetype
+    if vim.bo.filetype == "oil" then
+      vim.cmd("lcd " .. require("oil").get_current_dir())
+      local path = oil_get_selected_path()
+      cur_basename = vim.fn.fnamemodify(path, ":t")
+      filetype = vim.fn.fnamemodify(path, ":e") -- 用檔案的附檔名來嘗試當成filetype
+    else
+      vim.cmd("lcd %:h")
+      cur_basename = vim.fn.expand("%:t")
+      filetype = vim.bo.filetype
+    end
+
+    vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+    if vim.v.shell_error ~= 0 then
+      vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+      return
+    end
+
+    if diff_mode then vim.cmd("diffthis") end
+
+    vim.cmd(string.format("vnew | setlocal filetype=%s buftype=nofile noswapfile bufhidden=wipe nobuflisted", filetype))
+    vim.cmd("file " .. sha) -- 雖然不能存，但還是給一個名稱
+
+
+    vim.cmd(string.format("%%!git show -p %s:./%s", sha, cur_basename)) -- Warn: 已經有\n時，可以會影響到. 並非那麼宗於原本
+    if diff_mode then vim.cmd("diffthis") end
+  end,
+  {
+    -- desc = "檢視當前文件在某個時期的內容(有支援diff比較)",
+    desc = "View the content of the current file at a certain period (supports diff comparison)",
+    nargs = "*",
+    complete = function(arg_lead, cmd_line)
+      local argc = #(vim.split(cmd_line, "%s+")) - 1
+      if argc == 1 then
+        return {
+          "HEAD",
+        }
+      elseif argc == 2 then
+        return { "diff=1" }
+      end
     end
   }
 )
