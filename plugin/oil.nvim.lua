@@ -80,6 +80,13 @@ require("oil").setup({
     ["gx"] = "actions.open_external",
     ["g."] = { "actions.toggle_hidden", mode = "n" },
     ["g\\"] = { "actions.toggle_trash", mode = "n" },
+
+    ["<leader>a"] = {
+      desc = "File actions by extension",
+      callback = function()
+        require("external.oil-actions.actions").file_actions()
+      end,
+    },
   },
   -- Set to false to disable all of the above keymaps
   use_default_keymaps = false, -- Caution: 當有改過就要用成false, 用為true時 keymap還會包含原本oil的預設
