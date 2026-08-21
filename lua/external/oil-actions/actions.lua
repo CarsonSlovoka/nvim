@@ -24,12 +24,13 @@ local actions_by_ext = {
 ---取得目前游標下的完整路徑（僅在 oil buffer 有效）
 ---@return string|nil path, string|nil err
 local function get_cursor_path()
+  -- print(vim.inspect(require("oil").get_cursor_entry()))
   local entry = oil.get_cursor_entry()
   if not entry then
     return nil, "no entry under cursor"
   end
-  if entry.type ~= "file" then
-    return nil, ("not a regular file (type = %s)"):format(entry.type)
+  if entry.type ~= "file" and entry.type ~= "directory" then
+    return nil, ("not a regular file or directory (type = %s)"):format(entry.type)
   end
   local dir = oil.get_current_dir()
   if not dir then
@@ -110,10 +111,19 @@ local function file_actions()
   local name = vim.fn.fnamemodify(path, ":t")
   local ext = (name:match("%.([^%.]+)$") or ""):lower()
 
-  local root_items = actions_by_ext[ext]
-  if not root_items or #root_items == 0 then
-    vim.notify(("No actions defined for .%s"):format(ext), vim.log.levels.INFO)
-    return
+
+  -- local root_items = actions_by_ext[ext] or {}
+  local root_items = vim.deepcopy(actions_by_ext[ext]) or {}
+  -- if not root_items or #root_items == 0 then
+  --   vim.notify(("No actions defined for .%s"):format(ext), vim.log.levels.INFO)
+  --   return
+  -- end
+
+  -- 將符合的entry.type也加入
+  local entry = oil.get_cursor_entry()
+  if entry.type == "directory" or entry.type == "file" then
+    -- Warn: 如果沒有copy table, 那麼原始項目會越加越多(每次都會新增)
+    vim.list_extend(root_items, require(string.format("external.oil-actions.__%s__", entry.type)))
   end
 
   show_menu(root_items, path, ("Actions · %s"):format(name))
