@@ -5,6 +5,7 @@ local completion = require("utils.complete")
 local arrayUtils = require("utils.array")
 local extmarkUtils = require("utils.extmark")
 local utils = require("utils.utils")
+local kv = require("kvcomplete")
 
 -- https://github.com/neovim/neovim/tree/a167800/runtime/pack/dist/opt
 vim.cmd("packadd cfilter") -- :help cfilter -- 可以使用Cfilter, Lfilter -- 它不是真得刪除，而是在創件新的列表，可以用:cnewer :colder 切換
@@ -4110,28 +4111,40 @@ vim.api.nvim_create_user_command("Gitfiles", function(args)
     end
   }
 )
-vim.api.nvim_create_user_command("Gitlsfiles", function()
-    if vim.bo.filetype == "oil" then
-      vim.cmd("lcd " .. require("oil").get_current_dir())
-      local cur_path = utils.oil.get_cursor_path()
-      if cur_path then
-        vim.cmd("lcd " .. vim.fn.fnamemodify(cur_path, ":h:p"))
+
+kv.create("Gitlsfiles", function(opts)
+    local config = vim.tbl_deep_extend("force", { cd = true, abspath = true }, opts.kv)
+    if config.cd then
+      if vim.bo.filetype == "oil" then
+        vim.cmd("lcd " .. require("oil").get_current_dir())
+        local cur_path = utils.oil.get_cursor_path()
+        if cur_path then
+          vim.cmd("lcd " .. vim.fn.fnamemodify(cur_path, ":h:p"))
+        end
+      else
+        vim.cmd("lcd %:h")
       end
-    else
-      vim.cmd("lcd %:h")
+      local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+      if vim.v.shell_error ~= 0 then
+        vim.notify("Not in a Git repository", vim.log.levels.ERROR)
+        return
+      end
+      vim.cmd("lcd " .. git_root)
     end
-    local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
-    if vim.v.shell_error ~= 0 then
-      vim.notify("Not in a Git repository", vim.log.levels.ERROR)
-      return
-    end
-    vim.cmd("lcd " .. git_root)
     vim.cmd(":tabnew | setlocal buftype=nofile noswapfile")
-    vim.cmd([[%!git ls-files | xargs realpath]])
+    if config.abspath then
+      vim.cmd([[%!git ls-files | xargs realpath]])
+    else
+      vim.cmd([[%!git ls-files]])
+    end
     vim.cmd([[normal! ggmaGmb3o]]) -- 方便使用 :'a,'bg/xxx/t$ 在頭尾加入標籤, 同時也在最尾插入3列
   end,
   {
     desc = ":%!git ls-files | xargs realpath",
+    keys = {
+      cd = "bool",
+      abspath = "bool",
+    }
   }
 )
 

@@ -20,6 +20,7 @@ vim.opt.packpath = vim.opt.runtimepath:get()
 -- end
 
 -- config
+vim.pack.add({ "https://github.com/CarsonSlovoka/kvcomplete.nvim" }) -- 要寫在用到之前. 寫在plugin中會等init.lua完才做
 require("config.sign_define")
 require("config.options").setup()
 require "config.filetype".setup {

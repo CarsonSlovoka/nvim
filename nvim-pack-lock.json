@@ -44,6 +44,10 @@
       "rev": "259357fa4097e232730341fa60988087d189193a",
       "src": "https://github.com/lukas-reineke/indent-blankline.nvim"
     },
+    "kvcomplete.nvim": {
+      "rev": "618627e9c60e34bef9c9b31be661575107f6ba3e",
+      "src": "https://github.com/CarsonSlovoka/kvcomplete.nvim"
+    },
     "leap.nvim": {
       "rev": "b960d5038c5c505c52e56a54490f9bbb1f0e6ef6",
       "src": "https://codeberg.org/andyg/leap.nvim"
