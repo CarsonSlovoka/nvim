@@ -7,6 +7,7 @@ local utils = require("utils.utils")
 ---@field type "terminal"
 ---@field exe string bash, go, perl, python, ...
 ---@field name string prompt
+---@field wslpath boolean? if true call `wslpath -w <file>`
 ---@field autocd boolean? (default: true)
 ---@field args? string[]|fun():string[]
 
@@ -40,7 +41,10 @@ dap.configurations.%s = {
     vim.cmd.lcd(vim.fn.fnameescape(script_dir))
   end
 
-  local cmd = { config.exe, script_name }
+  local cmd = {
+    config.exe,
+    config.wslpath and string.format("$(wslpath -w %s)", script_name) or script_name
+  }
   vim.list_extend(cmd, utils.dap.get_args(config))
 
   -- 暫時先不加
