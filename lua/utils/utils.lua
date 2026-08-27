@@ -9,6 +9,7 @@ return {
   flag = require "utils.flag",
   http = require "utils.http",
   lmstudio = require "utils.lmstudio",
+  oil = require "utils.oil",
   os = require "utils.os",
   range = require "utils.range",
   register = require "utils.register",
