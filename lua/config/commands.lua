@@ -4148,6 +4148,44 @@ kv.create("Gitlsfiles", function(opts)
   }
 )
 
+vim.api.nvim_create_user_command("Gz", function(opts)
+    --- 找匹配項目的上下N列, 呈現在新的臨時視窗
+    if opts.fargs[1] == "-h" then
+      cmdUtils.showHelpAtQuickFix({
+        [[:let x = execute('g/bind/z#.3')      | new | setlocal buftype=nofile noswapfile | put =x]],
+        [[:let x = execute('''<,''>g/create/') | new | setlocal buftype=nofile noswapfile | put =x]],
+      })
+      return
+    end
+
+    local cmd = string.format(
+      [[:let x = execute('%s%s') | new | setlocal buftype=nofile noswapfile | put =x<CR>]],
+      -- opts.range ~= 0 and [['<,'>]] or "", -- 這是錯的，要用'' ''才會對
+      opts.range ~= 0 and [[''<,''>]] or "",
+      opts.fargs[1]
+    )
+    local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+    vim.fn.feedkeys(keys, "n")
+  end,
+  {
+    desc = ":let x = execute('%g/.../z#.3') | new | put =x",
+    range = true,
+    nargs = 1,
+    complete = function()
+      return {
+        -- # 顯示列號
+        -- . 當前匹配列顯示
+        -- N 上下總共取n列
+        "g/bind/z#.3",
+        "g/bind/z3",
+
+        [[g/\v(platform\=|^[-+])/p]],
+        [[v/\v(platform\=|^[-+])/p]], -- 對不是 platform= 或開頭 +- 的列執行print -- v 也能用g! 取代
+      }
+    end
+  }
+)
+
 vim.api.nvim_create_user_command("Gitshafile", function(args)
     local config = utils.cmd.get_cmp_config(args.fargs)
     local sha = args.fargs[1] or "HEAD"
