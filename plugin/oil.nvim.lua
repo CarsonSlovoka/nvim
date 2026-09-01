@@ -1,6 +1,6 @@
 vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
-
-require("oil").setup({
+local oil = require("oil")
+oil.setup({
   -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
   -- Set to false if you want some other plugin (e.g. netrw) to open when you edit directories.
   default_file_explorer = true,
@@ -87,6 +87,32 @@ require("oil").setup({
         require("external.oil-actions.actions").file_actions()
       end,
     },
+    ["gd"] = {
+      callback = function()
+        if vim.bo.modified then
+          vim.notify(
+            "⚠️ Please save or cancel changes in Oil first",
+            vim.log.levels.WARN
+          )
+          return
+        end
+
+        local bufnr = vim.api.nvim_get_current_buf()
+
+        vim.b[bufnr].oil_dirs_only =
+            not vim.b[bufnr].oil_dirs_only
+
+        -- 重新載入目前的 Oil buffer
+        vim.cmd.edit({ bang = true })
+
+        local message = vim.b[bufnr].oil_dirs_only
+            and "📁 Show only folders"
+            or "📄📁 Show files and folders"
+
+        vim.notify(message)
+      end,
+      desc = "Switch to show only folders",
+    },
   },
   -- Set to false to disable all of the above keymaps
   use_default_keymaps = false, -- Caution: 當有改過就要用成false, 用為true時 keymap還會包含原本oil的預設
@@ -99,8 +125,26 @@ require("oil").setup({
       return m ~= nil
     end,
     -- This function defines what will never be shown, even when `show_hidden` is set
+    ---@param name string
+    ---@param bufnr integer
+    ---@return boolean false 不隱藏, true 隱藏
     is_always_hidden = function(name, bufnr)
-      return false
+      if not vim.b[bufnr].oil_dirs_only then
+        -- 未啟用toggle dir時，預設為顯示
+        return false
+      end
+
+      -- 除了dir其它都隱藏
+      local dir = oil.get_current_dir(bufnr)
+      if not dir then
+        return false
+      end
+
+      local path = vim.fs.joinpath(dir, name)
+      local stat = vim.uv.fs_stat(path)
+
+      -- 不是資料夾，或者無法取得資訊時，將其隱藏
+      return not stat or stat.type ~= "directory"
     end,
     -- Sort file names with numbers in a more intuitive order for humans.
     -- Can be "fast", true, or false. "fast" will turn it off for large directories.
