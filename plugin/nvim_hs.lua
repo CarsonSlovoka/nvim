@@ -1,4 +1,4 @@
-if not vim.fn.executable('hs') then
+if vim.fn.executable('hs') == 0 then
   return
 end
 
