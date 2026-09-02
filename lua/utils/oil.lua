@@ -8,7 +8,7 @@ function M.get_cursor_path()
   if entry.type ~= "file" and entry.type ~= "directory" then
     return nil, ("not a regular file or directory (type = %s)"):format(entry.type)
   end
-  local dir = oil.get_current_dir()
+  local dir = require("oil").get_current_dir()
   if not dir then
     return nil, "cannot get current oil directory"
   end
