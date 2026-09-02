@@ -428,7 +428,7 @@ require("config.autocmd").autoReformat = false
 ```
 :help runtimepath
 :help :packadd
-    pack/*/start/{name}
+    pack/*/opt/{name}
 ```
 
 ---
