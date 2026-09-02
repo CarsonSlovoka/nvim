@@ -41,6 +41,11 @@ dap.configurations.%s = {
     vim.cmd.lcd(vim.fn.fnameescape(script_dir))
   end
 
+  -- if vim.bo.filetype == "make" then
+  if config.exe == "make" then
+    script_name = "-f " .. script_name
+  end
+
   local cmd = {
     config.exe,
     config.wslpath and string.format("$(wslpath -w %s)", script_name) or script_name
