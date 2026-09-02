@@ -508,12 +508,14 @@ local function setup_normal()
             start_line, end_line = end_line, start_line
           end
 
+          local filetype = vim.bo.filetype ~= "dosbatch" and vim.bo.filetype or "bat" -- bat 不認識dosbatch的語言, 但用bat有效
+
           for _, cur_sha in ipairs({ sha, string.sub(sha, 1, 8) }) do
             -- `git show -p 87b3c8cf:./keymaps.lua | bat -l lua -P -r 1:10`
             local cmd = string.format("git show -p %s:%s" ..
               " | bat -l %s -P -r %d:%d",
               cur_sha, git_rel_path,
-              vim.bo.filetype,
+              filetype,
               start_line, end_line
             )
             table.insert(git_show_paths, cmd)
