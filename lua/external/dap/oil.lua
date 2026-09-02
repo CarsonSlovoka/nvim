@@ -1,4 +1,5 @@
 local dap = require("dap")
+local utils = require("utils.utils")
 
 local function copy_path(path)
   vim.fn.setreg("+", path)
@@ -46,3 +47,32 @@ dap.configurations.oil = {
     end
   }
 }
+
+if vim.fn.has("wsl") == 1 then
+  table.insert(dap.configurations.oil, {
+    type = "none",
+    name = "explorer.exe",
+    function()
+      if vim.fn.executable('explorer.exe') == 0 then
+        vim.api.nvim_echo({
+          { "❌ `explorer.exe` not found. try: ", "Normal" },
+          { [[export PATH="$PATH:/mnt/c/Windows/System32"]], "@label" },
+        }, true, {})
+        return
+      end
+
+      local path, err = utils.oil.get_cursor_path()
+      if err then
+        vim.notify("❌ Unable to open file: " .. err, vim.log.levels.ERROR)
+      end
+
+      local cmd = {
+        "explorer.exe",
+        string.format('"$(wslpath -w %q)"', path)
+      }
+      vim.cmd("topleft new | term")
+      vim.cmd("startinsert")
+      vim.api.nvim_input(string.format([[%s <CR>]], table.concat(cmd, " ")))
+    end
+  })
+end

@@ -1,4 +1,7 @@
 local M = {}
+
+---@return string|nil
+---@return string? err_msg
 function M.get_cursor_path()
   -- print(vim.inspect(require("oil").get_cursor_entry()))
   local entry = require("oil").get_cursor_entry()
