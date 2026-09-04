@@ -4186,6 +4186,56 @@ vim.api.nvim_create_user_command("Gz", function(opts)
   }
 )
 
+vim.api.nvim_create_user_command("YankCtx", function(opts)
+  -- :argdo g/.../let @A = printf("%s:%d\n%s\n\n", expand('%'), line('.'), join(getline(max([1, line('.')-2]), min([line('$'), line('.')+2])), "\n"))
+  local reg_name = opts.fargs[1]
+  local n = tonumber(opts.fargs[2]) or 1
+  local mods = opts.fargs[3] or ":."                -- 預設用相對路徑
+  local cur_row = vim.api.nvim_win_get_cursor(0)[1] -- 1-based. 此為當前命中的列
+  local last = vim.api.nvim_buf_line_count(0)
+  local start = math.max(1, cur_row - n)
+  local finish = math.min(last, cur_row + n)
+
+  -- ===== path/to/xxx:929 =====
+  --   924: hello
+  -- > 925:   world
+  --   926:
+  local fname = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), mods)
+  local out = { string.format("===== %s:%d =====", fname, cur_row) }
+
+  -- vim.fn.getline(start, finish)
+  local raw = vim.api.nvim_buf_get_lines(0, start - 1, finish, false)
+  for i, text in ipairs(raw) do
+    local lnum = start + i - 1
+    local mark = (lnum == cur_row) and ">" or " "
+    table.insert(out, string.format("%s%4d: %s", mark, lnum, text))
+  end
+  table.insert(out, "") -- 區塊之間空一行
+
+  -- 不要建buffer, 這樣沒辦法用在 g/.../ 上, 因為會相當於命中的項目都一直執行這個項目, 所以寫在暫存器中就好
+  -- vim.cmd(":new | setlocal buftype=nofile noswapfile")
+  -- vim.api.nvim_buf_set_lines(0, 0, -1, false, out)
+
+  if reg_name then
+    -- 大寫: 追加到 "x
+    vim.fn.setreg(string.upper(reg_name), out, "l")
+  end
+end, {
+  desc = "g/.../YankCtx a 2",
+  nargs = "*",
+  range = true,
+  complete = function(_, cmd_line)
+    local argc = #(vim.split(cmd_line, "%s+")) - 1
+    if argc == 1 then
+      -- return vim.fn.getcompletion(arg_lead, "help") -- 目前沒有暫存器能用
+      return { "A", "B", "Z" }
+    elseif argc == 2 then
+      return { "1", "2", "5" }
+    elseif argc == 3 then
+      return { ":.", ":p" }
+    end
+  end
+})
 vim.api.nvim_create_user_command("Gitshafile", function(args)
     local config = utils.cmd.get_cmp_config(args.fargs)
     local sha = args.fargs[1] or "HEAD"
