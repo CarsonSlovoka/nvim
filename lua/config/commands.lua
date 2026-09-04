@@ -4212,7 +4212,7 @@ vim.api.nvim_create_user_command("YankCtx", function(opts)
   end
   table.insert(out, "") -- 區塊之間空一行
 
-  -- 不要建buffer, 這樣沒辦法用在 g/.../ 上, 因為會相當於命中的項目都一直執行這個項目, 所以寫在暫存器中就好
+  -- 不要建buffer, 這樣沒辦法用在 g/.../ 上, 因為會相當於命中的項目都一直執行這個項目, 所以寫在暫存器中就好 => 但是可以附加到一個已經存在的buffer即可. 參考 Tobuf
   -- vim.cmd(":new | setlocal buftype=nofile noswapfile")
   -- vim.api.nvim_buf_set_lines(0, 0, -1, false, out)
 
@@ -4227,7 +4227,6 @@ end, {
   complete = function(_, cmd_line)
     local argc = #(vim.split(cmd_line, "%s+")) - 1
     if argc == 1 then
-      -- return vim.fn.getcompletion(arg_lead, "help") -- 目前沒有暫存器能用
       return { "A", "B", "Z" }
     elseif argc == 2 then
       return { "1", "2", "5" }
@@ -4236,6 +4235,65 @@ end, {
     end
   end
 })
+
+vim.api.nvim_create_user_command("Tobuf", function(opts)
+  -- 很像: YankCtx 不過是將輸出直接寫到指定的buf中
+  if opts.fargs[1] == "-h" then
+    utils.cmd.showHelpAtQuickFix({
+      [[:NewTmp Tmpbuf                            -- 先建立一個準備用來寫入的buf]],
+      [[:'<,'>g/http/Tobuf Tmpbuf 2               -- 寫到剛才建立的臨時buf之中]],
+      [[:argdo %g/install_/Tobuf Tmpbuf 5 :p]],
+    })
+    return
+  end
+
+  local bufname = opts.fargs[1]
+  local out_buf_id = vim.fn.bufnr(bufname)
+  if out_buf_id == -1 or not vim.api.nvim_buf_is_valid(out_buf_id) then
+    vim.notify("buffer is invalid: " .. bufname, vim.log.levels.ERROR)
+    return
+  end
+  local n = tonumber(opts.fargs[2]) or 1
+  local mods = opts.fargs[3] or ":."
+  local cur_row = vim.api.nvim_win_get_cursor(0)[1]
+  local last = vim.api.nvim_buf_line_count(0)
+  local start = math.max(1, cur_row - n)
+  local finish = math.min(last, cur_row + n)
+
+  -- ===== path/to/xxx:929 =====
+  --   924: hello
+  -- > 925:   world
+  --   926:
+  local fname = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), mods)
+  local out = { string.format("===== %s:%d =====", fname, cur_row) }
+
+  -- vim.fn.getline(start, finish)
+  local raw = vim.api.nvim_buf_get_lines(0, start - 1, finish, false)
+  for i, text in ipairs(raw) do
+    local lnum = start + i - 1
+    local mark = (lnum == cur_row) and ">" or " "
+    table.insert(out, string.format("%s%4d: %s", mark, lnum, text))
+  end
+  table.insert(out, "")
+
+  -- vim.api.nvim_buf_set_lines(out_buf_id, 0, -1, false, out) -- 全部重寫
+  vim.api.nvim_buf_set_lines(out_buf_id, -1, -1, false, out) -- 加在最尾
+end, {
+  desc = "g/.../Tobuffer 0 2",
+  nargs = "*",
+  range = true,
+  complete = function(arg_lead, cmd_line)
+    local argc = #(vim.split(cmd_line, "%s+")) - 1
+    if argc == 1 then
+      return vim.fn.getcompletion(arg_lead, "buffer")
+    elseif argc == 2 then
+      return { "1", "2", "5" }
+    elseif argc == 3 then
+      return { ":.", ":p" }
+    end
+  end
+})
+
 vim.api.nvim_create_user_command("Gitshafile", function(args)
     local config = utils.cmd.get_cmp_config(args.fargs)
     local sha = args.fargs[1] or "HEAD"
