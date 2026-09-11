@@ -4651,27 +4651,36 @@ vim.api.nvim_create_user_command("PrintUcdblock",
 
 vim.api.nvim_create_user_command('GetImgDataURL', function(args)
   -- NOTE: 可以得到base64編碼的內容, 對象可為{選取得內容(通常用於svg) 該檔案本身(路徑) }
-
   local config = utils.cmd.get_cmp_config(args.fargs)
   local mimeType = config["mimeType"] or ""
 
-  local cmd = ""
+  local raw
   if args.range ~= 0 and mimeType == "image/svg+xml" then
-    -- 讀取當前緩衝區內容
-    -- local svg_txt = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), '')
-    local svg_txt = table.concat(utils.range.get_selected_text(), "")
-    -- echo -n  do not output the trailing newline
-    cmd = string.format([[echo -n %s | base64]], vim.fn.shellescape(svg_txt)) -- 利用linux的工具，取得base64編碼的結果
+    -- 選區文本，不走 shell
+    raw = table.concat(utils.range.get_selected_text(), "")
   else
-    local abs_path = vim.fn.expand(("%:p"))
-    cmd = string.format([[base64 -w 0 '%s' ]], abs_path) -- -w 0 -- disable line wrapping
+    local abs_path = vim.fn.expand("%:p")
+    if abs_path == "" or vim.fn.filereadable(abs_path) == 0 then
+      vim.notify("GetImgDataURL: no readable file on disk", vim.log.levels.ERROR)
+      return
+    end
+    -- 按二進位讀，避免把 PNG 當文字拆行
+    local f, err = io.open(abs_path, "rb")
+    if not f then
+      vim.notify("GetImgDataURL: " .. (err or "open failed"), vim.log.levels.ERROR)
+      return
+    end
+    raw = f:read("*a")
+    f:close()
   end
 
-  local base64 = vim.fn.system(cmd)
-  base64 = base64:gsub('\n', '')
+  local ok, b64 = pcall(vim.base64.encode, raw)
+  if not ok then
+    vim.notify("GetImgDataURL: vim.base64.encode failed (need Neovim 0.10+)", vim.log.levels.ERROR)
+    return
+  end
 
-  local data_url = (mimeType ~= "" and "data:" .. mimeType .. ';base64,' or "") .. base64
-
+  local data_url = (mimeType ~= "" and ("data:" .. mimeType .. ";base64,") or "") .. b64
   -- vim.api.nvim_put({ data_url }, 'l', true, true) -- 👈 可以考慮直接貼上
   --
   -- 將結果放入暫存器" 讓使用者自己貼上
@@ -4679,12 +4688,11 @@ vim.api.nvim_create_user_command('GetImgDataURL', function(args)
 
   -- 提示使用者
   vim.api.nvim_echo({
-    { 'press ',                                                       "Normal" },
-    { 'p',                                                            'YellowBold' },
-    { ' to get result ',                                              "Normal" },
-    { mimeType ~= "" and "data:" .. mimeType .. ';base64,... ' or "", '@label' },
-  }
-  , false, {})
+    { "press ",                                                        "Normal" },
+    { "p",                                                             "YellowBold" },
+    { " to get result ",                                               "Normal" },
+    { mimeType ~= "" and ("data:" .. mimeType .. ";base64,...") or "", "@label" },
+  }, false, {})
 end, {
   desc = "get data URL: data:image/svg+xml;base64,...  for inline encoded image",
   nargs = "?",
