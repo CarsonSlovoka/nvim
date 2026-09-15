@@ -49,6 +49,16 @@ require('dap-go').setup { -- https://github.com/leoluz/nvim-dap-go/blob/8763ced3
       outputMode = "remote",                  -- IMPORTANT: 有這個 :DapUIrepl 才能看到fmt, log 等相關的輸出
     },
     {
+      -- 此選項，可以由 :cd 的路徑當成工作目錄
+      type = "go",
+      name = "Debug Package (Arguments) (cwd: vim.fn.getcwd())", -- vim.fn.getcwd()
+      request = "launch",
+      program = "${fileDirname}",
+      args = require("dap-go").get_arguments,
+      outputMode = "remote",
+      cwd = "${workspaceFolder}",
+    },
+    {
       type = "go",
       name = "Debug Package (Build Flags & Arguments)",
       request = "launch",
