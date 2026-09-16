@@ -5478,7 +5478,8 @@ vim.api.nvim_create_user_command("CsvToMarkdownTable", function(args)
   local sep = config.sep or "\t"
   local clipboard_content
   local after = true
-  if args.range ~= 0 then
+  local is_range = args.range ~= 0
+  if is_range then
     clipboard_content = table.concat(utils.range.get_selected_text(), "\n")
     after = false -- 直接置換range的內容, 等同P
   else
@@ -5500,6 +5501,9 @@ vim.api.nvim_create_user_command("CsvToMarkdownTable", function(args)
     end
   end
   vim.api.nvim_put(markdown_tbl, "l", after, true)
+  if is_range then
+    vim.cmd("normal! gvd") -- 將選擇起來的csv table刪除，只留新的就好
+  end
 end, {
   desc = "Convert csv to markdown table",
   range = true,
