@@ -461,9 +461,11 @@ map({ 'n' }, '<leader>v', function()
     vim.g.is_simplest_view_mode = not vim.g.is_simplest_view_mode
     local cmd = ""
     if vim.g.is_simplest_view_mode then
-      cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw   showtabline=0 ls=0 ch=0"
+      cmd =
+      "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw   scl=no     showtabline=0 ls=0 ch=0"
     else
-      cmd = "set cursorcolumn   cursorline   foldenable   relativenumber   nolazyredraw showtabline=1 ls=2 ch=1"
+      cmd =
+      "set cursorcolumn   cursorline   foldenable   relativenumber   nolazyredraw scl=yes:1 showtabline=1 ls=2 ch=1"
     end
     vim.cmd(cmd)
   end,

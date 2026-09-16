@@ -5867,12 +5867,16 @@ end, {
 vim.api.nvim_create_user_command('Nostuff', function(opts)
   local cmd = ""
   if (opts.fargs[1] or "no") == "no" then
-    cmd = "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw   showtabline=0 ls=0 ch=1"
+    cmd =
+    "set nocursorcolumn nocursorline nofoldenable norelativenumber lazyredraw   signcolumn=no showtabline=0 ls=0 ch=1"
   else
-    cmd = "set cursorcolumn   cursorline   foldenable   relativenumber   nolazyredraw showtabline=1 ls=2 ch=1"
+    cmd =
+    "set cursorcolumn   cursorline   foldenable   relativenumber   nolazyredraw scl=auto:2    showtabline=1 ls=2 ch=1"
   end
   -- Note: ls為laststutus  `:help laststatus`. set laststatus={0, 1, 2(default), 3}
   -- vim.opt.cmdheight = 0  -- alias: `ch`
+
+  -- vim.fn.sign_define("^", { text = "✍️" }) 這種的顯示是由 signcolumn (scl) 來決定. 當 scl=auto:2時最多也可以到2個, 但移動的時候2~1, 1~2時就會覺得欄寬有增減的感覺
 
   -- vim.cmd(cmd) -- 會直接執行
   vim.api.nvim_feedkeys(':' .. cmd, 'n', false) -- 讓使用者自己按下<CR> 如果想要額外調整，可以再自己決定
