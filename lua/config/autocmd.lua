@@ -3,7 +3,7 @@ local utils = require("utils.utils")
 local M = {
   autoSave = true,
   autoReformat = true,
-  autoMarkRange = true,
+  -- autoMarkRange = true, -- 改用plugin達成: https://github.com/CarsonSlovoka/vsign.nvim
   callback = function(module) end
 }
 local create_autocmd = vim.api.nvim_create_autocmd
@@ -208,89 +208,32 @@ function M.setup(opts)
     }
   )
 
-  -- vim.keymap.set({ "v", "x" } -- x包含v, V. 但沒有Ctrl-V 而v會包含，並且包含所有x涵蓋的項目
-  -- local enable_mark_range = true
-  -- for _, key in ipairs({ "c", ":",
-  --   "/",
-  --   "C", -- ["x]C Delete from the cursor position to the end of the line
-  --   "I", -- 區塊選取時會用到
-  --   "A", -- 區塊選取時會用到
-  --   "R", -- 取代時會用到，例如: 3Rf0 https://vi.stackexchange.com/a/25129/31859
-  -- }) do
-  --   vim.keymap.set("v", key, function()
-  --       enable_mark_range = false
-  --       vim.defer_fn(function()
-  --         enable_mark_range = true
-  --       end, 50)
-  --       return key
-  --     end,
-  --     {
-  --       desc = "暫時停止sign m<, m>的行為，避免c的時候被多打上m<, m>",
-  --       noremap = false,
-  --       expr = true,
-  --     }
-  --   )
-  -- end
-
-  -- https://vi.stackexchange.com/a/44191/31859
-  local begin_visual_position
-  vim.api.nvim_create_autocmd("ModeChanged", {
-    pattern = { "*:[vV\x16]*" },
-    callback = function()
-      -- if not enable_mark_range then
-      --   return
-      -- end
-      local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
-      if buftype ~= "" then
-        return
-      end
-
-      if M.autoMarkRange then
-        -- vim.api.nvim_input("m<") -- 這樣沒用，因為還是在visual的情況，只能等到結束在設定
-        begin_visual_position = vim.api.nvim_win_get_cursor(0) -- [row, col]
-        -- print("Enter", vim.v.event.old_mode, vim.v.event.new_mode) -- :h ModeChanged -- n, v -- n, V 抓不到c
-        -- print("Enter", vim.api.nvim_get_mode().mode) -- 這也抓不到c
-      end
-    end,
-    desc = "VisualEnter 標記開始選取的位置"
-  })
-  vim.api.nvim_create_autocmd("ModeChanged", {
-    pattern = { "[vV\x16]*:*" },
-    callback = function()
-      -- if not enable_mark_range then
-      --   return
-      -- end
-      local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
-      if buftype ~= "" then
-        return
-      end
-      if M.autoMarkRange and begin_visual_position then
-        local cur_pos = vim.api.nvim_win_get_cursor(0)
-        vim.api.nvim_win_set_cursor(0, begin_visual_position)
-        -- TODO 以下全部都失敗
-        -- vim.api.nvim_input("m<") -- < 不行但是>可以
-        -- vim.api.nvim_input("m<lt>")
-        -- vim.api.nvim_feedkeys("m<", "n", false)
-        -- vim.api.nvim_feedkeys("m<lt>", "n", false)
-        vim.api.nvim_win_set_cursor(0, cur_pos)
-      end
-      if M.autoMarkRange then
-        -- print("Leave", vim.v.event.old_mode, vim.v.event.new_mode) -- v, n -- V, n
-        -- vim.cmd("normal! m>") -- 用這個變成不會觸發到自定義的keymap
-        -- vim.api.nvim_input("m>") -- 這可能會照成誤輸入到m>的情況發生，要額外去寫這些判斷很麻煩
-
-        -- 已知bug, 如果是下反白到上時的位置是顛倒的
-
-        -- https://github.com/CarsonSlovoka/nvim/blob/ea6d7d9c684410ec75ec594de874491e46f26796/lua/config/sign_define.lua#L36-L45
-        local sd = require("config.sign_define")
-        local sign_id = vim.api.nvim_create_namespace(sd.group .. "_>")
-        local line = vim.api.nvim_win_get_cursor(0)[1]
-        vim.fn.sign_unplace(sd.group, { buffer = vim.fn.bufnr(), id = sign_id })
-        vim.fn.sign_place(sign_id, sd.group, "MarkPin>", vim.fn.bufnr(), { lnum = line })
-      end
-    end,
-    desc = "VisualLeave 標記結束選取的位置"
-  })
+  -- -- https://vi.stackexchange.com/a/44191/31859
+  -- local begin_visual_position
+  -- vim.api.nvim_create_autocmd("ModeChanged", {
+  --   pattern = { "*:[vV\x16]*" },
+  --   callback = function()
+  --   end,
+  --   desc = "VisualEnter 標記開始選取的位置"
+  -- })
+  --
+  -- vim.api.nvim_create_autocmd("ModeChanged", {
+  --   pattern = { "[vV\x16]*:*" },
+  --   callback = function()
+  --     if M.autoMarkRange then
+  --       local cur_pos = vim.api.nvim_win_get_cursor(0)
+  --       vim.normal("normal! `<")
+  --
+  --       -- https://github.com/CarsonSlovoka/nvim/blob/ea6d7d9c684410ec75ec594de874491e46f26796/lua/config/sign_define.lua#L36-L45
+  --       local sd = require("config.sign_define")
+  --       local sign_id = vim.api.nvim_create_namespace(sd.group .. "_>")
+  --       local line = vim.api.nvim_win_get_cursor(0)[1]
+  --       vim.fn.sign_unplace(sd.group, { buffer = vim.fn.bufnr(), id = sign_id })
+  --       vim.fn.sign_place(sign_id, sd.group, "MarkPin>", vim.fn.bufnr(), { lnum = line })
+  --     end
+  --   end,
+  --   desc = "VisualLeave 標記結束選取的位置"
+  -- })
 
   create_autocmd(
     { "BufRead", "BufNewFile" },

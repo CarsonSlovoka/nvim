@@ -135,6 +135,10 @@
     "testing.nvim": {
       "rev": "5f519dcc16233638ce9d49c35588cb9391e35982",
       "src": "https://github.com/CarsonSlovoka/testing.nvim"
+    },
+    "vsign.nvim": {
+      "rev": "784ffc7c8d3b5e48c2613b354a1fb5373411b722",
+      "src": "https://github.com/CarsonSlovoka/vsign.nvim"
     }
   }
 }
