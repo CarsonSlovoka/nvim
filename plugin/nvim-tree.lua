@@ -1,3 +1,10 @@
+if not vim.g.__load__plugin_nvim_tree__ then
+  -- vim.pack.del({ "nvim-tree.lua" })
+  return
+end
+
+-- 使用的版本: `git show -p 11b5bf3f:nvim-pack-lock.json | bat -l json -P -r 91:94`
+
 vim.pack.add({ "https://github.com/nvim-tree/nvim-tree.lua" })
 local m = require("nvim-tree")
 
@@ -53,11 +60,3 @@ m.setup({
 })
 -- vim.keymap.set("n", "<leader>t", ":NvimTreeOpen<CR>", { desc = "Open NvimTree" }) -- 可以先將TreeOpen到指定的位置，再用telescope去搜
 vim.keymap.set("n", "<leader>t", ":NvimTreeToggle<CR>", { desc = "toggle NvimTree" })
-
-vim.keymap.set("n", "<A-t>", function()
-    local cur_file_path = vim.fn.expand("%:p")
-    -- 也可以考慮用 <C-W>T  把目前視窗「搬」到新 tab (原本視窗會消失)
-    vim.cmd("tabnew " .. cur_file_path) -- 會保留原本視窗，新 tab 顯示相同 buffer
-  end,
-  { desc = "在新的頁籤開啟當前的文件" }
-)

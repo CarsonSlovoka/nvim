@@ -333,7 +333,7 @@ windows可以來此頁面: https://github.com/BurntSushi/ripgrep/releases/tag/14
 │   │        └── nvim-web-devicons   -- ✅ 可豐富nvim-tree的導覽，替其新增圖標 (40e9d5a 2026-04-03) ([github-nvim-theme](#github-nvim-theme)可以輔助)
 │   │
 │   ├── tree/start/                  -- ✅ 導覧相關
-│   │        └── nvim-tree.lua       -- ✅ 左測目錄導覽(還可創建目錄,重新命名,...) (v1.14.0  321bc615)
+│   │        └── nvim-tree.lua       --    ~~左測目錄導覽(還可創建目錄,重新命名,...) (v1.14.0  321bc615)~~ 改用oil.nvim就好了, 要create, rename, move都能用oil來做到
 │   │
 │   ├── search/start/                -- ✅ 搜尋相關
 │   │          ├── telescope.nvim    -- ✅ 可以找文件, 搜索文本, 查看大綱(需與lsp配合)... (3333a52 2025-12-31)

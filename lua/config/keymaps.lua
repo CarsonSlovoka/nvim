@@ -830,6 +830,12 @@ local function setup_normal()
       desc = "toggle autosave"
     }
   )
+
+  vim.keymap.set("n", "<A-t>", function()
+      vim.cmd("tabnew " .. vim.fn.expand("%:p")) -- 會保留原本視窗，新 tab 顯示相同 buffer
+    end,
+    { desc = "在新的頁籤開啟當前的文件" }
+  )
 end
 
 local function setup_visual()
