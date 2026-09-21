@@ -16,6 +16,10 @@
       "rev": "34ea57c9e3260f17c6ece01a05c8aad0fa04b394",
       "src": "https://github.com/CarsonSlovoka/exiftool.nvim"
     },
+    "fileinfo.nvim": {
+      "rev": "2a92029b4c0681ddb14a2d09324f58f395d4e2de",
+      "src": "https://github.com/CarsonSlovoka/fileinfo.nvim"
+    },
     "flutter-tools.nvim": {
       "rev": "8fa438f36fa6cb747a93557d67ec30ef63715c20",
       "src": "https://github.com/nvim-flutter/flutter-tools.nvim"
