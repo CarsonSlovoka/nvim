@@ -36,3 +36,25 @@ set verbose=0  " 關閉
 
 若速度考量，可考慮不用這些插件
 
+## Update
+
+> nvim -u NORC -l update.lua
+
+```lua
+-- update.lua
+vim.pack.update({
+    "nvim-treesitter",
+    "nvim-treesitter-context",
+    "nvim-treesitter-textobjects",
+  },
+  {
+    -- force = true,     -- ❗ 這很重要，如果要用nvim -l的方式跑，少了confirm會只有fetch不會主動checkout過去❗
+    -- offline = true,   -- 如果已經clone下來了, 就可以不需要網路. 預設是false
+    target = "lockfile", -- 或者指定的版本. 所以先在 ../nvim-pack-lock.json 中寫好要的rev版本即可
+  }
+)
+```
+
+> [!WARNING] 當不用-l的方式跑，也就是在nvim使用中，貼上命令. 有用ssh時會遇到: `Permission denied (publickey)`的錯誤
+>
+> 而加了`force = true` 時，會沒有看到錯誤，但實際上也是沒有成功的
