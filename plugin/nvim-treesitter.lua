@@ -58,11 +58,11 @@ local parsers = {
   "typescript",
 }
 
-require("nvim-treesitter").install(parsers):wait(300000)
+require("nvim-treesitter").install(parsers):wait(300000) -- 下載 & 編譯成so檔案，放到runtime path中，例如: parser/mylang.so
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function(args)
-    if pcall(vim.treesitter.start, args.buf) then
+    if pcall(vim.treesitter.start, args.buf) then -- start做get_lang(可由附檔名)和language.add(載入相關lang的so檔案)
       vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end
   end

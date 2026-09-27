@@ -153,7 +153,6 @@ function options.setup()
       jxa = "javascript", -- JavaScript for Automation (JXA) scripts on macOS
       strings = "strings",
       gotmpl = "gotmpl",
-      gohtml = "gotmpl",
 
       ttc = "opentype",
 
