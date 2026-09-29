@@ -748,6 +748,9 @@ local function setup_normal()
   map('n', "<A-k>", "<C-w>k", { desc = "往上切換視窗" })
   map('n', "<A-l>", "<C-w>l", { desc = "往右切換視窗" })
 
+  -- buffer
+  vim.keymap.set("n", "gb", ":ls<CR>:b ", { desc = "List buffers then :b" })
+  vim.keymap.set("n", "<leader>bd", ":bp|bd #<CR>", { desc = "Delete buffer, keep window" })
 
   -- :help wincmd
   -- map('n', "<M-H>", function() vim.cmd("wincmd H") end, { desc = "move window to left" })
