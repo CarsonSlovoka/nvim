@@ -13,6 +13,7 @@ require("fzf-lua").setup({
   },
   keymap = {
     builtin = {
+      true, -- 繼承原本的按鍵
       -- ['<C-p>'] = 'preview-up', 👈 預設就是如此
       -- ['<C-n>'] = 'preview-down',
       -- ['<A-h>'] = 'preview-page-left', 沒有這選項
@@ -22,6 +23,14 @@ require("fzf-lua").setup({
       ['<C-t>'] = 'toggle-preview',    -- 用 Ctrl+T 來 toggle 預覽視窗（隱藏/顯示）
       ["<A-f>"] = "toggle-fullscreen", -- 在 `:FzfLua colorschemes`中，方便查看主題顏色
     },
+    fzf = {
+      true,
+      ["alt-p"] = "preview-page-up",
+      ["alt-n"] = "preview-page-down",
+
+      ["alt-k"] = "preview-up", -- 控制右邊選中項目, 滾動預覽的文本
+      ["alt-j"] = "preview-down",
+    }
   },
   buffers = {
     actions = {
