@@ -15,8 +15,13 @@ local oil = require("oil")
 local actions_by_ext = {
   -- 依據檔案附檔名來判斷
   zip = require("external.oil-actions.zip"),
+  tar = require("external.oil-actions.tar"),
+  gz = require("external.oil-actions.tar"), -- tar.gz
+  rar = require("external.oil-actions.tar"),
+
   lua = require("external.oil-actions.lua"),
   py = require("external.oil-actions.py"),
+
   ttf = require("external.oil-actions.ttf"),
   otf = require("external.oil-actions.ttf"), -- 同ttf
 }
