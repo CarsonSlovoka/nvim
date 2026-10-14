@@ -5936,6 +5936,16 @@ end, {
   end
 })
 
+vim.api.nvim_create_user_command("Pos", function()
+  local filepath = vim.fn.expand("%:p")
+  local line = vim.fn.line(".")
+  local col = vim.fn.col(".")
+  local content = string.format("%s:%d:%d", filepath, line, col)
+  print(content)
+  vim.fn.setreg('"', content)
+end, {
+  desc = "expand('%p') . ':' . line('.') . ':' . col('.')",
+})
 
 -- print(vim.inspect(get_font_map()))
 
