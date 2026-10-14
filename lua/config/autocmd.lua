@@ -116,7 +116,12 @@ function M.setup(opts)
               return
             end
 
+            if not vim.api.nvim_buf_is_valid(buf) then
+              return
+            end
+
             if not vim.api.nvim_get_option_value("modifiable", { buf = buf }) then -- 這是能不能編輯，至於是不是readonly不能用這個判斷，有可能是可以編輯，但是為readonly(不能儲)
+              -- 👆 以上如果buf不在了，使用就會得到問題，所以要先用: nvim_buf_is_valid 來檢查
               -- 不可編輯 (但是否唯讀然未知)
               return
             end
