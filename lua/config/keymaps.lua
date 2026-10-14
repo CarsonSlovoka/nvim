@@ -940,7 +940,6 @@ local function setup_visual()
         { "The working directory has been switched to: ", "Normal" },
         { cur_dir,                                        "@label" },
       }, false, {})
-      vim.notify("`nvim-tree.api` not found", vim.log.levels.ERROR)
     end
   end, { desc = "切換到檔案目錄" })
 
