@@ -12,15 +12,20 @@ end
 
 -- nvim中其它的變數
 -- g: global
--- t: tab     書架 一個tab可以有許多buffer
--- b: buffer  書      :e 或者 :Telescope buffers 的跳轉都是再換buffer
---    :lua print(vim.api.nvim_get_current_buf())
---    💡用 :ls 其實就能看到bufferID了
--- w: window  第幾頁. :split 等相關都可以從該buffer之中再分離出window, 拆分出來的是不同windowID
---   🧙 不同的buffer是可能對應到相同的windowsID, 例如用 :e 去開啟編輯其它文件，也是相同的winID
+-- t: tab     為window的容器
+-- w: window  是「看 buffer 的視窗」, 因此可以多個window他們都對應到相同的buffer
+--   例如 :split 等相關都可以從該buffer之中再分離出window, 拆分出來的是不同windowID
+--   🧙 不同的buffer是可能對應到相同的windowsID, 例如用 :e 去開啟編輯其它文件，也是相同的winID. 因為就只是當前window看的buffer改變, 但window用的還是同一個罷了
 --   以下兩個方法都可以查詢windowID
 --   :echo win_getid()
 --   :lua print(vim.api.nvim_get_current_win())
+--   如果希望同一個視窗，它們去 :e 不同檔案時，這些變數還是能套用，就選window
+--
+-- b: buffer  最底層單位 (當buffer相同時，異動都是同步的)
+--    :e 或者 :Telescope buffers 的跳轉都是再換buffer <== Note: 如果是已經存在的對像就還是同一個
+--    :lua print(vim.api.nvim_get_current_buf())
+--    :ls %
+--    💡用 :ls 其實就能看到bufferID了
 
 
 -- vim上可以這樣自定色彩, nvim沒有這個變數
