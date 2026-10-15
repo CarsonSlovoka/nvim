@@ -2938,6 +2938,11 @@ function commands.setup()
     -- match Search /\%>11l\%<22lend/ -- 也可以不接\c, \v直接用搜尋文字
     function(args)
       local hl_group = args.fargs[1]
+      -- 因為後面[6]之後開始放可選參數, 所以當沒有點滿時，就用這樣來確保參數從6開始
+      args.fargs[3] = args.fargs[3] or 10                             -- priority
+      args.fargs[4] = args.fargs[4] or -1                             -- id
+      args.fargs[5] = args.fargs[5] or vim.api.nvim_get_current_win() -- win_id
+      local win_id = args.fargs[5]
 
       -- 檢查高亮組是否存在
       if vim.fn.hlexists(hl_group) == 0 then
@@ -2952,14 +2957,13 @@ function commands.setup()
           local fg = colors[1]
           local bg = colors[2] or nil
           -- print(fg, bg)
-          local win_id = vim.api.nvim_get_current_win()
           local ns_id = vim.api.nvim_create_namespace("Highlight_" .. win_id)
           hl_group = string.format("Highlight_%d_%s_%s", win_id,
             string.sub(fg, 2), -- nvim_set_hl的group不能用#112233的方式(Invalid character in group name)
             string.sub(bg or "", 2)
           )
           vim.api.nvim_set_hl(ns_id, hl_group, { fg = fg, bg = bg })
-          vim.api.nvim_win_set_hl_ns(win_id, ns_id)
+          vim.api.nvim_win_set_hl_ns(tonumber(win_id) or 0, ns_id)
         else
           vim.notify('Highlight group "' .. hl_group .. '" does not exist', vim.log.levels.WARN)
           return
@@ -2984,17 +2988,17 @@ function commands.setup()
           local selected_text = table.concat(utils.range.get_selected_text(), "")
           args.fargs[2] = selected_text
         end
-        args.fargs[3] = line1 .. "-" .. line2
-        -- print(args.fargs[2], args.fargs[3])
-      elseif #args.fargs < 3 then
+        args.fargs[6] = line1 .. "-" .. line2
+        -- print(args.fargs[2], args.fargs[6])
+      elseif #args.fargs < 6 then
         -- 如果省略，就會用全部的範圍
         -- :match Search /func.*)/
-        args.fargs[3] = "1-" .. max_lines
+        args.fargs[6] = "1-" .. max_lines
       end
 
       -- 處理剩餘的行號參數
       local line_patterns = {}
-      for i = 3, #args.fargs do
+      for i = 6, #args.fargs do
         local arg = args.fargs[i]
         -- 處理範圍格式 (例如 10-15, +10-+15, -5--2)
         if arg:match('^[+-]?%d+%-[+-]?%d+$') then
@@ -3076,7 +3080,12 @@ function commands.setup()
       end
       -- print(pattern)
 
-      local m = vim.fn.matchadd(hl_group, pattern)
+      local priority = args.fargs[3] or 10 -- Search 是 0, 預設沒有給會是10, 所以通常有設定就會覆蓋Search
+      local id = args.fargs[4] or -1       -- -1會自動抓沒有用到的id, 給指定的id, 是方便用在: `call matchdelete(id)`
+
+
+      local m = vim.fn.matchadd(hl_group, pattern, tonumber(priority), tonumber(id), { window = tonumber(win_id) }) -- 從pattern之後的都是可選項
+      -- local m = vim.fn.matchadd(hl_group, pattern, tonumber(priority), tonumber(id), { window = tonumber(win_id) }) -- 從pattern之後的都是可選項
       -- :lua vim.fn.matchadd('Search', [[\%5l]])
       -- :lua vim.fn.matchadd('Search', '\\%>99l\\%<201l\\vim')
       -- :lua vim.fn.matchadd('Search', [[\%>99l\%<201l\vim]])
@@ -3131,6 +3140,23 @@ function commands.setup()
             [[\D]],          -- 非\d
           }
         end
+        if argc == 3 then
+          return {
+            "10", -- priority
+          }
+        end
+
+        if argc == 4 then
+          return {
+            "-1", -- id
+          }
+        end
+
+        if argc == 5 then
+          return {
+            tostring(vim.api.nvim_get_current_win())
+          }
+        end
         return {
           "-3-+7",         -- 相對位置
           "3 5 10-15",     -- 絕對位置
@@ -3144,9 +3170,11 @@ function commands.setup()
   vim.api.nvim_create_user_command("HighlightDelete",
     function(args)
       local pattern = args.fargs[1]
-      local m = highlight_map[pattern]
+      local win_id = args.fargs[2] or vim.api.nvim_get_current_win()
+      local m = highlight_map[pattern] -- TODO: 當前記錄的是用pattern的對應，所以如果pattern相同，但是有不同的權重，這樣map就只會記錄一個，導致後面的會刪不掉
+
       if m then
-        vim.fn.matchdelete(m)
+        vim.fn.matchdelete(m, tonumber(win_id)) -- 也可以用 `:call clearmatches()` 去全清
         highlight_map[pattern] = nil
       else
         vim.notify("沒有匹配的highlight項目", vim.log.levels.ERROR)
@@ -3154,7 +3182,7 @@ function commands.setup()
     end,
     {
       desc = "刪除透過Highlight命令加入的產物",
-      nargs = 1,
+      nargs = "+",
       complete = function(arg_lead, cmd_line)
         local parts = vim.split(cmd_line, "%s+")
         local argc = #parts - 1
@@ -3167,6 +3195,15 @@ function commands.setup()
           end
           return patterns
         end
+
+        local wins = {}
+        for _, winid in ipairs(vim.api.nvim_list_wins()) do
+          local s = tostring(winid)
+          if arg_lead == "" or s:find(arg_lead, 1, true) then
+            table.insert(wins, s)
+          end
+        end
+        return wins
       end
     }
   )
