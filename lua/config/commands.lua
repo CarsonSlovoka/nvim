@@ -3125,6 +3125,7 @@ function commands.setup()
             [[m_.*\.Set.*)]],   -- 例如m_foo.Set
             [[\cm_.*\.Set.*)]], -- m_foo.Set...), m_bar.set...)
             "func.*)",
+            '[^\\x00-\\x7F]',   -- 可以ASCII 0~127, 找釣魚網址會有用. аmazon.com, amazon.com
 
             -- [[^\s*Bk.*]],    -- 這種匹配方法，前面的空白、制表符也都會被突顯，所以可以利用\zs來幫忙
             [[^\s*\zsBk.*]], -- \zs zero-width assertions 零寬度斷言，代表會從這裡開始匹配
