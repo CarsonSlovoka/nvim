@@ -66,6 +66,12 @@ m.setup {
         end
         return indent_style
       end,
+      function()
+        local winid = vim.api.nvim_get_current_win()
+        -- local bufid = vim.api.nvim_win_get_buf(winid)
+        local bufid = vim.api.nvim_get_current_buf()
+        return string.format('%d:%d', bufid, winid)
+      end,
       -- 'encoding', -- 這也可，但是預設不會顯示bomb
       {
         'encoding',
