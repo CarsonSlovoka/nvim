@@ -26,6 +26,7 @@
 
 ---@type vim.lsp.Config
 return {
+  -- 能依據 $schema 去驗證欄位正確性
   cmd = { 'vscode-json-language-server', '--stdio' },
   filetypes = { 'json', 'jsonc' },
   init_options = {

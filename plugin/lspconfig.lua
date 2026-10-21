@@ -131,6 +131,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- Note: lsp.enable的項目名稱對應 `fd . -d1 ../lsp/ -a`, 而當中的lua回傳值要是table, 正確來說為: `@type vim.lsp.Config`
+-- 查看lsp相關設定: `:checkhealth vim.lsp`
 vim.lsp.enable({
   'pyright',
   'gopls',
@@ -140,7 +141,7 @@ vim.lsp.enable({
   -- 👆裡面有 vscode-{html,css,json,eslint}-language-server 四個執行檔
   'html',
   "cssls",
-  "jsonls",
+  "jsonls", -- 還能依據 $schema 去驗證欄位正確性
   "bashls",
   "markdown_oxide",
   "clangd",
