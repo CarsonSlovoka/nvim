@@ -89,15 +89,19 @@ map("n", "<leader>,", '@:', { desc = "Repeat last command-line" }) -- 其實原�
 
 map("n", "<leader><leader>t",
   function()
+    local filename = ""
     if vim.bo.filetype == "oil" then
+      filename = vim.fn.expand("%:h:t")
       vim.cmd("cd " .. require("oil").get_current_dir() .. " | sp | term")
     else
       if (vim.api.nvim_buf_get_name(0) ~= "") then
         vim.cmd("cd %:h")
       end
+      filename = vim.fn.expand("%:t")
       vim.cmd("sp | term")
       vim.cmd("startinsert")
     end
+    vim.cmd("file term:" .. filename)
   end,
   { desc = "cd %:h | sp | term" } -- 類似於:Term
 )
