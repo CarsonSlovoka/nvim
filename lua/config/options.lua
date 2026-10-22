@@ -139,7 +139,7 @@ function options.setup()
   vim.api.nvim_set_hl(0, "CursorLine", { bg = "#2f3e54" })
 
   -- vim.o.tabline = "%t" -- 用這個只會有當前的檔案名稱，不會看到其它的頁籤名稱
-  vim.o.tabline = "%!v:lua.get_tabline()"
+  vim.o.tabline = "%!v:lua.get_tabline()" -- 參考: _G.get_tabline()
 
   -- 如果要摺行，可以在v下用 :'<,'>fold 的方式去摺
   -- :1200,1600fold 這種方式也可以摺行 foldmethod為manual可用
@@ -345,12 +345,28 @@ function _G.get_tabline() -- 給全局變數
 
     local winnr = vim.fn.tabpagewinnr(i)
     local buflist = vim.fn.tabpagebuflist(i)
-    local buf = buflist[winnr]                              -- Lua table下標從1開始, 如果是vim則從0開始
-    local bufname = vim.fn.bufname(buf)
-    local bufname_short = vim.fn.fnamemodify(bufname, ":t") -- 僅提取檔名名稱，不包含路徑
+    local buf = buflist[winnr] -- Lua table下標從1開始, 如果是vim則從0開始
 
-    if bufname_short == "" then
-      bufname_short = "[No Name]"
+    local bufname_short
+    if vim.bo[buf].filetype == "oil" then
+      -- bufname_short = "oil:" .. vim.fn.expand("%:h:t") -- 這是錯的，因為_G.get_tabline是統一設定, 當前停留的%只會有一個, 因此這樣設定會所有的oil名稱都一樣
+
+      local dir = require("oil").get_current_dir(buf)
+      if dir then
+        bufname_short = vim.fn.fnamemodify(dir, ":h:t")
+        if bufname_short == "" then
+          bufname_short = "/"
+        end
+        bufname_short = "oil:" .. bufname_short
+      else
+        bufname_short = "[oil]"
+      end
+    else
+      local bufname = vim.fn.bufname(buf)
+      bufname_short = vim.fn.fnamemodify(bufname, ":t")
+      if bufname_short == "" then
+        bufname_short = "[No Name]"
+      end
     end
 
     s = s .. bufname_short .. ' '
