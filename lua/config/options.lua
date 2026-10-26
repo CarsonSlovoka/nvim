@@ -429,4 +429,94 @@ function _G.get_tabline() -- 給全局變數
   return s
 end
 
+-- 定義同義字補全函數
+local function thesaur(findstart, base)
+  -- 第一階段：尋找單字的起點
+  if findstart == 1 then
+    local line_num = vim.fn.line('.')
+    local pos = vim.fn.searchpos([[\<]], 'bnW', line_num)
+    return pos[2] - 1
+  end
+
+  -- 第二階段：依平台取得同義字
+  local res = {}
+  local h = ''
+  local is_macos = vim.fn.has('mac') == 1 or (vim.uv and vim.uv.os_uname().sysname == 'Darwin')
+
+  local lines = {}
+
+  if is_macos then
+    -- macOS：優先用 WordNet (wn) (brew install wor)，沒有再試 aiksaurus
+    if vim.fn.executable('wn') == 1 then
+      -- wn 的同義字輸出格式比較簡單，我們合併 noun/verb/adj/adv
+      local cmds = {
+        'wn ' .. vim.fn.shellescape(base) .. ' -synsn',
+        'wn ' .. vim.fn.shellescape(base) .. ' -synsv',
+        'wn ' .. vim.fn.shellescape(base) .. ' -synsa',
+        'wn ' .. vim.fn.shellescape(base) .. ' -synsr',
+      }
+      for _, cmd in ipairs(cmds) do
+        local out = vim.fn.systemlist(cmd)
+        for _, l in ipairs(out) do
+          -- 過濾掉說明行，只留真正的同義字
+          if l:match('^%s*%w') and not l:match('^Sense') and not l:match('^Overview') then
+            table.insert(lines, l)
+          end
+        end
+      end
+      h = '(wn)'
+    elseif vim.fn.executable('aiksaurus') == 1 then
+      lines = vim.fn.systemlist('aiksaurus ' .. vim.fn.shellescape(base))
+    else
+      return {} -- 兩邊都沒有就直接空
+    end
+  else
+    -- 非 macOS：只在有 aiksaurus 時才做
+    -- aiksaurus 是一個老牌的同義詞字典工具
+    if vim.fn.executable('aiksaurus') == 0 then
+      return {}
+    end
+    lines = vim.fn.systemlist('aiksaurus ' .. vim.fn.shellescape(base))
+  end
+
+  -- 解析結果（相容原本 aiksaurus 格式 + wn 的簡單格式）
+  for _, l in ipairs(lines) do
+    if l:sub(1, 4) == '=== ' then
+      -- 處理詞性標題，例如 === Noun === -> (Noun)
+      local clean_h = l:sub(5):gsub(' =*$', ')')
+      h = '(' .. clean_h
+    elseif l == 'Alphabetically similar known words are: ' then
+      -- 處理相似字標記
+      h = '🔮'
+    elseif l:sub(1, 1):match('%a') or (h == '🔮' and l:sub(1, 1) == '\t') then
+      local clean_line = l:gsub('^\t', ''):gsub('^%s+', ''):gsub('%s+$', '')
+      -- wn 有時會有 "=> word1, word2" 這種格式
+      clean_line = clean_line:gsub('^=>%s*', '')
+      local words = vim.split(clean_line, ',%s*', { trimempty = true })
+
+      -- 將單字包裝成 Neovim 補全選單格式
+      for _, word in ipairs(words) do
+        word = word:match('^%s*(.-)%s*$') -- 再清一次空白
+        if word and #word > 0 and word ~= base then
+          table.insert(res, { word = word, menu = h })
+        end
+      end
+    end
+  end
+
+  return res
+end
+
+-- 檢查並註冊至 thesaurusfunc
+_G.thesaur = thesaur
+if vim.fn.exists('+thesaurusfunc') == 1 then
+  vim.opt.thesaurusfunc = 'v:lua.thesaur' -- i_CTRL-X_CTRL-T 可觸發此補全
+
+  -- 補全來至固定的文件的方式
+  -- vim.opt.thesaurusfunc = ''
+  -- vim.opt.thesaurus = {
+  --   vim.fn.expand('~/.config/nvim/thesaurus/en.txt'),
+  -- }
+end
+
 return options
