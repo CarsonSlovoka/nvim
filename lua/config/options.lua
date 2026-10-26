@@ -10,6 +10,54 @@ local function custom_global_options()
   -- :lua print(vim.g:qffiletype) -- 查看
 end
 
+local function set_scrolloff()
+  local ns = vim.api.nvim_create_namespace("insert_scrolloff")
+  local ctrl_e = vim.keycode("<C-e>")
+  local ctrl_y = vim.keycode("<C-y>")
+
+  local scroll_win = nil
+  local pending = false
+
+  local function update_scrolloff()
+    pending = false
+
+    local scrolling = vim.fn.mode(1):sub(1, 1) == "i"
+        and vim.fn.complete_info({ "mode" }).mode == "scroll"
+
+    local win = vim.api.nvim_get_current_win()
+
+    -- 離開 Scroll，或切換到其他視窗：還原原視窗
+    if scroll_win and (not scrolling or scroll_win ~= win) then
+      if vim.api.nvim_win_is_valid(scroll_win) then
+        vim.wo[scroll_win].scrolloff = 999
+      end
+      scroll_win = nil
+    end
+
+    -- 進入 Scroll
+    if scrolling and not scroll_win then
+      scroll_win = win
+      vim.wo[win].scrolloff = 0
+    end
+  end
+
+  vim.on_key(function(key)
+    -- 已有等待中的檢查，就不重複排程
+    if pending then
+      return
+    end
+
+    -- 平常打字到這裡就返回，不查詢模式、不排程
+    if not scroll_win and key ~= ctrl_e and key ~= ctrl_y then
+      return
+    end
+
+    -- (insert) Scroll (^E/^y)
+    pending = true
+    vim.schedule(update_scrolloff)
+  end, ns)
+end
+
 -- nvim中其它的變數
 -- g: global
 -- t: tab     為window的容器
@@ -57,8 +105,8 @@ function options.setup()
   -- vim.g.mapleader = "," -- 預設是 \ -- , 在f, F, t, T的時候會當成另一個方向的重覆
   vim.g.mapleader = "\\"
 
-  vim.opt.scrolloff = 999 -- 距離當前畫面的頂部或者底部還有多少列的時候，可以進行scroll的動作 (預設是0, 也就是游標一定要移動到最下面才能捲動), 999讓其在畫面中間，也就是只要j, k動一定會連帶往下或往上移
-
+  -- vim.opt.scrolloff = 999 -- 距離當前畫面的頂部或者底部還有多少列的時候，可以進行scroll的動作 (預設是0, 也就是游標一定要移動到最下面才能捲動), 999讓其在畫面中間，也就是只要j, k動一定會連帶往下或往上移
+  set_scrolloff() -- 解決 scrolloff = 999 下, i_CTRL-X_CTRL-E, i_CTRL-X_CTRL-Y 會沒有作用的問題
   -- vim.opt.clipboard = "unnamedplus" -- set clipboard=unnamedplus  -- 讓一般的y, Y, d, dd, 等也可以複製到系統剪貼簿. 但會有一點成本，需要時再手動開即可
 
   -- :set history?
