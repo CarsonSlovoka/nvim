@@ -25,6 +25,14 @@ return {
       --
       -- Default upstream pattern is "**/*@(.sh|.inc|.bash|.command)".
       globPattern = vim.env.GLOB_PATTERN or '*@(.sh|.inc|.bash|.command)',
+
+      -- go install mvdan.cc/sh/v3/cmd/shfmt@latest
+      shfmt = {
+        path = "shfmt",         -- 指定 shfmt 執行檔路徑 -- 如果沒有這個檔案不會報錯
+        indent = 2,             -- 縮進使用 2 個空格
+        caseIndent = true,      -- 啟用 case 分支縮進
+        binaryNextLine = true,  -- 換行時運算子置於行首
+      },
     },
   },
   filetypes = { 'bash', 'sh' },

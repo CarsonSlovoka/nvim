@@ -1156,6 +1156,13 @@ vim.api.nvim_create_autocmd({ "BufWritePre" },
       if not M.autoReformat then
         return
       end
+
+      -- 當有lsp時，以lsp的格式化為主, 就不使用equalprg, 避免做兩次
+      local client = vim.lsp.get_clients({ bufnr = 0 })[1]
+      if client:supports_method('textDocument/formatting') then
+        return
+      end
+
       if vim.bo.equalprg and vim.bo.equalprg ~= "" then
         print("auto fmt from vim.bo.equalprg")
         vim.cmd('normal! m"gg=G`"`') -- 先在原本的地方做標籤，gg=G之後再回到原本的標籤位置
