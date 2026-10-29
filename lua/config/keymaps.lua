@@ -672,12 +672,19 @@ local function setup_normal()
     }, '<leader>fmt',
     function()
       vim.lsp.buf.format({
+        -- filter = function(client)
+        --   print(client.name);
+        --   return true
+        -- end,
         -- async = false, -- 可以用異步，這樣還可以去處理別的事，但是所想要明確的等待完成
         timeout_ms = 3000,
         -- range -- 整列的選取模式，只會格式化選取的行
       })
+      local client = vim.lsp.get_clients({ bufnr = 0 })[1]
+
       vim.notify(
-        string.format("%s lsp.buf.format done ", os.date("%Y-%m-%d %H:%M:%S")),
+        string.format("%s [%s] lsp.buf.format done ",
+          os.date("%Y-%m-%d %H:%M:%S"), client.name),
         vim.log.levels.INFO
       )
       -- return "<Esc>" -- 結束visual -- 我用expr=true配合這個會錯，估計和裡面的函數實作也有關
