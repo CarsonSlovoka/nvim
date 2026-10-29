@@ -1159,7 +1159,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" },
 
       -- 當有lsp時，以lsp的格式化為主, 就不使用equalprg, 避免做兩次
       local client = vim.lsp.get_clients({ bufnr = 0 })[1]
-      if client:supports_method('textDocument/formatting') then
+      if client and client:supports_method('textDocument/formatting') then
         return
       end
 
