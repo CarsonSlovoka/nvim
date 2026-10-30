@@ -189,6 +189,14 @@ function options.setup()
   -- vim.o.tabline = "%t" -- 用這個只會有當前的檔案名稱，不會看到其它的頁籤名稱
   vim.o.tabline = "%!v:lua.get_tabline()" -- 參考: _G.get_tabline()
 
+  -- switchbuf: 針對 :sb 怎麼開啟的設定. (要在哪一個視窗顯示它)跳轉到某個
+  -- Tip: 設定 switchbuf 很有用, 可以盡量避免已經存在的視窗再打開
+  vim.opt.switchbuf = {
+    "uselast", -- 這通常是預設
+    "useopen", -- 如果該buffer已經存在，就會直接跳過去，不會再開一個
+    "usetab",  -- 很像useopen，不過多了當這個開啟的對象可以在tab找到，就會協助直接切換到tab. 使得能直接用 :sb <tab> 的方式來切換到tab
+  }
+
   -- 如果要摺行，可以在v下用 :'<,'>fold 的方式去摺
   -- :1200,1600fold 這種方式也可以摺行 foldmethod為manual可用
   -- map: zc, zo 可以摺或展開
