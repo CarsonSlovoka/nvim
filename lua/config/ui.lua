@@ -7,6 +7,7 @@ local M = {
   commands = {
     marks = true,
     changes = true,
+    tabs = true,
 
     -- 此三者相同
     ls = true,
@@ -74,7 +75,7 @@ local function init_ui2()
       },
       msg = {
         height = 0.3,
-        timeout = 5000,
+        timeout = 3000,
       },
       pager = {
         height = 0.5,
