@@ -18,6 +18,7 @@ local function set_mark(label)
 end
 
 map({ "n", "v" }, "<leader>/", ':noh<CR>', { desc = ":nohlsearch" })
+map("n", "<leader>ms", ':marks<CR>', { desc = "marks" })
 
 -- 系統剪貼簿相關
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
