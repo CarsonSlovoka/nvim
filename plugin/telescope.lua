@@ -521,9 +521,10 @@ vim.keymap.set("v",
   { desc = "用當前選中的文字進行搜尋" }
 )
 
-vim.api.nvim_create_user_command("TelescopeBookmarks", require "config.telescope_bookmark".show, {})
-vim.keymap.set("n", "<leader>bk", require "config.telescope_bookmark".show,
-  { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
+-- vim.api.nvim_create_user_command("TelescopeBookmarks", require "config.telescope_bookmark".show, {})
+-- vim.keymap.set("n", "<leader>bk", require "config.telescope_bookmark".show,
+--   { noremap = true, silent = true, desc = "Telescope 書籤選擇" })
+
 vim.api.nvim_create_user_command("MyLivegrep", function(args)
   local opt = {}
   local no_auto_dir = false

@@ -239,13 +239,13 @@ local installs = {
     end,
     delay = 0
   },
-  {
-    name = "config.telescope_bookmark",
-    fn = function()
-      require "config.telescope_bookmark"
-    end,
-    delay = 0
-  },
+  -- {
+  --   name = "config.telescope_bookmark",
+  --   fn = function()
+  --     require "config.telescope_bookmark"
+  --   end,
+  --   delay = 0
+  -- },
   {
     name = "config.highlight",
     fn = function()
