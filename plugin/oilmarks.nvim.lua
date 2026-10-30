@@ -1,0 +1,6 @@
+-- 這是一個失敗的plugin, 不好用, 留紀念而已. 改用 pen.nvim 來取代
+-- 缺點: 資料存在太冗長, 不方便手動編輯
+-- vim.pack.add({ "https://github.com//CarsonSlovoka/oilmarks.nvim" })
+-- vim.cmd.packadd("oilmarks.nvim")
+-- vim.keymap.set("n", "<leader>mm", function() require("oilmarks").open() end, { desc = "Oilmarks" })
+-- vim.keymap.set("n", "<leader>ma", function() require("oilmarks").add() end, { desc = "Add bookmark" })
