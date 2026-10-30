@@ -519,4 +519,6 @@ if vim.fn.exists('+thesaurusfunc') == 1 then
   -- }
 end
 
+require("config.ui"):setup()
+
 return options
