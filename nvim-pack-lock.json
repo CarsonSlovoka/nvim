@@ -68,6 +68,10 @@
       "rev": "47f91c416daef12db467145e16bed5bbfe00add8",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
+    "marks-edit.nvim": {
+      "rev": "0167f4e34f195947e144a55f46f8d8ec05a57f4f",
+      "src": "https://github.com/CarsonSlovoka/marks-edit.nvim"
+    },
     "nvim-dap": {
       "rev": "03e83f1513264ca694ff35433f361fe993fcb83c",
       "src": "https://github.com/mfussenegger/nvim-dap"
