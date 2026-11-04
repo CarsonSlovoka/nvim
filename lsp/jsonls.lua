@@ -33,4 +33,11 @@ return {
     provideFormatter = true,
   },
   root_markers = { '.git' },
+
+  on_new_config = function(new_config)
+    -- Node.js 的憑證庫變更： 如果您最近透過 brew upgrade 更新了 Node.js，新版本的安全機制可能收緊了，或者它不再預設去讀取 macOS 系統鑰匙圈（Keychain）裡的憑證，導致它在發起 HTTPS 請求時找不到信任的根憑證（CA）
+    new_config.env = new_config.env or {}
+    new_config.env.NODE_TLS_REJECT_UNAUTHORIZED = os.getenv("NODE_TLS_REJECT_UNAUTHORIZED") -- 解決 jsonc 中的警告: Unable to load schema from 'https://opencode.ai/config.json': unable to get local issuer certificate.
+    -- export NODE_EXTRA_CA_CERTS="/opt/homebrew/etc/ca-certificates/cert.pem"  👈 可以在 .zshrc 或者 .bashrc 等等之類的檔案寫上相關的環境變數即可
+  end,
 }
