@@ -1378,10 +1378,28 @@ vim.cmd("digraphs ll 128073")           -- 👉
 vim.cmd("digraphs rt 128640")           -- 🚀
 vim.cmd("digraphs sg 128170")           -- 💪
 
-
 -- 近似於
 vim.cmd("digraphs ~~ 8776") -- ≈
 vim.cmd("digraphs := 8786") -- ≒
+
+
+-- 用 digraph_setlist 可以更直觀
+vim.fn.digraph_setlist({
+  { '!!', '❗' }, -- Error
+  { '!w', '⚠' }, -- Warning -- ⚠️：U+26A0 + U+FE0F # digraphs 只能一個unicode字元，所以這不是完整的，只能顯示 ⚠ 可以再補上變體選擇符即可: U+FE00..U+FE0F -- https://zh.wikipedia.org/zh-tw/變體選擇符_(Unicode區段)
+  { '!i', '💡' }, -- Idea
+  { '!n', '📝' }, -- Note
+
+  -- variation sequence
+  -- | 名稱       | Unicode         | 用途                            | 常用程度 |
+  -- |---         |---              |---                              |---       |
+  -- | VS1–VS14   | U+FE00–U+FE0D   | 特定字形變體，例如部分數學符號  | 低       |
+  -- | VS15       | U+FE0E          | 強制要求文字樣式（Text）        | 高       |
+  -- | VS16       | U+FE0F          | 強制要求 Emoji 樣式             | 高       |
+  -- | VS17–VS256 | U+E0100–U+E01EF | 主要用於漢字的異體字選擇（IVS） | 特殊用途 |
+  { 'vT', vim.fn.nr2char(0xFE0E) }, -- VS15: Text
+  { 'vE', vim.fn.nr2char(0xFE0F) }, -- VS16: Emoji
+})
 
 
 return M
