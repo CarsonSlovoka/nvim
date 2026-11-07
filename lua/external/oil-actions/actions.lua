@@ -19,6 +19,8 @@ local actions_by_ext = {
   gz = require("external.oil-actions.tar"), -- tar.gz
   rar = require("external.oil-actions.tar"),
 
+  ["7z"] = require("external.oil-actions.7z"),
+
   lua = require("external.oil-actions.lua"),
   py = require("external.oil-actions.py"),
 
