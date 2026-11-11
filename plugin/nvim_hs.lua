@@ -6,3 +6,4 @@ end
 vim.pack.add({ "https://github.com/CarsonSlovoka/nvim_hs" })
 -- vim.cmd.packadd("nvim_hs")
 require("nvim_hs.command").setup()
+require("nvim_hs.autocmd").setup()

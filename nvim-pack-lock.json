@@ -113,7 +113,7 @@
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
     "nvim_hs": {
-      "rev": "171d920fbec99ce1600065d6a577b95c2e21071c",
+      "rev": "ad2170733adc148b5e9a84f5b38143c5599b0ae3",
       "src": "https://github.com/CarsonSlovoka/nvim_hs"
     },
     "oil.nvim": {
