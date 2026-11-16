@@ -21,6 +21,13 @@ local actions_by_ext = {
 
   ["7z"] = require("external.oil-actions.7z"),
 
+  mp3 = require("external.oil-actions.media"),
+  mp4 = require("external.oil-actions.media"),
+  m4a = require("external.oil-actions.media"),
+  flc = require("external.oil-actions.media"),
+  ogg = require("external.oil-actions.media"),
+  wav = require("external.oil-actions.media"),
+
   lua = require("external.oil-actions.lua"),
   py = require("external.oil-actions.py"),
 
