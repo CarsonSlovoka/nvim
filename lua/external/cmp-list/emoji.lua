@@ -1299,6 +1299,7 @@ emoji_data.G._other = {
         "card",
       }
     },
+    { "🔔", "bell" },
   }
 }
 
@@ -1389,6 +1390,8 @@ vim.fn.digraph_setlist({
   { '!w', '⚠' }, -- Warning -- ⚠️：U+26A0 + U+FE0F # digraphs 只能一個unicode字元，所以這不是完整的，只能顯示 ⚠ 可以再補上變體選擇符即可: U+FE00..U+FE0F -- https://zh.wikipedia.org/zh-tw/變體選擇符_(Unicode區段)
   { '!i', '💡' }, -- Idea
   { '!n', '📝' }, -- Note
+
+  { 'ii', '🟧' }, -- item 個人覺得蠻醒目的
 
   -- variation sequence
   -- | 名稱       | Unicode         | 用途                            | 常用程度 |
