@@ -17,11 +17,17 @@ Then restart Neovim or :checkhealth again.]],
       '`vim.bo.equalprg = "shfmt -ln bash -i 2"`'
     })
   else
-    local path = vim.fn.exepath("shfmt")
-    local version = vim.fn.system({ "shfmt", "--version" }):gsub("%s+$", "")
+    local path                        = vim.fn.exepath("shfmt")
+    local version                     = vim.fn.system({ "shfmt", "--version" }):gsub("%s+$", "")
     -- shfmt --version
     -- v3.14.1
-    vim.health.ok(string.format("shfmt found: %s (%s)", path, version))
+    local minimal_support_zsh_version = "3.13.0"                   -- 此版本開始支援zsh
+    local cur_ver                     = vim.version.parse(version) -- 3.14.1 或 v3.14.1 => 3.14.1 前面的v會幫忙拿掉
+    if vim.version.cmp(minimal_support_zsh_version, tostring(cur_ver)) == 1 then
+      vim.health.warn(string.format("shfmt found: %s (%s) < %s", path, cur_ver, minimal_support_zsh_version))
+    else
+      vim.health.ok(string.format("shfmt found: %s (%s)", path, cur_ver))
+    end
 
     if vim.bo[vim.fn.bufnr('#')].filetype == "sh" then
       vim.health.info(string.format("vim.bo.equalprg = %s", vim.bo.equalprg))
