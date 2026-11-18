@@ -104,6 +104,8 @@ local function load_external_dap()
     command = "echo", -- 找一個不重要的指令, 為了通過require("dap")而已 -- 這個工具在 Linux / macOS / Windows shell 都有
   }
 
+  -- `:echom nvim_get_runtime_file('**/external/dap/*', v:true)`
+  -- `:pu=nvim_get_runtime_file('**/external/dap/*', v:true)`
   require("external.dap._tutorial") -- 教學測試用
   require("external.dap.terminal")
   require("external.dap.none")

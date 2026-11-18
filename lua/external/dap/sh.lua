@@ -50,6 +50,28 @@ for _, config in ipairs({
     type = "bash",
     name = "▶️< > run selection",
     range = true,
+  },
+  {
+    type = "terminal",
+    exe = "bats -p", -- https://github.com/bats-core/bats-core 安裝: https://bats-core.readthedocs.io/en/stable/installation.html
+    name = "bats -p <file>",
+  },
+  {
+    type = "terminal",
+    exe = "bats -p",
+    name = "bats -p --filter xxx <file>",
+    args = function()
+      local filter = utils.dap.ask_args("filter:")
+      if #filter > 0 then
+        return { "--filter", filter[1] }
+      end
+    end
+  },
+  {
+    type = "terminal",
+    exe = "bats",
+    name = "bats [args] <file>",
+    args = utils.dap.ask_args,
   }
 }) do
   ---@cast config ShRunConfig
