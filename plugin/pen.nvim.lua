@@ -32,8 +32,8 @@ require("pen").setup({
     separator = "  ",
   },
   preview = {
-    context = 8,      -- 預覽時顯示書籤行前後各幾行. preview關閉時，可以用{, }來再調整context的大小
-    auto_open = true, -- 進入書籤列表時是否自動開啟預覽
+    context = 8,       -- 預覽時顯示書籤行前後各幾行. preview關閉時，可以用{, }來再調整context的大小
+    auto_open = false, -- 進入書籤列表時是否自動開啟預覽
     syntax = true,
   },
 })
