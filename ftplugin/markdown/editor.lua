@@ -41,6 +41,7 @@ map('v', '<leader>~', 'c~~<C-r>"~~<ESC>', { desc = "刪除線 strokethrough" })
 -- map('n', '<Leader>c', 'I```<CR>```<C-o>O', { desc = "插入代碼塊, 可以先打上區塊代碼的名稱" })
 map('n', '<Leader><leader>`',
   function()
+    -- 最麻煩的方式
     -- local autoSaveEnable = require("config.autocmd").autoSave
     -- if autoSaveEnable then -- 這種情況下，它會自動用mi來記錄標籤，所以先暫停不保存標籤
     --   require("config.autocmd").autoSave = false
@@ -68,6 +69,10 @@ map('n', '<Leader><leader>`',
     -- if autoSaveEnable then -- 復原
     --   require("config.autocmd").autoSave = true
     -- end
+
+    -- snippet其實也不錯，但沒有什麼必要
+    -- vim.snippet.expand("```${1:}\n${2:}\n```")
+
     return "i```\r```<C-o>k<End>"
   end,
   {

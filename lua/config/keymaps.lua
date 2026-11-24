@@ -1000,7 +1000,10 @@ local function setup_visual()
       expr = true,
     }
   )
-  map('n', '<leader><leader>l', 'ciW[<C-r>"]()<Left>', { desc = "insert link" })
+  -- map('n', '<leader><leader>l', 'ciW[<C-r>"]()<Left>', { desc = "insert link" })
+  map('n', '<leader><leader>l', function()
+    vim.snippet.expand("${3:}[${1:desc}](${2:link})") -- : 後面的文字是佔位符也是預設值
+  end, { desc = "insert link" })
 end
 
 local function setup_smap()
