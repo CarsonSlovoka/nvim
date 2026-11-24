@@ -1003,6 +1003,34 @@ local function setup_visual()
   map('n', '<leader><leader>l', 'ciW[<C-r>"]()<Left>', { desc = "insert link" })
 end
 
+local function setup_smap()
+  -- 善用<tab>, <s-tab>
+  -- 這指定可以幫助瞭解smap `:lua vim.snippet.expand('func ${1:name}(${2:args}) ${3:result} {$0}')`
+
+  -- 預設為tab
+  -- map({ "s" }, "<C-l>", function()
+  --   if vim.snippet.active({ direction = 1 }) then
+  --     vim.snippet.jump(1)
+  --   end
+  -- end, { desc = "Next snippet placeholder" })
+
+  -- 預設為<S-tab>
+  -- map({ "s" }, "<C-h>", function() --此鍵位和切換visual mode或select mode衝突
+  --   if vim.snippet.active({ direction = -1 }) then
+  --     vim.snippet.jump(-1)
+  --   end
+  -- end, { desc = "Previous snippet placeholder" })
+
+  -- v下的C-c相當於取消
+  vim.keymap.set("s", "<C-c>", '<C-g>"+y', { desc = "複製到系統剪貼簿" })
+
+  -- v下的C-x為遞減, C-a為遞增
+  vim.keymap.set("s", "<C-x>", '<C-g>"+d', { desc = "剪下到系統剪貼簿" })
+
+  -- 有v下C-v是切換成visual block所以不建議改visual
+  vim.keymap.set("s", "<C-v>", '<C-g>"+P', { desc = "用系統剪貼簿的內容取代選取文字" })
+end
+
 local function setup_insert()
   map('v', 'p', '"_dP', {
     desc = '正常在visual下，於指定的反白處貼上內容後，下一次再貼的內容會是之前反白處的內容，為了避免如此讓其貼上的時候不要複製' }
@@ -1026,6 +1054,7 @@ end
 function keymaps.setup()
   setup_normal()
   setup_visual()
+  setup_smap()
   setup_insert()
   setup_cmap()
 end
