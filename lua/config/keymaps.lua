@@ -37,11 +37,11 @@ map({ "v" }, "<leader>+Y", function()
   end,
   { desc = "Append selected content + \n to the system clipboard" }
 )
-map({ "n", "v" }, "<leader>d", '"+d', { desc = "The cut content will also be retained in the system clipboard" })
+map({ "n", "x" }, "<leader>d", '"+d', { desc = "The cut content will also be retained in the system clipboard" })
 
 -- map("i", "<C-h>", '<C-o>b', { desc = "<C-Left>" }) -- 用C-o的效果不好
-map({ "i", "v" }, "<C-h>", '<C-Left>', { desc = "<C-Left>" })
-map({ "i", "v" }, "<C-l>", '<C-Right>', { desc = "<C-Right>" })
+map({ "i", "x" }, "<C-h>", '<C-Left>', { desc = "<C-Left>" })
+map({ "i", "x" }, "<C-l>", '<C-Right>', { desc = "<C-Right>" })
 
 -- map("i", "<C-S-h>", '<Left>', { desc = "move left" })
 map("i", "<A-h>", '<Left>', { desc = "move left" })
