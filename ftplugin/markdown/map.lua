@@ -136,6 +136,89 @@ map('n', '<Leader><leader>`',
 --   }
 -- )
 
+
+local function select_codeblock(inner)
+  local api = vim.api
+  local ts = vim.treesitter
+
+  -- 確保 Tree-sitter 已經解析目前的 buffer
+  ts.get_parser(0, "markdown"):parse()
+
+  -- 取得游標所在的 Markdown node
+  local node = ts.get_node({
+    ignore_injections = true,
+  })
+
+  -- 💡 這個可以查詢type: `:lua print(vim.treesitter.get_node():type())`
+  -- 向上尋找 fenced_code_block
+  while node and node:type() ~= "fenced_code_block" do
+    node = node:parent()
+  end
+
+  -- 找不到 code block 時，不進行操作
+  if not node then
+    return
+  end
+
+  -- 如果是 inner，則尋找 code_fence_content
+  if inner then
+    local content
+
+    for child in node:iter_children() do
+      if child:type() == "code_fence_content" then
+        content = child
+        break
+      end
+    end
+
+    if not content then
+      return
+    end
+
+    node = content
+  end
+
+  -- 取得 Tree-sitter node 的範圍
+  local sr, sc, er, ec = node:range()
+
+  if sr == er and sc == ec then
+    return
+  end
+
+  -- 轉換成 Neovim 使用的行號
+  local first = sr + 1
+  local last = ec == 0 and er or er + 1
+
+  if first > last then
+    return
+  end
+
+  -- 進入 Visual Line mode
+  if api.nvim_get_mode().mode ~= "V" then
+    vim.cmd("normal! V")
+  end
+
+  -- 設定選取範圍的兩端
+  api.nvim_win_set_cursor(0, { first, 0 })
+  vim.cmd("normal! o")
+  api.nvim_win_set_cursor(0, { last, 0 })
+end
+
+-- 💡 所謂的omap, 是在y, c, d等等的動作鍵的操作
+map({ "x", "o" }, "ic", function()
+  select_codeblock(true)
+end, {
+  buffer = true,
+  desc = "Inner code block",
+})
+
+map({ "x", "o" }, "ac", function()
+  select_codeblock(false)
+end, {
+  buffer = true,
+  desc = "Around code block",
+})
+
 -- Function to create markdown link from visual selection
 local function create_markdown_link()
   -- Get the visual selection
