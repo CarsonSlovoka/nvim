@@ -155,7 +155,8 @@ oil.setup({
     sort = {
       -- sort order can be "asc" or "desc"
       -- see :help oil-columns to see which columns are sortable
-      { "mtime", "asc" }, -- 最新修改排最後面
+      -- { "mtime", "asc" }, -- 最新修改排最後面
+      { "mtime", "desc" }, -- 通常打開目錄時，都會在最上面，所以讓最近修變的項目都在上方是比較好的選擇
       { "type",  "asc" },
       { "name",  "asc" },
     },
