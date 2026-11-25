@@ -140,6 +140,10 @@
       "rev": "2d9b06177a975543726ce5c73fca176cedbffe9d",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "reference.nvim": {
+      "rev": "a870531512d48c9e7d83de7acff2590ed6833e9e",
+      "src": "https://github.com/CarsonSlovoka/reference.nvim"
+    },
     "render-markdown.nvim": {
       "rev": "c7188a8f9d2953696b6303caccbf39c51fa2c1b1",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
