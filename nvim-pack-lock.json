@@ -28,6 +28,10 @@
       "rev": "8fa438f36fa6cb747a93557d67ec30ef63715c20",
       "src": "https://github.com/nvim-flutter/flutter-tools.nvim"
     },
+    "form.nvim": {
+      "rev": "8f51d463c18dfeeccae54022ce1897af230625e9",
+      "src": "https://github.com/CarsonSlovoka/form.nvim"
+    },
     "fzf-lua": {
       "rev": "c8aaa74c97157b2c62bdcfc1e57b15c052dc63ca",
       "src": "https://github.com/ibhagwan/fzf-lua"
