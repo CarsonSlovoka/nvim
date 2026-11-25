@@ -18,6 +18,7 @@ local function set_mark(label)
 end
 
 map({ "n", "v" }, "<leader>/", ':noh<CR>', { desc = ":nohlsearch" })
+map("i", "jk", '<ESC>', { desc = "Exit insert mode with jk" }) -- 如果是無蝦米輸入法也沒關係, 輸入的時候不是直接在nvim所以不會影響到
 map("n", "<leader>ms", ':marks<CR>', { desc = "marks" })
 
 -- 系統剪貼簿相關
