@@ -1,4 +1,4 @@
-if vim.uv.os_uname().sysname == "Darwin" and vim.fn.executable('hs') == 0 then
+if vim.uv.os_uname().sysname ~= "Darwin" or vim.fn.executable('hs') == 0 then
   return
 end
 
